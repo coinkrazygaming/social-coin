@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
+import { useAuth } from './AuthContext';
+import { AuthModal } from './AuthModal';
 import { 
   Menu, 
   X, 
@@ -26,20 +28,16 @@ import {
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  
-  // Mock user data - this would come from auth context
-  const user = {
-    username: 'Player123',
-    goldCoins: 25000,
-    sweepsCoins: 45.50,
-    isLoggedIn: true
-  };
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalTab, setAuthModalTab] = useState<'login' | 'register'>('login');
+  const { user, balance, logout } = useAuth();
 
   const navigation = [
     { name: 'Slots', href: '/slots', icon: Gamepad2 },
     { name: 'Table Games', href: '/table-games', icon: Dice6 },
     { name: 'Sportsbook', href: '/sportsbook', icon: Target },
     { name: 'Bingo', href: '/bingo', icon: Grid3X3 },
+    { name: 'Mini Games', href: '/mini-games', icon: Trophy },
     { name: 'Leaderboards', href: '/leaderboards', icon: Trophy },
   ];
 
@@ -78,24 +76,26 @@ export function Header() {
 
         {/* User Section */}
         <div className="flex items-center space-x-4">
-          {user.isLoggedIn ? (
+          {user ? (
             <>
               {/* Balance Display */}
               <div className="hidden sm:flex items-center space-x-3">
                 <Badge variant="outline" className="casino-glow border-gold text-gold">
                   <Coins className="h-3 w-3 mr-1" />
-                  {user.goldCoins.toLocaleString()} GC
+                  {balance?.goldCoins.toLocaleString() || '0'} GC
                 </Badge>
                 <Badge variant="outline" className="sweep-glow border-sweep text-sweep">
                   <Star className="h-3 w-3 mr-1" />
-                  {user.sweepsCoins.toFixed(2)} SC
+                  {balance?.sweepsCoins.toFixed(2) || '0.00'} SC
                 </Badge>
               </div>
 
               {/* Buy Coins Button */}
-              <Button size="sm" className="bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground hover:from-yellow-400 hover:to-gold casino-glow">
-                <Coins className="h-4 w-4 mr-1" />
-                Buy GC
+              <Button size="sm" className="bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground hover:from-yellow-400 hover:to-gold casino-glow" asChild>
+                <Link to="/store">
+                  <Coins className="h-4 w-4 mr-1" />
+                  Buy GC
+                </Link>
               </Button>
 
               {/* User Menu */}
@@ -122,7 +122,7 @@ export function Header() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-destructive">
+                  <DropdownMenuItem className="text-destructive" onClick={logout}>
                     <LogOut className="h-4 w-4 mr-2" />
                     Logout
                   </DropdownMenuItem>
@@ -131,8 +131,24 @@ export function Header() {
             </>
           ) : (
             <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="sm">Login</Button>
-              <Button size="sm" className="bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground hover:from-yellow-400 hover:to-gold">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => {
+                  setAuthModalTab('login');
+                  setIsAuthModalOpen(true);
+                }}
+              >
+                Login
+              </Button>
+              <Button 
+                size="sm" 
+                className="bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground hover:from-yellow-400 hover:to-gold"
+                onClick={() => {
+                  setAuthModalTab('register');
+                  setIsAuthModalOpen(true);
+                }}
+              >
                 Sign Up
               </Button>
             </div>
@@ -154,16 +170,16 @@ export function Header() {
       {isMenuOpen && (
         <div className="md:hidden border-t border-border">
           <nav className="container px-4 py-4 space-y-2">
-            {user.isLoggedIn && (
+            {user && (
               <div className="flex items-center justify-between py-2 mb-4 border-b border-border">
                 <div className="flex items-center space-x-3">
                   <Badge variant="outline" className="casino-glow border-gold text-gold">
                     <Coins className="h-3 w-3 mr-1" />
-                    {user.goldCoins.toLocaleString()} GC
+                    {balance?.goldCoins.toLocaleString() || '0'} GC
                   </Badge>
                   <Badge variant="outline" className="sweep-glow border-sweep text-sweep">
                     <Star className="h-3 w-3 mr-1" />
-                    {user.sweepsCoins.toFixed(2)} SC
+                    {balance?.sweepsCoins.toFixed(2) || '0.00'} SC
                   </Badge>
                 </div>
               </div>
@@ -185,6 +201,12 @@ export function Header() {
           </nav>
         </div>
       )}
+      
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)}
+        defaultTab={authModalTab}
+      />
     </header>
   );
 }
