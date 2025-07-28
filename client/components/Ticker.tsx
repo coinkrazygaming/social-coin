@@ -1,56 +1,33 @@
 import { useState, useEffect } from 'react';
 import { Badge } from './ui/badge';
-import { Trophy, Clock, Target, DollarSign, Zap } from 'lucide-react';
-
-interface TickerItem {
-  id: string;
-  type: 'win' | 'jackpot' | 'sports' | 'bingo' | 'promo';
-  content: string;
-  icon?: React.ReactNode;
-}
+import { Trophy, Clock, Target, DollarSign, Zap, Star } from 'lucide-react';
+import { TickerItem } from '@shared/types';
 
 export function Ticker() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  
-  // Mock ticker data - this would come from real-time API
-  const tickerItems: TickerItem[] = [
-    {
-      id: '1',
-      type: 'win',
-      content: 'Player "LuckyStars77" just won 15,000 SC on Lightning Slots!',
-      icon: <Trophy className="h-4 w-4" />
-    },
-    {
-      id: '2',
-      type: 'sports',
-      content: 'Live Now: Lakers vs Warriors - Lakers +2.5 (-110)',
-      icon: <Target className="h-4 w-4" />
-    },
-    {
-      id: '3',
-      type: 'bingo',
-      content: 'Next Bingo Round starts in 3:24 - Join now for FREE!',
-      icon: <Clock className="h-4 w-4" />
-    },
-    {
-      id: '4',
-      type: 'jackpot',
-      content: 'MEGA JACKPOT: $50,000 SC - Play Royal Riches now!',
-      icon: <DollarSign className="h-4 w-4" />
-    },
-    {
-      id: '5',
-      type: 'promo',
-      content: 'FLASH SALE: Buy 10,000 GC and get 10,000 GC FREE + 10 SC Bonus!',
-      icon: <Zap className="h-4 w-4" />
-    },
-    {
-      id: '6',
-      type: 'win',
-      content: 'Congratulations "BigWinner2024" - 25,000 GC win on Blackjack!',
-      icon: <Trophy className="h-4 w-4" />
+  const [tickerItems, setTickerItems] = useState<TickerItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTickerItems();
+    // Refresh ticker items every 30 seconds
+    const interval = setInterval(fetchTickerItems, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchTickerItems = async () => {
+    try {
+      const response = await fetch('/api/ticker');
+      if (response.ok) {
+        const data = await response.json();
+        setTickerItems(data);
+      }
+    } catch (error) {
+      console.error('Error fetching ticker items:', error);
+    } finally {
+      setIsLoading(false);
     }
-  ];
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
