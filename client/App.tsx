@@ -98,25 +98,7 @@ const App = () => (
                   }
                 />
 
-                <Route
-                  path="/leaderboards"
-                  element={
-                    <PlaceholderPage
-                      title="Leaderboards"
-                      description="Compete with players across all games"
-                      icon={<Trophy className="h-8 w-8 text-white" />}
-                      features={[
-                        "Slot game leaderboards",
-                        "Table game rankings",
-                        "Sports betting leaders",
-                        "Daily/weekly/monthly boards",
-                        "Prize pools",
-                        "Achievement system",
-                        "Player statistics",
-                      ]}
-                    />
-                  }
-                />
+                <Route path="/leaderboards" element={<Leaderboards />} />
 
                 {/* User Routes */}
                 <Route
