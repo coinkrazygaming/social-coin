@@ -1,425 +1,443 @@
-import { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  Coins,
-  Star,
-  CreditCard,
-  Gift,
-  CheckCircle,
-  AlertCircle,
-  Loader2,
-  Sparkles,
-} from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { useAuth } from '../components/AuthContext';
+import { AccessDeniedModal } from '../components/AccessDeniedModal';
+import { GoldCoinPackage, PurchaseTransaction, UserPurchaseHistory } from '@shared/storeTypes';
+import { ShoppingCart, Star, Gift, CreditCard, Smartphone, Crown, Shield, Zap, TrendingUp, DollarSign, Clock, Sparkles, CheckCircle } from 'lucide-react';
 
-interface Package {
-  id: string;
-  name: string;
-  price: number;
-  goldCoins: number;
-  bonusSC: number;
-}
-
-interface PaymentStatus {
-  status: "idle" | "processing" | "success" | "error";
-  message?: string;
-}
-
-export default function Store() {
-  const [packages, setPackages] = useState<Package[]>([]);
-  const [selectedPackage, setSelectedPackage] = useState<Package | null>(null);
-  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>({
-    status: "idle",
-  });
+export function Store() {
+  const { user } = useAuth();
+  const [showAccessDenied, setShowAccessDenied] = useState(false);
+  const [packages, setPackages] = useState<GoldCoinPackage[]>([]);
+  const [purchaseHistory, setPurchaseHistory] = useState<UserPurchaseHistory | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Mock user data - replace with actual auth
-  const userId = "user_demo123";
+  const [selectedPackage, setSelectedPackage] = useState<GoldCoinPackage | null>(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     fetchPackages();
-  }, []);
+    if (user) {
+      fetchPurchaseHistory();
+    }
+  }, [user]);
 
   const fetchPackages = async () => {
     try {
-      const response = await fetch("/api/payments/packages");
+      const response = await fetch('/api/store/packages?active=true');
       const data = await response.json();
       setPackages(data);
     } catch (error) {
-      console.error("Error fetching packages:", error);
+      console.error('Error fetching packages:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handlePurchase = async (pkg: Package) => {
-    setSelectedPackage(pkg);
-    setPaymentStatus({
-      status: "processing",
-      message: "Redirecting to PayPal...",
-    });
-
+  const fetchPurchaseHistory = async () => {
+    if (!user) return;
+    
     try {
-      // In a real implementation, you would integrate with PayPal SDK
-      // For demo purposes, we'll simulate the PayPal flow
-
-      // Simulate PayPal transaction ID
-      const paypalTransactionId = `PAYPAL_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
-
-      // Create payment record
-      const response = await fetch("/api/payments/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId,
-          packageId: pkg.id,
-          paypalTransactionId,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Payment creation failed");
-      }
-
-      const payment = await response.json();
-
-      // Simulate PayPal processing time
-      setTimeout(async () => {
-        try {
-          // Verify payment (simulate successful PayPal payment)
-          const verifyResponse = await fetch(
-            `/api/payments/${payment.id}/verify`,
-            {
-              method: "POST",
-            },
-          );
-
-          if (verifyResponse.ok) {
-            // Update user balance
-            await fetch(`/api/users/${userId}/balance`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                goldCoins: pkg.goldCoins,
-                sweepsCoins: pkg.bonusSC,
-                type: "purchase",
-                description: `Purchase: ${pkg.name}`,
-              }),
-            });
-
-            setPaymentStatus({
-              status: "success",
-              message: `Successfully purchased ${pkg.goldCoins.toLocaleString()} GC + ${pkg.bonusSC} SC!`,
-            });
-
-            // Reset after 3 seconds
-            setTimeout(() => {
-              setPaymentStatus({ status: "idle" });
-              setSelectedPackage(null);
-            }, 3000);
-          } else {
-            throw new Error("Payment verification failed");
-          }
-        } catch (error) {
-          setPaymentStatus({
-            status: "error",
-            message: "Payment verification failed. Please contact support.",
-          });
-        }
-      }, 2000);
+      const response = await fetch(`/api/store/users/${user.id}/purchases`);
+      const data = await response.json();
+      setPurchaseHistory(data);
     } catch (error) {
-      setPaymentStatus({
-        status: "error",
-        message: "Payment failed. Please try again.",
-      });
+      console.error('Error fetching purchase history:', error);
     }
   };
 
-  const getPackageValue = (pkg: Package) => {
-    const baseValue = (pkg.goldCoins / 1000) * 4.99; // Base rate: $4.99 per 1000 GC
-    const savings = baseValue - pkg.price;
-    const savingsPercent = Math.round((savings / baseValue) * 100);
-    return { savings, savingsPercent };
+  const handlePurchase = (packageItem: GoldCoinPackage) => {
+    if (!user) {
+      setShowAccessDenied(true);
+      return;
+    }
+    
+    setSelectedPackage(packageItem);
+    setShowPaymentModal(true);
   };
 
-  const getMostPopular = () => {
-    // Return the package with best value (typically mid-tier)
-    return packages.find((p) => p.id === "gc_10000") || packages[3];
+  const processPayPalPayment = async (packageItem: GoldCoinPackage) => {
+    setIsProcessing(true);
+    
+    try {
+      // Simulate PayPal payment processing
+      const paymentReference = `PAY-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
+      const response = await fetch('/api/store/purchase', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user!.id,
+          username: user!.username,
+          packageId: packageItem.id,
+          paymentMethod: 'paypal',
+          paymentReference
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Payment failed');
+      }
+      
+      const result = await response.json();
+      
+      // Update user balance (simulated)
+      alert(`Payment successful! You received ${packageItem.goldCoins.toLocaleString()} Gold Coins and ${packageItem.bonusSweepsCoins} Sweeps Coins!`);
+      
+      setShowPaymentModal(false);
+      setSelectedPackage(null);
+      fetchPurchaseHistory();
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert('Payment failed. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
-  const getBestValue = () => {
-    // Return the largest package
-    return packages[packages.length - 1];
+  const getVIPStatusIcon = (status: string) => {
+    switch (status) {
+      case 'platinum': return <Crown className="w-4 h-4 text-purple-400" />;
+      case 'gold': return <Crown className="w-4 h-4 text-yellow-400" />;
+      case 'silver': return <Shield className="w-4 h-4 text-gray-400" />;
+      case 'bronze': return <Shield className="w-4 h-4 text-orange-400" />;
+      default: return null;
+    }
+  };
+
+  const getPackageIcon = (packageName: string) => {
+    if (packageName.toLowerCase().includes('starter')) return '🌟';
+    if (packageName.toLowerCase().includes('value')) return '💎';
+    if (packageName.toLowerCase().includes('premium')) return '👑';
+    if (packageName.toLowerCase().includes('mega')) return '🚀';
+    if (packageName.toLowerCase().includes('ultimate')) return '💯';
+    if (packageName.toLowerCase().includes('daily')) return '☀️';
+    if (packageName.toLowerCase().includes('weekend')) return '🎉';
+    if (packageName.toLowerCase().includes('high roller')) return '🎰';
+    return '🪙';
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-purple-800 flex items-center justify-center">
+        <div className="text-white text-xl">Loading store...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="py-16 bg-gradient-to-br from-background via-background to-muted/20">
-        <div className="container px-4">
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center mb-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-gold to-yellow-400 rounded-2xl flex items-center justify-center mr-4 casino-glow">
-                <Coins className="h-8 w-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold">Gold Coin Store</h1>
-                <p className="text-muted-foreground text-lg">
-                  Purchase Gold Coins and get FREE Sweeps Coins!
-                </p>
-              </div>
-            </div>
-
-            <Alert className="max-w-2xl mx-auto bg-gradient-to-r from-gold/20 to-sweep/20 border-gold/30">
-              <Gift className="h-4 w-4" />
-              <AlertDescription className="text-center font-medium">
-                🎉 <strong>BONUS OFFER:</strong> Get the same value in Sweeps
-                Coins FREE with every purchase! PayPal payments go to{" "}
-                <strong>corey@coinkrazy.com</strong>
-              </AlertDescription>
-            </Alert>
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-purple-800">
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-white mb-2">
+            CoinKrazy Gold Coin Store 🪙
+          </h1>
+          <p className="text-purple-200">
+            Purchase Gold Coins for endless fun gaming! Bonus Sweeps Coins included!
+          </p>
+          <div className="mt-4 text-sm text-yellow-300">
+            💰 PayPal payments go to: <strong>corey@coinkrazy.com</strong>
           </div>
         </div>
-      </section>
 
-      {/* Payment Status */}
-      {paymentStatus.status !== "idle" && (
-        <div className="container px-4 mb-8">
-          <Alert
-            className={`max-w-2xl mx-auto ${
-              paymentStatus.status === "success"
-                ? "bg-casino-green/20 border-casino-green/30"
-                : paymentStatus.status === "error"
-                  ? "bg-casino-red/20 border-casino-red/30"
-                  : "bg-blue-500/20 border-blue-500/30"
-            }`}
-          >
-            {paymentStatus.status === "processing" && (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            )}
-            {paymentStatus.status === "success" && (
-              <CheckCircle className="h-4 w-4" />
-            )}
-            {paymentStatus.status === "error" && (
-              <AlertCircle className="h-4 w-4" />
-            )}
-            <AlertDescription className="font-medium">
-              {paymentStatus.message}
-            </AlertDescription>
-          </Alert>
-        </div>
-      )}
+        <Tabs defaultValue="packages" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto mb-8">
+            <TabsTrigger value="packages">Gold Coin Packages</TabsTrigger>
+            <TabsTrigger value="history">Purchase History</TabsTrigger>
+          </TabsList>
 
-      {/* Packages Grid */}
-      <section className="py-16">
-        <div className="container px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
-            {packages.map((pkg) => {
-              const { savings, savingsPercent } = getPackageValue(pkg);
-              const isMostPopular = pkg.id === getMostPopular()?.id;
-              const isBestValue = pkg.id === getBestValue()?.id;
-              const isProcessing =
-                selectedPackage?.id === pkg.id &&
-                paymentStatus.status === "processing";
+          <TabsContent value="packages">
+            {/* User Balance */}
+            {user && (
+              <div className="max-w-4xl mx-auto mb-8">
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="text-center">
+                        <h3 className="text-white font-medium mb-4">Your Balance</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <div className="text-2xl font-bold text-yellow-500">
+                              {user.goldCoins.toLocaleString()}
+                            </div>
+                            <div className="text-sm text-gray-400">Gold Coins</div>
+                          </div>
+                          <div>
+                            <div className="text-2xl font-bold text-green-500">
+                              {user.sweepsCoins.toFixed(2)}
+                            </div>
+                            <div className="text-sm text-gray-400">Sweeps Coins</div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {purchaseHistory && (
+                        <>
+                          <div className="text-center">
+                            <h3 className="text-white font-medium mb-4 flex items-center justify-center gap-2">
+                              VIP Status {getVIPStatusIcon(purchaseHistory.vipStatus)}
+                            </h3>
+                            <div className="text-lg font-bold text-purple-400 capitalize">
+                              {purchaseHistory.vipStatus}
+                            </div>
+                            <div className="text-sm text-gray-400">
+                              Total Spent: ${purchaseHistory.totalSpent.toFixed(2)}
+                            </div>
+                          </div>
+                          
+                          <div className="text-center">
+                            <h3 className="text-white font-medium mb-4">Lifetime Stats</h3>
+                            <div className="text-sm text-gray-400 space-y-1">
+                              <div>Purchases: {purchaseHistory.transactions.length}</div>
+                              <div>Gold Coins: {purchaseHistory.totalGoldCoins.toLocaleString()}</div>
+                              <div>Sweeps Coins: {purchaseHistory.totalSweepsCoins.toFixed(2)}</div>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
 
-              return (
-                <Card
-                  key={pkg.id}
-                  className={`relative group transition-all duration-300 hover:scale-105 ${
-                    isMostPopular
-                      ? "ring-2 ring-gold shadow-lg"
-                      : isBestValue
-                        ? "ring-2 ring-sweep shadow-lg"
-                        : ""
-                  } ${isProcessing ? "opacity-50" : ""}`}
+            {/* Gold Coin Packages - 8 Packages in 2 rows */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              {packages.map((pkg) => (
+                <Card 
+                  key={pkg.id} 
+                  className={`bg-gray-800 border-gray-700 hover:border-purple-500 transition-all duration-300 transform hover:scale-105 relative ${
+                    pkg.popular ? 'ring-2 ring-purple-500' : ''
+                  } ${pkg.bestValue ? 'ring-2 ring-green-500' : ''}`}
                 >
-                  {/* Popular/Best Value Badges */}
-                  {isMostPopular && (
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                      <Badge className="bg-gold text-gold-foreground casino-glow px-3 py-1">
-                        <Sparkles className="h-3 w-3 mr-1" />
+                  {pkg.popular && (
+                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                      <Badge className="bg-purple-600 text-white px-3 py-1">
+                        <Star className="w-3 h-3 mr-1" />
                         Most Popular
                       </Badge>
                     </div>
                   )}
-
-                  {isBestValue && (
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                      <Badge className="bg-sweep text-sweep-foreground sweep-glow px-3 py-1">
-                        <Star className="h-3 w-3 mr-1" />
+                  
+                  {pkg.bestValue && (
+                    <div className="absolute -top-3 right-4">
+                      <Badge className="bg-green-600 text-white px-3 py-1">
+                        <TrendingUp className="w-3 h-3 mr-1" />
                         Best Value
                       </Badge>
                     </div>
                   )}
-
-                  <CardHeader className="text-center pt-8">
-                    <div className="text-4xl mb-3">
-                      <Coins className="h-12 w-12 mx-auto text-gold" />
+                  
+                  <CardHeader className="text-center pb-4">
+                    <div className="text-4xl mx-auto mb-3">
+                      {getPackageIcon(pkg.name)}
                     </div>
-                    <CardTitle className="text-xl">{pkg.name}</CardTitle>
-                    <div className="text-3xl font-bold text-gold">
-                      ${pkg.price}
-                    </div>
-                    {savingsPercent > 0 && (
-                      <div className="text-sm text-casino-green">
-                        Save {savingsPercent}%
-                      </div>
-                    )}
+                    <CardTitle className="text-white text-xl mb-2">{pkg.name}</CardTitle>
+                    <p className="text-gray-400 text-sm">{pkg.description}</p>
                   </CardHeader>
-
-                  <CardContent className="space-y-4">
-                    {/* What You Get */}
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between p-3 bg-gold/10 rounded-lg border border-gold/20">
-                        <div className="flex items-center">
-                          <Coins className="h-5 w-5 text-gold mr-2" />
-                          <span className="font-medium">Gold Coins</span>
-                        </div>
-                        <span className="font-bold text-gold">
-                          {pkg.goldCoins.toLocaleString()}
-                        </span>
+                  
+                  <CardContent className="text-center">
+                    <div className="mb-4">
+                      <div className="text-3xl font-bold text-yellow-500 mb-1">
+                        {pkg.goldCoins.toLocaleString()}
                       </div>
-
-                      <div className="flex items-center justify-between p-3 bg-sweep/10 rounded-lg border border-sweep/20">
-                        <div className="flex items-center">
-                          <Star className="h-5 w-5 text-sweep mr-2" />
-                          <span className="font-medium">Sweeps Coins</span>
-                        </div>
-                        <div className="text-right">
-                          <span className="font-bold text-sweep">
-                            {pkg.bonusSC.toLocaleString()}
-                          </span>
-                          <div className="text-xs text-casino-green">FREE!</div>
-                        </div>
-                      </div>
+                      <div className="text-sm text-gray-400">Gold Coins</div>
                     </div>
-
-                    {/* Total Value */}
-                    <div className="text-center p-2 bg-muted/20 rounded-lg">
-                      <div className="text-sm text-muted-foreground">
-                        Total Value
+                    
+                    <div className="mb-4">
+                      <div className="text-lg font-semibold text-green-500 mb-1">
+                        +{pkg.bonusSweepsCoins}
                       </div>
-                      <div className="font-semibold">
-                        {pkg.goldCoins.toLocaleString()} GC + {pkg.bonusSC} SC
-                      </div>
+                      <div className="text-xs text-gray-400">Bonus Sweeps Coins</div>
                     </div>
-
-                    {/* Purchase Button */}
-                    <Button
-                      onClick={() => handlePurchase(pkg)}
-                      disabled={paymentStatus.status === "processing"}
-                      className={`w-full text-white ${
-                        isMostPopular
-                          ? "bg-gradient-to-r from-gold to-yellow-400 hover:from-yellow-400 hover:to-gold casino-glow"
-                          : isBestValue
-                            ? "bg-gradient-to-r from-sweep to-purple-600 hover:from-purple-600 hover:to-sweep sweep-glow"
-                            : "bg-gradient-to-r from-gold to-yellow-400 hover:from-yellow-400 hover:to-gold"
-                      }`}
-                      size="lg"
-                    >
-                      {isProcessing ? (
-                        <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Processing...
-                        </>
-                      ) : (
-                        <>
-                          <CreditCard className="h-4 w-4 mr-2" />
-                          Buy with PayPal
-                        </>
+                    
+                    <div className="mb-4">
+                      <ul className="text-xs text-gray-300 space-y-1">
+                        {pkg.features.slice(0, 3).map((feature, index) => (
+                          <li key={index} className="flex items-center justify-center gap-1">
+                            <Zap className="w-3 h-3 text-yellow-500" />
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    <div className="mb-6">
+                      {pkg.originalPrice && (
+                        <div className="text-sm text-gray-500 line-through mb-1">
+                          ${pkg.originalPrice}
+                        </div>
                       )}
-                    </Button>
-
-                    <div className="text-center text-xs text-muted-foreground">
-                      Secure payment via PayPal
+                      <div className="text-2xl font-bold text-white">
+                        ${pkg.price}
+                      </div>
                     </div>
+                    
+                    <Button 
+                      onClick={() => handlePurchase(pkg)}
+                      className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                    >
+                      <ShoppingCart className="w-4 h-4 mr-2" />
+                      Purchase
+                    </Button>
                   </CardContent>
                 </Card>
-              );
-            })}
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="history">
+            {user && purchaseHistory ? (
+              <div className="max-w-4xl mx-auto">
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardHeader>
+                    <CardTitle className="text-white">Purchase History</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {purchaseHistory.transactions.length > 0 ? (
+                      <div className="space-y-4">
+                        {purchaseHistory.transactions.map((transaction) => (
+                          <div key={transaction.id} className="p-4 bg-gray-700 rounded-lg">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h4 className="text-white font-medium">{transaction.packageName}</h4>
+                                <p className="text-gray-400 text-sm">
+                                  {transaction.goldCoinsAwarded.toLocaleString()} Gold Coins + {transaction.sweepsCoinsBonus} Sweeps Coins
+                                </p>
+                                <p className="text-gray-500 text-xs">
+                                  <Clock className="w-3 h-3 inline mr-1" />
+                                  {new Date(transaction.createdAt).toLocaleDateString()}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-white font-medium">${transaction.amountPaid}</div>
+                                <Badge 
+                                  className={`text-xs ${
+                                    transaction.status === 'completed' ? 'bg-green-600' :
+                                    transaction.status === 'pending' ? 'bg-yellow-600' :
+                                    transaction.status === 'failed' ? 'bg-red-600' :
+                                    'bg-gray-600'
+                                  }`}
+                                >
+                                  {transaction.status}
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <ShoppingCart className="w-12 h-12 text-gray-500 mx-auto mb-4" />
+                        <p className="text-gray-400">No purchases yet. Start with a package above!</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-gray-400">Please log in to view purchase history.</p>
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
+
+        {/* Payment Methods */}
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-white mb-4">Secure Payment Methods</h2>
+          <div className="flex justify-center gap-6">
+            <div className="bg-gray-800 p-4 rounded-lg">
+              <CreditCard className="w-8 h-8 text-blue-500 mx-auto mb-2" />
+              <p className="text-white text-sm">PayPal</p>
+            </div>
+            <div className="bg-gray-800 p-4 rounded-lg">
+              <Smartphone className="w-8 h-8 text-green-500 mx-auto mb-2" />
+              <p className="text-white text-sm">Apple Pay</p>
+            </div>
+            <div className="bg-gray-800 p-4 rounded-lg">
+              <Gift className="w-8 h-8 text-purple-500 mx-auto mb-2" />
+              <p className="text-white text-sm">Gift Cards</p>
+            </div>
           </div>
         </div>
-      </section>
 
-      {/* How It Works */}
-      <section className="py-16 bg-card/30">
-        <div className="container px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold">How It Works</h2>
-            <p className="text-muted-foreground mt-2">
-              Simple, secure, and instant
+        {/* Important Notice */}
+        <Card className="max-w-2xl mx-auto bg-yellow-900 border-yellow-700">
+          <CardContent className="p-6 text-center">
+            <h3 className="text-yellow-300 font-bold mb-2">Important Notice</h3>
+            <p className="text-yellow-100 text-sm">
+              Gold Coins have no cash value and are for entertainment purposes only. 
+              Sweeps Coins can be redeemed for prizes subject to terms and conditions.
             </p>
+          </CardContent>
+        </Card>
+
+        {/* Payment Modal */}
+        {showPaymentModal && selectedPackage && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <Card className="bg-gray-800 border-gray-700 w-full max-w-md mx-4">
+              <CardHeader>
+                <CardTitle className="text-white flex justify-between items-center">
+                  Complete Purchase
+                  <Button variant="ghost" size="sm" onClick={() => setShowPaymentModal(false)}>
+                    ✕
+                  </Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="text-center">
+                  <div className="text-4xl mb-2">{getPackageIcon(selectedPackage.name)}</div>
+                  <h3 className="text-white font-medium text-lg">{selectedPackage.name}</h3>
+                  <p className="text-gray-400">{selectedPackage.description}</p>
+                  
+                  <div className="my-4 p-4 bg-gray-700 rounded">
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <div className="text-yellow-500 font-bold">{selectedPackage.goldCoins.toLocaleString()}</div>
+                        <div className="text-gray-400">Gold Coins</div>
+                      </div>
+                      <div>
+                        <div className="text-green-500 font-bold">+{selectedPackage.bonusSweepsCoins}</div>
+                        <div className="text-gray-400">Sweeps Coins</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-2xl font-bold text-white mb-4">
+                    ${selectedPackage.price}
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <Button
+                    onClick={() => processPayPalPayment(selectedPackage)}
+                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    disabled={isProcessing}
+                  >
+                    <CreditCard className="w-4 h-4 mr-2" />
+                    {isProcessing ? 'Processing...' : 'Pay with PayPal'}
+                  </Button>
+                  
+                  <div className="text-xs text-gray-400 text-center">
+                    Secure payment processing • 256-bit SSL encryption<br/>
+                    Payment goes to: corey@coinkrazy.com
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
+        )}
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto">
-                <span className="text-2xl font-bold text-white">1</span>
-              </div>
-              <h3 className="text-xl font-semibold">Choose Package</h3>
-              <p className="text-muted-foreground">
-                Select your preferred Gold Coin package. Bigger packages =
-                better value!
-              </p>
-            </div>
-
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto">
-                <span className="text-2xl font-bold text-white">2</span>
-              </div>
-              <h3 className="text-xl font-semibold">Secure Payment</h3>
-              <p className="text-muted-foreground">
-                Pay securely with PayPal. All payments go to corey@coinkrazy.com
-              </p>
-            </div>
-
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-casino-green to-green-600 rounded-full flex items-center justify-center mx-auto">
-                <span className="text-2xl font-bold text-white">3</span>
-              </div>
-              <h3 className="text-xl font-semibold">Instant Coins</h3>
-              <p className="text-muted-foreground">
-                Get your Gold Coins + FREE Sweeps Coins instantly in your
-                account!
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Terms */}
-      <section className="py-8 bg-muted/20">
-        <div className="container px-4">
-          <div className="text-center text-sm text-muted-foreground max-w-4xl mx-auto">
-            <p className="mb-2">
-              * Sweeps Coins are awarded as a FREE bonus with every Gold Coin
-              purchase. Gold Coins have no cash value. Sweeps Coins can be
-              redeemed for prizes subject to terms and conditions.
-            </p>
-            <p>
-              By purchasing, you agree to our Terms of Service and acknowledge
-              that this is a social casino for entertainment purposes only. Must
-              be 21+ to play.
-            </p>
-          </div>
-        </div>
-      </section>
+        <AccessDeniedModal
+          isOpen={showAccessDenied}
+          onClose={() => setShowAccessDenied(false)}
+          feature="Gold Coin Store"
+        />
+      </div>
     </div>
   );
 }
