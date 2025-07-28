@@ -9,12 +9,14 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import MiniGames from "./pages/MiniGames";
-import Store from "./pages/Store";
-import AdminPanel from "./pages/AdminPanel";
+import { Store } from "./pages/Store";
+import { AdminPanel } from "./pages/AdminPanel";
 import Slots from "./pages/Slots";
 import TableGames from "./pages/TableGames";
 import Leaderboards from "./pages/Leaderboards";
 import Bingo from "./pages/Bingo";
+import { Sportsbook } from "./pages/Sportsbook";
+import { UserDashboard } from "./pages/UserDashboard";
 import { Header } from "./components/Header";
 import { Ticker } from "./components/Ticker";
 import { PlaceholderPage } from "./components/PlaceholderPage";
@@ -59,50 +61,15 @@ const App = () => (
                   element={<TableGames />}
                 />
 
-                <Route
-                  path="/sportsbook"
-                  element={
-                    <PlaceholderPage
-                      title="Live Sportsbook"
-                      description="Bet on live sports with real-time odds"
-                      icon={<Target className="h-8 w-8 text-white" />}
-                      features={[
-                        "NFL, NBA, MLB, NHL betting",
-                        "Live in-game odds",
-                        "Moneyline, spread, totals",
-                        "Player props",
-                        "Real-time game data",
-                        "Bet history tracking",
-                        "GC and SC wagering",
-                      ]}
-                    />
-                  }
-                />
+                <Route path="/sportsbook" element={<Sportsbook />} />
 
                 <Route path="/bingo" element={<Bingo />} />
 
                 <Route path="/leaderboards" element={<Leaderboards />} />
 
                 {/* User Routes */}
-                <Route
-                  path="/profile"
-                  element={
-                    <PlaceholderPage
-                      title="Player Profile"
-                      description="Manage your account and view statistics"
-                      icon={<User className="h-8 w-8 text-white" />}
-                      features={[
-                        "Account information",
-                        "Game history",
-                        "Balance management",
-                        "KYC verification",
-                        "Withdrawal requests",
-                        "Bonus tracking",
-                        "Responsible gaming tools",
-                      ]}
-                    />
-                  }
-                />
+                <Route path="/profile" element={<UserDashboard />} />
+                <Route path="/dashboard" element={<UserDashboard />} />
 
                 <Route
                   path="/settings"
