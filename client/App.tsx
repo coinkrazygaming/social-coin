@@ -1,7 +1,4 @@
-import "./global.css";
-
 import { Toaster } from "@/components/ui/toaster";
-import { createRoot } from "react-dom/client";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -21,15 +18,7 @@ import { Header } from "./components/Header";
 import { Ticker } from "./components/Ticker";
 import { PlaceholderPage } from "./components/PlaceholderPage";
 import { AuthProvider } from "./components/AuthContext";
-import {
-  Gamepad2,
-  Dice6,
-  Target,
-  Grid3X3,
-  Trophy,
-  User,
-  Settings,
-} from "lucide-react";
+import { Settings } from "lucide-react";
 
 const queryClient = new QueryClient();
 
@@ -52,13 +41,9 @@ const App = () => (
 
                 {/* Casino Routes */}
                 <Route path="/slots" element={<Slots />} />
-
                 <Route path="/table-games" element={<TableGames />} />
-
                 <Route path="/sportsbook" element={<Sportsbook />} />
-
                 <Route path="/bingo" element={<Bingo />} />
-
                 <Route path="/leaderboards" element={<Leaderboards />} />
 
                 {/* User Routes */}
@@ -96,4 +81,4 @@ const App = () => (
   </QueryClientProvider>
 );
 
-createRoot(document.getElementById("root")!).render(<App />);
+export default App;
