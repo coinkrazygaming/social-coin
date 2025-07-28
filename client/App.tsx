@@ -8,9 +8,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import MiniGames from "./pages/MiniGames";
+import Store from "./pages/Store";
 import { Header } from "./components/Header";
 import { Ticker } from "./components/Ticker";
 import { PlaceholderPage } from "./components/PlaceholderPage";
+import { AuthProvider } from "./components/AuthContext";
 import { Gamepad2, Dice6, Target, Grid3X3, Trophy, User, Settings } from "lucide-react";
 
 const queryClient = new QueryClient();
