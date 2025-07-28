@@ -206,15 +206,6 @@ export function AuthModal({
                 )}
               </Button>
             </form>
-
-            {/* Demo Accounts */}
-            <div className="text-center space-y-2 border-t pt-4">
-              <p className="text-sm text-muted-foreground">Demo Accounts:</p>
-              <div className="flex flex-col space-y-1 text-xs">
-                <p>Admin: coinkrazy00@gmail.com / Woot6969!</p>
-                <p>User: demo@example.com / password123</p>
-              </div>
-            </div>
           </TabsContent>
 
           {/* Register Tab */}
