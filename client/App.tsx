@@ -48,22 +48,7 @@ const App = () => (
                 {/* Casino Routes */}
                 <Route
                   path="/slots"
-                  element={
-                    <PlaceholderPage
-                      title="Slot Games Lobby"
-                      description="Experience 500+ premium slot games with real-time jackpots"
-                      icon={<Gamepad2 className="h-8 w-8 text-white" />}
-                      features={[
-                        "500+ slot games from top providers",
-                        "Real-time jackpot tracking",
-                        "GC and SC betting options",
-                        "Live game thumbnails",
-                        "Auto-sync with provider APIs",
-                        "Progressive jackpots",
-                        "Tournament modes",
-                      ]}
-                    />
-                  }
+                  element={<Slots />}
                 />
 
                 <Route
