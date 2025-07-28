@@ -389,3 +389,70 @@ export const handleGetAllMiniGameHistory: RequestHandler = (req, res) => {
 
   res.json(allPlays);
 };
+
+// In-memory user settings storage
+const userSettings: Map<string, any> = new Map();
+
+// Get user settings
+export const handleGetUserSettings: RequestHandler = (req, res) => {
+  const { userId } = req.params;
+
+  // Return default settings if none exist
+  const defaultSettings = {
+    theme: 'dark',
+    language: 'en',
+    timezone: 'America/New_York',
+    animations: true,
+    reducedMotion: false,
+    emailNotifications: true,
+    smsNotifications: false,
+    pushNotifications: true,
+    marketingEmails: false,
+    bonusNotifications: true,
+    gameNotifications: true,
+    sportsbookNotifications: true,
+    autoPlay: false,
+    quickSpin: true,
+    soundEffects: true,
+    backgroundMusic: false,
+    volumeLevel: 70,
+    vibration: true,
+    profileVisibility: 'public',
+    onlineStatus: true,
+    dataCollection: true,
+    thirdPartyIntegration: false,
+    chatEnabled: true,
+    friendRequests: true,
+    directMessages: true,
+    groupInvites: true,
+    sessionTimeLimit: 240,
+    dailyDepositLimit: 500,
+    lossLimit: 200,
+    realityChecks: true,
+    cooloffPeriod: 0,
+    luckyAIEnabled: true,
+    luckyAIPersonality: 'friendly',
+    joseyAIEnabled: true,
+    joseyAISocialFeatures: true
+  };
+
+  const settings = userSettings.get(userId) || defaultSettings;
+  res.json(settings);
+};
+
+// Update user settings
+export const handleUpdateUserSettings: RequestHandler = (req, res) => {
+  const { userId } = req.params;
+  const newSettings = req.body;
+
+  // Get current settings or defaults
+  const currentSettings = userSettings.get(userId) || {};
+
+  // Merge with new settings
+  const updatedSettings = { ...currentSettings, ...newSettings };
+
+  // Store updated settings
+  userSettings.set(userId, updatedSettings);
+
+  res.json({ success: true, settings: updatedSettings });
+};
