@@ -104,6 +104,9 @@ export function createServer() {
   app.get("/api/users/:userId/transactions", handleGetTransactions);
   app.get("/api/users/:userId/settings", handleGetUserSettings);
   app.put("/api/users/:userId/settings", handleUpdateUserSettings);
+  app.get("/api/users/redemptions/all", handleGetAllRedemptions);
+  app.post("/api/users/redemptions", handleCreateRedemption);
+  app.post("/api/users/redemptions/:requestId/review", handleReviewRedemption);
   app.get("/api/users", handleGetAllUsers);
 
   // Mini game routes
