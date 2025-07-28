@@ -19,7 +19,7 @@ import {
 interface AccessDeniedModalProps {
   isOpen: boolean;
   onClose: () => void;
-  feature: "mini-games" | "sweeps-coins" | "poker" | "sportsbook";
+  feature: string;
 }
 
 export function AccessDeniedModal({
