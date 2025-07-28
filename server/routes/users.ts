@@ -399,9 +399,9 @@ export const handleGetUserSettings: RequestHandler = (req, res) => {
 
   // Return default settings if none exist
   const defaultSettings = {
-    theme: "dark",
-    language: "en",
-    timezone: "America/New_York",
+    theme: 'dark',
+    language: 'en',
+    timezone: 'America/New_York',
     animations: true,
     reducedMotion: false,
     emailNotifications: true,
@@ -417,7 +417,7 @@ export const handleGetUserSettings: RequestHandler = (req, res) => {
     backgroundMusic: false,
     volumeLevel: 70,
     vibration: true,
-    profileVisibility: "public",
+    profileVisibility: 'public',
     onlineStatus: true,
     dataCollection: true,
     thirdPartyIntegration: false,
@@ -431,9 +431,9 @@ export const handleGetUserSettings: RequestHandler = (req, res) => {
     realityChecks: true,
     cooloffPeriod: 0,
     luckyAIEnabled: true,
-    luckyAIPersonality: "friendly",
+    luckyAIPersonality: 'friendly',
     joseyAIEnabled: true,
-    joseyAISocialFeatures: true,
+    joseyAISocialFeatures: true
   };
 
   const settings = userSettings.get(userId) || defaultSettings;
@@ -455,4 +455,77 @@ export const handleUpdateUserSettings: RequestHandler = (req, res) => {
   userSettings.set(userId, updatedSettings);
 
   res.json({ success: true, settings: updatedSettings });
+};
+
+// Mock redemption storage
+const redemptionRequests: any[] = [];
+
+// Get all redemption requests (admin/staff)
+export const handleGetAllRedemptions: RequestHandler = (req, res) => {
+  const { adminId, staffId } = req.headers;
+
+  if (!adminId && !staffId) {
+    return res.status(401).json({ error: 'Admin or staff access required' });
+  }
+
+  // Sort by requested date descending
+  const sortedRequests = redemptionRequests.sort((a, b) =>
+    new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime()
+  );
+
+  res.json(sortedRequests);
+};
+
+// Create redemption request
+export const handleCreateRedemption: RequestHandler = (req, res) => {
+  const { userId, username, amount, method, accountDetails } = req.body;
+
+  if (!userId || !amount || amount < 100) {
+    return res.status(400).json({ error: 'Invalid redemption request' });
+  }
+
+  const redemption = {
+    id: `redemption-${Date.now()}`,
+    userId,
+    username,
+    amount,
+    cashValue: amount, // 1 SC = $1 USD
+    method,
+    accountDetails,
+    status: 'pending',
+    requestedAt: new Date(),
+    kycRequired: true,
+    kycCompleted: true // Assume KYC is completed for demo
+  };
+
+  redemptionRequests.push(redemption);
+
+  res.json({ success: true, redemption });
+};
+
+// Review redemption request (staff/admin)
+export const handleReviewRedemption: RequestHandler = (req, res) => {
+  const { requestId } = req.params;
+  const { status, reviewNotes } = req.body;
+  const { adminId, staffId, adminUsername, staffUsername } = req.headers;
+
+  if (!adminId && !staffId) {
+    return res.status(401).json({ error: 'Admin or staff access required' });
+  }
+
+  const redemption = redemptionRequests.find(r => r.id === requestId);
+  if (!redemption) {
+    return res.status(404).json({ error: 'Redemption not found' });
+  }
+
+  redemption.status = status;
+  redemption.reviewNotes = reviewNotes;
+  redemption.reviewedAt = new Date();
+  redemption.reviewedBy = adminUsername || staffUsername;
+
+  if (status === 'approved') {
+    redemption.processedAt = new Date();
+  }
+
+  res.json({ success: true, redemption });
 };
