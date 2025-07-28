@@ -307,10 +307,17 @@ export function PokerTableThumbnail({ table, onJoinTable, size = 'medium' }: Pok
       </Dialog>
 
       {/* Auth Modal */}
-      <AuthModal 
-        isOpen={showAuthModal} 
+      <AuthModal
+        isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         defaultTab="register"
+      />
+
+      {/* Access Denied Modal */}
+      <AccessDeniedModal
+        isOpen={showAccessDenied}
+        onClose={() => setShowAccessDenied(false)}
+        feature="poker"
       />
     </>
   );
