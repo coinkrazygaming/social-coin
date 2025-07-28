@@ -29,6 +29,7 @@ export function TableGameThumbnail({ game, onPlay, size = 'medium' }: TableGameT
   const { user } = useAuth();
   const [showCurrencyDialog, setShowCurrencyDialog] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showAccessDenied, setShowAccessDenied] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState<'GC' | 'SC' | null>(null);
 
   const handlePlayClick = (currency: 'GC' | 'SC') => {
