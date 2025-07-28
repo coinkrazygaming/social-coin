@@ -32,7 +32,11 @@ export function PokerTableThumbnail({ table, onJoinTable, size = 'medium' }: Pok
 
   const handleTableClick = () => {
     if (!user) {
-      setShowAuthModal(true);
+      if (table.currency === 'SC') {
+        setShowAccessDenied(true);
+      } else {
+        setShowAuthModal(true);
+      }
       return;
     }
     setShowSeatSelection(true);
