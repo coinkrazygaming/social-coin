@@ -85,11 +85,13 @@ export default function MiniGames() {
   }, []);
 
   const checkCooldowns = async () => {
+    if (!user) return;
+
     setIsLoading(true);
     const cooldownPromises = miniGames.map(async (game) => {
       try {
         const response = await fetch(
-          `/api/mini-games/${userId}/${game.id}/cooldown`,
+          `/api/mini-games/${user.id}/${game.id}/cooldown`,
         );
         const data = await response.json();
         return { gameId: game.id, ...data };
