@@ -399,9 +399,9 @@ export const handleGetUserSettings: RequestHandler = (req, res) => {
 
   // Return default settings if none exist
   const defaultSettings = {
-    theme: 'dark',
-    language: 'en',
-    timezone: 'America/New_York',
+    theme: "dark",
+    language: "en",
+    timezone: "America/New_York",
     animations: true,
     reducedMotion: false,
     emailNotifications: true,
@@ -417,7 +417,7 @@ export const handleGetUserSettings: RequestHandler = (req, res) => {
     backgroundMusic: false,
     volumeLevel: 70,
     vibration: true,
-    profileVisibility: 'public',
+    profileVisibility: "public",
     onlineStatus: true,
     dataCollection: true,
     thirdPartyIntegration: false,
@@ -431,9 +431,9 @@ export const handleGetUserSettings: RequestHandler = (req, res) => {
     realityChecks: true,
     cooloffPeriod: 0,
     luckyAIEnabled: true,
-    luckyAIPersonality: 'friendly',
+    luckyAIPersonality: "friendly",
     joseyAIEnabled: true,
-    joseyAISocialFeatures: true
+    joseyAISocialFeatures: true,
   };
 
   const settings = userSettings.get(userId) || defaultSettings;

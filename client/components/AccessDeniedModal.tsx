@@ -64,7 +64,9 @@ export function AccessDeniedModal({
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-2xl p-0 overflow-hidden bg-gradient-to-br from-background via-background to-muted/20">
-          <DialogTitle className="sr-only">Access Denied - {getFeatureTitle()}</DialogTitle>
+          <DialogTitle className="sr-only">
+            Access Denied - {getFeatureTitle()}
+          </DialogTitle>
           {/* Header with Branding */}
           <div className="relative bg-gradient-to-r from-gold via-yellow-400 to-gold p-6 text-center">
             <div

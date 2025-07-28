@@ -80,12 +80,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         // Role-based redirect
         setTimeout(() => {
-          if (data.user.role === 'admin') {
-            navigate('/admin');
-          } else if (data.user.role === 'staff') {
-            navigate('/staff');
+          if (data.user.role === "admin") {
+            navigate("/admin");
+          } else if (data.user.role === "staff") {
+            navigate("/staff");
           } else {
-            navigate('/dashboard');
+            navigate("/dashboard");
           }
         }, 500); // Small delay to allow state to update
 

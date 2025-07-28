@@ -66,7 +66,7 @@ import {
   Video,
   Wand2,
   Sparkles,
-  Send
+  Send,
 } from "lucide-react";
 
 export function UserDashboard() {
@@ -89,22 +89,28 @@ export function UserDashboard() {
     accountDetails: {},
   });
   const [showKYCUpload, setShowKYCUpload] = useState(false);
-  const [luckyAIMessages, setLuckyAIMessages] = useState<Array<{role: 'user' | 'ai', message: string, timestamp: Date}>>([
+  const [luckyAIMessages, setLuckyAIMessages] = useState<
+    Array<{ role: "user" | "ai"; message: string; timestamp: Date }>
+  >([
     {
-      role: 'ai',
-      message: 'Hello! I\'m LuckyAI, your personal casino assistant. I\'m here to help you with KYC verification, game strategies, bonus information, and responsible gaming tips. How can I assist you today?',
-      timestamp: new Date()
-    }
+      role: "ai",
+      message:
+        "Hello! I'm LuckyAI, your personal casino assistant. I'm here to help you with KYC verification, game strategies, bonus information, and responsible gaming tips. How can I assist you today?",
+      timestamp: new Date(),
+    },
   ]);
-  const [joseyAIMessages, setJoseyAIMessages] = useState<Array<{role: 'user' | 'ai', message: string, timestamp: Date}>>([
+  const [joseyAIMessages, setJoseyAIMessages] = useState<
+    Array<{ role: "user" | "ai"; message: string; timestamp: Date }>
+  >([
     {
-      role: 'ai',
-      message: 'Hey there! I\'m JoseyAI, your social media content creator! 🎬 I can help you create amazing 30-second video ads to share your wins and promote CoinKrazy. Ready to go viral? Let\'s create something awesome together!',
-      timestamp: new Date()
-    }
+      role: "ai",
+      message:
+        "Hey there! I'm JoseyAI, your social media content creator! 🎬 I can help you create amazing 30-second video ads to share your wins and promote CoinKrazy. Ready to go viral? Let's create something awesome together!",
+      timestamp: new Date(),
+    },
   ]);
-  const [aiInput, setAiInput] = useState('');
-  const [joseyInput, setJoseyInput] = useState('');
+  const [aiInput, setAiInput] = useState("");
+  const [joseyInput, setJoseyInput] = useState("");
   const [showLuckyAIChat, setShowLuckyAIChat] = useState(false);
   const [showJoseyAIChat, setShowJoseyAIChat] = useState(false);
   const [isCreatingVideo, setIsCreatingVideo] = useState(false);
@@ -248,108 +254,148 @@ export function UserDashboard() {
   const sendLuckyAIMessage = () => {
     if (!aiInput.trim()) return;
 
-    const userMessage = { role: 'user' as const, message: aiInput, timestamp: new Date() };
-    setLuckyAIMessages(prev => [...prev, userMessage]);
+    const userMessage = {
+      role: "user" as const,
+      message: aiInput,
+      timestamp: new Date(),
+    };
+    setLuckyAIMessages((prev) => [...prev, userMessage]);
 
     // Simulate AI response based on KYC context
     setTimeout(() => {
-      let aiResponse = '';
-      if (aiInput.toLowerCase().includes('kyc') || aiInput.toLowerCase().includes('verification')) {
+      let aiResponse = "";
+      if (
+        aiInput.toLowerCase().includes("kyc") ||
+        aiInput.toLowerCase().includes("verification")
+      ) {
         const kycSteps = [
           "Let's start your KYC verification! First, I'll need a government-issued photo ID (driver's license, passport, or state ID). Make sure the document is clear and all corners are visible.",
           "Great! Next, we'll need a proof of address document from the last 90 days. This can be a utility bill, bank statement, or official mail with your name and address.",
           "Perfect! Now I'll guide you through the selfie verification. Hold your ID next to your face and take a clear photo. Make sure your face and the ID are both clearly visible.",
-          "Excellent! Your documents are being reviewed. Our staff will verify them within 24-48 hours. You'll receive an email notification once approved!"
+          "Excellent! Your documents are being reviewed. Our staff will verify them within 24-48 hours. You'll receive an email notification once approved!",
         ];
-        aiResponse = kycSteps[kycStep] || "Your KYC verification is complete! You can now make withdrawals and access all premium features.";
-        setKycStep(prev => Math.min(prev + 1, kycSteps.length));
-      } else if (aiInput.toLowerCase().includes('game') || aiInput.toLowerCase().includes('strategy')) {
+        aiResponse =
+          kycSteps[kycStep] ||
+          "Your KYC verification is complete! You can now make withdrawals and access all premium features.";
+        setKycStep((prev) => Math.min(prev + 1, kycSteps.length));
+      } else if (
+        aiInput.toLowerCase().includes("game") ||
+        aiInput.toLowerCase().includes("strategy")
+      ) {
         const gameResponses = [
           "For slots, I recommend starting with games that have higher RTP (Return to Player) percentages. Look for games above 96% RTP for better long-term odds.",
           "In table games, blackjack offers some of the best odds if you follow basic strategy. Would you like me to explain the fundamentals?",
           "For sportsbook betting, consider the value in underdogs and always compare odds across different markets. Bankroll management is key!",
-          "Remember to set limits and take breaks. Gambling should always be fun and within your means. Use our responsible gaming tools!"
+          "Remember to set limits and take breaks. Gambling should always be fun and within your means. Use our responsible gaming tools!",
         ];
-        aiResponse = gameResponses[Math.floor(Math.random() * gameResponses.length)];
+        aiResponse =
+          gameResponses[Math.floor(Math.random() * gameResponses.length)];
       } else {
         const generalResponses = [
           "I'm here to help with any questions about CoinKrazy! Feel free to ask about games, bonuses, verification, or responsible gaming.",
           "Your account looks great! Is there anything specific you'd like help with today?",
           "Don't forget to check your daily bonuses and loyalty rewards. Every day brings new opportunities!",
-          "Remember, I'm here 24/7 to assist you with anything you need. What would you like to explore?"
+          "Remember, I'm here 24/7 to assist you with anything you need. What would you like to explore?",
         ];
-        aiResponse = generalResponses[Math.floor(Math.random() * generalResponses.length)];
+        aiResponse =
+          generalResponses[Math.floor(Math.random() * generalResponses.length)];
       }
 
       const aiMessage = {
-        role: 'ai' as const,
+        role: "ai" as const,
         message: aiResponse,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
-      setLuckyAIMessages(prev => [...prev, aiMessage]);
+      setLuckyAIMessages((prev) => [...prev, aiMessage]);
     }, 1000);
 
-    setAiInput('');
+    setAiInput("");
   };
 
   const sendJoseyAIMessage = () => {
     if (!joseyInput.trim()) return;
 
-    const userMessage = { role: 'user' as const, message: joseyInput, timestamp: new Date() };
-    setJoseyAIMessages(prev => [...prev, userMessage]);
+    const userMessage = {
+      role: "user" as const,
+      message: joseyInput,
+      timestamp: new Date(),
+    };
+    setJoseyAIMessages((prev) => [...prev, userMessage]);
 
     // Simulate AI response for video creation
     setTimeout(() => {
-      let aiResponse = '';
-      if (joseyInput.toLowerCase().includes('video') || joseyInput.toLowerCase().includes('ad')) {
+      let aiResponse = "";
+      if (
+        joseyInput.toLowerCase().includes("video") ||
+        joseyInput.toLowerCase().includes("ad")
+      ) {
         const videoQuestions = [
           "Awesome! Let's create your video ad. What's your biggest win on CoinKrazy? I'll make it the highlight of your video! 💰",
           "Perfect! What's your favorite game on the platform? I'll showcase it with amazing visuals! 🎰",
           "Great choice! What message do you want to share with other players? Something like 'Join me on CoinKrazy for epic wins!' 🎉",
-          "Fantastic! I'm now generating your 30-second video ad with AI magic. It'll feature your win, favorite game, and custom message with CoinKrazy branding! ✨"
+          "Fantastic! I'm now generating your 30-second video ad with AI magic. It'll feature your win, favorite game, and custom message with CoinKrazy branding! ✨",
         ];
-        aiResponse = videoQuestions[Math.min(joseyAIMessages.filter(m => m.role === 'user').length - 1, videoQuestions.length - 1)];
-      } else if (joseyInput.toLowerCase().includes('share') || joseyInput.toLowerCase().includes('social')) {
-        aiResponse = "I can help you create content for TikTok, Instagram, YouTube Shorts, and more! What platform are you most excited about? 📱";
+        aiResponse =
+          videoQuestions[
+            Math.min(
+              joseyAIMessages.filter((m) => m.role === "user").length - 1,
+              videoQuestions.length - 1,
+            )
+          ];
+      } else if (
+        joseyInput.toLowerCase().includes("share") ||
+        joseyInput.toLowerCase().includes("social")
+      ) {
+        aiResponse =
+          "I can help you create content for TikTok, Instagram, YouTube Shorts, and more! What platform are you most excited about? 📱";
       } else {
         const socialResponses = [
           "Ready to go viral? I specialize in creating engaging casino content that follows all platform guidelines! 🔥",
           "Your wins deserve to be celebrated! Let's create content that showcases your success while promoting responsible gaming. 🌟",
           "I can create videos with trending music, cool effects, and your personal gaming highlights. What style interests you most? 🎵",
-          "Social media success starts with authentic content. Tell me about your CoinKrazy journey and I'll help you share it! 📸"
+          "Social media success starts with authentic content. Tell me about your CoinKrazy journey and I'll help you share it! 📸",
         ];
-        aiResponse = socialResponses[Math.floor(Math.random() * socialResponses.length)];
+        aiResponse =
+          socialResponses[Math.floor(Math.random() * socialResponses.length)];
       }
 
       const aiMessage = {
-        role: 'ai' as const,
+        role: "ai" as const,
         message: aiResponse,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
-      setJoseyAIMessages(prev => [...prev, aiMessage]);
+      setJoseyAIMessages((prev) => [...prev, aiMessage]);
     }, 1000);
 
-    setJoseyInput('');
+    setJoseyInput("");
   };
 
   const startVideoCreation = () => {
     setIsCreatingVideo(true);
-    setJoseyAIMessages(prev => [...prev, {
-      role: 'ai',
-      message: '🎬 Creating your personalized video ad... This may take a few minutes. I\'m adding your gameplay highlights, win animations, and CoinKrazy branding!',
-      timestamp: new Date()
-    }]);
+    setJoseyAIMessages((prev) => [
+      ...prev,
+      {
+        role: "ai",
+        message:
+          "🎬 Creating your personalized video ad... This may take a few minutes. I'm adding your gameplay highlights, win animations, and CoinKrazy branding!",
+        timestamp: new Date(),
+      },
+    ]);
 
     // Simulate video creation process
     setTimeout(() => {
       setIsCreatingVideo(false);
-      setJoseyAIMessages(prev => [...prev, {
-        role: 'ai',
-        message: '🎉 Your video is ready! Check your downloads folder for "CoinKrazy_MyWin_VideoAd.mp4". Ready to share it on your favorite social platform?',
-        timestamp: new Date()
-      }]);
+      setJoseyAIMessages((prev) => [
+        ...prev,
+        {
+          role: "ai",
+          message:
+            '🎉 Your video is ready! Check your downloads folder for "CoinKrazy_MyWin_VideoAd.mp4". Ready to share it on your favorite social platform?',
+          timestamp: new Date(),
+        },
+      ]);
     }, 5000);
   };
 
@@ -640,9 +686,9 @@ export function UserDashboard() {
                           <div
                             key={index}
                             className={`p-2 rounded text-sm ${
-                              msg.role === 'ai'
-                                ? 'bg-blue-600 text-white ml-4'
-                                : 'bg-gray-600 text-white mr-4'
+                              msg.role === "ai"
+                                ? "bg-blue-600 text-white ml-4"
+                                : "bg-gray-600 text-white mr-4"
                             }`}
                           >
                             {msg.message}
@@ -654,7 +700,9 @@ export function UserDashboard() {
                           value={aiInput}
                           onChange={(e) => setAiInput(e.target.value)}
                           placeholder="Ask about KYC, games, or strategies..."
-                          onKeyPress={(e) => e.key === 'Enter' && sendLuckyAIMessage()}
+                          onKeyPress={(e) =>
+                            e.key === "Enter" && sendLuckyAIMessage()
+                          }
                         />
                         <Button size="sm" onClick={sendLuckyAIMessage}>
                           <Send className="w-4 h-4" />
@@ -671,8 +719,9 @@ export function UserDashboard() {
                   ) : (
                     <div className="space-y-4">
                       <p className="text-gray-300 text-sm">
-                        Your personal casino assistant is here to help with KYC verification,
-                        game strategies, bonus information, and responsible gaming guidance.
+                        Your personal casino assistant is here to help with KYC
+                        verification, game strategies, bonus information, and
+                        responsible gaming guidance.
                       </p>
                       <div className="space-y-2">
                         <div className="flex items-center gap-2 text-sm text-gray-400">
@@ -721,9 +770,9 @@ export function UserDashboard() {
                           <div
                             key={index}
                             className={`p-2 rounded text-sm ${
-                              msg.role === 'ai'
-                                ? 'bg-pink-600 text-white ml-4'
-                                : 'bg-gray-600 text-white mr-4'
+                              msg.role === "ai"
+                                ? "bg-pink-600 text-white ml-4"
+                                : "bg-gray-600 text-white mr-4"
                             }`}
                           >
                             {msg.message}
@@ -741,7 +790,9 @@ export function UserDashboard() {
                           value={joseyInput}
                           onChange={(e) => setJoseyInput(e.target.value)}
                           placeholder="Tell me about your wins for the video..."
-                          onKeyPress={(e) => e.key === 'Enter' && sendJoseyAIMessage()}
+                          onKeyPress={(e) =>
+                            e.key === "Enter" && sendJoseyAIMessage()
+                          }
                         />
                         <Button size="sm" onClick={sendJoseyAIMessage}>
                           <Send className="w-4 h-4" />
@@ -769,8 +820,9 @@ export function UserDashboard() {
                   ) : (
                     <div className="space-y-4">
                       <p className="text-gray-300 text-sm">
-                        Create amazing 30-second video ads showcasing your wins and promoting
-                        CoinKrazy with our AI-powered video generator!
+                        Create amazing 30-second video ads showcasing your wins
+                        and promoting CoinKrazy with our AI-powered video
+                        generator!
                       </p>
                       <div className="space-y-2">
                         <div className="flex items-center gap-2 text-sm text-gray-400">

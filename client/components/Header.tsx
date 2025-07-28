@@ -141,7 +141,7 @@ export function Header() {
                       Settings
                     </Link>
                   </DropdownMenuItem>
-                  {(user.role === 'staff' || user.role === 'admin') && (
+                  {(user.role === "staff" || user.role === "admin") && (
                     <>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
@@ -152,7 +152,7 @@ export function Header() {
                       </DropdownMenuItem>
                     </>
                   )}
-                  {user.role === 'admin' && (
+                  {user.role === "admin" && (
                     <DropdownMenuItem asChild>
                       <Link to="/admin" className="flex items-center">
                         <Crown className="h-4 w-4 mr-2" />
