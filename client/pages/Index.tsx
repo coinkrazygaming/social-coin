@@ -67,29 +67,10 @@ export default function Index() {
     },
   ];
 
-  const featuredSlots = [
-    {
-      name: "Lightning Riches",
-      provider: "SweepSlots",
-      jackpot: "125,000 SC",
-      image: "https://via.placeholder.com/300x200?text=Lightning+Riches",
-      popular: true,
-    },
-    {
-      name: "Royal Fortune",
-      provider: "ReelGames",
-      jackpot: "89,500 SC",
-      image: "https://via.placeholder.com/300x200?text=Royal+Fortune",
-      new: true,
-    },
-    {
-      name: "Mystic Dragons",
-      provider: "SweepSlots",
-      jackpot: "67,200 SC",
-      image: "https://via.placeholder.com/300x200?text=Mystic+Dragons",
-      hot: true,
-    },
-  ];
+  const handlePlayGame = (gameId: string, currency: 'GC' | 'SC') => {
+    console.log(`Playing ${gameId} with ${currency}`);
+    // TODO: Implement game launch
+  };
 
   const recentWinners = [
     {
@@ -237,58 +218,14 @@ export default function Index() {
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredSlots.map((slot) => (
-              <Card
-                key={slot.name}
-                className="group overflow-hidden hover:scale-105 transition-all duration-300"
-              >
-                <div className="relative">
-                  <img
-                    src={slot.image}
-                    alt={slot.name}
-                    className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                  <div className="absolute top-3 left-3 flex gap-2">
-                    {slot.popular && (
-                      <Badge className="bg-gold/90 text-gold-foreground">
-                        <Star className="h-3 w-3 mr-1" />
-                        Popular
-                      </Badge>
-                    )}
-                    {slot.new && (
-                      <Badge className="bg-casino-green/90 text-white">
-                        <Zap className="h-3 w-3 mr-1" />
-                        New
-                      </Badge>
-                    )}
-                    {slot.hot && (
-                      <Badge className="bg-casino-red/90 text-white">
-                        <TrendingUp className="h-3 w-3 mr-1" />
-                        Hot
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    {slot.name}
-                    <Badge
-                      variant="outline"
-                      className="text-sweep border-sweep"
-                    >
-                      {slot.jackpot}
-                    </Badge>
-                  </CardTitle>
-                  <CardDescription>by {slot.provider}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button className="w-full" variant="outline">
-                    <PlayCircle className="h-4 w-4 mr-2" />
-                    Play Now
-                  </Button>
-                </CardContent>
-              </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {featuredSlots.slice(0, 4).map((game) => (
+              <SlotThumbnail
+                key={game.id}
+                game={game}
+                onPlay={handlePlayGame}
+                size="large"
+              />
             ))}
           </div>
         </div>
