@@ -51,25 +51,7 @@ const App = () => (
                 <Route path="/profile" element={<UserDashboard />} />
                 <Route path="/dashboard" element={<UserDashboard />} />
 
-                <Route
-                  path="/settings"
-                  element={
-                    <PlaceholderPage
-                      title="Account Settings"
-                      description="Customize your gaming experience"
-                      icon={<Settings className="h-8 w-8 text-white" />}
-                      features={[
-                        "Notification preferences",
-                        "Privacy settings",
-                        "Game preferences",
-                        "Sound and display options",
-                        "Security settings",
-                        "Communication preferences",
-                        "Responsible gaming limits",
-                      ]}
-                    />
-                  }
-                />
+                <Route path="/settings" element={<AccountSettings />} />
 
                 {/* Catch-all route */}
                 <Route path="*" element={<NotFound />} />
