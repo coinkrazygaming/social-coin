@@ -310,6 +310,10 @@ export default function MiniGames() {
                       : "opacity-75"
                   }`}
                   onClick={() => {
+                    if (!user) {
+                      setShowAccessDenied(true);
+                      return;
+                    }
                     if (gameStatus.status === "available") {
                       setSelectedGame(game.id);
                     }
