@@ -17,6 +17,8 @@ import {
   Dice6,
   Target,
   Grid3X3,
+  Crown,
+  Shield,
 } from "lucide-react";
 import {
   DropdownMenu,
