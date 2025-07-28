@@ -205,7 +205,7 @@ export default function AdminPanel() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle>Mini Games > Colin Shots > Payout History</CardTitle>
+                    <CardTitle>Mini Games → Colin Shots → Payout History</CardTitle>
                     <CardDescription>Track all mini game plays and payouts</CardDescription>
                   </div>
                   <Badge variant="outline" className="text-gold border-gold/30">
