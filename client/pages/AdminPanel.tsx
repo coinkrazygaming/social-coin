@@ -136,12 +136,46 @@ export function AdminPanel() {
         }),
       ]);
 
-      if (packagesRes.ok) setPackages(await packagesRes.json());
-      if (settingsRes.ok) setStoreSettings(await settingsRes.json());
-      if (logsRes.ok) setAdminLogs(await logsRes.json());
-      if (redemptionsRes.ok) setRedemptionRequests(await redemptionsRes.json());
-      if (refundsRes.ok) setRefundRequests(await refundsRes.json());
-      if (statsRes.ok) setPaymentStats(await statsRes.json());
+      try {
+        if (packagesRes.ok) setPackages(await packagesRes.json());
+      } catch (e) {
+        console.error('Error parsing packages response:', e);
+        setPackages([]);
+      }
+
+      try {
+        if (settingsRes.ok) setStoreSettings(await settingsRes.json());
+      } catch (e) {
+        console.error('Error parsing settings response:', e);
+      }
+
+      try {
+        if (logsRes.ok) setAdminLogs(await logsRes.json());
+      } catch (e) {
+        console.error('Error parsing logs response:', e);
+        setAdminLogs([]);
+      }
+
+      try {
+        if (redemptionsRes.ok) setRedemptionRequests(await redemptionsRes.json());
+      } catch (e) {
+        console.error('Error parsing redemptions response:', e);
+        setRedemptionRequests([]);
+      }
+
+      try {
+        if (refundsRes.ok) setRefundRequests(await refundsRes.json());
+      } catch (e) {
+        console.error('Error parsing refunds response:', e);
+        setRefundRequests([]);
+      }
+
+      try {
+        if (statsRes.ok) setPaymentStats(await statsRes.json());
+      } catch (e) {
+        console.error('Error parsing stats response:', e);
+        setPaymentStats(null);
+      }
     } catch (error) {
       console.error("Error fetching admin data:", error);
     } finally {
