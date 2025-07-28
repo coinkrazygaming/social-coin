@@ -28,6 +28,7 @@ export function PokerTableThumbnail({ table, onJoinTable, size = 'medium' }: Pok
   const { user } = useAuth();
   const [showSeatSelection, setShowSeatSelection] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showAccessDenied, setShowAccessDenied] = useState(false);
 
   const handleTableClick = () => {
     if (!user) {
