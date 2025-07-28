@@ -301,10 +301,17 @@ export function TableGameThumbnail({ game, onPlay, size = 'medium' }: TableGameT
       </Dialog>
 
       {/* Auth Modal */}
-      <AuthModal 
-        isOpen={showAuthModal} 
+      <AuthModal
+        isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         defaultTab="register"
+      />
+
+      {/* Access Denied Modal */}
+      <AccessDeniedModal
+        isOpen={showAccessDenied}
+        onClose={() => setShowAccessDenied(false)}
+        feature="sweeps-coins"
       />
     </>
   );
