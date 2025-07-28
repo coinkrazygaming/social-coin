@@ -2,6 +2,32 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
+import {
+  handleRegister,
+  handleLogin,
+  handleGetBalance,
+  handleUpdateBalance,
+  handleGetTransactions,
+  handleGetAllUsers,
+  handleCheckCooldown,
+  handleMiniGamePlay,
+  handleGetMiniGameHistory,
+  handleGetAllMiniGameHistory
+} from "./routes/users";
+import {
+  handleGetPackages,
+  handleCreatePayment,
+  handleVerifyPayment,
+  handleGetPayments,
+  handleGetAllPayments,
+  handlePayPalWebhook
+} from "./routes/payments";
+import {
+  handleGetTickerItems,
+  handleAddTickerItem,
+  handleDeleteTickerItem,
+  handleAddMiniGameWin
+} from "./routes/ticker";
 
 export function createServer() {
   const app = express();
