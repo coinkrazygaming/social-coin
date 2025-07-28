@@ -82,5 +82,14 @@ export function createServer() {
   app.delete("/api/ticker/:itemId", handleDeleteTickerItem);
   app.post("/api/ticker/mini-game", handleAddMiniGameWin);
 
+  // Leaderboard routes
+  app.get("/api/leaderboards", handleGetLeaderboard);
+  app.get("/api/leaderboards/categories", handleGetCategories);
+  app.get("/api/leaderboards/users/:userId/position/:category", handleGetUserPosition);
+  app.get("/api/leaderboards/users/:userId/stats", handleGetUserStats);
+  app.post("/api/leaderboards/update-score", handleUpdateScore);
+  app.get("/api/leaderboards/achievements", handleGetAchievements);
+  app.get("/api/leaderboards/live-updates", handleGetLiveUpdates);
+
   return app;
 }
