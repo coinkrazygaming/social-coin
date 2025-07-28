@@ -99,6 +99,8 @@ export function createServer() {
   app.get("/api/users/:userId/balance", handleGetBalance);
   app.post("/api/users/:userId/balance", handleUpdateBalance);
   app.get("/api/users/:userId/transactions", handleGetTransactions);
+  app.get("/api/users/:userId/settings", handleGetUserSettings);
+  app.put("/api/users/:userId/settings", handleUpdateUserSettings);
   app.get("/api/users", handleGetAllUsers);
 
   // Mini game routes
