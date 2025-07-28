@@ -40,6 +40,7 @@ const App = () => (
                 <Route path="/mini-games" element={<MiniGames />} />
                 <Route path="/store" element={<Store />} />
                 <Route path="/admin" element={<AdminPanel />} />
+                <Route path="/staff" element={<StaffPanel />} />
 
                 {/* Casino Routes */}
                 <Route path="/slots" element={<Slots />} />
