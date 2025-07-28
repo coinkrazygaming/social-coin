@@ -1,499 +1,869 @@
-import { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useAuth } from "@/components/AuthContext";
-import {
-  ShieldCheck,
-  Users,
-  TrendingUp,
-  DollarSign,
-  Gamepad2,
-  Trophy,
-  Clock,
-  Star,
-  ArrowLeft,
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Textarea } from '../components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Switch } from '../components/ui/switch';
+import { useAuth } from '../components/AuthContext';
+import { AccessDeniedModal } from '../components/AccessDeniedModal';
+import { GoldCoinPackage, StoreSettings, AdminLog, RefundRequest } from '@shared/storeTypes';
+import { RedemptionRequest } from '@shared/userTypes';
+import { 
+  Settings, 
+  Package, 
+  DollarSign, 
+  Users, 
+  FileText, 
+  Shield, 
+  CheckCircle, 
+  XCircle, 
+  Clock, 
   AlertTriangle,
-} from "lucide-react";
-import {
-  MiniGamePlay,
-  User as UserType,
-  Transaction,
-  PayPalPayment,
-} from "@shared/types";
+  Plus,
+  Edit,
+  Trash2,
+  Eye,
+  Download,
+  Upload,
+  Crown,
+  TrendingUp,
+  Target,
+  Star,
+  BarChart3,
+  PieChart,
+  Activity,
+  Zap,
+  MessageSquare,
+  Bot
+} from 'lucide-react';
 
-export default function AdminPanel() {
+export function AdminPanel() {
   const { user } = useAuth();
-  const [miniGameHistory, setMiniGameHistory] = useState<MiniGamePlay[]>([]);
-  const [allUsers, setAllUsers] = useState<UserType[]>([]);
-  const [allPayments, setAllPayments] = useState<PayPalPayment[]>([]);
+  const [showAccessDenied, setShowAccessDenied] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [packages, setPackages] = useState<GoldCoinPackage[]>([]);
+  const [storeSettings, setStoreSettings] = useState<StoreSettings | null>(null);
+  const [adminLogs, setAdminLogs] = useState<AdminLog[]>([]);
+  const [redemptionRequests, setRedemptionRequests] = useState<RedemptionRequest[]>([]);
+  const [refundRequests, setRefundRequests] = useState<RefundRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedGame, setSelectedGame] = useState<string>("all");
+  const [editingPackage, setEditingPackage] = useState<GoldCoinPackage | null>(null);
+  const [showNewPackageForm, setShowNewPackageForm] = useState(false);
+  const [newPackage, setNewPackage] = useState({
+    name: '',
+    description: '',
+    goldCoins: 0,
+    bonusSweepsCoins: 0,
+    price: 0,
+    originalPrice: 0,
+    image: '',
+    popular: false,
+    bestValue: false,
+    features: [''],
+    isActive: true
+  });
+  const [paymentStats, setPaymentStats] = useState<any>(null);
 
   useEffect(() => {
-    if (user?.role === "admin") {
-      fetchAdminData();
+    if (!user || user.role !== 'admin') {
+      setShowAccessDenied(true);
+      return;
     }
+    
+    fetchAdminData();
   }, [user]);
 
   const fetchAdminData = async () => {
+    if (!user) return;
+
     try {
-      const [miniGamesRes, usersRes, paymentsRes] = await Promise.all([
-        fetch("/api/mini-games/history"),
-        fetch("/api/users"),
-        fetch("/api/payments"),
+      const [packagesRes, settingsRes, logsRes, redemptionsRes, refundsRes, statsRes] = await Promise.all([
+        fetch('/api/store/packages', {
+          headers: { 'adminId': user.id, 'adminUsername': user.username }
+        }),
+        fetch('/api/store/settings', {
+          headers: { 'adminId': user.id, 'adminUsername': user.username }
+        }),
+        fetch('/api/store/admin-logs', {
+          headers: { 'adminId': user.id, 'adminUsername': user.username }
+        }),
+        fetch('/api/users/redemptions/all', {
+          headers: { 'adminId': user.id, 'adminUsername': user.username }
+        }),
+        fetch('/api/store/refund-requests', {
+          headers: { 'adminId': user.id, 'adminUsername': user.username }
+        }),
+        fetch('/api/store/payment-stats', {
+          headers: { 'adminId': user.id, 'adminUsername': user.username }
+        })
       ]);
 
-      if (miniGamesRes.ok) {
-        const miniGames = await miniGamesRes.json();
-        setMiniGameHistory(miniGames);
-      }
-
-      if (usersRes.ok) {
-        const users = await usersRes.json();
-        setAllUsers(users);
-      }
-
-      if (paymentsRes.ok) {
-        const payments = await paymentsRes.json();
-        setAllPayments(payments);
-      }
+      if (packagesRes.ok) setPackages(await packagesRes.json());
+      if (settingsRes.ok) setStoreSettings(await settingsRes.json());
+      if (logsRes.ok) setAdminLogs(await logsRes.json());
+      if (redemptionsRes.ok) setRedemptionRequests(await redemptionsRes.json());
+      if (refundsRes.ok) setRefundRequests(await refundsRes.json());
+      if (statsRes.ok) setPaymentStats(await statsRes.json());
     } catch (error) {
-      console.error("Error fetching admin data:", error);
+      console.error('Error fetching admin data:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Redirect non-admin users
-  if (!user || user.role !== "admin") {
+  const handlePackageCreate = async () => {
+    try {
+      const response = await fetch('/api/store/packages', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'adminId': user!.id, 
+          'adminUsername': user!.username 
+        },
+        body: JSON.stringify(newPackage)
+      });
+
+      if (response.ok) {
+        setShowNewPackageForm(false);
+        setNewPackage({
+          name: '',
+          description: '',
+          goldCoins: 0,
+          bonusSweepsCoins: 0,
+          price: 0,
+          originalPrice: 0,
+          image: '',
+          popular: false,
+          bestValue: false,
+          features: [''],
+          isActive: true
+        });
+        fetchAdminData();
+        alert('Package created successfully!');
+      }
+    } catch (error) {
+      console.error('Error creating package:', error);
+      alert('Failed to create package');
+    }
+  };
+
+  const handlePackageUpdate = async (packageId: string, updates: Partial<GoldCoinPackage>) => {
+    try {
+      const response = await fetch(`/api/store/packages/${packageId}`, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'adminId': user!.id, 
+          'adminUsername': user!.username 
+        },
+        body: JSON.stringify(updates)
+      });
+
+      if (response.ok) {
+        fetchAdminData();
+        setEditingPackage(null);
+        alert('Package updated successfully!');
+      }
+    } catch (error) {
+      console.error('Error updating package:', error);
+      alert('Failed to update package');
+    }
+  };
+
+  const handlePackageDelete = async (packageId: string) => {
+    if (!confirm('Are you sure you want to delete this package?')) return;
+
+    try {
+      const response = await fetch(`/api/store/packages/${packageId}`, {
+        method: 'DELETE',
+        headers: { 
+          'adminId': user!.id, 
+          'adminUsername': user!.username 
+        }
+      });
+
+      if (response.ok) {
+        fetchAdminData();
+        alert('Package deleted successfully!');
+      }
+    } catch (error) {
+      console.error('Error deleting package:', error);
+      alert('Failed to delete package');
+    }
+  };
+
+  const handleRedemptionReview = async (requestId: string, status: 'approved' | 'denied', notes: string) => {
+    try {
+      const response = await fetch(`/api/users/redemptions/${requestId}/review`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'adminId': user!.id, 
+          'adminUsername': user!.username 
+        },
+        body: JSON.stringify({ status, reviewNotes: notes })
+      });
+
+      if (response.ok) {
+        fetchAdminData();
+        alert(`Redemption request ${status}!`);
+      }
+    } catch (error) {
+      console.error('Error reviewing redemption:', error);
+      alert('Failed to review redemption request');
+    }
+  };
+
+  const handleRefundReview = async (refundId: string, status: 'approved' | 'denied', notes: string) => {
+    try {
+      const response = await fetch(`/api/store/refund-requests/${refundId}/process`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'adminId': user!.id, 
+          'adminUsername': user!.username 
+        },
+        body: JSON.stringify({ status, reviewNotes: notes })
+      });
+
+      if (response.ok) {
+        fetchAdminData();
+        alert(`Refund request ${status}!`);
+      }
+    } catch (error) {
+      console.error('Error processing refund:', error);
+      alert('Failed to process refund request');
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed':
+      case 'approved':
+      case 'paid': return 'bg-green-600';
+      case 'pending':
+      case 'staff_review':
+      case 'admin_review': return 'bg-yellow-600';
+      case 'denied':
+      case 'failed': return 'bg-red-600';
+      default: return 'bg-gray-600';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'completed':
+      case 'approved':
+      case 'paid': return <CheckCircle className="w-4 h-4" />;
+      case 'pending':
+      case 'staff_review':
+      case 'admin_review': return <Clock className="w-4 h-4" />;
+      case 'denied':
+      case 'failed': return <XCircle className="w-4 h-4" />;
+      default: return <AlertTriangle className="w-4 h-4" />;
+    }
+  };
+
+  if (!user || user.role !== 'admin') {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <Card className="max-w-md w-full">
-          <CardHeader className="text-center">
-            <AlertTriangle className="h-12 w-12 mx-auto text-casino-red mb-4" />
-            <CardTitle>Access Denied</CardTitle>
-            <CardDescription>
-              This area is restricted to administrators only.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <Button asChild>
-              <a href="/">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Casino
-              </a>
-            </Button>
-          </CardContent>
-        </Card>
+      <AccessDeniedModal
+        isOpen={showAccessDenied}
+        onClose={() => setShowAccessDenied(false)}
+        feature="Admin Panel"
+      />
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-purple-800 flex items-center justify-center">
+        <div className="text-white text-xl">Loading admin panel...</div>
       </div>
     );
   }
 
-  const colinShotsHistory = miniGameHistory.filter(
-    (play) => play.gameType === "colin-shots",
-  );
-  const totalSCPaidOut = miniGameHistory.reduce(
-    (sum, play) => sum + play.scEarned,
-    0,
-  );
-  const totalRevenue = allPayments
-    .filter((p) => p.status === "completed")
-    .reduce((sum, payment) => sum + payment.amount, 0);
-
-  const stats = {
-    totalUsers: allUsers.length,
-    totalPlays: miniGameHistory.length,
-    totalSCPaidOut: Math.round(totalSCPaidOut * 100) / 100,
-    totalRevenue,
-    avgScoreColinShots:
-      colinShotsHistory.length > 0
-        ? Math.round(
-            (colinShotsHistory.reduce((sum, play) => sum + play.score, 0) /
-              colinShotsHistory.length) *
-              100,
-          ) / 100
-        : 0,
-  };
-
-  const formatDate = (date: Date | string) => {
-    return new Date(date).toLocaleString();
-  };
-
-  const getScoreColor = (score: number, maxScore: number) => {
-    const percentage = score / maxScore;
-    if (percentage >= 0.8) return "text-casino-green";
-    if (percentage >= 0.6) return "text-gold";
-    if (percentage >= 0.4) return "text-yellow-400";
-    return "text-muted-foreground";
-  };
-
   return (
-    <div className="min-h-screen p-4">
-      <div className="container mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-casino-red to-red-600 rounded-lg flex items-center justify-center mr-4">
-              <ShieldCheck className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold">Admin Panel</h1>
-              <p className="text-muted-foreground">
-                CoinKrazy Casino Management
-              </p>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-purple-800">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-4xl font-bold text-white mb-2">
+              CoinKrazy Admin Panel 👑
+            </h1>
+            <p className="text-purple-200">Manage store, users, and platform settings</p>
           </div>
-
-          <Alert>
-            <ShieldCheck className="h-4 w-4" />
-            <AlertDescription>
-              Welcome, {user.username}! You have full administrative access to
-              CoinKrazy.
-            </AlertDescription>
-          </Alert>
+          <div className="flex items-center gap-2 text-white">
+            <Crown className="w-5 h-5 text-yellow-400" />
+            <span>Admin: {user.username}</span>
+          </div>
         </div>
 
         {/* Overview Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalUsers}</div>
-            </CardContent>
-          </Card>
+        {paymentStats && (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardContent className="p-4 text-center">
+                <DollarSign className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-green-500">
+                  ${paymentStats.totalRevenue.toFixed(2)}
+                </div>
+                <div className="text-sm text-gray-400">Total Revenue</div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gray-800 border-gray-700">
+              <CardContent className="p-4 text-center">
+                <TrendingUp className="w-8 h-8 text-blue-500 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-blue-500">
+                  ${paymentStats.todayRevenue.toFixed(2)}
+                </div>
+                <div className="text-sm text-gray-400">Today's Revenue</div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gray-800 border-gray-700">
+              <CardContent className="p-4 text-center">
+                <Activity className="w-8 h-8 text-purple-500 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-purple-500">
+                  {paymentStats.totalTransactions}
+                </div>
+                <div className="text-sm text-gray-400">Total Transactions</div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gray-800 border-gray-700">
+              <CardContent className="p-4 text-center">
+                <Target className="w-8 h-8 text-yellow-500 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-yellow-500">
+                  ${paymentStats.averageTransactionValue.toFixed(2)}
+                </div>
+                <div className="text-sm text-gray-400">Avg Transaction</div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Mini Game Plays
-              </CardTitle>
-              <Gamepad2 className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalPlays}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">SC Paid Out</CardTitle>
-              <Star className="h-4 w-4 text-sweep" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-sweep">
-                {stats.totalSCPaidOut}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total Revenue
-              </CardTitle>
-              <DollarSign className="h-4 w-4 text-casino-green" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-casino-green">
-                ${stats.totalRevenue.toFixed(2)}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Avg Colin Shots
-              </CardTitle>
-              <Trophy className="h-4 w-4 text-gold" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-gold">
-                {stats.avgScoreColinShots}/25
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Main Content Tabs */}
-        <Tabs defaultValue="mini-games" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="mini-games">Mini Games</TabsTrigger>
-            <TabsTrigger value="users">Users</TabsTrigger>
-            <TabsTrigger value="payments">Payments</TabsTrigger>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-6">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="packages">Packages</TabsTrigger>
+            <TabsTrigger value="redemptions">Redemptions</TabsTrigger>
+            <TabsTrigger value="refunds">Refunds</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
+            <TabsTrigger value="logs">Logs</TabsTrigger>
           </TabsList>
 
-          {/* Mini Games Tab */}
-          <TabsContent value="mini-games" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>
-                      Mini Games → Colin Shots → Payout History
-                    </CardTitle>
-                    <CardDescription>
-                      Track all mini game plays and payouts
-                    </CardDescription>
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Pending Actions */}
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5 text-yellow-500" />
+                    Pending Actions
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400">Pending Redemptions</span>
+                    <Badge className="bg-yellow-600">
+                      {redemptionRequests.filter(r => r.status === 'pending' || r.status === 'staff_review').length}
+                    </Badge>
                   </div>
-                  <Badge variant="outline" className="text-gold border-gold/30">
-                    {colinShotsHistory.length} Colin Shots Plays
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {colinShotsHistory.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      No Colin Shots games played yet.
-                    </div>
-                  ) : (
-                    <div className="space-y-3 max-h-96 overflow-y-auto">
-                      {colinShotsHistory.map((play) => {
-                        const user = allUsers.find((u) => u.id === play.userId);
-                        return (
-                          <div
-                            key={play.id}
-                            className="flex items-center justify-between p-4 bg-muted/20 rounded-lg"
-                          >
-                            <div className="flex items-center space-x-4">
-                              <div className="w-10 h-10 bg-gradient-to-br from-gold to-yellow-400 rounded-full flex items-center justify-center">
-                                🏀
-                              </div>
-                              <div>
-                                <div className="font-medium">
-                                  {user?.username || "Unknown Player"}
-                                </div>
-                                <div className="text-sm text-muted-foreground">
-                                  {formatDate(play.playedAt)}
-                                </div>
-                              </div>
-                            </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400">Pending Refunds</span>
+                    <Badge className="bg-yellow-600">
+                      {refundRequests.filter(r => r.status === 'pending').length}
+                    </Badge>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400">Active Packages</span>
+                    <Badge className="bg-green-600">
+                      {packages.filter(p => p.isActive).length}
+                    </Badge>
+                  </div>
+                </CardContent>
+              </Card>
 
-                            <div className="flex items-center space-x-4">
-                              <div className="text-center">
-                                <div
-                                  className={`font-bold ${getScoreColor(play.score, play.maxScore)}`}
-                                >
-                                  {play.score}/{play.maxScore}
-                                </div>
-                                <div className="text-xs text-muted-foreground">
-                                  Score
-                                </div>
-                              </div>
-
-                              <div className="text-center">
-                                <div className="font-bold text-sweep">
-                                  {play.scEarned.toFixed(2)} SC
-                                </div>
-                                <div className="text-xs text-muted-foreground">
-                                  Earned
-                                </div>
-                              </div>
-
-                              <div className="text-center">
-                                <div className="font-bold text-blue-400">
-                                  {play.duration}s
-                                </div>
-                                <div className="text-xs text-muted-foreground">
-                                  Duration
-                                </div>
-                              </div>
-                            </div>
+              {/* Popular Packages */}
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Star className="w-5 h-5 text-yellow-500" />
+                    Popular Packages
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {paymentStats?.popularPackages && (
+                    <div className="space-y-3">
+                      {paymentStats.popularPackages.slice(0, 5).map((pkg: any, index: number) => (
+                        <div key={pkg.packageId} className="flex justify-between items-center">
+                          <span className="text-gray-400">{pkg.name}</span>
+                          <div className="text-right">
+                            <div className="text-white font-medium">{pkg.count} sales</div>
+                            <div className="text-sm text-gray-400">${pkg.revenue.toFixed(2)}</div>
                           </div>
-                        );
-                      })}
+                        </div>
+                      ))}
                     </div>
                   )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* LuckyAI Department Managers */}
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Bot className="w-5 h-5 text-blue-500" />
+                  AI Department Managers
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="p-4 bg-gray-700 rounded-lg text-center">
+                    <div className="text-2xl mb-2">🎰</div>
+                    <h3 className="text-white font-medium">SlotAI Manager</h3>
+                    <p className="text-sm text-gray-400">Manages slot games and RTP</p>
+                    <Button size="sm" className="mt-2" variant="outline">
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Chat
+                    </Button>
+                  </div>
+                  
+                  <div className="p-4 bg-gray-700 rounded-lg text-center">
+                    <div className="text-2xl mb-2">🏆</div>
+                    <h3 className="text-white font-medium">SportsAI Manager</h3>
+                    <p className="text-sm text-gray-400">Handles sportsbook operations</p>
+                    <Button size="sm" className="mt-2" variant="outline">
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Chat
+                    </Button>
+                  </div>
+                  
+                  <div className="p-4 bg-gray-700 rounded-lg text-center">
+                    <div className="text-2xl mb-2">💰</div>
+                    <h3 className="text-white font-medium">StoreAI Manager</h3>
+                    <p className="text-sm text-gray-400">Oversees coin store and payments</p>
+                    <Button size="sm" className="mt-2" variant="outline">
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Chat
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Users Tab */}
-          <TabsContent value="users" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>User Management</CardTitle>
-                <CardDescription>
-                  View and manage all registered users
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3 max-h-96 overflow-y-auto">
-                  {allUsers.map((user) => (
-                    <div
-                      key={user.id}
-                      className="flex items-center justify-between p-4 bg-muted/20 rounded-lg"
-                    >
-                      <div className="flex items-center space-x-4">
-                        <div
-                          className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                            user.role === "admin"
-                              ? "bg-gradient-to-br from-casino-red to-red-600"
-                              : user.role === "staff"
-                                ? "bg-gradient-to-br from-blue-500 to-blue-600"
-                                : "bg-gradient-to-br from-sweep to-purple-600"
-                          }`}
-                        >
-                          <Users className="h-5 w-5 text-white" />
-                        </div>
-                        <div>
-                          <div className="font-medium flex items-center space-x-2">
-                            <span>{user.username}</span>
-                            <Badge
-                              variant="outline"
-                              className={
-                                user.role === "admin"
-                                  ? "border-casino-red/30 text-casino-red"
-                                  : user.role === "staff"
-                                    ? "border-blue-500/30 text-blue-400"
-                                    : "border-muted/30 text-muted-foreground"
-                              }
-                            >
-                              {user.role}
-                            </Badge>
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            {user.email}
-                          </div>
-                        </div>
+          <TabsContent value="packages" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-white">Package Management</h2>
+              <Button
+                onClick={() => setShowNewPackageForm(true)}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Package
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {packages.map((pkg) => (
+                <Card key={pkg.id} className="bg-gray-800 border-gray-700">
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <CardTitle className="text-white text-lg">{pkg.name}</CardTitle>
+                        <p className="text-gray-400 text-sm">{pkg.description}</p>
                       </div>
-
-                      <div className="flex items-center space-x-4">
-                        <div className="text-center">
-                          <div className="font-bold text-gold">
-                            {user.goldCoins.toLocaleString()}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            GC
-                          </div>
-                        </div>
-
-                        <div className="text-center">
-                          <div className="font-bold text-sweep">
-                            {user.sweepsCoins.toFixed(2)}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            SC
-                          </div>
-                        </div>
-
-                        <Badge
-                          variant={
-                            user.kycStatus === "approved"
-                              ? "default"
-                              : "secondary"
-                          }
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setEditingPackage(pkg)}
                         >
-                          {user.kycStatus}
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handlePackageDelete(pkg.id)}
+                          className="text-red-400 hover:text-red-300"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Price:</span>
+                        <span className="text-white">${pkg.price}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Gold Coins:</span>
+                        <span className="text-yellow-500">{pkg.goldCoins.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Bonus SC:</span>
+                        <span className="text-green-500">{pkg.bonusSweepsCoins}</span>
+                      </div>
+                      <div className="flex justify-between items-center mt-4">
+                        <span className="text-gray-400">Status:</span>
+                        <Badge className={pkg.isActive ? 'bg-green-600' : 'bg-red-600'}>
+                          {pkg.isActive ? 'Active' : 'Inactive'}
                         </Badge>
                       </div>
+                      {(pkg.popular || pkg.bestValue) && (
+                        <div className="flex gap-2 mt-2">
+                          {pkg.popular && (
+                            <Badge className="bg-purple-600">Popular</Badge>
+                          )}
+                          {pkg.bestValue && (
+                            <Badge className="bg-green-600">Best Value</Badge>
+                          )}
+                        </div>
+                      )}
                     </div>
-                  ))}
-                </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="redemptions" className="space-y-6">
+            <h2 className="text-2xl font-bold text-white">Prize Redemption Requests</h2>
+            
+            <Card className="bg-gray-800 border-gray-700">
+              <CardContent className="p-6">
+                {redemptionRequests.length > 0 ? (
+                  <div className="space-y-4">
+                    {redemptionRequests.map((request) => (
+                      <div key={request.id} className="p-4 bg-gray-700 rounded-lg">
+                        <div className="flex justify-between items-start mb-4">
+                          <div>
+                            <h3 className="text-white font-medium">@{request.username}</h3>
+                            <p className="text-gray-400 text-sm">
+                              ${request.cashValue} ({request.amount} SC) via {request.method}
+                            </p>
+                            <p className="text-gray-500 text-xs">
+                              Requested: {new Date(request.requestedAt).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <Badge className={getStatusColor(request.status)}>
+                            {getStatusIcon(request.status)}
+                            <span className="ml-2">{request.status.replace('_', ' ')}</span>
+                          </Badge>
+                        </div>
+                        
+                        {request.status === 'pending' || request.status === 'staff_review' ? (
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              className="bg-green-600 hover:bg-green-700"
+                              onClick={() => {
+                                const notes = prompt('Review notes (optional):') || '';
+                                handleRedemptionReview(request.id, 'approved', notes);
+                              }}
+                            >
+                              <CheckCircle className="w-4 h-4 mr-2" />
+                              Approve
+                            </Button>
+                            <Button
+                              size="sm"
+                              className="bg-red-600 hover:bg-red-700"
+                              onClick={() => {
+                                const notes = prompt('Denial reason (required):');
+                                if (notes) handleRedemptionReview(request.id, 'denied', notes);
+                              }}
+                            >
+                              <XCircle className="w-4 h-4 mr-2" />
+                              Deny
+                            </Button>
+                          </div>
+                        ) : request.denialReason && (
+                          <div className="text-sm text-red-400 mt-2">
+                            Denial reason: {request.denialReason}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <DollarSign className="w-12 h-12 text-gray-500 mx-auto mb-4" />
+                    <p className="text-gray-400">No redemption requests.</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Payments Tab */}
-          <TabsContent value="payments" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Payment History</CardTitle>
-                <CardDescription>
-                  Track all PayPal transactions and Gold Coin purchases
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3 max-h-96 overflow-y-auto">
-                  {allPayments.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      No payments recorded yet.
-                    </div>
-                  ) : (
-                    allPayments.map((payment) => {
-                      const user = allUsers.find(
-                        (u) => u.id === payment.userId,
-                      );
-                      return (
-                        <div
-                          key={payment.id}
-                          className="flex items-center justify-between p-4 bg-muted/20 rounded-lg"
-                        >
-                          <div className="flex items-center space-x-4">
-                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
-                              <DollarSign className="h-5 w-5 text-white" />
-                            </div>
-                            <div>
-                              <div className="font-medium">
-                                {user?.username || "Unknown User"}
-                              </div>
-                              <div className="text-sm text-muted-foreground">
-                                {formatDate(payment.createdAt)}
-                              </div>
-                            </div>
+          <TabsContent value="refunds" className="space-y-6">
+            <h2 className="text-2xl font-bold text-white">Refund Requests</h2>
+            
+            <Card className="bg-gray-800 border-gray-700">
+              <CardContent className="p-6">
+                {refundRequests.length > 0 ? (
+                  <div className="space-y-4">
+                    {refundRequests.map((request) => (
+                      <div key={request.id} className="p-4 bg-gray-700 rounded-lg">
+                        <div className="flex justify-between items-start mb-4">
+                          <div>
+                            <h3 className="text-white font-medium">@{request.username}</h3>
+                            <p className="text-gray-400 text-sm">
+                              Refund: ${request.requestedAmount}
+                            </p>
+                            <p className="text-gray-400 text-sm">
+                              Reason: {request.reason}
+                            </p>
+                            <p className="text-gray-500 text-xs">
+                              Requested: {new Date(request.requestedAt).toLocaleDateString()}
+                            </p>
                           </div>
-
-                          <div className="flex items-center space-x-4">
-                            <div className="text-center">
-                              <div className="font-bold text-casino-green">
-                                ${payment.amount.toFixed(2)}
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                USD
-                              </div>
-                            </div>
-
-                            <div className="text-center">
-                              <div className="font-bold text-gold">
-                                {payment.goldCoinsAwarded.toLocaleString()}
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                GC
-                              </div>
-                            </div>
-
-                            <div className="text-center">
-                              <div className="font-bold text-sweep">
-                                {payment.sweepsCoinsBonus.toFixed(2)}
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                SC Bonus
-                              </div>
-                            </div>
-
-                            <Badge
-                              variant={
-                                payment.status === "completed"
-                                  ? "default"
-                                  : "secondary"
-                              }
-                            >
-                              {payment.status}
-                            </Badge>
-                          </div>
+                          <Badge className={getStatusColor(request.status)}>
+                            {getStatusIcon(request.status)}
+                            <span className="ml-2">{request.status}</span>
+                          </Badge>
                         </div>
-                      );
-                    })
-                  )}
-                </div>
+                        
+                        {request.status === 'pending' && (
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              className="bg-green-600 hover:bg-green-700"
+                              onClick={() => {
+                                const notes = prompt('Review notes (optional):') || '';
+                                handleRefundReview(request.id, 'approved', notes);
+                              }}
+                            >
+                              <CheckCircle className="w-4 h-4 mr-2" />
+                              Approve
+                            </Button>
+                            <Button
+                              size="sm"
+                              className="bg-red-600 hover:bg-red-700"
+                              onClick={() => {
+                                const notes = prompt('Denial reason (required):');
+                                if (notes) handleRefundReview(request.id, 'denied', notes);
+                              }}
+                            >
+                              <XCircle className="w-4 h-4 mr-2" />
+                              Deny
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <DollarSign className="w-12 h-12 text-gray-500 mx-auto mb-4" />
+                    <p className="text-gray-400">No refund requests.</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="settings" className="space-y-6">
+            <h2 className="text-2xl font-bold text-white">Store Settings</h2>
+            
+            {storeSettings && (
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white">Payment Settings</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-white">PayPal Enabled</Label>
+                        <Switch checked={storeSettings.paypalEnabled} />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <Label className="text-white">Stripe Enabled</Label>
+                        <Switch checked={storeSettings.stripeEnabled} />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <Label className="text-white">Crypto Enabled</Label>
+                        <Switch checked={storeSettings.cryptoEnabled} />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <Label className="text-white">Min Purchase Amount</Label>
+                        <Input 
+                          type="number" 
+                          value={storeSettings.minPurchaseAmount}
+                          className="mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-white">Max Purchase Amount</Label>
+                        <Input 
+                          type="number" 
+                          value={storeSettings.maxPurchaseAmount}
+                          className="mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-white">Bonus Multiplier</Label>
+                        <Input 
+                          type="number" 
+                          step="0.1"
+                          value={storeSettings.bonusMultiplier}
+                          className="mt-1"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Button className="bg-blue-600 hover:bg-blue-700">
+                    Save Settings
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          <TabsContent value="logs" className="space-y-6">
+            <h2 className="text-2xl font-bold text-white">Admin Activity Logs</h2>
+            
+            <Card className="bg-gray-800 border-gray-700">
+              <CardContent className="p-6">
+                {adminLogs.length > 0 ? (
+                  <div className="space-y-3">
+                    {adminLogs.slice(0, 20).map((log) => (
+                      <div key={log.id} className="p-3 bg-gray-700 rounded">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <span className="text-white font-medium">@{log.adminUsername}</span>
+                            <span className="text-gray-400 ml-2">{log.description}</span>
+                          </div>
+                          <span className="text-gray-500 text-xs">
+                            {new Date(log.timestamp).toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <FileText className="w-12 h-12 text-gray-500 mx-auto mb-4" />
+                    <p className="text-gray-400">No admin logs yet.</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* New Package Form Modal */}
+        {showNewPackageForm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <Card className="bg-gray-800 border-gray-700 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+              <CardHeader>
+                <CardTitle className="text-white flex justify-between items-center">
+                  Create New Package
+                  <Button variant="ghost" size="sm" onClick={() => setShowNewPackageForm(false)}>
+                    ✕
+                  </Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-white">Package Name</Label>
+                    <Input
+                      value={newPackage.name}
+                      onChange={(e) => setNewPackage(prev => ({ ...prev, name: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-white">Price (USD)</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={newPackage.price}
+                      onChange={(e) => setNewPackage(prev => ({ ...prev, price: parseFloat(e.target.value) }))}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-white">Description</Label>
+                  <Textarea
+                    value={newPackage.description}
+                    onChange={(e) => setNewPackage(prev => ({ ...prev, description: e.target.value }))}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-white">Gold Coins</Label>
+                    <Input
+                      type="number"
+                      value={newPackage.goldCoins}
+                      onChange={(e) => setNewPackage(prev => ({ ...prev, goldCoins: parseInt(e.target.value) }))}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-white">Bonus Sweeps Coins</Label>
+                    <Input
+                      type="number"
+                      value={newPackage.bonusSweepsCoins}
+                      onChange={(e) => setNewPackage(prev => ({ ...prev, bonusSweepsCoins: parseInt(e.target.value) }))}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      checked={newPackage.popular}
+                      onCheckedChange={(checked) => setNewPackage(prev => ({ ...prev, popular: checked }))}
+                    />
+                    <Label className="text-white">Popular</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      checked={newPackage.bestValue}
+                      onCheckedChange={(checked) => setNewPackage(prev => ({ ...prev, bestValue: checked }))}
+                    />
+                    <Label className="text-white">Best Value</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      checked={newPackage.isActive}
+                      onCheckedChange={(checked) => setNewPackage(prev => ({ ...prev, isActive: checked }))}
+                    />
+                    <Label className="text-white">Active</Label>
+                  </div>
+                </div>
+
+                <Button
+                  onClick={handlePackageCreate}
+                  className="w-full bg-green-600 hover:bg-green-700"
+                >
+                  Create Package
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        <AccessDeniedModal
+          isOpen={showAccessDenied}
+          onClose={() => setShowAccessDenied(false)}
+          feature="Admin Panel"
+        />
       </div>
     </div>
   );
