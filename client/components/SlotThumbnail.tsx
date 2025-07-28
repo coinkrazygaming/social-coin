@@ -35,7 +35,11 @@ export function SlotThumbnail({ game, onPlay, size = 'medium' }: SlotThumbnailPr
 
   const handlePlayClick = (currency: 'GC' | 'SC') => {
     if (!user) {
-      setShowAuthModal(true);
+      if (currency === 'SC') {
+        setShowAccessDenied(true);
+      } else {
+        setShowAuthModal(true);
+      }
       return;
     }
     setSelectedCurrency(currency);
