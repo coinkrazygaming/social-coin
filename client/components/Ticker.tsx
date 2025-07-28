@@ -15,17 +15,37 @@ export function Ticker() {
     return () => clearInterval(interval);
   }, []);
 
-  const fetchTickerItems = async () => {
+  const fetchTickerItems = async (retryCount = 0) => {
     try {
       const response = await fetch("/api/ticker");
       if (response.ok) {
-        const data = await response.json();
-        setTickerItems(data);
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const data = await response.json();
+          setTickerItems(Array.isArray(data) ? data : []);
+        } else {
+          console.warn('Ticker API returned non-JSON response');
+          setTickerItems([]);
+        }
+      } else {
+        console.warn('Ticker API returned error status:', response.status);
+        setTickerItems([]);
       }
     } catch (error) {
       console.error("Error fetching ticker items:", error);
+
+      // Retry once after a short delay
+      if (retryCount < 1) {
+        setTimeout(() => fetchTickerItems(retryCount + 1), 2000);
+        return;
+      }
+
+      // Set empty array on failure
+      setTickerItems([]);
     } finally {
-      setIsLoading(false);
+      if (retryCount === 0) { // Only set loading false on first attempt
+        setIsLoading(false);
+      }
     }
   };
 
