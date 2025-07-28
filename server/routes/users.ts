@@ -1,5 +1,11 @@
 import { RequestHandler } from "express";
-import { User, Balance, Transaction, MiniGamePlay, MiniGameCooldown } from "@shared/types";
+import {
+  User,
+  Balance,
+  Transaction,
+  MiniGamePlay,
+  MiniGameCooldown,
+} from "@shared/types";
 import { z } from "zod";
 
 // In-memory storage (replace with real database)
@@ -11,16 +17,16 @@ const cooldowns: Map<string, MiniGameCooldown[]> = new Map();
 
 // Create admin account
 const adminUser: User = {
-  id: 'admin-001',
-  email: 'coinkrazy00@gmail.com',
-  username: 'CoinKrazyAdmin',
+  id: "admin-001",
+  email: "coinkrazy00@gmail.com",
+  username: "CoinKrazyAdmin",
   goldCoins: 1000000,
   sweepsCoins: 1000,
   isVerified: true,
-  role: 'admin',
+  role: "admin",
   createdAt: new Date(),
   lastLogin: new Date(),
-  kycStatus: 'approved'
+  kycStatus: "approved",
 };
 
 users.set(adminUser.id, adminUser);
@@ -28,7 +34,7 @@ balances.set(adminUser.id, {
   userId: adminUser.id,
   goldCoins: adminUser.goldCoins,
   sweepsCoins: adminUser.sweepsCoins,
-  lastUpdated: new Date()
+  lastUpdated: new Date(),
 });
 
 // Validation schemas
@@ -36,33 +42,35 @@ const registerSchema = z.object({
   email: z.string().email(),
   username: z.string().min(3),
   password: z.string().min(6),
-  agreeToTerms: z.boolean().refine(val => val === true, "Must agree to terms")
+  agreeToTerms: z
+    .boolean()
+    .refine((val) => val === true, "Must agree to terms"),
 });
 
 const loginSchema = z.object({
   email: z.string().email(),
-  password: z.string()
+  password: z.string(),
 });
 
 // Helper functions
 function generateUserId(): string {
-  return 'user_' + Math.random().toString(36).substring(2, 15);
+  return "user_" + Math.random().toString(36).substring(2, 15);
 }
 
 function generateTransactionId(): string {
-  return 'txn_' + Math.random().toString(36).substring(2, 15);
+  return "txn_" + Math.random().toString(36).substring(2, 15);
 }
 
 function createWelcomeTransaction(userId: string): Transaction {
   return {
     id: generateTransactionId(),
     userId,
-    type: 'bonus',
+    type: "bonus",
     amount: 10000,
-    currency: 'GC',
-    description: 'Welcome Bonus - 10,000 GC',
+    currency: "GC",
+    description: "Welcome Bonus - 10,000 GC",
     createdAt: new Date(),
-    status: 'completed'
+    status: "completed",
   };
 }
 
@@ -70,24 +78,28 @@ function createWelcomeSCTransaction(userId: string): Transaction {
   return {
     id: generateTransactionId(),
     userId,
-    type: 'bonus',
+    type: "bonus",
     amount: 10,
-    currency: 'SC',
-    description: 'Welcome Bonus - 10 SC',
+    currency: "SC",
+    description: "Welcome Bonus - 10 SC",
     createdAt: new Date(),
-    status: 'completed'
+    status: "completed",
   };
 }
 
 // Register user
 export const handleRegister: RequestHandler = (req, res) => {
   try {
-    const { email, username, password, agreeToTerms } = registerSchema.parse(req.body);
-    
+    const { email, username, password, agreeToTerms } = registerSchema.parse(
+      req.body,
+    );
+
     // Check if user already exists
-    const existingUser = Array.from(users.values()).find(u => u.email === email);
+    const existingUser = Array.from(users.values()).find(
+      (u) => u.email === email,
+    );
     if (existingUser) {
-      return res.status(400).json({ error: 'User already exists' });
+      return res.status(400).json({ error: "User already exists" });
     }
 
     const userId = generateUserId();
@@ -98,35 +110,35 @@ export const handleRegister: RequestHandler = (req, res) => {
       goldCoins: 10000, // Welcome bonus
       sweepsCoins: 10, // Welcome bonus
       isVerified: false,
-      role: 'user',
+      role: "user",
       createdAt: new Date(),
       lastLogin: new Date(),
-      kycStatus: 'pending'
+      kycStatus: "pending",
     };
 
     users.set(userId, newUser);
-    
+
     // Create balance record
     balances.set(userId, {
       userId,
       goldCoins: 10000,
       sweepsCoins: 10,
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     });
 
     // Create welcome bonus transactions
     const gcTransaction = createWelcomeTransaction(userId);
     const scTransaction = createWelcomeSCTransaction(userId);
-    
+
     transactions.set(gcTransaction.id, gcTransaction);
     transactions.set(scTransaction.id, scTransaction);
 
-    res.json({ 
-      user: { ...newUser, password: undefined }, 
-      message: 'Registration successful! Welcome bonus awarded.' 
+    res.json({
+      user: { ...newUser, password: undefined },
+      message: "Registration successful! Welcome bonus awarded.",
     });
   } catch (error) {
-    res.status(400).json({ error: 'Invalid registration data' });
+    res.status(400).json({ error: "Invalid registration data" });
   }
 };
 
@@ -134,27 +146,27 @@ export const handleRegister: RequestHandler = (req, res) => {
 export const handleLogin: RequestHandler = (req, res) => {
   try {
     const { email, password } = loginSchema.parse(req.body);
-    
+
     // Find user by email
-    const user = Array.from(users.values()).find(u => u.email === email);
+    const user = Array.from(users.values()).find((u) => u.email === email);
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
     // Simple password check (use proper hashing in production)
-    if (email === 'coinkrazy00@gmail.com' && password === 'Woot6969!') {
+    if (email === "coinkrazy00@gmail.com" && password === "Woot6969!") {
       // Admin login
       user.lastLogin = new Date();
       return res.json({ user: { ...user, password: undefined } });
-    } else if (password === 'password123') {
+    } else if (password === "password123") {
       // Demo login for other users
       user.lastLogin = new Date();
       return res.json({ user: { ...user, password: undefined } });
     }
 
-    res.status(401).json({ error: 'Invalid credentials' });
+    res.status(401).json({ error: "Invalid credentials" });
   } catch (error) {
-    res.status(400).json({ error: 'Invalid login data' });
+    res.status(400).json({ error: "Invalid login data" });
   }
 };
 
@@ -162,9 +174,9 @@ export const handleLogin: RequestHandler = (req, res) => {
 export const handleGetBalance: RequestHandler = (req, res) => {
   const userId = req.params.userId;
   const balance = balances.get(userId);
-  
+
   if (!balance) {
-    return res.status(404).json({ error: 'User not found' });
+    return res.status(404).json({ error: "User not found" });
   }
 
   res.json(balance);
@@ -174,17 +186,17 @@ export const handleGetBalance: RequestHandler = (req, res) => {
 export const handleUpdateBalance: RequestHandler = (req, res) => {
   const userId = req.params.userId;
   const { goldCoins, sweepsCoins, type, description } = req.body;
-  
+
   const currentBalance = balances.get(userId);
   if (!currentBalance) {
-    return res.status(404).json({ error: 'User not found' });
+    return res.status(404).json({ error: "User not found" });
   }
 
   const newBalance = {
     ...currentBalance,
     goldCoins: currentBalance.goldCoins + (goldCoins || 0),
     sweepsCoins: currentBalance.sweepsCoins + (sweepsCoins || 0),
-    lastUpdated: new Date()
+    lastUpdated: new Date(),
   };
 
   balances.set(userId, newBalance);
@@ -194,12 +206,12 @@ export const handleUpdateBalance: RequestHandler = (req, res) => {
     const transaction: Transaction = {
       id: generateTransactionId(),
       userId,
-      type: type || 'win',
+      type: type || "win",
       amount: goldCoins,
-      currency: 'GC',
-      description: description || 'Balance update',
+      currency: "GC",
+      description: description || "Balance update",
       createdAt: new Date(),
-      status: 'completed'
+      status: "completed",
     };
     transactions.set(transaction.id, transaction);
   }
@@ -208,12 +220,12 @@ export const handleUpdateBalance: RequestHandler = (req, res) => {
     const transaction: Transaction = {
       id: generateTransactionId(),
       userId,
-      type: type || 'win',
+      type: type || "win",
       amount: sweepsCoins,
-      currency: 'SC',
-      description: description || 'Balance update',
+      currency: "SC",
+      description: description || "Balance update",
       createdAt: new Date(),
-      status: 'completed'
+      status: "completed",
     };
     transactions.set(transaction.id, transaction);
   }
@@ -225,7 +237,7 @@ export const handleUpdateBalance: RequestHandler = (req, res) => {
 export const handleGetTransactions: RequestHandler = (req, res) => {
   const userId = req.params.userId;
   const userTransactions = Array.from(transactions.values())
-    .filter(t => t.userId === userId)
+    .filter((t) => t.userId === userId)
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
   res.json(userTransactions);
@@ -233,9 +245,9 @@ export const handleGetTransactions: RequestHandler = (req, res) => {
 
 // Get all users (admin only)
 export const handleGetAllUsers: RequestHandler = (req, res) => {
-  const allUsers = Array.from(users.values()).map(user => ({
+  const allUsers = Array.from(users.values()).map((user) => ({
     ...user,
-    password: undefined
+    password: undefined,
   }));
   res.json(allUsers);
 };
@@ -244,30 +256,38 @@ export const handleGetAllUsers: RequestHandler = (req, res) => {
 export const handleCheckCooldown: RequestHandler = (req, res) => {
   const { userId, gameType } = req.params;
   const userCooldowns = cooldowns.get(userId) || [];
-  const gameCooldown = userCooldowns.find(c => c.gameType === gameType);
-  
+  const gameCooldown = userCooldowns.find((c) => c.gameType === gameType);
+
   if (!gameCooldown) {
     return res.json({ canPlay: true, nextAvailable: null });
   }
 
   const now = new Date();
   const canPlay = now >= gameCooldown.nextAvailable;
-  
-  res.json({ 
-    canPlay, 
+
+  res.json({
+    canPlay,
     nextAvailable: gameCooldown.nextAvailable,
-    hoursRemaining: canPlay ? 0 : Math.ceil((gameCooldown.nextAvailable.getTime() - now.getTime()) / (1000 * 60 * 60))
+    hoursRemaining: canPlay
+      ? 0
+      : Math.ceil(
+          (gameCooldown.nextAvailable.getTime() - now.getTime()) /
+            (1000 * 60 * 60),
+        ),
   });
 };
 
 // Record mini game play
 export const handleMiniGamePlay: RequestHandler = (req, res) => {
   const { userId, gameType, score, maxScore, duration } = req.body;
-  
+
   // Calculate SC earned (max 0.25 SC)
   const scorePercentage = score / maxScore;
-  const scEarned = Math.min(0.25, Math.round(scorePercentage * 0.25 * 100) / 100);
-  
+  const scEarned = Math.min(
+    0.25,
+    Math.round(scorePercentage * 0.25 * 100) / 100,
+  );
+
   const gamePlay: MiniGamePlay = {
     id: generateTransactionId(),
     userId,
@@ -276,60 +296,63 @@ export const handleMiniGamePlay: RequestHandler = (req, res) => {
     maxScore,
     scEarned,
     playedAt: new Date(),
-    duration
+    duration,
   };
-  
+
   // Store game play
   const userPlays = miniGamePlays.get(userId) || [];
   userPlays.push(gamePlay);
   miniGamePlays.set(userId, userPlays);
-  
+
   // Set cooldown (24 hours)
   const nextAvailable = new Date();
   nextAvailable.setHours(nextAvailable.getHours() + 24);
-  
+
   const cooldown: MiniGameCooldown = {
     userId,
     gameType,
     lastPlayed: new Date(),
-    nextAvailable
+    nextAvailable,
   };
-  
+
   const userCooldowns = cooldowns.get(userId) || [];
-  const existingCooldownIndex = userCooldowns.findIndex(c => c.gameType === gameType);
-  
+  const existingCooldownIndex = userCooldowns.findIndex(
+    (c) => c.gameType === gameType,
+  );
+
   if (existingCooldownIndex >= 0) {
     userCooldowns[existingCooldownIndex] = cooldown;
   } else {
     userCooldowns.push(cooldown);
   }
   cooldowns.set(userId, userCooldowns);
-  
+
   // Update user balance
   const currentBalance = balances.get(userId);
   if (currentBalance && scEarned > 0) {
     const newBalance = {
       ...currentBalance,
-      sweepsCoins: Math.round((currentBalance.sweepsCoins + scEarned) * 100) / 100,
-      lastUpdated: new Date()
+      sweepsCoins:
+        Math.round((currentBalance.sweepsCoins + scEarned) * 100) / 100,
+      lastUpdated: new Date(),
     };
     balances.set(userId, newBalance);
-    
+
     // Create transaction
     const transaction: Transaction = {
       id: generateTransactionId(),
       userId,
-      type: 'mini-game',
+      type: "mini-game",
       amount: scEarned,
-      currency: 'SC',
+      currency: "SC",
       description: `${gameType} mini-game reward - ${score}/${maxScore}`,
       createdAt: new Date(),
-      status: 'completed',
-      metadata: { gameType, score, maxScore }
+      status: "completed",
+      metadata: { gameType, score, maxScore },
     };
     transactions.set(transaction.id, transaction);
   }
-  
+
   res.json({ ...gamePlay, balanceUpdated: scEarned > 0 });
 };
 
@@ -337,15 +360,15 @@ export const handleMiniGamePlay: RequestHandler = (req, res) => {
 export const handleGetMiniGameHistory: RequestHandler = (req, res) => {
   const userId = req.params.userId;
   const gameType = req.query.gameType as string;
-  
+
   let userPlays = miniGamePlays.get(userId) || [];
-  
+
   if (gameType) {
-    userPlays = userPlays.filter(play => play.gameType === gameType);
+    userPlays = userPlays.filter((play) => play.gameType === gameType);
   }
-  
+
   userPlays.sort((a, b) => b.playedAt.getTime() - a.playedAt.getTime());
-  
+
   res.json(userPlays);
 };
 
@@ -353,16 +376,16 @@ export const handleGetMiniGameHistory: RequestHandler = (req, res) => {
 export const handleGetAllMiniGameHistory: RequestHandler = (req, res) => {
   const gameType = req.query.gameType as string;
   let allPlays: MiniGamePlay[] = [];
-  
+
   for (const userPlays of miniGamePlays.values()) {
     allPlays = allPlays.concat(userPlays);
   }
-  
+
   if (gameType) {
-    allPlays = allPlays.filter(play => play.gameType === gameType);
+    allPlays = allPlays.filter((play) => play.gameType === gameType);
   }
-  
+
   allPlays.sort((a, b) => b.playedAt.getTime() - a.playedAt.getTime());
-  
+
   res.json(allPlays);
 };

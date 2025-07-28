@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { Badge } from './ui/badge';
-import { Trophy, Clock, Target, DollarSign, Zap, Star } from 'lucide-react';
-import { TickerItem } from '@shared/types';
+import { useState, useEffect } from "react";
+import { Badge } from "./ui/badge";
+import { Trophy, Clock, Target, DollarSign, Zap, Star } from "lucide-react";
+import { TickerItem } from "@shared/types";
 
 export function Ticker() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -17,13 +17,13 @@ export function Ticker() {
 
   const fetchTickerItems = async () => {
     try {
-      const response = await fetch('/api/ticker');
+      const response = await fetch("/api/ticker");
       if (response.ok) {
         const data = await response.json();
         setTickerItems(data);
       }
     } catch (error) {
-      console.error('Error fetching ticker items:', error);
+      console.error("Error fetching ticker items:", error);
     } finally {
       setIsLoading(false);
     }
@@ -37,38 +37,38 @@ export function Ticker() {
     return () => clearInterval(interval);
   }, [tickerItems.length]);
 
-  const getItemStyle = (type: TickerItem['type']) => {
+  const getItemStyle = (type: TickerItem["type"]) => {
     switch (type) {
-      case 'win':
-        return 'bg-casino-green/20 text-casino-green border-casino-green/30';
-      case 'jackpot':
-        return 'bg-gold/20 text-gold border-gold/30 casino-glow';
-      case 'sports':
-        return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-      case 'bingo':
-        return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
-      case 'promo':
-        return 'bg-sweep/20 text-sweep border-sweep/30 sweep-glow';
-      case 'mini-game':
-        return 'bg-gold/20 text-gold border-gold/30 casino-glow';
+      case "win":
+        return "bg-casino-green/20 text-casino-green border-casino-green/30";
+      case "jackpot":
+        return "bg-gold/20 text-gold border-gold/30 casino-glow";
+      case "sports":
+        return "bg-blue-500/20 text-blue-400 border-blue-500/30";
+      case "bingo":
+        return "bg-purple-500/20 text-purple-400 border-purple-500/30";
+      case "promo":
+        return "bg-sweep/20 text-sweep border-sweep/30 sweep-glow";
+      case "mini-game":
+        return "bg-gold/20 text-gold border-gold/30 casino-glow";
       default:
-        return 'bg-muted/20 text-muted-foreground border-muted/30';
+        return "bg-muted/20 text-muted-foreground border-muted/30";
     }
   };
 
-  const getItemIcon = (type: TickerItem['type']) => {
+  const getItemIcon = (type: TickerItem["type"]) => {
     switch (type) {
-      case 'win':
+      case "win":
         return <Trophy className="h-4 w-4" />;
-      case 'jackpot':
+      case "jackpot":
         return <DollarSign className="h-4 w-4" />;
-      case 'sports':
+      case "sports":
         return <Target className="h-4 w-4" />;
-      case 'bingo':
+      case "bingo":
         return <Clock className="h-4 w-4" />;
-      case 'promo':
+      case "promo":
         return <Zap className="h-4 w-4" />;
-      case 'mini-game':
+      case "mini-game":
         return <Star className="h-4 w-4" />;
       default:
         return <Trophy className="h-4 w-4" />;
@@ -80,9 +80,14 @@ export function Ticker() {
       <div className="w-full bg-card/50 backdrop-blur border-b border-border/40 overflow-hidden">
         <div className="container px-4 py-2">
           <div className="flex items-center justify-center">
-            <Badge variant="outline" className="bg-muted/20 text-muted-foreground border-muted/30 flex items-center space-x-2 px-4 py-2 text-sm">
+            <Badge
+              variant="outline"
+              className="bg-muted/20 text-muted-foreground border-muted/30 flex items-center space-x-2 px-4 py-2 text-sm"
+            >
               <Zap className="h-4 w-4" />
-              <span className="font-medium">Welcome to CoinKrazy - The Ultimate Social Casino!</span>
+              <span className="font-medium">
+                Welcome to CoinKrazy - The Ultimate Social Casino!
+              </span>
             </Badge>
           </div>
         </div>
@@ -101,22 +106,24 @@ export function Ticker() {
             className={`flex items-center space-x-2 px-4 py-2 text-sm transition-all duration-500 ${getItemStyle(currentItem.type)}`}
           >
             {getItemIcon(currentItem.type)}
-            <span className="font-medium animate-pulse">{currentItem.content}</span>
+            <span className="font-medium animate-pulse">
+              {currentItem.content}
+            </span>
           </Badge>
         </div>
       </div>
-      
+
       {/* Progress indicator */}
       <div className="h-1 bg-muted/20">
-        <div 
+        <div
           className="h-full bg-gradient-to-r from-gold to-sweep transition-all duration-[4000ms] ease-linear"
-          style={{ 
-            width: '100%',
-            animation: 'ticker-progress 4s infinite linear'
+          style={{
+            width: "100%",
+            animation: "ticker-progress 4s infinite linear",
           }}
         />
       </div>
-      
+
       <style>{`
         @keyframes ticker-progress {
           0% { width: 0%; }

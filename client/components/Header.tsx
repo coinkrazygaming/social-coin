@@ -1,44 +1,46 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { useAuth } from './AuthContext';
-import { AuthModal } from './AuthModal';
-import { 
-  Menu, 
-  X, 
-  User, 
-  Settings, 
-  LogOut, 
-  Coins, 
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+import { useAuth } from "./AuthContext";
+import { AuthModal } from "./AuthModal";
+import {
+  Menu,
+  X,
+  User,
+  Settings,
+  LogOut,
+  Coins,
   Star,
   Trophy,
   Gamepad2,
   Dice6,
   Target,
-  Grid3X3
-} from 'lucide-react';
+  Grid3X3,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from './ui/dropdown-menu';
+} from "./ui/dropdown-menu";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalTab, setAuthModalTab] = useState<'login' | 'register'>('login');
+  const [authModalTab, setAuthModalTab] = useState<"login" | "register">(
+    "login",
+  );
   const { user, balance, logout } = useAuth();
 
   const navigation = [
-    { name: 'Slots', href: '/slots', icon: Gamepad2 },
-    { name: 'Table Games', href: '/table-games', icon: Dice6 },
-    { name: 'Sportsbook', href: '/sportsbook', icon: Target },
-    { name: 'Bingo', href: '/bingo', icon: Grid3X3 },
-    { name: 'Mini Games', href: '/mini-games', icon: Trophy },
-    { name: 'Leaderboards', href: '/leaderboards', icon: Trophy },
+    { name: "Slots", href: "/slots", icon: Gamepad2 },
+    { name: "Table Games", href: "/table-games", icon: Dice6 },
+    { name: "Sportsbook", href: "/sportsbook", icon: Target },
+    { name: "Bingo", href: "/bingo", icon: Grid3X3 },
+    { name: "Mini Games", href: "/mini-games", icon: Trophy },
+    { name: "Leaderboards", href: "/leaderboards", icon: Trophy },
   ];
 
   return (
@@ -80,18 +82,28 @@ export function Header() {
             <>
               {/* Balance Display */}
               <div className="hidden sm:flex items-center space-x-3">
-                <Badge variant="outline" className="casino-glow border-gold text-gold">
+                <Badge
+                  variant="outline"
+                  className="casino-glow border-gold text-gold"
+                >
                   <Coins className="h-3 w-3 mr-1" />
-                  {balance?.goldCoins.toLocaleString() || '0'} GC
+                  {balance?.goldCoins.toLocaleString() || "0"} GC
                 </Badge>
-                <Badge variant="outline" className="sweep-glow border-sweep text-sweep">
+                <Badge
+                  variant="outline"
+                  className="sweep-glow border-sweep text-sweep"
+                >
                   <Star className="h-3 w-3 mr-1" />
-                  {balance?.sweepsCoins.toFixed(2) || '0.00'} SC
+                  {balance?.sweepsCoins.toFixed(2) || "0.00"} SC
                 </Badge>
               </div>
 
               {/* Buy Coins Button */}
-              <Button size="sm" className="bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground hover:from-yellow-400 hover:to-gold casino-glow" asChild>
+              <Button
+                size="sm"
+                className="bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground hover:from-yellow-400 hover:to-gold casino-glow"
+                asChild
+              >
                 <Link to="/store">
                   <Coins className="h-4 w-4 mr-1" />
                   Buy GC
@@ -101,11 +113,17 @@ export function Header() {
               {/* User Menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex items-center space-x-2"
+                  >
                     <div className="h-8 w-8 rounded-full bg-gradient-to-br from-sweep to-purple-600 flex items-center justify-center">
                       <User className="h-4 w-4 text-white" />
                     </div>
-                    <span className="hidden sm:block text-sm">{user.username}</span>
+                    <span className="hidden sm:block text-sm">
+                      {user.username}
+                    </span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
@@ -122,7 +140,10 @@ export function Header() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-destructive" onClick={logout}>
+                  <DropdownMenuItem
+                    className="text-destructive"
+                    onClick={logout}
+                  >
                     <LogOut className="h-4 w-4 mr-2" />
                     Logout
                   </DropdownMenuItem>
@@ -131,21 +152,21 @@ export function Header() {
             </>
           ) : (
             <div className="flex items-center space-x-2">
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 size="sm"
                 onClick={() => {
-                  setAuthModalTab('login');
+                  setAuthModalTab("login");
                   setIsAuthModalOpen(true);
                 }}
               >
                 Login
               </Button>
-              <Button 
-                size="sm" 
+              <Button
+                size="sm"
                 className="bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground hover:from-yellow-400 hover:to-gold"
                 onClick={() => {
-                  setAuthModalTab('register');
+                  setAuthModalTab("register");
                   setIsAuthModalOpen(true);
                 }}
               >
@@ -161,7 +182,11 @@ export function Header() {
             className="md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {isMenuOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
           </Button>
         </div>
       </div>
@@ -173,13 +198,19 @@ export function Header() {
             {user && (
               <div className="flex items-center justify-between py-2 mb-4 border-b border-border">
                 <div className="flex items-center space-x-3">
-                  <Badge variant="outline" className="casino-glow border-gold text-gold">
+                  <Badge
+                    variant="outline"
+                    className="casino-glow border-gold text-gold"
+                  >
                     <Coins className="h-3 w-3 mr-1" />
-                    {balance?.goldCoins.toLocaleString() || '0'} GC
+                    {balance?.goldCoins.toLocaleString() || "0"} GC
                   </Badge>
-                  <Badge variant="outline" className="sweep-glow border-sweep text-sweep">
+                  <Badge
+                    variant="outline"
+                    className="sweep-glow border-sweep text-sweep"
+                  >
                     <Star className="h-3 w-3 mr-1" />
-                    {balance?.sweepsCoins.toFixed(2) || '0.00'} SC
+                    {balance?.sweepsCoins.toFixed(2) || "0.00"} SC
                   </Badge>
                 </div>
               </div>
@@ -201,9 +232,9 @@ export function Header() {
           </nav>
         </div>
       )}
-      
-      <AuthModal 
-        isOpen={isAuthModalOpen} 
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         defaultTab={authModalTab}
       />

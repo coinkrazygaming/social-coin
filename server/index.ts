@@ -12,7 +12,7 @@ import {
   handleCheckCooldown,
   handleMiniGamePlay,
   handleGetMiniGameHistory,
-  handleGetAllMiniGameHistory
+  handleGetAllMiniGameHistory,
 } from "./routes/users";
 import {
   handleGetPackages,
@@ -20,13 +20,13 @@ import {
   handleVerifyPayment,
   handleGetPayments,
   handleGetAllPayments,
-  handlePayPalWebhook
+  handlePayPalWebhook,
 } from "./routes/payments";
 import {
   handleGetTickerItems,
   handleAddTickerItem,
   handleDeleteTickerItem,
-  handleAddMiniGameWin
+  handleAddMiniGameWin,
 } from "./routes/ticker";
 
 export function createServer() {

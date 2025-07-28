@@ -5,10 +5,10 @@ export interface User {
   goldCoins: number;
   sweepsCoins: number;
   isVerified: boolean;
-  role: 'user' | 'staff' | 'admin';
+  role: "user" | "staff" | "admin";
   createdAt: Date;
   lastLogin: Date;
-  kycStatus: 'pending' | 'approved' | 'rejected';
+  kycStatus: "pending" | "approved" | "rejected";
 }
 
 export interface Balance {
@@ -21,7 +21,7 @@ export interface Balance {
 export interface MiniGamePlay {
   id: string;
   userId: string;
-  gameType: 'colin-shots' | 'future-game';
+  gameType: "colin-shots" | "future-game";
   score: number;
   maxScore: number;
   scEarned: number;
@@ -39,18 +39,18 @@ export interface MiniGameCooldown {
 export interface Transaction {
   id: string;
   userId: string;
-  type: 'purchase' | 'win' | 'bet' | 'mini-game' | 'bonus' | 'withdrawal';
+  type: "purchase" | "win" | "bet" | "mini-game" | "bonus" | "withdrawal";
   amount: number;
-  currency: 'GC' | 'SC' | 'USD';
+  currency: "GC" | "SC" | "USD";
   description: string;
   createdAt: Date;
-  status: 'pending' | 'completed' | 'failed';
+  status: "pending" | "completed" | "failed";
   metadata?: Record<string, any>;
 }
 
 export interface TickerItem {
   id: string;
-  type: 'win' | 'jackpot' | 'sports' | 'bingo' | 'promo' | 'mini-game';
+  type: "win" | "jackpot" | "sports" | "bingo" | "promo" | "mini-game";
   content: string;
   userId?: string;
   amount?: number;
@@ -66,7 +66,7 @@ export interface PayPalPayment {
   goldCoinsAwarded: number;
   sweepsCoinsBonus: number;
   paypalTransactionId: string;
-  status: 'pending' | 'completed' | 'failed';
+  status: "pending" | "completed" | "failed";
   createdAt: Date;
 }
 
