@@ -14,6 +14,7 @@ import Leaderboards from "./pages/Leaderboards";
 import Bingo from "./pages/Bingo";
 import { Sportsbook } from "./pages/Sportsbook";
 import { UserDashboard } from "./pages/UserDashboard";
+import { AccountSettings } from "./pages/AccountSettings";
 import { Header } from "./components/Header";
 import { Ticker } from "./components/Ticker";
 import { PlaceholderPage } from "./components/PlaceholderPage";
