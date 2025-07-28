@@ -12,6 +12,7 @@ import MiniGames from "./pages/MiniGames";
 import Store from "./pages/Store";
 import AdminPanel from "./pages/AdminPanel";
 import Slots from "./pages/Slots";
+import TableGames from "./pages/TableGames";
 import { Header } from "./components/Header";
 import { Ticker } from "./components/Ticker";
 import { PlaceholderPage } from "./components/PlaceholderPage";
