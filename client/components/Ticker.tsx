@@ -116,7 +116,7 @@ export function Ticker() {
       {/* Progress indicator */}
       <div className="h-1 bg-muted/20">
         <div
-          className="h-full bg-gradient-to-r from-gold to-sweep transition-all duration-[4000ms] ease-linear"
+          className="h-full bg-gradient-to-r from-gold to-sweep transition-all duration-1000 ease-linear"
           style={{
             width: "100%",
             animation: "ticker-progress 4s infinite linear",
