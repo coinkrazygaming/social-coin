@@ -97,6 +97,27 @@ export function Ticker() {
 
   const currentItem = tickerItems[currentIndex];
 
+  // Handle case where currentItem might be undefined
+  if (!currentItem) {
+    return (
+      <div className="w-full bg-card/50 backdrop-blur border-b border-border/40 overflow-hidden">
+        <div className="container px-4 py-2">
+          <div className="flex items-center justify-center">
+            <Badge
+              variant="outline"
+              className="bg-muted/20 text-muted-foreground border-muted/30 flex items-center space-x-2 px-4 py-2 text-sm"
+            >
+              <Zap className="h-4 w-4" />
+              <span className="font-medium">
+                Welcome to CoinKrazy - The Ultimate Social Casino!
+              </span>
+            </Badge>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full bg-card/50 backdrop-blur border-b border-border/40 overflow-hidden">
       <div className="container px-4 py-2">
