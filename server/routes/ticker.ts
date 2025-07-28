@@ -37,15 +37,21 @@ function generateTickerId(): string {
 
 // Get all ticker items
 export const handleGetTickerItems: RequestHandler = (req, res) => {
-  const items = Array.from(tickerItems.values())
-    .sort(
-      (a, b) =>
-        a.priority - b.priority ||
-        b.createdAt.getTime() - a.createdAt.getTime(),
-    )
-    .slice(0, 20); // Limit to 20 most recent/important items
+  try {
+    const items = Array.from(tickerItems.values())
+      .sort(
+        (a, b) =>
+          a.priority - b.priority ||
+          b.createdAt.getTime() - a.createdAt.getTime(),
+      )
+      .slice(0, 20); // Limit to 20 most recent/important items
 
-  res.json(items);
+    res.setHeader('Content-Type', 'application/json');
+    res.json(items);
+  } catch (error) {
+    console.error('Error in handleGetTickerItems:', error);
+    res.status(500).json({ error: 'Failed to fetch ticker items' });
+  }
 };
 
 // Add ticker item
