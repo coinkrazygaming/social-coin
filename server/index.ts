@@ -48,6 +48,32 @@ import {
   handleStartGame,
   handleGetLiveUpdates as handleBingoLiveUpdates,
 } from "./routes/bingo";
+import {
+  handleGetEvents,
+  handleGetEvent,
+  handlePlaceBet,
+  handleGetUserBets,
+  handleGetSports,
+  handleGetLiveOdds,
+  handleCashOut,
+  handleGetPopularBets,
+} from "./routes/sportsbook";
+import {
+  handleGetPackages as handleGetStorePackages,
+  handleGetPackage,
+  handleCreatePackage,
+  handleUpdatePackage,
+  handleDeletePackage,
+  handlePurchasePackage,
+  handleGetUserPurchases,
+  handleGetStoreSettings,
+  handleUpdateStoreSettings,
+  handleGetAdminLogs,
+  handleCreateRefundRequest,
+  handleGetRefundRequests,
+  handleProcessRefund,
+  handleGetPaymentStats,
+} from "./routes/store";
 
 export function createServer() {
   const app = express();
@@ -112,6 +138,32 @@ export function createServer() {
   app.get("/api/bingo/patterns", handleGetPatterns);
   app.post("/api/bingo/games/:gameId/start", handleStartGame);
   app.get("/api/bingo/games/:gameId/live-updates", handleBingoLiveUpdates);
+
+  // Sportsbook routes
+  app.get("/api/sportsbook/events", handleGetEvents);
+  app.get("/api/sportsbook/events/:eventId", handleGetEvent);
+  app.post("/api/sportsbook/bets", handlePlaceBet);
+  app.get("/api/sportsbook/users/:userId/bets", handleGetUserBets);
+  app.get("/api/sportsbook/sports", handleGetSports);
+  app.get("/api/sportsbook/events/:eventId/odds", handleGetLiveOdds);
+  app.post("/api/sportsbook/bets/:betId/cash-out", handleCashOut);
+  app.get("/api/sportsbook/popular-bets", handleGetPopularBets);
+
+  // Store routes
+  app.get("/api/store/packages", handleGetStorePackages);
+  app.get("/api/store/packages/:packageId", handleGetPackage);
+  app.post("/api/store/packages", handleCreatePackage);
+  app.put("/api/store/packages/:packageId", handleUpdatePackage);
+  app.delete("/api/store/packages/:packageId", handleDeletePackage);
+  app.post("/api/store/purchase", handlePurchasePackage);
+  app.get("/api/store/users/:userId/purchases", handleGetUserPurchases);
+  app.get("/api/store/settings", handleGetStoreSettings);
+  app.put("/api/store/settings", handleUpdateStoreSettings);
+  app.get("/api/store/admin-logs", handleGetAdminLogs);
+  app.post("/api/store/refund-requests", handleCreateRefundRequest);
+  app.get("/api/store/refund-requests", handleGetRefundRequests);
+  app.post("/api/store/refund-requests/:refundId/process", handleProcessRefund);
+  app.get("/api/store/payment-stats", handleGetPaymentStats);
 
   return app;
 }
