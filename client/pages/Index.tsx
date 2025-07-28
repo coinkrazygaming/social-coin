@@ -8,6 +8,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { SlotThumbnail } from "@/components/SlotThumbnail";
+import { featuredSlots } from "@shared/slotData";
 import {
   Gamepad2,
   Dice6,
