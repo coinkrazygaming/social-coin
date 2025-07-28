@@ -79,25 +79,7 @@ const App = () => (
                   }
                 />
 
-                <Route
-                  path="/bingo"
-                  element={
-                    <PlaceholderPage
-                      title="Bingo Hall"
-                      description="Community bingo games with countdown timers"
-                      icon={<Grid3X3 className="h-8 w-8 text-white" />}
-                      features={[
-                        "Scheduled bingo rounds",
-                        "Free GC-only games",
-                        "Premium SC games",
-                        "Real-time countdown timers",
-                        "Community chat",
-                        "Progressive prizes",
-                        "Auto-daub features",
-                      ]}
-                    />
-                  }
-                />
+                <Route path="/bingo" element={<Bingo />} />
 
                 <Route path="/leaderboards" element={<Leaderboards />} />
 
