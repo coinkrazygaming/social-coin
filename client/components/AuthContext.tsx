@@ -5,6 +5,7 @@ import {
   useEffect,
   ReactNode,
 } from "react";
+import { useNavigate } from "react-router-dom";
 import { User, Balance } from "@shared/types";
 
 interface AuthContextType {
