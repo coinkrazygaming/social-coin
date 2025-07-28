@@ -15,6 +15,9 @@ import {
   handleGetAllMiniGameHistory,
   handleGetUserSettings,
   handleUpdateUserSettings,
+  handleGetAllRedemptions,
+  handleCreateRedemption,
+  handleReviewRedemption,
 } from "./routes/users";
 import {
   handleGetPackages,
