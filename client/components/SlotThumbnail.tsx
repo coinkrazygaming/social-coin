@@ -30,6 +30,7 @@ export function SlotThumbnail({ game, onPlay, size = 'medium' }: SlotThumbnailPr
   const { user } = useAuth();
   const [showCurrencyDialog, setShowCurrencyDialog] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showAccessDenied, setShowAccessDenied] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState<'GC' | 'SC' | null>(null);
 
   const handlePlayClick = (currency: 'GC' | 'SC') => {
