@@ -50,11 +50,11 @@ export function Ticker() {
           setTickerItems(Array.isArray(data) ? data : []);
         } else {
           console.warn('Ticker API returned non-JSON response');
-          setTickerItems([]);
+          setTickerItems(fallbackItems);
         }
       } else {
         console.warn('Ticker API returned error status:', response.status);
-        setTickerItems([]);
+        setTickerItems(fallbackItems);
       }
     } catch (error) {
       console.error("Error fetching ticker items:", error);
