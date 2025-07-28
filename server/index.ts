@@ -37,6 +37,17 @@ import {
   handleGetAchievements,
   handleGetLiveUpdates,
 } from "./routes/leaderboards";
+import {
+  handleGetRooms,
+  handleGetRoomGames,
+  handleGetGame,
+  handleJoinGame,
+  handleGetPlayerCards,
+  handleMarkNumber,
+  handleGetPatterns,
+  handleStartGame,
+  handleGetLiveUpdates as handleBingoLiveUpdates,
+} from "./routes/bingo";
 
 export function createServer() {
   const app = express();
