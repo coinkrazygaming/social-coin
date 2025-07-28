@@ -35,10 +35,9 @@ export default function MiniGames() {
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
   const [cooldowns, setCooldowns] = useState<Record<string, CooldownInfo>>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [showAccessDenied, setShowAccessDenied] = useState(false);
 
-  // Mock user data - replace with actual auth
-  const userId = "user_demo123";
-  const username = "Player123";
+  const { user } = useAuth();
 
   const miniGames: MiniGame[] = [
     {
