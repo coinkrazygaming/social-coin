@@ -122,7 +122,10 @@ export function createServer() {
   // Leaderboard routes
   app.get("/api/leaderboards", handleGetLeaderboard);
   app.get("/api/leaderboards/categories", handleGetCategories);
-  app.get("/api/leaderboards/users/:userId/position/:category", handleGetUserPosition);
+  app.get(
+    "/api/leaderboards/users/:userId/position/:category",
+    handleGetUserPosition,
+  );
   app.get("/api/leaderboards/users/:userId/stats", handleGetUserStats);
   app.post("/api/leaderboards/update-score", handleUpdateScore);
   app.get("/api/leaderboards/achievements", handleGetAchievements);

@@ -1,31 +1,42 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { SlotThumbnail } from '@/components/SlotThumbnail';
-import { 
-  Search, 
-  Filter, 
-  TrendingUp, 
-  Star, 
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SlotThumbnail } from "@/components/SlotThumbnail";
+import {
+  Search,
+  Filter,
+  TrendingUp,
+  Star,
   Zap,
   Crown,
   Gamepad2,
   Trophy,
   Clock,
-  DollarSign
-} from 'lucide-react';
-import { slotGames, featuredSlots, newSlots, popularSlots } from '@shared/slotData';
-import { SlotGame } from '@shared/slotTypes';
-import { useAuth } from '@/components/AuthContext';
+  DollarSign,
+} from "lucide-react";
+import {
+  slotGames,
+  featuredSlots,
+  newSlots,
+  popularSlots,
+} from "@shared/slotData";
+import { SlotGame } from "@shared/slotTypes";
+import { useAuth } from "@/components/AuthContext";
 
 export default function Slots() {
   const { user } = useAuth();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedProvider, setSelectedProvider] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedProvider, setSelectedProvider] = useState<string>("all");
   const [filteredGames, setFilteredGames] = useState<SlotGame[]>(slotGames);
 
   useEffect(() => {
@@ -33,43 +44,47 @@ export default function Slots() {
 
     // Search filter
     if (searchTerm) {
-      filtered = filtered.filter(game => 
-        game.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        game.provider.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (game) =>
+          game.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          game.provider.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
     // Category filter
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(game => game.category === selectedCategory);
+    if (selectedCategory !== "all") {
+      filtered = filtered.filter((game) => game.category === selectedCategory);
     }
 
     // Provider filter
-    if (selectedProvider !== 'all') {
-      filtered = filtered.filter(game => game.provider === selectedProvider);
+    if (selectedProvider !== "all") {
+      filtered = filtered.filter((game) => game.provider === selectedProvider);
     }
 
     setFilteredGames(filtered);
   }, [searchTerm, selectedCategory, selectedProvider]);
 
-  const handlePlayGame = (gameId: string, currency: 'GC' | 'SC') => {
+  const handlePlayGame = (gameId: string, currency: "GC" | "SC") => {
     // TODO: Implement actual game launch
     console.log(`Launching game ${gameId} with ${currency}`);
     // This would redirect to the actual slot game or open in a modal
   };
 
-  const providers = Array.from(new Set(slotGames.map(game => game.provider)));
+  const providers = Array.from(new Set(slotGames.map((game) => game.provider)));
   const categories = [
-    { id: 'all', name: 'All Games', icon: Gamepad2 },
-    { id: 'featured', name: 'Featured', icon: Star },
-    { id: 'new', name: 'New', icon: Zap },
-    { id: 'progressive', name: 'Progressive', icon: Crown },
-    { id: 'video', name: 'Video Slots', icon: TrendingUp },
-    { id: 'classic', name: 'Classic', icon: Trophy }
+    { id: "all", name: "All Games", icon: Gamepad2 },
+    { id: "featured", name: "Featured", icon: Star },
+    { id: "new", name: "New", icon: Zap },
+    { id: "progressive", name: "Progressive", icon: Crown },
+    { id: "video", name: "Video Slots", icon: TrendingUp },
+    { id: "classic", name: "Classic", icon: Trophy },
   ];
 
-  const totalSCEarned = slotGames.reduce((sum, game) => sum + game.liveSCEarned, 0);
-  const totalMaxWin = Math.max(...slotGames.map(game => game.maxWin));
+  const totalSCEarned = slotGames.reduce(
+    (sum, game) => sum + game.liveSCEarned,
+    0,
+  );
+  const totalMaxWin = Math.max(...slotGames.map((game) => game.maxWin));
 
   return (
     <div className="min-h-screen">
@@ -88,23 +103,37 @@ export default function Slots() {
                 </p>
               </div>
             </div>
-            
+
             <div className="flex justify-center space-x-6 mt-8">
               <div className="text-center">
-                <div className="text-2xl font-bold text-gold">{slotGames.length}</div>
+                <div className="text-2xl font-bold text-gold">
+                  {slotGames.length}
+                </div>
                 <div className="text-sm text-muted-foreground">Total Games</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-sweep">{totalSCEarned.toLocaleString()}</div>
-                <div className="text-sm text-muted-foreground">SC Earned Today</div>
+                <div className="text-2xl font-bold text-sweep">
+                  {totalSCEarned.toLocaleString()}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  SC Earned Today
+                </div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-casino-green">{totalMaxWin.toLocaleString()}</div>
-                <div className="text-sm text-muted-foreground">Max Win Available</div>
+                <div className="text-2xl font-bold text-casino-green">
+                  {totalMaxWin.toLocaleString()}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Max Win Available
+                </div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-400">{user ? slotGames.length : 0}</div>
-                <div className="text-sm text-muted-foreground">Available to Play</div>
+                <div className="text-2xl font-bold text-blue-400">
+                  {user ? slotGames.length : 0}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Available to Play
+                </div>
               </div>
             </div>
           </div>
@@ -137,8 +166,10 @@ export default function Slots() {
                 className="bg-background border border-border rounded-md px-3 py-2 text-sm"
               >
                 <option value="all">All Providers</option>
-                {providers.map(provider => (
-                  <option key={provider} value={provider}>{provider}</option>
+                {providers.map((provider) => (
+                  <option key={provider} value={provider}>
+                    {provider}
+                  </option>
                 ))}
               </select>
             </div>
@@ -146,15 +177,21 @@ export default function Slots() {
 
           {/* Category Tabs */}
           <div className="flex flex-wrap gap-2">
-            {categories.map(category => {
+            {categories.map((category) => {
               const Icon = category.icon;
               return (
                 <Button
                   key={category.id}
-                  variant={selectedCategory === category.id ? 'default' : 'outline'}
+                  variant={
+                    selectedCategory === category.id ? "default" : "outline"
+                  }
                   size="sm"
                   onClick={() => setSelectedCategory(category.id)}
-                  className={selectedCategory === category.id ? 'bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground' : ''}
+                  className={
+                    selectedCategory === category.id
+                      ? "bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground"
+                      : ""
+                  }
                 >
                   <Icon className="h-4 w-4 mr-2" />
                   {category.name}
@@ -180,7 +217,9 @@ export default function Slots() {
             <TabsContent value="all" className="space-y-8">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold">
-                  {selectedCategory === 'all' ? 'All Slot Games' : categories.find(c => c.id === selectedCategory)?.name}
+                  {selectedCategory === "all"
+                    ? "All Slot Games"
+                    : categories.find((c) => c.id === selectedCategory)?.name}
                   {searchTerm && ` matching "${searchTerm}"`}
                 </h2>
                 <Badge variant="outline" className="text-lg px-4 py-2">
@@ -189,7 +228,7 @@ export default function Slots() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
-                {filteredGames.map(game => (
+                {filteredGames.map((game) => (
                   <SlotThumbnail
                     key={game.id}
                     game={game}
@@ -214,14 +253,17 @@ export default function Slots() {
             <TabsContent value="featured" className="space-y-8">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold">Featured Games</h2>
-                <Badge variant="outline" className="text-lg px-4 py-2 bg-gold/20 text-gold border-gold/30">
+                <Badge
+                  variant="outline"
+                  className="text-lg px-4 py-2 bg-gold/20 text-gold border-gold/30"
+                >
                   <Star className="h-4 w-4 mr-2" />
                   {featuredSlots.length} Featured
                 </Badge>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {featuredSlots.map(game => (
+                {featuredSlots.map((game) => (
                   <SlotThumbnail
                     key={game.id}
                     game={game}
@@ -236,7 +278,10 @@ export default function Slots() {
             <TabsContent value="popular" className="space-y-8">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold">Most Popular</h2>
-                <Badge variant="outline" className="text-lg px-4 py-2 bg-casino-green/20 text-casino-green border-casino-green/30">
+                <Badge
+                  variant="outline"
+                  className="text-lg px-4 py-2 bg-casino-green/20 text-casino-green border-casino-green/30"
+                >
                   <TrendingUp className="h-4 w-4 mr-2" />
                   Top Earners
                 </Badge>
@@ -262,14 +307,17 @@ export default function Slots() {
             <TabsContent value="new" className="space-y-8">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold">New Releases</h2>
-                <Badge variant="outline" className="text-lg px-4 py-2 bg-sweep/20 text-sweep border-sweep/30">
+                <Badge
+                  variant="outline"
+                  className="text-lg px-4 py-2 bg-sweep/20 text-sweep border-sweep/30"
+                >
                   <Zap className="h-4 w-4 mr-2" />
                   Fresh Games
                 </Badge>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {newSlots.map(game => (
+                {newSlots.map((game) => (
                   <SlotThumbnail
                     key={game.id}
                     game={game}
@@ -288,34 +336,44 @@ export default function Slots() {
         <div className="container px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold">Live Casino Stats</h2>
-            <p className="text-muted-foreground mt-2">Real-time performance across all slot games</p>
+            <p className="text-muted-foreground mt-2">
+              Real-time performance across all slot games
+            </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
             <Card>
               <CardHeader className="text-center pb-2">
-                <CardTitle className="text-2xl font-bold text-gold">{totalSCEarned.toLocaleString()}</CardTitle>
+                <CardTitle className="text-2xl font-bold text-gold">
+                  {totalSCEarned.toLocaleString()}
+                </CardTitle>
                 <CardDescription>Total SC Earned</CardDescription>
               </CardHeader>
             </Card>
-            
+
             <Card>
               <CardHeader className="text-center pb-2">
-                <CardTitle className="text-2xl font-bold text-sweep">{totalMaxWin.toLocaleString()}</CardTitle>
+                <CardTitle className="text-2xl font-bold text-sweep">
+                  {totalMaxWin.toLocaleString()}
+                </CardTitle>
                 <CardDescription>Highest Max Win</CardDescription>
               </CardHeader>
             </Card>
-            
+
             <Card>
               <CardHeader className="text-center pb-2">
-                <CardTitle className="text-2xl font-bold text-casino-green">{slotGames.length}</CardTitle>
+                <CardTitle className="text-2xl font-bold text-casino-green">
+                  {slotGames.length}
+                </CardTitle>
                 <CardDescription>Active Games</CardDescription>
               </CardHeader>
             </Card>
-            
+
             <Card>
               <CardHeader className="text-center pb-2">
-                <CardTitle className="text-2xl font-bold text-blue-400">{providers.length}</CardTitle>
+                <CardTitle className="text-2xl font-bold text-blue-400">
+                  {providers.length}
+                </CardTitle>
                 <CardDescription>Game Providers</CardDescription>
               </CardHeader>
             </Card>

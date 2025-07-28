@@ -1,30 +1,44 @@
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
-import { 
-  Users, 
-  Crown, 
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
+import {
+  Users,
+  Crown,
   DollarSign,
   Play,
   Coins,
   Star,
   ChevronRight,
-  Seat
-} from 'lucide-react';
-import { PokerTable } from '@shared/slotTypes';
-import { useAuth } from './AuthContext';
-import { AuthModal } from './AuthModal';
-import { AccessDeniedModal } from './AccessDeniedModal';
+  Seat,
+} from "lucide-react";
+import { PokerTable } from "@shared/slotTypes";
+import { useAuth } from "./AuthContext";
+import { AuthModal } from "./AuthModal";
+import { AccessDeniedModal } from "./AccessDeniedModal";
 
 interface PokerTableThumbnailProps {
   table: PokerTable;
-  onJoinTable: (tableId: string, seatNumber: number, currency: 'GC' | 'SC') => void;
-  size?: 'small' | 'medium' | 'large';
+  onJoinTable: (
+    tableId: string,
+    seatNumber: number,
+    currency: "GC" | "SC",
+  ) => void;
+  size?: "small" | "medium" | "large";
 }
 
-export function PokerTableThumbnail({ table, onJoinTable, size = 'medium' }: PokerTableThumbnailProps) {
+export function PokerTableThumbnail({
+  table,
+  onJoinTable,
+  size = "medium",
+}: PokerTableThumbnailProps) {
   const { user } = useAuth();
   const [showSeatSelection, setShowSeatSelection] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -32,7 +46,7 @@ export function PokerTableThumbnail({ table, onJoinTable, size = 'medium' }: Pok
 
   const handleTableClick = () => {
     if (!user) {
-      if (table.currency === 'SC') {
+      if (table.currency === "SC") {
         setShowAccessDenied(true);
       } else {
         setShowAuthModal(true);
@@ -49,28 +63,38 @@ export function PokerTableThumbnail({ table, onJoinTable, size = 'medium' }: Pok
 
   const getCardSize = () => {
     switch (size) {
-      case 'small': return 'w-48 h-80';
-      case 'large': return 'w-80 h-96';
-      default: return 'w-64 h-88';
+      case "small":
+        return "w-48 h-80";
+      case "large":
+        return "w-80 h-96";
+      default:
+        return "w-64 h-88";
     }
   };
 
-  const occupiedSeats = table.seats.filter(seat => seat.player !== null).length;
+  const occupiedSeats = table.seats.filter(
+    (seat) => seat.player !== null,
+  ).length;
   const availableSeats = table.maxSeats - occupiedSeats;
 
   const getGameTypeDisplay = () => {
     switch (table.gameType) {
-      case 'texas-holdem': return 'Texas Hold\'em';
-      case 'omaha': return 'Omaha';
-      case 'seven-card-stud': return '7-Card Stud';
-      case 'blackjack': return 'Blackjack';
-      default: return table.gameType;
+      case "texas-holdem":
+        return "Texas Hold'em";
+      case "omaha":
+        return "Omaha";
+      case "seven-card-stud":
+        return "7-Card Stud";
+      case "blackjack":
+        return "Blackjack";
+      default:
+        return table.gameType;
     }
   };
 
   return (
     <>
-      <Card 
+      <Card
         className={`${getCardSize()} group hover:scale-105 transition-all duration-300 overflow-hidden relative cursor-pointer`}
         onClick={handleTableClick}
       >
@@ -80,7 +104,7 @@ export function PokerTableThumbnail({ table, onJoinTable, size = 'medium' }: Pok
           <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-xs font-bold">
             CoinKrazy.com
           </div>
-          
+
           {/* Game Type Badge */}
           <Badge className="absolute top-2 left-2 bg-gold text-gold-foreground">
             <Crown className="h-3 w-3 mr-1" />
@@ -98,11 +122,11 @@ export function PokerTableThumbnail({ table, onJoinTable, size = 'medium' }: Pok
           {/* Seat Indicators */}
           <div className="absolute inset-0">
             {table.seats.slice(0, 6).map((seat, index) => {
-              const angle = (index * 60) - 90; // Start from top
+              const angle = index * 60 - 90; // Start from top
               const radius = 45;
               const x = 50 + radius * Math.cos((angle * Math.PI) / 180);
               const y = 50 + radius * Math.sin((angle * Math.PI) / 180);
-              
+
               return (
                 <div
                   key={seat.seatNumber}
@@ -110,7 +134,7 @@ export function PokerTableThumbnail({ table, onJoinTable, size = 'medium' }: Pok
                   style={{
                     left: `${x}%`,
                     top: `${y}%`,
-                    backgroundColor: seat.player ? '#EF4444' : '#10B981'
+                    backgroundColor: seat.player ? "#EF4444" : "#10B981",
                   }}
                 >
                   {seat.seatNumber}
@@ -130,20 +154,26 @@ export function PokerTableThumbnail({ table, onJoinTable, size = 'medium' }: Pok
         <CardContent className="p-4 space-y-3">
           {/* Table Info */}
           <div>
-            <CardTitle className="text-lg leading-tight">{table.name}</CardTitle>
-            <p className="text-sm text-muted-foreground">{getGameTypeDisplay()}</p>
+            <CardTitle className="text-lg leading-tight">
+              {table.name}
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              {getGameTypeDisplay()}
+            </p>
           </div>
 
           {/* Table Stats */}
           <div className="space-y-2">
             <div className="flex justify-between items-center text-sm">
               <span className="text-muted-foreground">Seats:</span>
-              <span className={`font-bold ${availableSeats > 0 ? 'text-casino-green' : 'text-casino-red'}`}>
+              <span
+                className={`font-bold ${availableSeats > 0 ? "text-casino-green" : "text-casino-red"}`}
+              >
                 {occupiedSeats}/{table.maxSeats}
               </span>
             </div>
-            
-            {table.gameType !== 'blackjack' && (
+
+            {table.gameType !== "blackjack" && (
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Blinds:</span>
                 <span className="font-bold text-gold">
@@ -151,31 +181,37 @@ export function PokerTableThumbnail({ table, onJoinTable, size = 'medium' }: Pok
                 </span>
               </div>
             )}
-            
+
             <div className="flex justify-between items-center text-sm">
               <span className="text-muted-foreground">Buy-in:</span>
               <span className="font-bold text-sweep">
-                {table.buyIn.min.toLocaleString()}-{table.buyIn.max.toLocaleString()} {table.currency}
+                {table.buyIn.min.toLocaleString()}-
+                {table.buyIn.max.toLocaleString()} {table.currency}
               </span>
             </div>
           </div>
 
           {/* Currency Badge */}
           <div className="flex justify-center">
-            <Badge 
-              className={`${table.currency === 'GC' ? 'bg-gold/20 text-gold border-gold/30' : 'bg-sweep/20 text-sweep border-sweep/30'}`}
+            <Badge
+              className={`${table.currency === "GC" ? "bg-gold/20 text-gold border-gold/30" : "bg-sweep/20 text-sweep border-sweep/30"}`}
               variant="outline"
             >
-              {table.currency === 'GC' ? <Coins className="h-3 w-3 mr-1" /> : <Star className="h-3 w-3 mr-1" />}
+              {table.currency === "GC" ? (
+                <Coins className="h-3 w-3 mr-1" />
+              ) : (
+                <Star className="h-3 w-3 mr-1" />
+              )}
               {table.currency} Table
             </Badge>
           </div>
 
           {/* Join Button */}
-          <Button 
-            className={`w-full ${table.currency === 'GC' ? 
-              'bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground hover:from-yellow-400 hover:to-gold' :
-              'bg-gradient-to-r from-sweep to-purple-600 text-sweep-foreground hover:from-purple-600 hover:to-sweep'
+          <Button
+            className={`w-full ${
+              table.currency === "GC"
+                ? "bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground hover:from-yellow-400 hover:to-gold"
+                : "bg-gradient-to-r from-sweep to-purple-600 text-sweep-foreground hover:from-purple-600 hover:to-sweep"
             }`}
             disabled={availableSeats === 0}
           >
@@ -224,18 +260,18 @@ export function PokerTableThumbnail({ table, onJoinTable, size = 'medium' }: Pok
 
               {/* Interactive Seats */}
               {table.seats.map((seat, index) => {
-                const angle = (index * (360 / table.maxSeats)) - 90;
+                const angle = index * (360 / table.maxSeats) - 90;
                 const radius = 35;
                 const x = 50 + radius * Math.cos((angle * Math.PI) / 180);
                 const y = 50 + radius * Math.sin((angle * Math.PI) / 180);
-                
+
                 return (
                   <div
                     key={seat.seatNumber}
                     className="absolute transform -translate-x-1/2 -translate-y-1/2"
                     style={{
                       left: `${x}%`,
-                      top: `${y}%`
+                      top: `${y}%`,
                     }}
                   >
                     <Button
@@ -244,7 +280,9 @@ export function PokerTableThumbnail({ table, onJoinTable, size = 'medium' }: Pok
                       disabled={seat.player !== null}
                       onClick={() => handleSeatSelect(seat.seatNumber)}
                       className={`w-16 h-16 rounded-full text-xs font-bold ${
-                        seat.player ? 'bg-casino-red text-white' : 'bg-casino-green text-white hover:bg-green-600'
+                        seat.player
+                          ? "bg-casino-red text-white"
+                          : "bg-casino-green text-white hover:bg-green-600"
                       }`}
                     >
                       <div className="text-center">
@@ -275,30 +313,44 @@ export function PokerTableThumbnail({ table, onJoinTable, size = 'medium' }: Pok
                   <span className="font-medium">{table.currency}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Available Seats:</span>
-                  <span className="font-medium text-casino-green">{availableSeats}</span>
+                  <span className="text-muted-foreground">
+                    Available Seats:
+                  </span>
+                  <span className="font-medium text-casino-green">
+                    {availableSeats}
+                  </span>
                 </div>
               </div>
               <div className="space-y-2">
-                {table.gameType !== 'blackjack' && (
+                {table.gameType !== "blackjack" && (
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Blinds:</span>
-                    <span className="font-medium">{table.blinds.small}/{table.blinds.big}</span>
+                    <span className="font-medium">
+                      {table.blinds.small}/{table.blinds.big}
+                    </span>
                   </div>
                 )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Buy-in Range:</span>
-                  <span className="font-medium">{table.buyIn.min.toLocaleString()}-{table.buyIn.max.toLocaleString()}</span>
+                  <span className="font-medium">
+                    {table.buyIn.min.toLocaleString()}-
+                    {table.buyIn.max.toLocaleString()}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Players:</span>
-                  <span className="font-medium">{occupiedSeats}/{table.maxSeats}</span>
+                  <span className="font-medium">
+                    {occupiedSeats}/{table.maxSeats}
+                  </span>
                 </div>
               </div>
             </div>
 
             <div className="text-center">
-              <Button variant="outline" onClick={() => setShowSeatSelection(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setShowSeatSelection(false)}
+              >
                 Cancel
               </Button>
             </div>

@@ -1,13 +1,19 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Progress } from '@/components/ui/progress';
-import { 
-  Trophy, 
-  Medal, 
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
+import {
+  Trophy,
+  Medal,
   Crown,
   Star,
   Target,
@@ -20,15 +26,19 @@ import {
   Zap,
   Gift,
   Award,
-  Timer
-} from 'lucide-react';
-import { LeaderboardEntry, LeaderboardCategory, UserStats } from '@shared/leaderboardTypes';
-import { useAuth } from '@/components/AuthContext';
+  Timer,
+} from "lucide-react";
+import {
+  LeaderboardEntry,
+  LeaderboardCategory,
+  UserStats,
+} from "@shared/leaderboardTypes";
+import { useAuth } from "@/components/AuthContext";
 
 export default function Leaderboards() {
   const { user } = useAuth();
-  const [selectedCategory, setSelectedCategory] = useState('overall-sc');
-  const [selectedPeriod, setSelectedPeriod] = useState('weekly');
+  const [selectedCategory, setSelectedCategory] = useState("overall-sc");
+  const [selectedPeriod, setSelectedPeriod] = useState("weekly");
   const [leaderboardData, setLeaderboardData] = useState<{
     category: LeaderboardCategory | null;
     entries: LeaderboardEntry[];
@@ -36,7 +46,10 @@ export default function Leaderboards() {
   }>({ category: null, entries: [], lastUpdated: new Date() });
   const [categories, setCategories] = useState<LeaderboardCategory[]>([]);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
-  const [userPosition, setUserPosition] = useState<{ position: number | null; entry: LeaderboardEntry | null }>({ position: null, entry: null });
+  const [userPosition, setUserPosition] = useState<{
+    position: number | null;
+    entry: LeaderboardEntry | null;
+  }>({ position: null, entry: null });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -55,22 +68,24 @@ export default function Leaderboards() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/api/leaderboards/categories');
+      const response = await fetch("/api/leaderboards/categories");
       const data = await response.json();
       setCategories(data);
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      console.error("Error fetching categories:", error);
     }
   };
 
   const fetchLeaderboard = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/leaderboards?category=${selectedCategory}&period=${selectedPeriod}`);
+      const response = await fetch(
+        `/api/leaderboards?category=${selectedCategory}&period=${selectedPeriod}`,
+      );
       const data = await response.json();
       setLeaderboardData(data);
     } catch (error) {
-      console.error('Error fetching leaderboard:', error);
+      console.error("Error fetching leaderboard:", error);
     } finally {
       setIsLoading(false);
     }
@@ -83,47 +98,67 @@ export default function Leaderboards() {
       const data = await response.json();
       setUserStats(data);
     } catch (error) {
-      console.error('Error fetching user stats:', error);
+      console.error("Error fetching user stats:", error);
     }
   };
 
   const fetchUserPosition = async () => {
     if (!user) return;
     try {
-      const response = await fetch(`/api/leaderboards/users/${user.id}/position/${selectedCategory}`);
+      const response = await fetch(
+        `/api/leaderboards/users/${user.id}/position/${selectedCategory}`,
+      );
       const data = await response.json();
       setUserPosition(data);
     } catch (error) {
-      console.error('Error fetching user position:', error);
+      console.error("Error fetching user position:", error);
     }
   };
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
-      case 1: return <Crown className="h-6 w-6 text-gold" />;
-      case 2: return <Medal className="h-6 w-6 text-gray-400" />;
-      case 3: return <Award className="h-6 w-6 text-amber-600" />;
-      default: return <span className="text-lg font-bold text-muted-foreground">#{rank}</span>;
+      case 1:
+        return <Crown className="h-6 w-6 text-gold" />;
+      case 2:
+        return <Medal className="h-6 w-6 text-gray-400" />;
+      case 3:
+        return <Award className="h-6 w-6 text-amber-600" />;
+      default:
+        return (
+          <span className="text-lg font-bold text-muted-foreground">
+            #{rank}
+          </span>
+        );
     }
   };
 
   const getRankColor = (rank: number) => {
     switch (rank) {
-      case 1: return 'bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground';
-      case 2: return 'bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800';
-      case 3: return 'bg-gradient-to-r from-amber-500 to-amber-600 text-white';
-      default: return 'bg-muted';
+      case 1:
+        return "bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground";
+      case 2:
+        return "bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800";
+      case 3:
+        return "bg-gradient-to-r from-amber-500 to-amber-600 text-white";
+      default:
+        return "bg-muted";
     }
   };
 
   const getCategoryIcon = (gameType: string) => {
     switch (gameType) {
-      case 'slots': return <Gamepad2 className="h-5 w-5" />;
-      case 'table-games': return <Dice6 className="h-5 w-5" />;
-      case 'mini-games': return <Target className="h-5 w-5" />;
-      case 'sportsbook': return <Trophy className="h-5 w-5" />;
-      case 'bingo': return <Grid3X3 className="h-5 w-5" />;
-      default: return <Crown className="h-5 w-5" />;
+      case "slots":
+        return <Gamepad2 className="h-5 w-5" />;
+      case "table-games":
+        return <Dice6 className="h-5 w-5" />;
+      case "mini-games":
+        return <Target className="h-5 w-5" />;
+      case "sportsbook":
+        return <Trophy className="h-5 w-5" />;
+      case "bingo":
+        return <Grid3X3 className="h-5 w-5" />;
+      default:
+        return <Crown className="h-5 w-5" />;
     }
   };
 
@@ -140,10 +175,10 @@ export default function Leaderboards() {
   };
 
   const periods = [
-    { id: 'daily', name: 'Daily', icon: Timer },
-    { id: 'weekly', name: 'Weekly', icon: Clock },
-    { id: 'monthly', name: 'Monthly', icon: TrendingUp },
-    { id: 'all-time', name: 'All Time', icon: Star }
+    { id: "daily", name: "Daily", icon: Timer },
+    { id: "weekly", name: "Weekly", icon: Clock },
+    { id: "monthly", name: "Monthly", icon: TrendingUp },
+    { id: "all-time", name: "All Time", icon: Star },
   ];
 
   return (
@@ -163,7 +198,7 @@ export default function Leaderboards() {
                 </p>
               </div>
             </div>
-            
+
             {/* User Position Card */}
             {user && userPosition.position && (
               <Card className="max-w-2xl mx-auto mb-8 bg-gradient-to-r from-sweep/10 to-gold/10 border-sweep/30">
@@ -175,11 +210,15 @@ export default function Leaderboards() {
                       </div>
                       <div>
                         <h3 className="font-bold text-lg">Your Rank</h3>
-                        <p className="text-muted-foreground">in {leaderboardData.category?.name}</p>
+                        <p className="text-muted-foreground">
+                          in {leaderboardData.category?.name}
+                        </p>
                       </div>
                     </div>
                     <div className="text-center">
-                      <div className="text-3xl font-bold text-sweep">#{userPosition.position}</div>
+                      <div className="text-3xl font-bold text-sweep">
+                        #{userPosition.position}
+                      </div>
                       <div className="text-sm text-muted-foreground">
                         {userPosition.entry?.score.toLocaleString()} SC
                       </div>
@@ -201,13 +240,19 @@ export default function Leaderboards() {
                 <Trophy className="h-5 w-5 mr-2" />
                 Categories:
               </h3>
-              {categories.map(category => (
+              {categories.map((category) => (
                 <Button
                   key={category.id}
-                  variant={selectedCategory === category.id ? 'default' : 'outline'}
+                  variant={
+                    selectedCategory === category.id ? "default" : "outline"
+                  }
                   size="sm"
                   onClick={() => setSelectedCategory(category.id)}
-                  className={selectedCategory === category.id ? 'bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground' : ''}
+                  className={
+                    selectedCategory === category.id
+                      ? "bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground"
+                      : ""
+                  }
                 >
                   {getCategoryIcon(category.gameType)}
                   <span className="ml-2">{category.name}</span>
@@ -220,15 +265,21 @@ export default function Leaderboards() {
                 <Clock className="h-5 w-5 mr-2" />
                 Period:
               </h3>
-              {periods.map(period => {
+              {periods.map((period) => {
                 const Icon = period.icon;
                 return (
                   <Button
                     key={period.id}
-                    variant={selectedPeriod === period.id ? 'default' : 'outline'}
+                    variant={
+                      selectedPeriod === period.id ? "default" : "outline"
+                    }
                     size="sm"
                     onClick={() => setSelectedPeriod(period.id)}
-                    className={selectedPeriod === period.id ? 'bg-gradient-to-r from-sweep to-purple-600 text-white' : ''}
+                    className={
+                      selectedPeriod === period.id
+                        ? "bg-gradient-to-r from-sweep to-purple-600 text-white"
+                        : ""
+                    }
                   >
                     <Icon className="h-4 w-4 mr-1" />
                     {period.name}
@@ -251,10 +302,15 @@ export default function Leaderboards() {
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle className="flex items-center text-2xl">
-                        {leaderboardData.category && getCategoryIcon(leaderboardData.category.gameType)}
-                        <span className="ml-2">{leaderboardData.category?.name || 'Loading...'}</span>
+                        {leaderboardData.category &&
+                          getCategoryIcon(leaderboardData.category.gameType)}
+                        <span className="ml-2">
+                          {leaderboardData.category?.name || "Loading..."}
+                        </span>
                       </CardTitle>
-                      <CardDescription>{leaderboardData.category?.description}</CardDescription>
+                      <CardDescription>
+                        {leaderboardData.category?.description}
+                      </CardDescription>
                     </div>
                     {leaderboardData.category?.prize && (
                       <div className="text-center">
@@ -263,9 +319,18 @@ export default function Leaderboards() {
                           Prizes Available
                         </Badge>
                         <div className="text-sm space-y-1">
-                          <div>🥇 {leaderboardData.category.prize.first} {leaderboardData.category.prize.currency}</div>
-                          <div>🥈 {leaderboardData.category.prize.second} {leaderboardData.category.prize.currency}</div>
-                          <div>🥉 {leaderboardData.category.prize.third} {leaderboardData.category.prize.currency}</div>
+                          <div>
+                            🥇 {leaderboardData.category.prize.first}{" "}
+                            {leaderboardData.category.prize.currency}
+                          </div>
+                          <div>
+                            🥈 {leaderboardData.category.prize.second}{" "}
+                            {leaderboardData.category.prize.currency}
+                          </div>
+                          <div>
+                            🥉 {leaderboardData.category.prize.third}{" "}
+                            {leaderboardData.category.prize.currency}
+                          </div>
                         </div>
                       </div>
                     )}
@@ -275,52 +340,64 @@ export default function Leaderboards() {
                   {isLoading ? (
                     <div className="text-center py-8">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold mx-auto"></div>
-                      <p className="text-muted-foreground mt-2">Loading leaderboard...</p>
+                      <p className="text-muted-foreground mt-2">
+                        Loading leaderboard...
+                      </p>
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {leaderboardData.entries.slice(0, 50).map((entry, index) => (
-                        <div 
-                          key={entry.id}
-                          className={`flex items-center justify-between p-4 rounded-lg transition-all hover:scale-[1.02] ${
-                            entry.rank <= 3 ? getRankColor(entry.rank) : 'bg-muted/20 hover:bg-muted/30'
-                          } ${entry.userId === user?.id ? 'ring-2 ring-sweep' : ''}`}
-                        >
-                          <div className="flex items-center space-x-4">
-                            <div className="flex items-center justify-center w-12 h-12">
-                              {getRankIcon(entry.rank)}
+                      {leaderboardData.entries
+                        .slice(0, 50)
+                        .map((entry, index) => (
+                          <div
+                            key={entry.id}
+                            className={`flex items-center justify-between p-4 rounded-lg transition-all hover:scale-[1.02] ${
+                              entry.rank <= 3
+                                ? getRankColor(entry.rank)
+                                : "bg-muted/20 hover:bg-muted/30"
+                            } ${entry.userId === user?.id ? "ring-2 ring-sweep" : ""}`}
+                          >
+                            <div className="flex items-center space-x-4">
+                              <div className="flex items-center justify-center w-12 h-12">
+                                {getRankIcon(entry.rank)}
+                              </div>
+                              <Avatar className="w-10 h-10">
+                                <AvatarFallback className="bg-gradient-to-br from-sweep to-purple-600 text-white">
+                                  {entry.username.substring(0, 2).toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <div className="font-bold flex items-center space-x-2">
+                                  <span>{entry.username}</span>
+                                  {entry.isVip && (
+                                    <Crown className="h-4 w-4 text-gold" />
+                                  )}
+                                  {entry.achievements.length > 0 && (
+                                    <Badge
+                                      variant="outline"
+                                      className="text-xs"
+                                    >
+                                      {entry.achievements.length} 🏆
+                                    </Badge>
+                                  )}
+                                </div>
+                                <div className="text-sm text-muted-foreground">
+                                  {entry.gamesPlayed} games •{" "}
+                                  {entry.winRate.toFixed(1)}% win rate
+                                </div>
+                              </div>
                             </div>
-                            <Avatar className="w-10 h-10">
-                              <AvatarFallback className="bg-gradient-to-br from-sweep to-purple-600 text-white">
-                                {entry.username.substring(0, 2).toUpperCase()}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <div className="font-bold flex items-center space-x-2">
-                                <span>{entry.username}</span>
-                                {entry.isVip && <Crown className="h-4 w-4 text-gold" />}
-                                {entry.achievements.length > 0 && (
-                                  <Badge variant="outline" className="text-xs">
-                                    {entry.achievements.length} 🏆
-                                  </Badge>
-                                )}
+
+                            <div className="text-right">
+                              <div className="font-bold text-lg">
+                                {entry.score.toLocaleString()} {entry.currency}
                               </div>
                               <div className="text-sm text-muted-foreground">
-                                {entry.gamesPlayed} games • {entry.winRate.toFixed(1)}% win rate
+                                Last win: {formatTimeAgo(entry.lastWin)}
                               </div>
                             </div>
                           </div>
-                          
-                          <div className="text-right">
-                            <div className="font-bold text-lg">
-                              {entry.score.toLocaleString()} {entry.currency}
-                            </div>
-                            <div className="text-sm text-muted-foreground">
-                              Last win: {formatTimeAgo(entry.lastWin)}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                        ))}
                     </div>
                   )}
                 </CardContent>
@@ -340,22 +417,32 @@ export default function Leaderboards() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="text-center">
-                      <div className="text-3xl font-bold text-gold">Level {userStats.level}</div>
+                      <div className="text-3xl font-bold text-gold">
+                        Level {userStats.level}
+                      </div>
                       <div className="text-sm text-muted-foreground">
                         {userStats.experience}/{userStats.nextLevelExp} XP
                       </div>
                     </div>
-                    <Progress 
-                      value={(userStats.experience / userStats.nextLevelExp) * 100} 
+                    <Progress
+                      value={
+                        (userStats.experience / userStats.nextLevelExp) * 100
+                      }
                       className="h-3"
                     />
                     <div className="grid grid-cols-2 gap-4 text-center text-sm">
                       <div>
-                        <div className="font-bold text-sweep">{userStats.totalGamesPlayed}</div>
-                        <div className="text-muted-foreground">Games Played</div>
+                        <div className="font-bold text-sweep">
+                          {userStats.totalGamesPlayed}
+                        </div>
+                        <div className="text-muted-foreground">
+                          Games Played
+                        </div>
                       </div>
                       <div>
-                        <div className="font-bold text-casino-green">{userStats.currentWinStreak}</div>
+                        <div className="font-bold text-casino-green">
+                          {userStats.currentWinStreak}
+                        </div>
                         <div className="text-muted-foreground">Win Streak</div>
                       </div>
                     </div>
@@ -375,9 +462,12 @@ export default function Leaderboards() {
                   <CardContent>
                     <div className="text-center space-y-2">
                       <div className="text-2xl font-bold text-casino-green">
-                        {userStats.biggestWin.amount.toLocaleString()} {userStats.biggestWin.currency}
+                        {userStats.biggestWin.amount.toLocaleString()}{" "}
+                        {userStats.biggestWin.currency}
                       </div>
-                      <div className="text-sm text-muted-foreground">{userStats.biggestWin.game}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {userStats.biggestWin.game}
+                      </div>
                       <div className="text-xs text-muted-foreground">
                         {formatTimeAgo(userStats.biggestWin.date)}
                       </div>
@@ -397,12 +487,19 @@ export default function Leaderboards() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      {userStats.achievements.slice(0, 3).map(achievement => (
-                        <div key={achievement.id} className="flex items-center space-x-3 p-2 bg-muted/20 rounded-lg">
+                      {userStats.achievements.slice(0, 3).map((achievement) => (
+                        <div
+                          key={achievement.id}
+                          className="flex items-center space-x-3 p-2 bg-muted/20 rounded-lg"
+                        >
                           <div className="text-2xl">{achievement.icon}</div>
                           <div>
-                            <div className="font-semibold text-sm">{achievement.name}</div>
-                            <div className="text-xs text-muted-foreground">{achievement.description}</div>
+                            <div className="font-semibold text-sm">
+                              {achievement.name}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              {achievement.description}
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -423,15 +520,21 @@ export default function Leaderboards() {
                   <div className="space-y-3 text-sm">
                     <div className="flex items-center space-x-2">
                       <div className="w-2 h-2 bg-casino-green rounded-full animate-pulse"></div>
-                      <span className="text-muted-foreground">SlotMaster2024 just won 1,250 SC!</span>
+                      <span className="text-muted-foreground">
+                        SlotMaster2024 just won 1,250 SC!
+                      </span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <div className="w-2 h-2 bg-gold rounded-full animate-pulse"></div>
-                      <span className="text-muted-foreground">PokerPro88 climbed to #2!</span>
+                      <span className="text-muted-foreground">
+                        PokerPro88 climbed to #2!
+                      </span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <div className="w-2 h-2 bg-sweep rounded-full animate-pulse"></div>
-                      <span className="text-muted-foreground">New player joined the leaderboard</span>
+                      <span className="text-muted-foreground">
+                        New player joined the leaderboard
+                      </span>
                     </div>
                   </div>
                 </CardContent>

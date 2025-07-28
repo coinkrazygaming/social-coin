@@ -1,26 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Textarea } from '../components/ui/textarea';
-import { useAuth } from '../components/AuthContext';
-import { AccessDeniedModal } from '../components/AccessDeniedModal';
-import { UserProfile, TransactionHistory, GameHistoryEntry, RedemptionRequest, UserStats, UserBalance } from '@shared/userTypes';
-import { 
-  User, 
-  CreditCard, 
-  TrendingUp, 
-  Download, 
-  Settings, 
-  Shield, 
-  Gift, 
-  Clock, 
-  DollarSign, 
-  Trophy, 
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Badge } from "../components/ui/badge";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+import { Textarea } from "../components/ui/textarea";
+import { useAuth } from "../components/AuthContext";
+import { AccessDeniedModal } from "../components/AccessDeniedModal";
+import {
+  UserProfile,
+  TransactionHistory,
+  GameHistoryEntry,
+  RedemptionRequest,
+  UserStats,
+  UserBalance,
+} from "@shared/userTypes";
+import {
+  User,
+  CreditCard,
+  TrendingUp,
+  Download,
+  Settings,
+  Shield,
+  Gift,
+  Clock,
+  DollarSign,
+  Trophy,
   Star,
   Bell,
   Eye,
@@ -37,25 +60,27 @@ import {
   Phone,
   Mail,
   FileText,
-  Smartphone
-} from 'lucide-react';
+  Smartphone,
+} from "lucide-react";
 
 export function UserDashboard() {
   const { user } = useAuth();
   const [showAccessDenied, setShowAccessDenied] = useState(false);
-  const [activeTab, setActiveTab] = useState('profile');
+  const [activeTab, setActiveTab] = useState("profile");
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [userBalance, setUserBalance] = useState<UserBalance | null>(null);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [transactions, setTransactions] = useState<TransactionHistory[]>([]);
   const [gameHistory, setGameHistory] = useState<GameHistoryEntry[]>([]);
-  const [redemptionRequests, setRedemptionRequests] = useState<RedemptionRequest[]>([]);
+  const [redemptionRequests, setRedemptionRequests] = useState<
+    RedemptionRequest[]
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showRedemptionForm, setShowRedemptionForm] = useState(false);
   const [redemptionData, setRedemptionData] = useState({
-    amount: '',
-    method: '',
-    accountDetails: {}
+    amount: "",
+    method: "",
+    accountDetails: {},
   });
   const [showKYCUpload, setShowKYCUpload] = useState(false);
 
@@ -64,7 +89,7 @@ export function UserDashboard() {
       setShowAccessDenied(true);
       return;
     }
-    
+
     fetchUserData();
   }, [user]);
 
@@ -72,13 +97,20 @@ export function UserDashboard() {
     if (!user) return;
 
     try {
-      const [profileRes, balanceRes, statsRes, transactionsRes, gameHistoryRes, redemptionsRes] = await Promise.all([
+      const [
+        profileRes,
+        balanceRes,
+        statsRes,
+        transactionsRes,
+        gameHistoryRes,
+        redemptionsRes,
+      ] = await Promise.all([
         fetch(`/api/users/${user.id}/profile`),
         fetch(`/api/users/${user.id}/balance`),
         fetch(`/api/users/${user.id}/stats`),
         fetch(`/api/users/${user.id}/transactions`),
         fetch(`/api/users/${user.id}/game-history`),
-        fetch(`/api/users/${user.id}/redemptions`)
+        fetch(`/api/users/${user.id}/redemptions`),
       ]);
 
       if (profileRes.ok) setUserProfile(await profileRes.json());
@@ -88,7 +120,7 @@ export function UserDashboard() {
       if (gameHistoryRes.ok) setGameHistory(await gameHistoryRes.json());
       if (redemptionsRes.ok) setRedemptionRequests(await redemptionsRes.json());
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      console.error("Error fetching user data:", error);
     } finally {
       setIsLoading(false);
     }
@@ -96,76 +128,94 @@ export function UserDashboard() {
 
   const handleRedemptionSubmit = async () => {
     if (!user || !redemptionData.amount || !redemptionData.method) {
-      alert('Please fill in all required fields');
+      alert("Please fill in all required fields");
       return;
     }
 
     const amount = parseFloat(redemptionData.amount);
     if (amount < 100) {
-      alert('Minimum redemption amount is 100 SC');
+      alert("Minimum redemption amount is 100 SC");
       return;
     }
 
-    if (!userProfile?.kycStatus || userProfile.kycStatus !== 'approved') {
-      alert('KYC verification required for redemptions. Please complete identity verification first.');
+    if (!userProfile?.kycStatus || userProfile.kycStatus !== "approved") {
+      alert(
+        "KYC verification required for redemptions. Please complete identity verification first.",
+      );
       setShowKYCUpload(true);
       return;
     }
 
     try {
-      const response = await fetch('/api/users/redemptions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/users/redemptions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId: user.id,
           username: user.username,
           amount,
           method: redemptionData.method,
-          accountDetails: redemptionData.accountDetails
-        })
+          accountDetails: redemptionData.accountDetails,
+        }),
       });
 
       if (response.ok) {
-        alert('Redemption request submitted successfully! It will be reviewed by our staff.');
+        alert(
+          "Redemption request submitted successfully! It will be reviewed by our staff.",
+        );
         setShowRedemptionForm(false);
-        setRedemptionData({ amount: '', method: '', accountDetails: {} });
+        setRedemptionData({ amount: "", method: "", accountDetails: {} });
         fetchUserData();
       } else {
         const error = await response.json();
         alert(`Error: ${error.message}`);
       }
     } catch (error) {
-      console.error('Redemption error:', error);
-      alert('Failed to submit redemption request. Please try again.');
+      console.error("Redemption error:", error);
+      alert("Failed to submit redemption request. Please try again.");
     }
   };
 
   const getKYCStatusColor = (status: string) => {
     switch (status) {
-      case 'approved': return 'bg-green-600';
-      case 'pending': return 'bg-yellow-600';
-      case 'rejected': return 'bg-red-600';
-      default: return 'bg-gray-600';
+      case "approved":
+        return "bg-green-600";
+      case "pending":
+        return "bg-yellow-600";
+      case "rejected":
+        return "bg-red-600";
+      default:
+        return "bg-gray-600";
     }
   };
 
   const getKYCStatusIcon = (status: string) => {
     switch (status) {
-      case 'approved': return <CheckCircle className="w-4 h-4" />;
-      case 'pending': return <Clock className="w-4 h-4" />;
-      case 'rejected': return <XCircle className="w-4 h-4" />;
-      default: return <AlertTriangle className="w-4 h-4" />;
+      case "approved":
+        return <CheckCircle className="w-4 h-4" />;
+      case "pending":
+        return <Clock className="w-4 h-4" />;
+      case "rejected":
+        return <XCircle className="w-4 h-4" />;
+      default:
+        return <AlertTriangle className="w-4 h-4" />;
     }
   };
 
   const getVIPIcon = (level: string) => {
     switch (level) {
-      case 'diamond': return <Crown className="w-5 h-5 text-blue-400" />;
-      case 'platinum': return <Crown className="w-5 h-5 text-gray-300" />;
-      case 'gold': return <Crown className="w-5 h-5 text-yellow-400" />;
-      case 'silver': return <Shield className="w-5 h-5 text-gray-400" />;
-      case 'bronze': return <Shield className="w-5 h-5 text-orange-400" />;
-      default: return <Star className="w-5 h-5 text-gray-500" />;
+      case "diamond":
+        return <Crown className="w-5 h-5 text-blue-400" />;
+      case "platinum":
+        return <Crown className="w-5 h-5 text-gray-300" />;
+      case "gold":
+        return <Crown className="w-5 h-5 text-yellow-400" />;
+      case "silver":
+        return <Shield className="w-5 h-5 text-gray-400" />;
+      case "bronze":
+        return <Shield className="w-5 h-5 text-orange-400" />;
+      default:
+        return <Star className="w-5 h-5 text-gray-500" />;
     }
   };
 
@@ -195,19 +245,27 @@ export function UserDashboard() {
             <h1 className="text-4xl font-bold text-white mb-2">
               My Dashboard 👤
             </h1>
-            <p className="text-purple-200">Manage your CoinKrazy account and view your activity</p>
+            <p className="text-purple-200">
+              Manage your CoinKrazy account and view your activity
+            </p>
           </div>
           <div className="flex items-center gap-4">
             {userProfile && (
-              <Badge className={`px-3 py-1 ${getKYCStatusColor(userProfile.kycStatus)}`}>
+              <Badge
+                className={`px-3 py-1 ${getKYCStatusColor(userProfile.kycStatus)}`}
+              >
                 {getKYCStatusIcon(userProfile.kycStatus)}
-                <span className="ml-2 capitalize">{userProfile.kycStatus.replace('_', ' ')}</span>
+                <span className="ml-2 capitalize">
+                  {userProfile.kycStatus.replace("_", " ")}
+                </span>
               </Badge>
             )}
             {userStats && (
               <div className="flex items-center gap-2 text-white">
                 {getVIPIcon(userStats.vipProgress.currentLevel)}
-                <span className="capitalize">{userStats.vipProgress.currentLevel}</span>
+                <span className="capitalize">
+                  {userStats.vipProgress.currentLevel}
+                </span>
               </div>
             )}
           </div>
@@ -225,7 +283,7 @@ export function UserDashboard() {
                 <div className="text-sm text-gray-400">Gold Coins</div>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-4 text-center">
                 <Star className="w-8 h-8 text-green-500 mx-auto mb-2" />
@@ -235,7 +293,7 @@ export function UserDashboard() {
                 <div className="text-sm text-gray-400">Sweeps Coins</div>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-4 text-center">
                 <TrendingUp className="w-8 h-8 text-blue-500 mx-auto mb-2" />
@@ -245,7 +303,7 @@ export function UserDashboard() {
                 <div className="text-sm text-gray-400">Total Deposits</div>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-4 text-center">
                 <Download className="w-8 h-8 text-purple-500 mx-auto mb-2" />
@@ -283,11 +341,15 @@ export function UserDashboard() {
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <Label className="text-gray-400">First Name</Label>
-                          <div className="text-white">{userProfile.firstName}</div>
+                          <div className="text-white">
+                            {userProfile.firstName}
+                          </div>
                         </div>
                         <div>
                           <Label className="text-gray-400">Last Name</Label>
-                          <div className="text-white">{userProfile.lastName}</div>
+                          <div className="text-white">
+                            {userProfile.lastName}
+                          </div>
                         </div>
                       </div>
                       <div>
@@ -296,16 +358,22 @@ export function UserDashboard() {
                       </div>
                       <div>
                         <Label className="text-gray-400">Username</Label>
-                        <div className="text-white">@{userProfile.username}</div>
+                        <div className="text-white">
+                          @{userProfile.username}
+                        </div>
                       </div>
                       <div>
                         <Label className="text-gray-400">Phone Number</Label>
-                        <div className="text-white">{userProfile.phoneNumber || 'Not provided'}</div>
+                        <div className="text-white">
+                          {userProfile.phoneNumber || "Not provided"}
+                        </div>
                       </div>
                       <div>
                         <Label className="text-gray-400">Date of Birth</Label>
                         <div className="text-white">
-                          {new Date(userProfile.dateOfBirth).toLocaleDateString()}
+                          {new Date(
+                            userProfile.dateOfBirth,
+                          ).toLocaleDateString()}
                         </div>
                       </div>
                     </>
@@ -328,13 +396,19 @@ export function UserDashboard() {
                     <>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-400">KYC Status</span>
-                        <Badge className={getKYCStatusColor(userProfile.kycStatus)}>
+                        <Badge
+                          className={getKYCStatusColor(userProfile.kycStatus)}
+                        >
                           {getKYCStatusIcon(userProfile.kycStatus)}
-                          <span className="ml-2 capitalize">{userProfile.kycStatus.replace('_', ' ')}</span>
+                          <span className="ml-2 capitalize">
+                            {userProfile.kycStatus.replace("_", " ")}
+                          </span>
                         </Badge>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-400">Verification Level</span>
+                        <span className="text-gray-400">
+                          Verification Level
+                        </span>
                         <Badge className="bg-blue-600 capitalize">
                           {userProfile.accountVerificationLevel}
                         </Badge>
@@ -343,7 +417,9 @@ export function UserDashboard() {
                         <span className="text-gray-400">VIP Level</span>
                         <div className="flex items-center gap-2">
                           {getVIPIcon(userProfile.vipLevel)}
-                          <span className="text-white capitalize">{userProfile.vipLevel}</span>
+                          <span className="text-white capitalize">
+                            {userProfile.vipLevel}
+                          </span>
                         </div>
                       </div>
                       <div className="flex justify-between items-center">
@@ -352,8 +428,8 @@ export function UserDashboard() {
                           {new Date(userProfile.createdAt).toLocaleDateString()}
                         </span>
                       </div>
-                      
-                      {userProfile.kycStatus !== 'approved' && (
+
+                      {userProfile.kycStatus !== "approved" && (
                         <Button
                           onClick={() => setShowKYCUpload(true)}
                           className="w-full bg-green-600 hover:bg-green-700"
@@ -380,22 +456,31 @@ export function UserDashboard() {
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-blue-500">{userStats.gamesPlayed}</div>
+                      <div className="text-2xl font-bold text-blue-500">
+                        {userStats.gamesPlayed}
+                      </div>
                       <div className="text-sm text-gray-400">Games Played</div>
                     </div>
                     <div className="text-center">
                       <div className="text-2xl font-bold text-green-500">
-                        {userStats.biggestWin.amount.toLocaleString()} {userStats.biggestWin.currency}
+                        {userStats.biggestWin.amount.toLocaleString()}{" "}
+                        {userStats.biggestWin.currency}
                       </div>
                       <div className="text-sm text-gray-400">Biggest Win</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-purple-500">{userStats.winRate.toFixed(1)}%</div>
+                      <div className="text-2xl font-bold text-purple-500">
+                        {userStats.winRate.toFixed(1)}%
+                      </div>
                       <div className="text-sm text-gray-400">Win Rate</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-yellow-500">{userStats.currentStreak}</div>
-                      <div className="text-sm text-gray-400">Current Streak</div>
+                      <div className="text-2xl font-bold text-yellow-500">
+                        {userStats.currentStreak}
+                      </div>
+                      <div className="text-sm text-gray-400">
+                        Current Streak
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -415,27 +500,48 @@ export function UserDashboard() {
                 {transactions.length > 0 ? (
                   <div className="space-y-4">
                     {transactions.slice(0, 10).map((transaction) => (
-                      <div key={transaction.id} className="flex justify-between items-center p-4 bg-gray-700 rounded-lg">
+                      <div
+                        key={transaction.id}
+                        className="flex justify-between items-center p-4 bg-gray-700 rounded-lg"
+                      >
                         <div>
-                          <div className="text-white font-medium">{transaction.description}</div>
+                          <div className="text-white font-medium">
+                            {transaction.description}
+                          </div>
                           <div className="text-sm text-gray-400">
-                            {new Date(transaction.createdAt).toLocaleDateString()} • {transaction.type}
+                            {new Date(
+                              transaction.createdAt,
+                            ).toLocaleDateString()}{" "}
+                            • {transaction.type}
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className={`font-bold ${
-                            transaction.type === 'win' || transaction.type === 'bonus' ? 'text-green-500' :
-                            transaction.type === 'bet' || transaction.type === 'purchase' ? 'text-red-500' :
-                            'text-white'
-                          }`}>
-                            {transaction.type === 'win' || transaction.type === 'bonus' ? '+' : ''}
+                          <div
+                            className={`font-bold ${
+                              transaction.type === "win" ||
+                              transaction.type === "bonus"
+                                ? "text-green-500"
+                                : transaction.type === "bet" ||
+                                    transaction.type === "purchase"
+                                  ? "text-red-500"
+                                  : "text-white"
+                            }`}
+                          >
+                            {transaction.type === "win" ||
+                            transaction.type === "bonus"
+                              ? "+"
+                              : ""}
                             {transaction.amount} {transaction.currency}
                           </div>
-                          <Badge className={`text-xs ${
-                            transaction.status === 'completed' ? 'bg-green-600' :
-                            transaction.status === 'pending' ? 'bg-yellow-600' :
-                            'bg-red-600'
-                          }`}>
+                          <Badge
+                            className={`text-xs ${
+                              transaction.status === "completed"
+                                ? "bg-green-600"
+                                : transaction.status === "pending"
+                                  ? "bg-yellow-600"
+                                  : "bg-red-600"
+                            }`}
+                          >
                             {transaction.status}
                           </Badge>
                         </div>
@@ -471,11 +577,17 @@ export function UserDashboard() {
                 {gameHistory.length > 0 ? (
                   <div className="space-y-4">
                     {gameHistory.slice(0, 10).map((game) => (
-                      <div key={game.id} className="flex justify-between items-center p-4 bg-gray-700 rounded-lg">
+                      <div
+                        key={game.id}
+                        className="flex justify-between items-center p-4 bg-gray-700 rounded-lg"
+                      >
                         <div>
-                          <div className="text-white font-medium">{game.gameName}</div>
+                          <div className="text-white font-medium">
+                            {game.gameName}
+                          </div>
                           <div className="text-sm text-gray-400">
-                            {new Date(game.playedAt).toLocaleDateString()} • {game.gameType}
+                            {new Date(game.playedAt).toLocaleDateString()} •{" "}
+                            {game.gameType}
                             {game.provider && ` • ${game.provider}`}
                           </div>
                         </div>
@@ -483,10 +595,15 @@ export function UserDashboard() {
                           <div className="text-gray-400 text-sm">
                             Bet: {game.betAmount} {game.currency}
                           </div>
-                          <div className={`font-bold ${
-                            game.result === 'win' ? 'text-green-500' : 'text-red-500'
-                          }`}>
-                            {game.result === 'win' ? '+' : ''}{game.winAmount} {game.currency}
+                          <div
+                            className={`font-bold ${
+                              game.result === "win"
+                                ? "text-green-500"
+                                : "text-red-500"
+                            }`}
+                          >
+                            {game.result === "win" ? "+" : ""}
+                            {game.winAmount} {game.currency}
                           </div>
                           {game.multiplier && (
                             <div className="text-xs text-yellow-500">
@@ -516,7 +633,9 @@ export function UserDashboard() {
 
           <TabsContent value="redemptions" className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-white">Prize Redemptions</h2>
+              <h2 className="text-2xl font-bold text-white">
+                Prize Redemptions
+              </h2>
               <Button
                 onClick={() => setShowRedemptionForm(true)}
                 className="bg-green-600 hover:bg-green-700"
@@ -530,7 +649,9 @@ export function UserDashboard() {
             {/* Redemption Requirements */}
             <Card className="bg-yellow-900 border-yellow-700">
               <CardContent className="p-4">
-                <h3 className="text-yellow-300 font-medium mb-2">Redemption Requirements:</h3>
+                <h3 className="text-yellow-300 font-medium mb-2">
+                  Redemption Requirements:
+                </h3>
                 <ul className="text-yellow-100 text-sm space-y-1">
                   <li>• Minimum redemption: 100 Sweeps Coins ($100 USD)</li>
                   <li>• KYC verification must be completed and approved</li>
@@ -548,23 +669,34 @@ export function UserDashboard() {
                 {redemptionRequests.length > 0 ? (
                   <div className="space-y-4">
                     {redemptionRequests.map((request) => (
-                      <div key={request.id} className="p-4 bg-gray-700 rounded-lg">
+                      <div
+                        key={request.id}
+                        className="p-4 bg-gray-700 rounded-lg"
+                      >
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <div className="text-white font-medium">
                               ${request.cashValue} ({request.amount} SC)
                             </div>
                             <div className="text-sm text-gray-400 capitalize">
-                              {request.method} • {new Date(request.requestedAt).toLocaleDateString()}
+                              {request.method} •{" "}
+                              {new Date(
+                                request.requestedAt,
+                              ).toLocaleDateString()}
                             </div>
                           </div>
-                          <Badge className={`${
-                            request.status === 'paid' ? 'bg-green-600' :
-                            request.status === 'approved' ? 'bg-blue-600' :
-                            request.status === 'denied' ? 'bg-red-600' :
-                            'bg-yellow-600'
-                          }`}>
-                            {request.status.replace('_', ' ')}
+                          <Badge
+                            className={`${
+                              request.status === "paid"
+                                ? "bg-green-600"
+                                : request.status === "approved"
+                                  ? "bg-blue-600"
+                                  : request.status === "denied"
+                                    ? "bg-red-600"
+                                    : "bg-yellow-600"
+                            }`}
+                          >
+                            {request.status.replace("_", " ")}
                           </Badge>
                         </div>
                         {request.denialReason && (
@@ -596,37 +728,55 @@ export function UserDashboard() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <h3 className="text-white font-medium mb-3">Notifications</h3>
+                    <h3 className="text-white font-medium mb-3">
+                      Notifications
+                    </h3>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-gray-400">Email Notifications</span>
-                        <Button variant="outline" size="sm">Toggle</Button>
+                        <span className="text-gray-400">
+                          Email Notifications
+                        </span>
+                        <Button variant="outline" size="sm">
+                          Toggle
+                        </Button>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-gray-400">SMS Notifications</span>
-                        <Button variant="outline" size="sm">Toggle</Button>
+                        <Button variant="outline" size="sm">
+                          Toggle
+                        </Button>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-gray-400">Marketing Emails</span>
-                        <Button variant="outline" size="sm">Toggle</Button>
+                        <Button variant="outline" size="sm">
+                          Toggle
+                        </Button>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div>
-                    <h3 className="text-white font-medium mb-3">Gaming Preferences</h3>
+                    <h3 className="text-white font-medium mb-3">
+                      Gaming Preferences
+                    </h3>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-gray-400">Sound Effects</span>
-                        <Button variant="outline" size="sm">Toggle</Button>
+                        <Button variant="outline" size="sm">
+                          Toggle
+                        </Button>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-gray-400">Animations</span>
-                        <Button variant="outline" size="sm">Toggle</Button>
+                        <Button variant="outline" size="sm">
+                          Toggle
+                        </Button>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-gray-400">Auto-play Slots</span>
-                        <Button variant="outline" size="sm">Toggle</Button>
+                        <Button variant="outline" size="sm">
+                          Toggle
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -643,7 +793,11 @@ export function UserDashboard() {
               <CardHeader>
                 <CardTitle className="text-white flex justify-between items-center">
                   Request Prize Redemption
-                  <Button variant="ghost" size="sm" onClick={() => setShowRedemptionForm(false)}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowRedemptionForm(false)}
+                  >
                     ✕
                   </Button>
                 </CardTitle>
@@ -655,7 +809,12 @@ export function UserDashboard() {
                     type="number"
                     placeholder="Minimum 100 SC"
                     value={redemptionData.amount}
-                    onChange={(e) => setRedemptionData(prev => ({ ...prev, amount: e.target.value }))}
+                    onChange={(e) =>
+                      setRedemptionData((prev) => ({
+                        ...prev,
+                        amount: e.target.value,
+                      }))
+                    }
                     min="100"
                     max={userBalance?.sweepsCoins || 0}
                   />
@@ -666,22 +825,27 @@ export function UserDashboard() {
 
                 <div>
                   <Label className="text-white">Redemption Method</Label>
-                  <Select value={redemptionData.method} onValueChange={(value) => 
-                    setRedemptionData(prev => ({ ...prev, method: value }))
-                  }>
+                  <Select
+                    value={redemptionData.method}
+                    onValueChange={(value) =>
+                      setRedemptionData((prev) => ({ ...prev, method: value }))
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select payment method" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="cashapp">Cash App</SelectItem>
                       <SelectItem value="paypal">PayPal</SelectItem>
-                      <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+                      <SelectItem value="bank_transfer">
+                        Bank Transfer
+                      </SelectItem>
                       <SelectItem value="check">Check</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
-                {redemptionData.method === 'cashapp' && (
+                {redemptionData.method === "cashapp" && (
                   <div className="space-y-3">
                     <div>
                       <Label className="text-white">Cash App Tag</Label>
@@ -694,7 +858,7 @@ export function UserDashboard() {
                   </div>
                 )}
 
-                {redemptionData.method === 'paypal' && (
+                {redemptionData.method === "paypal" && (
                   <div className="space-y-3">
                     <div>
                       <Label className="text-white">PayPal Email</Label>
@@ -709,8 +873,8 @@ export function UserDashboard() {
 
                 <div className="text-sm text-yellow-300 bg-yellow-900 p-3 rounded">
                   <AlertTriangle className="w-4 h-4 inline mr-2" />
-                  Your request will be reviewed by staff and admin before processing.
-                  KYC verification is required for all redemptions.
+                  Your request will be reviewed by staff and admin before
+                  processing. KYC verification is required for all redemptions.
                 </div>
 
                 <Button

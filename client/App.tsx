@@ -51,15 +51,9 @@ const App = () => (
                 <Route path="/admin" element={<AdminPanel />} />
 
                 {/* Casino Routes */}
-                <Route
-                  path="/slots"
-                  element={<Slots />}
-                />
+                <Route path="/slots" element={<Slots />} />
 
-                <Route
-                  path="/table-games"
-                  element={<TableGames />}
-                />
+                <Route path="/table-games" element={<TableGames />} />
 
                 <Route path="/sportsbook" element={<Sportsbook />} />
 

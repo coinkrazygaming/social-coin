@@ -239,8 +239,8 @@ export default function MiniGames() {
             </div>
 
             <GameComponent
-              userId={user?.id || ''}
-              username={user?.username || ''}
+              userId={user?.id || ""}
+              username={user?.username || ""}
               onGameComplete={(score: number, scEarned: number) =>
                 handleGameComplete(selectedGame, score, scEarned)
               }

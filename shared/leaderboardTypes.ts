@@ -4,8 +4,14 @@ export interface LeaderboardEntry {
   username: string;
   avatar?: string;
   score: number;
-  currency: 'GC' | 'SC';
-  gameType: 'slots' | 'table-games' | 'mini-games' | 'sportsbook' | 'bingo' | 'overall';
+  currency: "GC" | "SC";
+  gameType:
+    | "slots"
+    | "table-games"
+    | "mini-games"
+    | "sportsbook"
+    | "bingo"
+    | "overall";
   specificGame?: string;
   rank: number;
   winAmount: number;
@@ -31,12 +37,12 @@ export interface LeaderboardCategory {
   description: string;
   icon: string;
   gameType: string;
-  currency: 'GC' | 'SC' | 'both';
+  currency: "GC" | "SC" | "both";
   prize?: {
     first: number;
     second: number;
     third: number;
-    currency: 'GC' | 'SC';
+    currency: "GC" | "SC";
   };
 }
 
@@ -47,10 +53,10 @@ export interface Achievement {
   icon: string;
   requirement: number;
   category: string;
-  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  rarity: "common" | "rare" | "epic" | "legendary";
   reward: {
     amount: number;
-    currency: 'GC' | 'SC';
+    currency: "GC" | "SC";
   };
 }
 
@@ -66,7 +72,7 @@ export interface UserStats {
   currentWinStreak: number;
   biggestWin: {
     amount: number;
-    currency: 'GC' | 'SC';
+    currency: "GC" | "SC";
     game: string;
     date: Date;
   };

@@ -1,11 +1,11 @@
 export interface SportEvent {
   id: string;
-  sport: 'NFL' | 'NBA' | 'MLB' | 'NHL' | 'UFC' | 'MLS' | 'NCAA' | 'PGA';
+  sport: "NFL" | "NBA" | "MLB" | "NHL" | "UFC" | "MLS" | "NCAA" | "PGA";
   league: string;
   homeTeam: Team;
   awayTeam: Team;
   startTime: Date;
-  status: 'upcoming' | 'live' | 'finished' | 'postponed';
+  status: "upcoming" | "live" | "finished" | "postponed";
   quarter?: string;
   timeRemaining?: string;
   homeScore?: number;
@@ -65,13 +65,13 @@ export interface Bet {
   userId: string;
   username: string;
   eventId: string;
-  betType: 'moneyline' | 'spread' | 'total' | 'prop';
+  betType: "moneyline" | "spread" | "total" | "prop";
   selection: string;
   odds: number;
   stake: number;
-  currency: 'GC' | 'SC';
+  currency: "GC" | "SC";
   potentialWin: number;
-  status: 'pending' | 'won' | 'lost' | 'void' | 'cashed-out';
+  status: "pending" | "won" | "lost" | "void" | "cashed-out";
   placedAt: Date;
   settledAt?: Date;
   cashOutValue?: number;
@@ -81,14 +81,14 @@ export interface BetSlip {
   bets: BetSlipItem[];
   totalStake: number;
   totalPotentialWin: number;
-  currency: 'GC' | 'SC';
-  betType: 'single' | 'parlay' | 'system';
+  currency: "GC" | "SC";
+  betType: "single" | "parlay" | "system";
 }
 
 export interface BetSlipItem {
   eventId: string;
   event: SportEvent;
-  betType: 'moneyline' | 'spread' | 'total' | 'prop';
+  betType: "moneyline" | "spread" | "total" | "prop";
   selection: string;
   odds: number;
   line?: number;
@@ -108,7 +108,13 @@ export interface PlayerProp {
   eventId: string;
   playerId: string;
   playerName: string;
-  propType: 'points' | 'rebounds' | 'assists' | 'yards' | 'touchdowns' | 'strikeouts';
+  propType:
+    | "points"
+    | "rebounds"
+    | "assists"
+    | "yards"
+    | "touchdowns"
+    | "strikeouts";
   line: number;
   overOdds: number;
   underOdds: number;
@@ -141,7 +147,7 @@ export interface SportsbookStats {
   favoriteSport: string;
   biggestWin: {
     amount: number;
-    currency: 'GC' | 'SC';
+    currency: "GC" | "SC";
     event: string;
     odds: number;
     date: Date;

@@ -13,25 +13,30 @@ export interface UserProfile {
     zipCode: string;
     country: string;
   };
-  kycStatus: 'pending' | 'approved' | 'rejected' | 'not_submitted';
+  kycStatus: "pending" | "approved" | "rejected" | "not_submitted";
   kycDocuments: KYCDocument[];
-  accountVerificationLevel: 'basic' | 'verified' | 'premium';
+  accountVerificationLevel: "basic" | "verified" | "premium";
   preferences: UserPreferences;
   createdAt: Date;
   updatedAt: Date;
   lastLogin: Date;
   isActive: boolean;
-  vipLevel: 'none' | 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
+  vipLevel: "none" | "bronze" | "silver" | "gold" | "platinum" | "diamond";
   referralCode: string;
   referredBy?: string;
 }
 
 export interface KYCDocument {
   id: string;
-  type: 'drivers_license' | 'passport' | 'state_id' | 'utility_bill' | 'bank_statement';
+  type:
+    | "drivers_license"
+    | "passport"
+    | "state_id"
+    | "utility_bill"
+    | "bank_statement";
   fileName: string;
   fileUrl: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: "pending" | "approved" | "rejected";
   uploadedAt: Date;
   reviewedAt?: Date;
   reviewedBy?: string;
@@ -45,7 +50,7 @@ export interface UserPreferences {
   marketingEmails: boolean;
   language: string;
   timezone: string;
-  currency: 'USD' | 'CAD' | 'EUR' | 'GBP';
+  currency: "USD" | "CAD" | "EUR" | "GBP";
   autoPlaySlots: boolean;
   soundEnabled: boolean;
   animationsEnabled: boolean;
@@ -54,11 +59,19 @@ export interface UserPreferences {
 export interface TransactionHistory {
   id: string;
   userId: string;
-  type: 'deposit' | 'withdrawal' | 'purchase' | 'win' | 'bet' | 'bonus' | 'refund' | 'redemption';
+  type:
+    | "deposit"
+    | "withdrawal"
+    | "purchase"
+    | "win"
+    | "bet"
+    | "bonus"
+    | "refund"
+    | "redemption";
   amount: number;
-  currency: 'GC' | 'SC' | 'USD';
+  currency: "GC" | "SC" | "USD";
   description: string;
-  status: 'pending' | 'completed' | 'failed' | 'cancelled';
+  status: "pending" | "completed" | "failed" | "cancelled";
   createdAt: Date;
   completedAt?: Date;
   reference?: string;
@@ -72,15 +85,15 @@ export interface TransactionHistory {
 export interface GameHistoryEntry {
   id: string;
   userId: string;
-  gameType: 'slot' | 'table' | 'bingo' | 'sportsbook' | 'mini_game';
+  gameType: "slot" | "table" | "bingo" | "sportsbook" | "mini_game";
   gameId: string;
   gameName: string;
   provider?: string;
   betAmount: number;
   winAmount: number;
-  currency: 'GC' | 'SC';
+  currency: "GC" | "SC";
   duration: number; // in seconds
-  result: 'win' | 'loss' | 'bonus';
+  result: "win" | "loss" | "bonus";
   multiplier?: number;
   features?: string[]; // bonus features triggered
   playedAt: Date;
@@ -93,9 +106,16 @@ export interface RedemptionRequest {
   username: string;
   amount: number; // SC amount
   cashValue: number; // USD equivalent (1 SC = $1)
-  method: 'cashapp' | 'paypal' | 'bank_transfer' | 'check';
+  method: "cashapp" | "paypal" | "bank_transfer" | "check";
   accountDetails: RedemptionAccountDetails;
-  status: 'pending' | 'staff_review' | 'admin_review' | 'approved' | 'denied' | 'processed' | 'paid';
+  status:
+    | "pending"
+    | "staff_review"
+    | "admin_review"
+    | "approved"
+    | "denied"
+    | "processed"
+    | "paid";
   requestedAt: Date;
   reviewedAt?: Date;
   processedAt?: Date;
@@ -121,7 +141,7 @@ export interface RedemptionAccountDetails {
     routingNumber: string;
     bankName: string;
     accountHolderName: string;
-    accountType: 'checking' | 'savings';
+    accountType: "checking" | "savings";
   };
   check?: {
     fullName: string;
@@ -162,7 +182,7 @@ export interface UserStats {
   totalWon: number;
   biggestWin: {
     amount: number;
-    currency: 'GC' | 'SC';
+    currency: "GC" | "SC";
     gameName: string;
     date: Date;
   };
@@ -200,7 +220,7 @@ export interface UserSession {
   };
   ipAddress: string;
   userAgent: string;
-  deviceType: 'desktop' | 'mobile' | 'tablet';
+  deviceType: "desktop" | "mobile" | "tablet";
   isActive: boolean;
 }
 
@@ -210,17 +230,17 @@ export interface UserAchievement {
   achievementId: string;
   achievementName: string;
   achievementDescription: string;
-  achievementType: 'games' | 'wins' | 'loyalty' | 'special';
+  achievementType: "games" | "wins" | "loyalty" | "special";
   earnedAt: Date;
   rewardAmount?: number;
-  rewardCurrency?: 'GC' | 'SC';
+  rewardCurrency?: "GC" | "SC";
   badgeIcon?: string;
 }
 
 export interface UserNotification {
   id: string;
   userId: string;
-  type: 'bonus' | 'win' | 'redemption' | 'kyc' | 'promotion' | 'system';
+  type: "bonus" | "win" | "redemption" | "kyc" | "promotion" | "system";
   title: string;
   message: string;
   isRead: boolean;

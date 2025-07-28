@@ -1,27 +1,48 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Textarea } from '../components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Switch } from '../components/ui/switch';
-import { useAuth } from '../components/AuthContext';
-import { AccessDeniedModal } from '../components/AccessDeniedModal';
-import { GoldCoinPackage, StoreSettings, AdminLog, RefundRequest } from '@shared/storeTypes';
-import { RedemptionRequest } from '@shared/userTypes';
-import { 
-  Settings, 
-  Package, 
-  DollarSign, 
-  Users, 
-  FileText, 
-  Shield, 
-  CheckCircle, 
-  XCircle, 
-  Clock, 
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Badge } from "../components/ui/badge";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Textarea } from "../components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+import { Switch } from "../components/ui/switch";
+import { useAuth } from "../components/AuthContext";
+import { AccessDeniedModal } from "../components/AccessDeniedModal";
+import {
+  GoldCoinPackage,
+  StoreSettings,
+  AdminLog,
+  RefundRequest,
+} from "@shared/storeTypes";
+import { RedemptionRequest } from "@shared/userTypes";
+import {
+  Settings,
+  Package,
+  DollarSign,
+  Users,
+  FileText,
+  Shield,
+  CheckCircle,
+  XCircle,
+  Clock,
   AlertTriangle,
   Plus,
   Edit,
@@ -38,42 +59,48 @@ import {
   Activity,
   Zap,
   MessageSquare,
-  Bot
-} from 'lucide-react';
+  Bot,
+} from "lucide-react";
 
 export function AdminPanel() {
   const { user } = useAuth();
   const [showAccessDenied, setShowAccessDenied] = useState(false);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState("overview");
   const [packages, setPackages] = useState<GoldCoinPackage[]>([]);
-  const [storeSettings, setStoreSettings] = useState<StoreSettings | null>(null);
+  const [storeSettings, setStoreSettings] = useState<StoreSettings | null>(
+    null,
+  );
   const [adminLogs, setAdminLogs] = useState<AdminLog[]>([]);
-  const [redemptionRequests, setRedemptionRequests] = useState<RedemptionRequest[]>([]);
+  const [redemptionRequests, setRedemptionRequests] = useState<
+    RedemptionRequest[]
+  >([]);
   const [refundRequests, setRefundRequests] = useState<RefundRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [editingPackage, setEditingPackage] = useState<GoldCoinPackage | null>(null);
+  const [editingPackage, setEditingPackage] = useState<GoldCoinPackage | null>(
+    null,
+  );
   const [showNewPackageForm, setShowNewPackageForm] = useState(false);
   const [newPackage, setNewPackage] = useState({
-    name: '',
-    description: '',
+    name: "",
+    description: "",
     goldCoins: 0,
     bonusSweepsCoins: 0,
     price: 0,
     originalPrice: 0,
-    image: '',
+    image: "",
     popular: false,
     bestValue: false,
-    features: [''],
-    isActive: true
+    features: [""],
+    isActive: true,
   });
   const [paymentStats, setPaymentStats] = useState<any>(null);
 
   useEffect(() => {
-    if (!user || user.role !== 'admin') {
+    if (!user || user.role !== "admin") {
       setShowAccessDenied(true);
       return;
     }
-    
+
     fetchAdminData();
   }, [user]);
 
@@ -81,25 +108,32 @@ export function AdminPanel() {
     if (!user) return;
 
     try {
-      const [packagesRes, settingsRes, logsRes, redemptionsRes, refundsRes, statsRes] = await Promise.all([
-        fetch('/api/store/packages', {
-          headers: { 'adminId': user.id, 'adminUsername': user.username }
+      const [
+        packagesRes,
+        settingsRes,
+        logsRes,
+        redemptionsRes,
+        refundsRes,
+        statsRes,
+      ] = await Promise.all([
+        fetch("/api/store/packages", {
+          headers: { adminId: user.id, adminUsername: user.username },
         }),
-        fetch('/api/store/settings', {
-          headers: { 'adminId': user.id, 'adminUsername': user.username }
+        fetch("/api/store/settings", {
+          headers: { adminId: user.id, adminUsername: user.username },
         }),
-        fetch('/api/store/admin-logs', {
-          headers: { 'adminId': user.id, 'adminUsername': user.username }
+        fetch("/api/store/admin-logs", {
+          headers: { adminId: user.id, adminUsername: user.username },
         }),
-        fetch('/api/users/redemptions/all', {
-          headers: { 'adminId': user.id, 'adminUsername': user.username }
+        fetch("/api/users/redemptions/all", {
+          headers: { adminId: user.id, adminUsername: user.username },
         }),
-        fetch('/api/store/refund-requests', {
-          headers: { 'adminId': user.id, 'adminUsername': user.username }
+        fetch("/api/store/refund-requests", {
+          headers: { adminId: user.id, adminUsername: user.username },
         }),
-        fetch('/api/store/payment-stats', {
-          headers: { 'adminId': user.id, 'adminUsername': user.username }
-        })
+        fetch("/api/store/payment-stats", {
+          headers: { adminId: user.id, adminUsername: user.username },
+        }),
       ]);
 
       if (packagesRes.ok) setPackages(await packagesRes.json());
@@ -109,7 +143,7 @@ export function AdminPanel() {
       if (refundsRes.ok) setRefundRequests(await refundsRes.json());
       if (statsRes.ok) setPaymentStats(await statsRes.json());
     } catch (error) {
-      console.error('Error fetching admin data:', error);
+      console.error("Error fetching admin data:", error);
     } finally {
       setIsLoading(false);
     }
@@ -117,158 +151,183 @@ export function AdminPanel() {
 
   const handlePackageCreate = async () => {
     try {
-      const response = await fetch('/api/store/packages', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'adminId': user!.id, 
-          'adminUsername': user!.username 
+      const response = await fetch("/api/store/packages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          adminId: user!.id,
+          adminUsername: user!.username,
         },
-        body: JSON.stringify(newPackage)
+        body: JSON.stringify(newPackage),
       });
 
       if (response.ok) {
         setShowNewPackageForm(false);
         setNewPackage({
-          name: '',
-          description: '',
+          name: "",
+          description: "",
           goldCoins: 0,
           bonusSweepsCoins: 0,
           price: 0,
           originalPrice: 0,
-          image: '',
+          image: "",
           popular: false,
           bestValue: false,
-          features: [''],
-          isActive: true
+          features: [""],
+          isActive: true,
         });
         fetchAdminData();
-        alert('Package created successfully!');
+        alert("Package created successfully!");
       }
     } catch (error) {
-      console.error('Error creating package:', error);
-      alert('Failed to create package');
+      console.error("Error creating package:", error);
+      alert("Failed to create package");
     }
   };
 
-  const handlePackageUpdate = async (packageId: string, updates: Partial<GoldCoinPackage>) => {
+  const handlePackageUpdate = async (
+    packageId: string,
+    updates: Partial<GoldCoinPackage>,
+  ) => {
     try {
       const response = await fetch(`/api/store/packages/${packageId}`, {
-        method: 'PUT',
-        headers: { 
-          'Content-Type': 'application/json',
-          'adminId': user!.id, 
-          'adminUsername': user!.username 
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          adminId: user!.id,
+          adminUsername: user!.username,
         },
-        body: JSON.stringify(updates)
+        body: JSON.stringify(updates),
       });
 
       if (response.ok) {
         fetchAdminData();
         setEditingPackage(null);
-        alert('Package updated successfully!');
+        alert("Package updated successfully!");
       }
     } catch (error) {
-      console.error('Error updating package:', error);
-      alert('Failed to update package');
+      console.error("Error updating package:", error);
+      alert("Failed to update package");
     }
   };
 
   const handlePackageDelete = async (packageId: string) => {
-    if (!confirm('Are you sure you want to delete this package?')) return;
+    if (!confirm("Are you sure you want to delete this package?")) return;
 
     try {
       const response = await fetch(`/api/store/packages/${packageId}`, {
-        method: 'DELETE',
-        headers: { 
-          'adminId': user!.id, 
-          'adminUsername': user!.username 
-        }
+        method: "DELETE",
+        headers: {
+          adminId: user!.id,
+          adminUsername: user!.username,
+        },
       });
 
       if (response.ok) {
         fetchAdminData();
-        alert('Package deleted successfully!');
+        alert("Package deleted successfully!");
       }
     } catch (error) {
-      console.error('Error deleting package:', error);
-      alert('Failed to delete package');
+      console.error("Error deleting package:", error);
+      alert("Failed to delete package");
     }
   };
 
-  const handleRedemptionReview = async (requestId: string, status: 'approved' | 'denied', notes: string) => {
+  const handleRedemptionReview = async (
+    requestId: string,
+    status: "approved" | "denied",
+    notes: string,
+  ) => {
     try {
-      const response = await fetch(`/api/users/redemptions/${requestId}/review`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'adminId': user!.id, 
-          'adminUsername': user!.username 
+      const response = await fetch(
+        `/api/users/redemptions/${requestId}/review`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            adminId: user!.id,
+            adminUsername: user!.username,
+          },
+          body: JSON.stringify({ status, reviewNotes: notes }),
         },
-        body: JSON.stringify({ status, reviewNotes: notes })
-      });
+      );
 
       if (response.ok) {
         fetchAdminData();
         alert(`Redemption request ${status}!`);
       }
     } catch (error) {
-      console.error('Error reviewing redemption:', error);
-      alert('Failed to review redemption request');
+      console.error("Error reviewing redemption:", error);
+      alert("Failed to review redemption request");
     }
   };
 
-  const handleRefundReview = async (refundId: string, status: 'approved' | 'denied', notes: string) => {
+  const handleRefundReview = async (
+    refundId: string,
+    status: "approved" | "denied",
+    notes: string,
+  ) => {
     try {
-      const response = await fetch(`/api/store/refund-requests/${refundId}/process`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'adminId': user!.id, 
-          'adminUsername': user!.username 
+      const response = await fetch(
+        `/api/store/refund-requests/${refundId}/process`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            adminId: user!.id,
+            adminUsername: user!.username,
+          },
+          body: JSON.stringify({ status, reviewNotes: notes }),
         },
-        body: JSON.stringify({ status, reviewNotes: notes })
-      });
+      );
 
       if (response.ok) {
         fetchAdminData();
         alert(`Refund request ${status}!`);
       }
     } catch (error) {
-      console.error('Error processing refund:', error);
-      alert('Failed to process refund request');
+      console.error("Error processing refund:", error);
+      alert("Failed to process refund request");
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed':
-      case 'approved':
-      case 'paid': return 'bg-green-600';
-      case 'pending':
-      case 'staff_review':
-      case 'admin_review': return 'bg-yellow-600';
-      case 'denied':
-      case 'failed': return 'bg-red-600';
-      default: return 'bg-gray-600';
+      case "completed":
+      case "approved":
+      case "paid":
+        return "bg-green-600";
+      case "pending":
+      case "staff_review":
+      case "admin_review":
+        return "bg-yellow-600";
+      case "denied":
+      case "failed":
+        return "bg-red-600";
+      default:
+        return "bg-gray-600";
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'completed':
-      case 'approved':
-      case 'paid': return <CheckCircle className="w-4 h-4" />;
-      case 'pending':
-      case 'staff_review':
-      case 'admin_review': return <Clock className="w-4 h-4" />;
-      case 'denied':
-      case 'failed': return <XCircle className="w-4 h-4" />;
-      default: return <AlertTriangle className="w-4 h-4" />;
+      case "completed":
+      case "approved":
+      case "paid":
+        return <CheckCircle className="w-4 h-4" />;
+      case "pending":
+      case "staff_review":
+      case "admin_review":
+        return <Clock className="w-4 h-4" />;
+      case "denied":
+      case "failed":
+        return <XCircle className="w-4 h-4" />;
+      default:
+        return <AlertTriangle className="w-4 h-4" />;
     }
   };
 
-  if (!user || user.role !== 'admin') {
+  if (!user || user.role !== "admin") {
     return (
       <AccessDeniedModal
         isOpen={showAccessDenied}
@@ -294,7 +353,9 @@ export function AdminPanel() {
             <h1 className="text-4xl font-bold text-white mb-2">
               CoinKrazy Admin Panel 👑
             </h1>
-            <p className="text-purple-200">Manage store, users, and platform settings</p>
+            <p className="text-purple-200">
+              Manage store, users, and platform settings
+            </p>
           </div>
           <div className="flex items-center gap-2 text-white">
             <Crown className="w-5 h-5 text-yellow-400" />
@@ -314,7 +375,7 @@ export function AdminPanel() {
                 <div className="text-sm text-gray-400">Total Revenue</div>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-4 text-center">
                 <TrendingUp className="w-8 h-8 text-blue-500 mx-auto mb-2" />
@@ -324,7 +385,7 @@ export function AdminPanel() {
                 <div className="text-sm text-gray-400">Today's Revenue</div>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-4 text-center">
                 <Activity className="w-8 h-8 text-purple-500 mx-auto mb-2" />
@@ -334,7 +395,7 @@ export function AdminPanel() {
                 <div className="text-sm text-gray-400">Total Transactions</div>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-4 text-center">
                 <Target className="w-8 h-8 text-yellow-500 mx-auto mb-2" />
@@ -371,19 +432,28 @@ export function AdminPanel() {
                   <div className="flex justify-between items-center">
                     <span className="text-gray-400">Pending Redemptions</span>
                     <Badge className="bg-yellow-600">
-                      {redemptionRequests.filter(r => r.status === 'pending' || r.status === 'staff_review').length}
+                      {
+                        redemptionRequests.filter(
+                          (r) =>
+                            r.status === "pending" ||
+                            r.status === "staff_review",
+                        ).length
+                      }
                     </Badge>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-400">Pending Refunds</span>
                     <Badge className="bg-yellow-600">
-                      {refundRequests.filter(r => r.status === 'pending').length}
+                      {
+                        refundRequests.filter((r) => r.status === "pending")
+                          .length
+                      }
                     </Badge>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-400">Active Packages</span>
                     <Badge className="bg-green-600">
-                      {packages.filter(p => p.isActive).length}
+                      {packages.filter((p) => p.isActive).length}
                     </Badge>
                   </div>
                 </CardContent>
@@ -400,15 +470,24 @@ export function AdminPanel() {
                 <CardContent>
                   {paymentStats?.popularPackages && (
                     <div className="space-y-3">
-                      {paymentStats.popularPackages.slice(0, 5).map((pkg: any, index: number) => (
-                        <div key={pkg.packageId} className="flex justify-between items-center">
-                          <span className="text-gray-400">{pkg.name}</span>
-                          <div className="text-right">
-                            <div className="text-white font-medium">{pkg.count} sales</div>
-                            <div className="text-sm text-gray-400">${pkg.revenue.toFixed(2)}</div>
+                      {paymentStats.popularPackages
+                        .slice(0, 5)
+                        .map((pkg: any, index: number) => (
+                          <div
+                            key={pkg.packageId}
+                            className="flex justify-between items-center"
+                          >
+                            <span className="text-gray-400">{pkg.name}</span>
+                            <div className="text-right">
+                              <div className="text-white font-medium">
+                                {pkg.count} sales
+                              </div>
+                              <div className="text-sm text-gray-400">
+                                ${pkg.revenue.toFixed(2)}
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
                     </div>
                   )}
                 </CardContent>
@@ -428,27 +507,33 @@ export function AdminPanel() {
                   <div className="p-4 bg-gray-700 rounded-lg text-center">
                     <div className="text-2xl mb-2">🎰</div>
                     <h3 className="text-white font-medium">SlotAI Manager</h3>
-                    <p className="text-sm text-gray-400">Manages slot games and RTP</p>
+                    <p className="text-sm text-gray-400">
+                      Manages slot games and RTP
+                    </p>
                     <Button size="sm" className="mt-2" variant="outline">
                       <MessageSquare className="w-4 h-4 mr-2" />
                       Chat
                     </Button>
                   </div>
-                  
+
                   <div className="p-4 bg-gray-700 rounded-lg text-center">
                     <div className="text-2xl mb-2">🏆</div>
                     <h3 className="text-white font-medium">SportsAI Manager</h3>
-                    <p className="text-sm text-gray-400">Handles sportsbook operations</p>
+                    <p className="text-sm text-gray-400">
+                      Handles sportsbook operations
+                    </p>
                     <Button size="sm" className="mt-2" variant="outline">
                       <MessageSquare className="w-4 h-4 mr-2" />
                       Chat
                     </Button>
                   </div>
-                  
+
                   <div className="p-4 bg-gray-700 rounded-lg text-center">
                     <div className="text-2xl mb-2">💰</div>
                     <h3 className="text-white font-medium">StoreAI Manager</h3>
-                    <p className="text-sm text-gray-400">Oversees coin store and payments</p>
+                    <p className="text-sm text-gray-400">
+                      Oversees coin store and payments
+                    </p>
                     <Button size="sm" className="mt-2" variant="outline">
                       <MessageSquare className="w-4 h-4 mr-2" />
                       Chat
@@ -461,7 +546,9 @@ export function AdminPanel() {
 
           <TabsContent value="packages" className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-white">Package Management</h2>
+              <h2 className="text-2xl font-bold text-white">
+                Package Management
+              </h2>
               <Button
                 onClick={() => setShowNewPackageForm(true)}
                 className="bg-green-600 hover:bg-green-700"
@@ -477,8 +564,12 @@ export function AdminPanel() {
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div>
-                        <CardTitle className="text-white text-lg">{pkg.name}</CardTitle>
-                        <p className="text-gray-400 text-sm">{pkg.description}</p>
+                        <CardTitle className="text-white text-lg">
+                          {pkg.name}
+                        </CardTitle>
+                        <p className="text-gray-400 text-sm">
+                          {pkg.description}
+                        </p>
                       </div>
                       <div className="flex gap-2">
                         <Button
@@ -507,16 +598,24 @@ export function AdminPanel() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400">Gold Coins:</span>
-                        <span className="text-yellow-500">{pkg.goldCoins.toLocaleString()}</span>
+                        <span className="text-yellow-500">
+                          {pkg.goldCoins.toLocaleString()}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400">Bonus SC:</span>
-                        <span className="text-green-500">{pkg.bonusSweepsCoins}</span>
+                        <span className="text-green-500">
+                          {pkg.bonusSweepsCoins}
+                        </span>
                       </div>
                       <div className="flex justify-between items-center mt-4">
                         <span className="text-gray-400">Status:</span>
-                        <Badge className={pkg.isActive ? 'bg-green-600' : 'bg-red-600'}>
-                          {pkg.isActive ? 'Active' : 'Inactive'}
+                        <Badge
+                          className={
+                            pkg.isActive ? "bg-green-600" : "bg-red-600"
+                          }
+                        >
+                          {pkg.isActive ? "Active" : "Inactive"}
                         </Badge>
                       </div>
                       {(pkg.popular || pkg.bestValue) && (
@@ -537,38 +636,57 @@ export function AdminPanel() {
           </TabsContent>
 
           <TabsContent value="redemptions" className="space-y-6">
-            <h2 className="text-2xl font-bold text-white">Prize Redemption Requests</h2>
-            
+            <h2 className="text-2xl font-bold text-white">
+              Prize Redemption Requests
+            </h2>
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-6">
                 {redemptionRequests.length > 0 ? (
                   <div className="space-y-4">
                     {redemptionRequests.map((request) => (
-                      <div key={request.id} className="p-4 bg-gray-700 rounded-lg">
+                      <div
+                        key={request.id}
+                        className="p-4 bg-gray-700 rounded-lg"
+                      >
                         <div className="flex justify-between items-start mb-4">
                           <div>
-                            <h3 className="text-white font-medium">@{request.username}</h3>
+                            <h3 className="text-white font-medium">
+                              @{request.username}
+                            </h3>
                             <p className="text-gray-400 text-sm">
-                              ${request.cashValue} ({request.amount} SC) via {request.method}
+                              ${request.cashValue} ({request.amount} SC) via{" "}
+                              {request.method}
                             </p>
                             <p className="text-gray-500 text-xs">
-                              Requested: {new Date(request.requestedAt).toLocaleDateString()}
+                              Requested:{" "}
+                              {new Date(
+                                request.requestedAt,
+                              ).toLocaleDateString()}
                             </p>
                           </div>
                           <Badge className={getStatusColor(request.status)}>
                             {getStatusIcon(request.status)}
-                            <span className="ml-2">{request.status.replace('_', ' ')}</span>
+                            <span className="ml-2">
+                              {request.status.replace("_", " ")}
+                            </span>
                           </Badge>
                         </div>
-                        
-                        {request.status === 'pending' || request.status === 'staff_review' ? (
+
+                        {request.status === "pending" ||
+                        request.status === "staff_review" ? (
                           <div className="flex gap-2">
                             <Button
                               size="sm"
                               className="bg-green-600 hover:bg-green-700"
                               onClick={() => {
-                                const notes = prompt('Review notes (optional):') || '';
-                                handleRedemptionReview(request.id, 'approved', notes);
+                                const notes =
+                                  prompt("Review notes (optional):") || "";
+                                handleRedemptionReview(
+                                  request.id,
+                                  "approved",
+                                  notes,
+                                );
                               }}
                             >
                               <CheckCircle className="w-4 h-4 mr-2" />
@@ -578,18 +696,27 @@ export function AdminPanel() {
                               size="sm"
                               className="bg-red-600 hover:bg-red-700"
                               onClick={() => {
-                                const notes = prompt('Denial reason (required):');
-                                if (notes) handleRedemptionReview(request.id, 'denied', notes);
+                                const notes = prompt(
+                                  "Denial reason (required):",
+                                );
+                                if (notes)
+                                  handleRedemptionReview(
+                                    request.id,
+                                    "denied",
+                                    notes,
+                                  );
                               }}
                             >
                               <XCircle className="w-4 h-4 mr-2" />
                               Deny
                             </Button>
                           </div>
-                        ) : request.denialReason && (
-                          <div className="text-sm text-red-400 mt-2">
-                            Denial reason: {request.denialReason}
-                          </div>
+                        ) : (
+                          request.denialReason && (
+                            <div className="text-sm text-red-400 mt-2">
+                              Denial reason: {request.denialReason}
+                            </div>
+                          )
                         )}
                       </div>
                     ))}
@@ -606,16 +733,21 @@ export function AdminPanel() {
 
           <TabsContent value="refunds" className="space-y-6">
             <h2 className="text-2xl font-bold text-white">Refund Requests</h2>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-6">
                 {refundRequests.length > 0 ? (
                   <div className="space-y-4">
                     {refundRequests.map((request) => (
-                      <div key={request.id} className="p-4 bg-gray-700 rounded-lg">
+                      <div
+                        key={request.id}
+                        className="p-4 bg-gray-700 rounded-lg"
+                      >
                         <div className="flex justify-between items-start mb-4">
                           <div>
-                            <h3 className="text-white font-medium">@{request.username}</h3>
+                            <h3 className="text-white font-medium">
+                              @{request.username}
+                            </h3>
                             <p className="text-gray-400 text-sm">
                               Refund: ${request.requestedAmount}
                             </p>
@@ -623,7 +755,10 @@ export function AdminPanel() {
                               Reason: {request.reason}
                             </p>
                             <p className="text-gray-500 text-xs">
-                              Requested: {new Date(request.requestedAt).toLocaleDateString()}
+                              Requested:{" "}
+                              {new Date(
+                                request.requestedAt,
+                              ).toLocaleDateString()}
                             </p>
                           </div>
                           <Badge className={getStatusColor(request.status)}>
@@ -631,15 +766,20 @@ export function AdminPanel() {
                             <span className="ml-2">{request.status}</span>
                           </Badge>
                         </div>
-                        
-                        {request.status === 'pending' && (
+
+                        {request.status === "pending" && (
                           <div className="flex gap-2">
                             <Button
                               size="sm"
                               className="bg-green-600 hover:bg-green-700"
                               onClick={() => {
-                                const notes = prompt('Review notes (optional):') || '';
-                                handleRefundReview(request.id, 'approved', notes);
+                                const notes =
+                                  prompt("Review notes (optional):") || "";
+                                handleRefundReview(
+                                  request.id,
+                                  "approved",
+                                  notes,
+                                );
                               }}
                             >
                               <CheckCircle className="w-4 h-4 mr-2" />
@@ -649,8 +789,15 @@ export function AdminPanel() {
                               size="sm"
                               className="bg-red-600 hover:bg-red-700"
                               onClick={() => {
-                                const notes = prompt('Denial reason (required):');
-                                if (notes) handleRefundReview(request.id, 'denied', notes);
+                                const notes = prompt(
+                                  "Denial reason (required):",
+                                );
+                                if (notes)
+                                  handleRefundReview(
+                                    request.id,
+                                    "denied",
+                                    notes,
+                                  );
                               }}
                             >
                               <XCircle className="w-4 h-4 mr-2" />
@@ -673,7 +820,7 @@ export function AdminPanel() {
 
           <TabsContent value="settings" className="space-y-6">
             <h2 className="text-2xl font-bold text-white">Store Settings</h2>
-            
+
             {storeSettings && (
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
@@ -695,28 +842,32 @@ export function AdminPanel() {
                         <Switch checked={storeSettings.cryptoEnabled} />
                       </div>
                     </div>
-                    
+
                     <div className="space-y-4">
                       <div>
-                        <Label className="text-white">Min Purchase Amount</Label>
-                        <Input 
-                          type="number" 
+                        <Label className="text-white">
+                          Min Purchase Amount
+                        </Label>
+                        <Input
+                          type="number"
                           value={storeSettings.minPurchaseAmount}
                           className="mt-1"
                         />
                       </div>
                       <div>
-                        <Label className="text-white">Max Purchase Amount</Label>
-                        <Input 
-                          type="number" 
+                        <Label className="text-white">
+                          Max Purchase Amount
+                        </Label>
+                        <Input
+                          type="number"
                           value={storeSettings.maxPurchaseAmount}
                           className="mt-1"
                         />
                       </div>
                       <div>
                         <Label className="text-white">Bonus Multiplier</Label>
-                        <Input 
-                          type="number" 
+                        <Input
+                          type="number"
                           step="0.1"
                           value={storeSettings.bonusMultiplier}
                           className="mt-1"
@@ -724,7 +875,7 @@ export function AdminPanel() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <Button className="bg-blue-600 hover:bg-blue-700">
                     Save Settings
                   </Button>
@@ -734,8 +885,10 @@ export function AdminPanel() {
           </TabsContent>
 
           <TabsContent value="logs" className="space-y-6">
-            <h2 className="text-2xl font-bold text-white">Admin Activity Logs</h2>
-            
+            <h2 className="text-2xl font-bold text-white">
+              Admin Activity Logs
+            </h2>
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-6">
                 {adminLogs.length > 0 ? (
@@ -744,8 +897,12 @@ export function AdminPanel() {
                       <div key={log.id} className="p-3 bg-gray-700 rounded">
                         <div className="flex justify-between items-start">
                           <div>
-                            <span className="text-white font-medium">@{log.adminUsername}</span>
-                            <span className="text-gray-400 ml-2">{log.description}</span>
+                            <span className="text-white font-medium">
+                              @{log.adminUsername}
+                            </span>
+                            <span className="text-gray-400 ml-2">
+                              {log.description}
+                            </span>
                           </div>
                           <span className="text-gray-500 text-xs">
                             {new Date(log.timestamp).toLocaleString()}
@@ -772,7 +929,11 @@ export function AdminPanel() {
               <CardHeader>
                 <CardTitle className="text-white flex justify-between items-center">
                   Create New Package
-                  <Button variant="ghost" size="sm" onClick={() => setShowNewPackageForm(false)}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowNewPackageForm(false)}
+                  >
                     ✕
                   </Button>
                 </CardTitle>
@@ -783,7 +944,12 @@ export function AdminPanel() {
                     <Label className="text-white">Package Name</Label>
                     <Input
                       value={newPackage.name}
-                      onChange={(e) => setNewPackage(prev => ({ ...prev, name: e.target.value }))}
+                      onChange={(e) =>
+                        setNewPackage((prev) => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
+                      }
                     />
                   </div>
                   <div>
@@ -792,7 +958,12 @@ export function AdminPanel() {
                       type="number"
                       step="0.01"
                       value={newPackage.price}
-                      onChange={(e) => setNewPackage(prev => ({ ...prev, price: parseFloat(e.target.value) }))}
+                      onChange={(e) =>
+                        setNewPackage((prev) => ({
+                          ...prev,
+                          price: parseFloat(e.target.value),
+                        }))
+                      }
                     />
                   </div>
                 </div>
@@ -801,7 +972,12 @@ export function AdminPanel() {
                   <Label className="text-white">Description</Label>
                   <Textarea
                     value={newPackage.description}
-                    onChange={(e) => setNewPackage(prev => ({ ...prev, description: e.target.value }))}
+                    onChange={(e) =>
+                      setNewPackage((prev) => ({
+                        ...prev,
+                        description: e.target.value,
+                      }))
+                    }
                   />
                 </div>
 
@@ -811,7 +987,12 @@ export function AdminPanel() {
                     <Input
                       type="number"
                       value={newPackage.goldCoins}
-                      onChange={(e) => setNewPackage(prev => ({ ...prev, goldCoins: parseInt(e.target.value) }))}
+                      onChange={(e) =>
+                        setNewPackage((prev) => ({
+                          ...prev,
+                          goldCoins: parseInt(e.target.value),
+                        }))
+                      }
                     />
                   </div>
                   <div>
@@ -819,7 +1000,12 @@ export function AdminPanel() {
                     <Input
                       type="number"
                       value={newPackage.bonusSweepsCoins}
-                      onChange={(e) => setNewPackage(prev => ({ ...prev, bonusSweepsCoins: parseInt(e.target.value) }))}
+                      onChange={(e) =>
+                        setNewPackage((prev) => ({
+                          ...prev,
+                          bonusSweepsCoins: parseInt(e.target.value),
+                        }))
+                      }
                     />
                   </div>
                 </div>
@@ -828,21 +1014,33 @@ export function AdminPanel() {
                   <div className="flex items-center space-x-2">
                     <Switch
                       checked={newPackage.popular}
-                      onCheckedChange={(checked) => setNewPackage(prev => ({ ...prev, popular: checked }))}
+                      onCheckedChange={(checked) =>
+                        setNewPackage((prev) => ({ ...prev, popular: checked }))
+                      }
                     />
                     <Label className="text-white">Popular</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Switch
                       checked={newPackage.bestValue}
-                      onCheckedChange={(checked) => setNewPackage(prev => ({ ...prev, bestValue: checked }))}
+                      onCheckedChange={(checked) =>
+                        setNewPackage((prev) => ({
+                          ...prev,
+                          bestValue: checked,
+                        }))
+                      }
                     />
                     <Label className="text-white">Best Value</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Switch
                       checked={newPackage.isActive}
-                      onCheckedChange={(checked) => setNewPackage(prev => ({ ...prev, isActive: checked }))}
+                      onCheckedChange={(checked) =>
+                        setNewPackage((prev) => ({
+                          ...prev,
+                          isActive: checked,
+                        }))
+                      }
                     />
                     <Label className="text-white">Active</Label>
                   </div>

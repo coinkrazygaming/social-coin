@@ -1,11 +1,17 @@
-import { useState } from 'react';
-import { Card, CardContent } from './ui/card';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
-import { 
-  Star, 
-  TrendingUp, 
+import { useState } from "react";
+import { Card, CardContent } from "./ui/card";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
+import {
+  Star,
+  TrendingUp,
   Clock,
   Trophy,
   Coins,
@@ -13,29 +19,35 @@ import {
   Play,
   Zap,
   Crown,
-  Timer
-} from 'lucide-react';
-import { SlotGame } from '@shared/slotTypes';
-import { useAuth } from './AuthContext';
-import { AuthModal } from './AuthModal';
-import { AccessDeniedModal } from './AccessDeniedModal';
+  Timer,
+} from "lucide-react";
+import { SlotGame } from "@shared/slotTypes";
+import { useAuth } from "./AuthContext";
+import { AuthModal } from "./AuthModal";
+import { AccessDeniedModal } from "./AccessDeniedModal";
 
 interface SlotThumbnailProps {
   game: SlotGame;
-  onPlay: (gameId: string, currency: 'GC' | 'SC') => void;
-  size?: 'small' | 'medium' | 'large';
+  onPlay: (gameId: string, currency: "GC" | "SC") => void;
+  size?: "small" | "medium" | "large";
 }
 
-export function SlotThumbnail({ game, onPlay, size = 'medium' }: SlotThumbnailProps) {
+export function SlotThumbnail({
+  game,
+  onPlay,
+  size = "medium",
+}: SlotThumbnailProps) {
   const { user } = useAuth();
   const [showCurrencyDialog, setShowCurrencyDialog] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showAccessDenied, setShowAccessDenied] = useState(false);
-  const [selectedCurrency, setSelectedCurrency] = useState<'GC' | 'SC' | null>(null);
+  const [selectedCurrency, setSelectedCurrency] = useState<"GC" | "SC" | null>(
+    null,
+  );
 
-  const handlePlayClick = (currency: 'GC' | 'SC') => {
+  const handlePlayClick = (currency: "GC" | "SC") => {
     if (!user) {
-      if (currency === 'SC') {
+      if (currency === "SC") {
         setShowAccessDenied(true);
       } else {
         setShowAuthModal(true);
@@ -68,20 +80,38 @@ export function SlotThumbnail({ game, onPlay, size = 'medium' }: SlotThumbnailPr
 
   const getCardSize = () => {
     switch (size) {
-      case 'small': return 'w-48 h-80';
-      case 'large': return 'w-80 h-96';
-      default: return 'w-64 h-88';
+      case "small":
+        return "w-48 h-80";
+      case "large":
+        return "w-80 h-96";
+      default:
+        return "w-64 h-88";
     }
   };
 
   const getCategoryBadge = () => {
     switch (game.category) {
-      case 'featured':
-        return <Badge className="absolute top-2 left-2 bg-gold text-gold-foreground casino-glow"><Star className="h-3 w-3 mr-1" />Featured</Badge>;
-      case 'new':
-        return <Badge className="absolute top-2 left-2 bg-casino-green text-white"><Zap className="h-3 w-3 mr-1" />New</Badge>;
-      case 'progressive':
-        return <Badge className="absolute top-2 left-2 bg-sweep text-sweep-foreground sweep-glow"><Crown className="h-3 w-3 mr-1" />Progressive</Badge>;
+      case "featured":
+        return (
+          <Badge className="absolute top-2 left-2 bg-gold text-gold-foreground casino-glow">
+            <Star className="h-3 w-3 mr-1" />
+            Featured
+          </Badge>
+        );
+      case "new":
+        return (
+          <Badge className="absolute top-2 left-2 bg-casino-green text-white">
+            <Zap className="h-3 w-3 mr-1" />
+            New
+          </Badge>
+        );
+      case "progressive":
+        return (
+          <Badge className="absolute top-2 left-2 bg-sweep text-sweep-foreground sweep-glow">
+            <Crown className="h-3 w-3 mr-1" />
+            Progressive
+          </Badge>
+        );
       default:
         return null;
     }
@@ -89,7 +119,9 @@ export function SlotThumbnail({ game, onPlay, size = 'medium' }: SlotThumbnailPr
 
   return (
     <>
-      <Card className={`${getCardSize()} group hover:scale-105 transition-all duration-300 overflow-hidden relative`}>
+      <Card
+        className={`${getCardSize()} group hover:scale-105 transition-all duration-300 overflow-hidden relative`}
+      >
         {/* Thumbnail Image */}
         <div className="relative h-40 overflow-hidden">
           <img
@@ -97,10 +129,10 @@ export function SlotThumbnail({ game, onPlay, size = 'medium' }: SlotThumbnailPr
             alt={game.name}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
           />
-          
+
           {/* Category Badge */}
           {getCategoryBadge()}
-          
+
           {/* Stats Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <div className="absolute bottom-2 left-2 right-2 text-white">
@@ -133,11 +165,15 @@ export function SlotThumbnail({ game, onPlay, size = 'medium' }: SlotThumbnailPr
           <div className="space-y-2">
             <div className="flex justify-between items-center text-sm">
               <span className="text-muted-foreground">Live SC Earned:</span>
-              <span className="font-bold text-sweep">{game.liveSCEarned.toLocaleString()} SC</span>
+              <span className="font-bold text-sweep">
+                {game.liveSCEarned.toLocaleString()} SC
+              </span>
             </div>
             <div className="flex justify-between items-center text-sm">
               <span className="text-muted-foreground">Max Win:</span>
-              <span className="font-bold text-gold">{game.maxWin.toLocaleString()} SC</span>
+              <span className="font-bold text-gold">
+                {game.maxWin.toLocaleString()} SC
+              </span>
             </div>
           </div>
 
@@ -151,12 +187,14 @@ export function SlotThumbnail({ game, onPlay, size = 'medium' }: SlotThumbnailPr
                     {game.lastWinner.firstName} {game.lastWinner.lastInitial}.
                   </div>
                   <div className="text-muted-foreground">
-                    {game.lastWinner.amount.toLocaleString()} {game.lastWinner.currency} • {formatTime(game.lastWinner.timestamp)}
+                    {game.lastWinner.amount.toLocaleString()}{" "}
+                    {game.lastWinner.currency} •{" "}
+                    {formatTime(game.lastWinner.timestamp)}
                   </div>
                 </div>
               </div>
             )}
-            
+
             {game.biggestWin && (
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Biggest Win:</span>
@@ -165,7 +203,9 @@ export function SlotThumbnail({ game, onPlay, size = 'medium' }: SlotThumbnailPr
                     {game.biggestWin.firstName} {game.biggestWin.lastInitial}.
                   </div>
                   <div className="text-muted-foreground">
-                    {game.biggestWin.amount.toLocaleString()} {game.biggestWin.currency} • {formatTime(game.biggestWin.timestamp)}
+                    {game.biggestWin.amount.toLocaleString()}{" "}
+                    {game.biggestWin.currency} •{" "}
+                    {formatTime(game.biggestWin.timestamp)}
                   </div>
                 </div>
               </div>
@@ -174,19 +214,19 @@ export function SlotThumbnail({ game, onPlay, size = 'medium' }: SlotThumbnailPr
 
           {/* Play Buttons */}
           <div className="flex gap-2 pt-2">
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               className="flex-1 bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground hover:from-yellow-400 hover:to-gold"
-              onClick={() => handlePlayClick('GC')}
+              onClick={() => handlePlayClick("GC")}
             >
               <Coins className="h-3 w-3 mr-1" />
               Play GC
             </Button>
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               variant="outline"
               className="flex-1 border-sweep text-sweep hover:bg-sweep/10"
-              onClick={() => handlePlayClick('SC')}
+              onClick={() => handlePlayClick("SC")}
             >
               <Star className="h-3 w-3 mr-1" />
               Play SC
@@ -203,18 +243,26 @@ export function SlotThumbnail({ game, onPlay, size = 'medium' }: SlotThumbnailPr
               <span className="text-gold">CoinKrazy</span>.com
             </DialogTitle>
             <DialogDescription className="text-center text-lg">
-              You Selected to play <strong>{game.name}</strong> with{' '}
-              <span className={selectedCurrency === 'GC' ? 'text-gold font-bold' : 'text-sweep font-bold'}>
-                {selectedCurrency === 'GC' ? 'Gold Coins' : 'Sweeps Coins'}
+              You Selected to play <strong>{game.name}</strong> with{" "}
+              <span
+                className={
+                  selectedCurrency === "GC"
+                    ? "text-gold font-bold"
+                    : "text-sweep font-bold"
+                }
+              >
+                {selectedCurrency === "GC" ? "Gold Coins" : "Sweeps Coins"}
               </span>
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
-            {selectedCurrency === 'GC' ? (
+            {selectedCurrency === "GC" ? (
               <div className="space-y-4">
                 <div className="p-4 bg-gold/10 border border-gold/20 rounded-lg">
-                  <h4 className="font-semibold text-gold mb-2">Gold Coins Gameplay</h4>
+                  <h4 className="font-semibold text-gold mb-2">
+                    Gold Coins Gameplay
+                  </h4>
                   <ul className="text-sm space-y-1 text-muted-foreground">
                     <li>• Play with Gold Coins for entertainment</li>
                     <li>• Win additional Gold Coins</li>
@@ -224,18 +272,19 @@ export function SlotThumbnail({ game, onPlay, size = 'medium' }: SlotThumbnailPr
                 </div>
 
                 <div className="text-center text-sm text-muted-foreground">
-                  By continuing, you accept the Terms of Service of CoinKrazy.com
+                  By continuing, you accept the Terms of Service of
+                  CoinKrazy.com
                 </div>
 
                 <div className="flex gap-2">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="flex-1"
                     onClick={() => setShowCurrencyDialog(false)}
                   >
                     Cancel
                   </Button>
-                  <Button 
+                  <Button
                     className="flex-1 bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground hover:from-yellow-400 hover:to-gold"
                     onClick={handleConfirmPlay}
                   >
@@ -247,9 +296,13 @@ export function SlotThumbnail({ game, onPlay, size = 'medium' }: SlotThumbnailPr
             ) : (
               <div className="space-y-4">
                 <div className="p-4 bg-sweep/10 border border-sweep/20 rounded-lg">
-                  <h4 className="font-semibold text-sweep mb-2">Sweeps Coins Gameplay</h4>
+                  <h4 className="font-semibold text-sweep mb-2">
+                    Sweeps Coins Gameplay
+                  </h4>
                   <ul className="text-sm space-y-1 text-muted-foreground">
-                    <li>• Play with Sweeps Coins (1 SC = $1 redeemable value)</li>
+                    <li>
+                      • Play with Sweeps Coins (1 SC = $1 redeemable value)
+                    </li>
                     <li>• Win additional Sweeps Coins</li>
                     <li>• Cannot be purchased - only earned or won</li>
                     <li>• Redeemable for real prizes</li>
@@ -257,14 +310,14 @@ export function SlotThumbnail({ game, onPlay, size = 'medium' }: SlotThumbnailPr
                 </div>
 
                 <div className="flex gap-2">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="flex-1"
                     onClick={() => setShowCurrencyDialog(false)}
                   >
                     Cancel
                   </Button>
-                  <Button 
+                  <Button
                     className="flex-1 bg-gradient-to-r from-sweep to-purple-600 text-sweep-foreground hover:from-purple-600 hover:to-sweep"
                     onClick={handleConfirmPlay}
                   >

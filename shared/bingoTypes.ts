@@ -2,11 +2,11 @@ export interface BingoGame {
   id: string;
   name: string;
   description: string;
-  currency: 'GC' | 'SC';
+  currency: "GC" | "SC";
   ticketPrice: number;
   maxPlayers: number;
   currentPlayers: number;
-  status: 'waiting' | 'starting' | 'in-progress' | 'completed';
+  status: "waiting" | "starting" | "in-progress" | "completed";
   startTime: Date;
   duration: number; // in minutes
   timeRemaining: number; // in seconds
@@ -23,7 +23,7 @@ export interface BingoPattern {
   description: string;
   icon: string;
   winningPositions: number[][];
-  difficulty: 'easy' | 'medium' | 'hard';
+  difficulty: "easy" | "medium" | "hard";
 }
 
 export interface BingoCard {
@@ -40,7 +40,7 @@ export interface BingoCard {
 
 export interface BingoNumber {
   number: number;
-  letter: 'B' | 'I' | 'N' | 'G' | 'O';
+  letter: "B" | "I" | "N" | "G" | "O";
   called: boolean;
   calledTime?: Date;
 }
@@ -52,7 +52,7 @@ export interface BingoWinner {
   cardId: string;
   pattern: string;
   prize: number;
-  currency: 'GC' | 'SC';
+  currency: "GC" | "SC";
   timestamp: Date;
 }
 
@@ -60,7 +60,7 @@ export interface BingoRoom {
   id: string;
   name: string;
   description: string;
-  currency: 'GC' | 'SC';
+  currency: "GC" | "SC";
   maxCapacity: number;
   currentOccupancy: number;
   activeGames: BingoGame[];
@@ -75,7 +75,7 @@ export interface BingoSchedule {
   duration: number;
   pattern: BingoPattern;
   ticketPrice: number;
-  currency: 'GC' | 'SC';
+  currency: "GC" | "SC";
   maxPlayers: number;
   prizeStructure: {
     first: number;

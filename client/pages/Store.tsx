@@ -1,20 +1,50 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { useAuth } from '../components/AuthContext';
-import { AccessDeniedModal } from '../components/AccessDeniedModal';
-import { GoldCoinPackage, PurchaseTransaction, UserPurchaseHistory } from '@shared/storeTypes';
-import { ShoppingCart, Star, Gift, CreditCard, Smartphone, Crown, Shield, Zap, TrendingUp, DollarSign, Clock, Sparkles, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Badge } from "../components/ui/badge";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import { useAuth } from "../components/AuthContext";
+import { AccessDeniedModal } from "../components/AccessDeniedModal";
+import {
+  GoldCoinPackage,
+  PurchaseTransaction,
+  UserPurchaseHistory,
+} from "@shared/storeTypes";
+import {
+  ShoppingCart,
+  Star,
+  Gift,
+  CreditCard,
+  Smartphone,
+  Crown,
+  Shield,
+  Zap,
+  TrendingUp,
+  DollarSign,
+  Clock,
+  Sparkles,
+  CheckCircle,
+} from "lucide-react";
 
 export function Store() {
   const { user } = useAuth();
   const [showAccessDenied, setShowAccessDenied] = useState(false);
   const [packages, setPackages] = useState<GoldCoinPackage[]>([]);
-  const [purchaseHistory, setPurchaseHistory] = useState<UserPurchaseHistory | null>(null);
+  const [purchaseHistory, setPurchaseHistory] =
+    useState<UserPurchaseHistory | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedPackage, setSelectedPackage] = useState<GoldCoinPackage | null>(null);
+  const [selectedPackage, setSelectedPackage] =
+    useState<GoldCoinPackage | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -27,11 +57,11 @@ export function Store() {
 
   const fetchPackages = async () => {
     try {
-      const response = await fetch('/api/store/packages?active=true');
+      const response = await fetch("/api/store/packages?active=true");
       const data = await response.json();
       setPackages(data);
     } catch (error) {
-      console.error('Error fetching packages:', error);
+      console.error("Error fetching packages:", error);
     } finally {
       setIsLoading(false);
     }
@@ -39,13 +69,13 @@ export function Store() {
 
   const fetchPurchaseHistory = async () => {
     if (!user) return;
-    
+
     try {
       const response = await fetch(`/api/store/users/${user.id}/purchases`);
       const data = await response.json();
       setPurchaseHistory(data);
     } catch (error) {
-      console.error('Error fetching purchase history:', error);
+      console.error("Error fetching purchase history:", error);
     }
   };
 
@@ -54,45 +84,47 @@ export function Store() {
       setShowAccessDenied(true);
       return;
     }
-    
+
     setSelectedPackage(packageItem);
     setShowPaymentModal(true);
   };
 
   const processPayPalPayment = async (packageItem: GoldCoinPackage) => {
     setIsProcessing(true);
-    
+
     try {
       // Simulate PayPal payment processing
       const paymentReference = `PAY-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      
-      const response = await fetch('/api/store/purchase', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+
+      const response = await fetch("/api/store/purchase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId: user!.id,
           username: user!.username,
           packageId: packageItem.id,
-          paymentMethod: 'paypal',
-          paymentReference
-        })
+          paymentMethod: "paypal",
+          paymentReference,
+        }),
       });
-      
+
       if (!response.ok) {
-        throw new Error('Payment failed');
+        throw new Error("Payment failed");
       }
-      
+
       const result = await response.json();
-      
+
       // Update user balance (simulated)
-      alert(`Payment successful! You received ${packageItem.goldCoins.toLocaleString()} Gold Coins and ${packageItem.bonusSweepsCoins} Sweeps Coins!`);
-      
+      alert(
+        `Payment successful! You received ${packageItem.goldCoins.toLocaleString()} Gold Coins and ${packageItem.bonusSweepsCoins} Sweeps Coins!`,
+      );
+
       setShowPaymentModal(false);
       setSelectedPackage(null);
       fetchPurchaseHistory();
     } catch (error) {
-      console.error('Payment error:', error);
-      alert('Payment failed. Please try again.');
+      console.error("Payment error:", error);
+      alert("Payment failed. Please try again.");
     } finally {
       setIsProcessing(false);
     }
@@ -100,24 +132,29 @@ export function Store() {
 
   const getVIPStatusIcon = (status: string) => {
     switch (status) {
-      case 'platinum': return <Crown className="w-4 h-4 text-purple-400" />;
-      case 'gold': return <Crown className="w-4 h-4 text-yellow-400" />;
-      case 'silver': return <Shield className="w-4 h-4 text-gray-400" />;
-      case 'bronze': return <Shield className="w-4 h-4 text-orange-400" />;
-      default: return null;
+      case "platinum":
+        return <Crown className="w-4 h-4 text-purple-400" />;
+      case "gold":
+        return <Crown className="w-4 h-4 text-yellow-400" />;
+      case "silver":
+        return <Shield className="w-4 h-4 text-gray-400" />;
+      case "bronze":
+        return <Shield className="w-4 h-4 text-orange-400" />;
+      default:
+        return null;
     }
   };
 
   const getPackageIcon = (packageName: string) => {
-    if (packageName.toLowerCase().includes('starter')) return '🌟';
-    if (packageName.toLowerCase().includes('value')) return '💎';
-    if (packageName.toLowerCase().includes('premium')) return '👑';
-    if (packageName.toLowerCase().includes('mega')) return '🚀';
-    if (packageName.toLowerCase().includes('ultimate')) return '💯';
-    if (packageName.toLowerCase().includes('daily')) return '☀️';
-    if (packageName.toLowerCase().includes('weekend')) return '🎉';
-    if (packageName.toLowerCase().includes('high roller')) return '🎰';
-    return '🪙';
+    if (packageName.toLowerCase().includes("starter")) return "🌟";
+    if (packageName.toLowerCase().includes("value")) return "💎";
+    if (packageName.toLowerCase().includes("premium")) return "👑";
+    if (packageName.toLowerCase().includes("mega")) return "🚀";
+    if (packageName.toLowerCase().includes("ultimate")) return "💯";
+    if (packageName.toLowerCase().includes("daily")) return "☀️";
+    if (packageName.toLowerCase().includes("weekend")) return "🎉";
+    if (packageName.toLowerCase().includes("high roller")) return "🎰";
+    return "🪙";
   };
 
   if (isLoading) {
@@ -136,7 +173,8 @@ export function Store() {
             CoinKrazy Gold Coin Store 🪙
           </h1>
           <p className="text-purple-200">
-            Purchase Gold Coins for endless fun gaming! Bonus Sweeps Coins included!
+            Purchase Gold Coins for endless fun gaming! Bonus Sweeps Coins
+            included!
           </p>
           <div className="mt-4 text-sm text-yellow-300">
             💰 PayPal payments go to: <strong>corey@coinkrazy.com</strong>
@@ -157,43 +195,61 @@ export function Store() {
                   <CardContent className="p-6">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="text-center">
-                        <h3 className="text-white font-medium mb-4">Your Balance</h3>
+                        <h3 className="text-white font-medium mb-4">
+                          Your Balance
+                        </h3>
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <div className="text-2xl font-bold text-yellow-500">
                               {user.goldCoins.toLocaleString()}
                             </div>
-                            <div className="text-sm text-gray-400">Gold Coins</div>
+                            <div className="text-sm text-gray-400">
+                              Gold Coins
+                            </div>
                           </div>
                           <div>
                             <div className="text-2xl font-bold text-green-500">
                               {user.sweepsCoins.toFixed(2)}
                             </div>
-                            <div className="text-sm text-gray-400">Sweeps Coins</div>
+                            <div className="text-sm text-gray-400">
+                              Sweeps Coins
+                            </div>
                           </div>
                         </div>
                       </div>
-                      
+
                       {purchaseHistory && (
                         <>
                           <div className="text-center">
                             <h3 className="text-white font-medium mb-4 flex items-center justify-center gap-2">
-                              VIP Status {getVIPStatusIcon(purchaseHistory.vipStatus)}
+                              VIP Status{" "}
+                              {getVIPStatusIcon(purchaseHistory.vipStatus)}
                             </h3>
                             <div className="text-lg font-bold text-purple-400 capitalize">
                               {purchaseHistory.vipStatus}
                             </div>
                             <div className="text-sm text-gray-400">
-                              Total Spent: ${purchaseHistory.totalSpent.toFixed(2)}
+                              Total Spent: $
+                              {purchaseHistory.totalSpent.toFixed(2)}
                             </div>
                           </div>
-                          
+
                           <div className="text-center">
-                            <h3 className="text-white font-medium mb-4">Lifetime Stats</h3>
+                            <h3 className="text-white font-medium mb-4">
+                              Lifetime Stats
+                            </h3>
                             <div className="text-sm text-gray-400 space-y-1">
-                              <div>Purchases: {purchaseHistory.transactions.length}</div>
-                              <div>Gold Coins: {purchaseHistory.totalGoldCoins.toLocaleString()}</div>
-                              <div>Sweeps Coins: {purchaseHistory.totalSweepsCoins.toFixed(2)}</div>
+                              <div>
+                                Purchases: {purchaseHistory.transactions.length}
+                              </div>
+                              <div>
+                                Gold Coins:{" "}
+                                {purchaseHistory.totalGoldCoins.toLocaleString()}
+                              </div>
+                              <div>
+                                Sweeps Coins:{" "}
+                                {purchaseHistory.totalSweepsCoins.toFixed(2)}
+                              </div>
                             </div>
                           </div>
                         </>
@@ -207,11 +263,11 @@ export function Store() {
             {/* Gold Coin Packages - 8 Packages in 2 rows */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
               {packages.map((pkg) => (
-                <Card 
-                  key={pkg.id} 
+                <Card
+                  key={pkg.id}
                   className={`bg-gray-800 border-gray-700 hover:border-purple-500 transition-all duration-300 transform hover:scale-105 relative ${
-                    pkg.popular ? 'ring-2 ring-purple-500' : ''
-                  } ${pkg.bestValue ? 'ring-2 ring-green-500' : ''}`}
+                    pkg.popular ? "ring-2 ring-purple-500" : ""
+                  } ${pkg.bestValue ? "ring-2 ring-green-500" : ""}`}
                 >
                   {pkg.popular && (
                     <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -221,7 +277,7 @@ export function Store() {
                       </Badge>
                     </div>
                   )}
-                  
+
                   {pkg.bestValue && (
                     <div className="absolute -top-3 right-4">
                       <Badge className="bg-green-600 text-white px-3 py-1">
@@ -230,15 +286,17 @@ export function Store() {
                       </Badge>
                     </div>
                   )}
-                  
+
                   <CardHeader className="text-center pb-4">
                     <div className="text-4xl mx-auto mb-3">
                       {getPackageIcon(pkg.name)}
                     </div>
-                    <CardTitle className="text-white text-xl mb-2">{pkg.name}</CardTitle>
+                    <CardTitle className="text-white text-xl mb-2">
+                      {pkg.name}
+                    </CardTitle>
                     <p className="text-gray-400 text-sm">{pkg.description}</p>
                   </CardHeader>
-                  
+
                   <CardContent className="text-center">
                     <div className="mb-4">
                       <div className="text-3xl font-bold text-yellow-500 mb-1">
@@ -246,25 +304,30 @@ export function Store() {
                       </div>
                       <div className="text-sm text-gray-400">Gold Coins</div>
                     </div>
-                    
+
                     <div className="mb-4">
                       <div className="text-lg font-semibold text-green-500 mb-1">
                         +{pkg.bonusSweepsCoins}
                       </div>
-                      <div className="text-xs text-gray-400">Bonus Sweeps Coins</div>
+                      <div className="text-xs text-gray-400">
+                        Bonus Sweeps Coins
+                      </div>
                     </div>
-                    
+
                     <div className="mb-4">
                       <ul className="text-xs text-gray-300 space-y-1">
                         {pkg.features.slice(0, 3).map((feature, index) => (
-                          <li key={index} className="flex items-center justify-center gap-1">
+                          <li
+                            key={index}
+                            className="flex items-center justify-center gap-1"
+                          >
                             <Zap className="w-3 h-3 text-yellow-500" />
                             {feature}
                           </li>
                         ))}
                       </ul>
                     </div>
-                    
+
                     <div className="mb-6">
                       {pkg.originalPrice && (
                         <div className="text-sm text-gray-500 line-through mb-1">
@@ -275,8 +338,8 @@ export function Store() {
                         ${pkg.price}
                       </div>
                     </div>
-                    
-                    <Button 
+
+                    <Button
                       onClick={() => handlePurchase(pkg)}
                       className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                     >
@@ -294,32 +357,48 @@ export function Store() {
               <div className="max-w-4xl mx-auto">
                 <Card className="bg-gray-800 border-gray-700">
                   <CardHeader>
-                    <CardTitle className="text-white">Purchase History</CardTitle>
+                    <CardTitle className="text-white">
+                      Purchase History
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     {purchaseHistory.transactions.length > 0 ? (
                       <div className="space-y-4">
                         {purchaseHistory.transactions.map((transaction) => (
-                          <div key={transaction.id} className="p-4 bg-gray-700 rounded-lg">
+                          <div
+                            key={transaction.id}
+                            className="p-4 bg-gray-700 rounded-lg"
+                          >
                             <div className="flex justify-between items-start">
                               <div>
-                                <h4 className="text-white font-medium">{transaction.packageName}</h4>
+                                <h4 className="text-white font-medium">
+                                  {transaction.packageName}
+                                </h4>
                                 <p className="text-gray-400 text-sm">
-                                  {transaction.goldCoinsAwarded.toLocaleString()} Gold Coins + {transaction.sweepsCoinsBonus} Sweeps Coins
+                                  {transaction.goldCoinsAwarded.toLocaleString()}{" "}
+                                  Gold Coins + {transaction.sweepsCoinsBonus}{" "}
+                                  Sweeps Coins
                                 </p>
                                 <p className="text-gray-500 text-xs">
                                   <Clock className="w-3 h-3 inline mr-1" />
-                                  {new Date(transaction.createdAt).toLocaleDateString()}
+                                  {new Date(
+                                    transaction.createdAt,
+                                  ).toLocaleDateString()}
                                 </p>
                               </div>
                               <div className="text-right">
-                                <div className="text-white font-medium">${transaction.amountPaid}</div>
-                                <Badge 
+                                <div className="text-white font-medium">
+                                  ${transaction.amountPaid}
+                                </div>
+                                <Badge
                                   className={`text-xs ${
-                                    transaction.status === 'completed' ? 'bg-green-600' :
-                                    transaction.status === 'pending' ? 'bg-yellow-600' :
-                                    transaction.status === 'failed' ? 'bg-red-600' :
-                                    'bg-gray-600'
+                                    transaction.status === "completed"
+                                      ? "bg-green-600"
+                                      : transaction.status === "pending"
+                                        ? "bg-yellow-600"
+                                        : transaction.status === "failed"
+                                          ? "bg-red-600"
+                                          : "bg-gray-600"
                                   }`}
                                 >
                                   {transaction.status}
@@ -332,7 +411,9 @@ export function Store() {
                     ) : (
                       <div className="text-center py-8">
                         <ShoppingCart className="w-12 h-12 text-gray-500 mx-auto mb-4" />
-                        <p className="text-gray-400">No purchases yet. Start with a package above!</p>
+                        <p className="text-gray-400">
+                          No purchases yet. Start with a package above!
+                        </p>
                       </div>
                     )}
                   </CardContent>
@@ -340,7 +421,9 @@ export function Store() {
               </div>
             ) : (
               <div className="text-center py-8">
-                <p className="text-gray-400">Please log in to view purchase history.</p>
+                <p className="text-gray-400">
+                  Please log in to view purchase history.
+                </p>
               </div>
             )}
           </TabsContent>
@@ -348,7 +431,9 @@ export function Store() {
 
         {/* Payment Methods */}
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-white mb-4">Secure Payment Methods</h2>
+          <h2 className="text-2xl font-bold text-white mb-4">
+            Secure Payment Methods
+          </h2>
           <div className="flex justify-center gap-6">
             <div className="bg-gray-800 p-4 rounded-lg">
               <CreditCard className="w-8 h-8 text-blue-500 mx-auto mb-2" />
@@ -370,8 +455,9 @@ export function Store() {
           <CardContent className="p-6 text-center">
             <h3 className="text-yellow-300 font-bold mb-2">Important Notice</h3>
             <p className="text-yellow-100 text-sm">
-              Gold Coins have no cash value and are for entertainment purposes only. 
-              Sweeps Coins can be redeemed for prizes subject to terms and conditions.
+              Gold Coins have no cash value and are for entertainment purposes
+              only. Sweeps Coins can be redeemed for prizes subject to terms and
+              conditions.
             </p>
           </CardContent>
         </Card>
@@ -383,35 +469,47 @@ export function Store() {
               <CardHeader>
                 <CardTitle className="text-white flex justify-between items-center">
                   Complete Purchase
-                  <Button variant="ghost" size="sm" onClick={() => setShowPaymentModal(false)}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowPaymentModal(false)}
+                  >
                     ✕
                   </Button>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="text-center">
-                  <div className="text-4xl mb-2">{getPackageIcon(selectedPackage.name)}</div>
-                  <h3 className="text-white font-medium text-lg">{selectedPackage.name}</h3>
+                  <div className="text-4xl mb-2">
+                    {getPackageIcon(selectedPackage.name)}
+                  </div>
+                  <h3 className="text-white font-medium text-lg">
+                    {selectedPackage.name}
+                  </h3>
                   <p className="text-gray-400">{selectedPackage.description}</p>
-                  
+
                   <div className="my-4 p-4 bg-gray-700 rounded">
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
-                        <div className="text-yellow-500 font-bold">{selectedPackage.goldCoins.toLocaleString()}</div>
+                        <div className="text-yellow-500 font-bold">
+                          {selectedPackage.goldCoins.toLocaleString()}
+                        </div>
                         <div className="text-gray-400">Gold Coins</div>
                       </div>
                       <div>
-                        <div className="text-green-500 font-bold">+{selectedPackage.bonusSweepsCoins}</div>
+                        <div className="text-green-500 font-bold">
+                          +{selectedPackage.bonusSweepsCoins}
+                        </div>
                         <div className="text-gray-400">Sweeps Coins</div>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="text-2xl font-bold text-white mb-4">
                     ${selectedPackage.price}
                   </div>
                 </div>
-                
+
                 <div className="space-y-3">
                   <Button
                     onClick={() => processPayPalPayment(selectedPackage)}
@@ -419,11 +517,12 @@ export function Store() {
                     disabled={isProcessing}
                   >
                     <CreditCard className="w-4 h-4 mr-2" />
-                    {isProcessing ? 'Processing...' : 'Pay with PayPal'}
+                    {isProcessing ? "Processing..." : "Pay with PayPal"}
                   </Button>
-                  
+
                   <div className="text-xs text-gray-400 text-center">
-                    Secure payment processing • 256-bit SSL encryption<br/>
+                    Secure payment processing • 256-bit SSL encryption
+                    <br />
                     Payment goes to: corey@coinkrazy.com
                   </div>
                 </div>

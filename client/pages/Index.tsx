@@ -67,7 +67,7 @@ export default function Index() {
     },
   ];
 
-  const handlePlayGame = (gameId: string, currency: 'GC' | 'SC') => {
+  const handlePlayGame = (gameId: string, currency: "GC" | "SC") => {
     console.log(`Playing ${gameId} with ${currency}`);
     // TODO: Implement game launch
   };

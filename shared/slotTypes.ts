@@ -3,7 +3,7 @@ export interface SlotGame {
   name: string;
   provider: string;
   thumbnail: string;
-  category: 'classic' | 'video' | 'progressive' | 'featured' | 'new';
+  category: "classic" | "video" | "progressive" | "featured" | "new";
   rtp: number; // Between 92-96%
   maxWin: number; // In SC
   liveSCEarned: number; // Real-time SC earned by all players
@@ -11,14 +11,14 @@ export interface SlotGame {
     firstName: string;
     lastInitial: string;
     amount: number;
-    currency: 'GC' | 'SC';
+    currency: "GC" | "SC";
     timestamp: Date;
   } | null;
   biggestWin: {
     firstName: string;
     lastInitial: string;
     amount: number;
-    currency: 'GC' | 'SC';
+    currency: "GC" | "SC";
     timestamp: Date;
   } | null;
   isActive: boolean;
@@ -27,7 +27,7 @@ export interface SlotGame {
   paylines: number;
   features: string[];
   description: string;
-  volatility: 'low' | 'medium' | 'high';
+  volatility: "low" | "medium" | "high";
 }
 
 export interface SlotProvider {
@@ -41,7 +41,7 @@ export interface SlotProvider {
 export interface TableGame {
   id: string;
   name: string;
-  type: 'card' | 'poker' | 'specialty';
+  type: "card" | "poker" | "specialty";
   thumbnail: string;
   maxPlayers: number;
   currentPlayers: number;
@@ -52,14 +52,14 @@ export interface TableGame {
     firstName: string;
     lastInitial: string;
     amount: number;
-    currency: 'GC' | 'SC';
+    currency: "GC" | "SC";
     timestamp: Date;
   } | null;
   biggestWin: {
     firstName: string;
     lastInitial: string;
     amount: number;
-    currency: 'GC' | 'SC';
+    currency: "GC" | "SC";
     timestamp: Date;
   } | null;
   isActive: boolean;
@@ -70,7 +70,7 @@ export interface TableGame {
 export interface PokerTable {
   id: string;
   name: string;
-  gameType: 'texas-holdem' | 'omaha' | 'seven-card-stud' | 'blackjack';
+  gameType: "texas-holdem" | "omaha" | "seven-card-stud" | "blackjack";
   maxSeats: number;
   seats: PokerSeat[];
   blinds: {
@@ -81,7 +81,7 @@ export interface PokerTable {
     min: number;
     max: number;
   };
-  currency: 'GC' | 'SC';
+  currency: "GC" | "SC";
   isActive: boolean;
   currentPot: number;
 }
@@ -100,15 +100,15 @@ export interface PokerSeat {
 
 export interface GameSelection {
   gameId: string;
-  gameType: 'slot' | 'table' | 'poker';
-  currency: 'GC' | 'SC';
+  gameType: "slot" | "table" | "poker";
+  currency: "GC" | "SC";
   betAmount?: number;
 }
 
 export interface LuckyAIMessage {
   id: string;
   message: string;
-  type: 'welcome' | 'help' | 'win' | 'info' | 'warning';
+  type: "welcome" | "help" | "win" | "info" | "warning";
   timestamp: Date;
   tableId?: string;
   userId?: string;

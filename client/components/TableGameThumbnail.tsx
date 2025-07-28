@@ -1,40 +1,52 @@
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
-import { 
-  Users, 
-  TrendingUp, 
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
+import {
+  Users,
+  TrendingUp,
   Clock,
   Trophy,
   Coins,
   Star,
   Play,
   Crown,
-  Timer
-} from 'lucide-react';
-import { TableGame } from '@shared/slotTypes';
-import { useAuth } from './AuthContext';
-import { AuthModal } from './AuthModal';
-import { AccessDeniedModal } from './AccessDeniedModal';
+  Timer,
+} from "lucide-react";
+import { TableGame } from "@shared/slotTypes";
+import { useAuth } from "./AuthContext";
+import { AuthModal } from "./AuthModal";
+import { AccessDeniedModal } from "./AccessDeniedModal";
 
 interface TableGameThumbnailProps {
   game: TableGame;
-  onPlay: (gameId: string, currency: 'GC' | 'SC') => void;
-  size?: 'small' | 'medium' | 'large';
+  onPlay: (gameId: string, currency: "GC" | "SC") => void;
+  size?: "small" | "medium" | "large";
 }
 
-export function TableGameThumbnail({ game, onPlay, size = 'medium' }: TableGameThumbnailProps) {
+export function TableGameThumbnail({
+  game,
+  onPlay,
+  size = "medium",
+}: TableGameThumbnailProps) {
   const { user } = useAuth();
   const [showCurrencyDialog, setShowCurrencyDialog] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showAccessDenied, setShowAccessDenied] = useState(false);
-  const [selectedCurrency, setSelectedCurrency] = useState<'GC' | 'SC' | null>(null);
+  const [selectedCurrency, setSelectedCurrency] = useState<"GC" | "SC" | null>(
+    null,
+  );
 
-  const handlePlayClick = (currency: 'GC' | 'SC') => {
+  const handlePlayClick = (currency: "GC" | "SC") => {
     if (!user) {
-      if (currency === 'SC') {
+      if (currency === "SC") {
         setShowAccessDenied(true);
       } else {
         setShowAuthModal(true);
@@ -67,17 +79,20 @@ export function TableGameThumbnail({ game, onPlay, size = 'medium' }: TableGameT
 
   const getCardSize = () => {
     switch (size) {
-      case 'small': return 'w-48 h-80';
-      case 'large': return 'w-80 h-96';
-      default: return 'w-64 h-88';
+      case "small":
+        return "w-48 h-80";
+      case "large":
+        return "w-80 h-96";
+      default:
+        return "w-64 h-88";
     }
   };
 
   const getTypeIcon = () => {
     switch (game.type) {
-      case 'card':
+      case "card":
         return <Trophy className="h-4 w-4" />;
-      case 'poker':
+      case "poker":
         return <Crown className="h-4 w-4" />;
       default:
         return <Play className="h-4 w-4" />;
@@ -86,14 +101,16 @@ export function TableGameThumbnail({ game, onPlay, size = 'medium' }: TableGameT
 
   const occupancyPercentage = (game.currentPlayers / game.maxPlayers) * 100;
   const getOccupancyColor = () => {
-    if (occupancyPercentage >= 80) return 'text-casino-red';
-    if (occupancyPercentage >= 60) return 'text-yellow-400';
-    return 'text-casino-green';
+    if (occupancyPercentage >= 80) return "text-casino-red";
+    if (occupancyPercentage >= 60) return "text-yellow-400";
+    return "text-casino-green";
   };
 
   return (
     <>
-      <Card className={`${getCardSize()} group hover:scale-105 transition-all duration-300 overflow-hidden relative`}>
+      <Card
+        className={`${getCardSize()} group hover:scale-105 transition-all duration-300 overflow-hidden relative`}
+      >
         {/* Thumbnail Image */}
         <div className="relative h-40 overflow-hidden">
           <img
@@ -101,18 +118,18 @@ export function TableGameThumbnail({ game, onPlay, size = 'medium' }: TableGameT
             alt={game.name}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
           />
-          
+
           {/* CoinKrazy.com Branding Overlay */}
           <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-xs font-bold">
             CoinKrazy.com
           </div>
-          
+
           {/* Game Type Badge */}
           <Badge className="absolute top-2 left-2 bg-casino-green text-white">
             {getTypeIcon()}
             <span className="ml-1 capitalize">{game.type} Game</span>
           </Badge>
-          
+
           {/* Stats Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <div className="absolute bottom-2 left-2 right-2 text-white">
@@ -126,7 +143,9 @@ export function TableGameThumbnail({ game, onPlay, size = 'medium' }: TableGameT
                 <div className="bg-black/50 rounded p-1">
                   <div className="flex items-center">
                     <Coins className="h-3 w-3 mr-1 text-gold" />
-                    <span>${game.minBet}-${game.maxBet}</span>
+                    <span>
+                      ${game.minBet}-${game.maxBet}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -151,7 +170,9 @@ export function TableGameThumbnail({ game, onPlay, size = 'medium' }: TableGameT
             </div>
             <div className="flex justify-between items-center text-sm">
               <span className="text-muted-foreground">Table Limits:</span>
-              <span className="font-bold text-gold">${game.minBet} - ${game.maxBet}</span>
+              <span className="font-bold text-gold">
+                ${game.minBet} - ${game.maxBet}
+              </span>
             </div>
           </div>
 
@@ -165,12 +186,14 @@ export function TableGameThumbnail({ game, onPlay, size = 'medium' }: TableGameT
                     {game.lastWinner.firstName} {game.lastWinner.lastInitial}.
                   </div>
                   <div className="text-muted-foreground">
-                    {game.lastWinner.amount.toLocaleString()} {game.lastWinner.currency} • {formatTime(game.lastWinner.timestamp)}
+                    {game.lastWinner.amount.toLocaleString()}{" "}
+                    {game.lastWinner.currency} •{" "}
+                    {formatTime(game.lastWinner.timestamp)}
                   </div>
                 </div>
               </div>
             )}
-            
+
             {game.biggestWin && (
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Biggest Win:</span>
@@ -179,7 +202,9 @@ export function TableGameThumbnail({ game, onPlay, size = 'medium' }: TableGameT
                     {game.biggestWin.firstName} {game.biggestWin.lastInitial}.
                   </div>
                   <div className="text-muted-foreground">
-                    {game.biggestWin.amount.toLocaleString()} {game.biggestWin.currency} • {formatTime(game.biggestWin.timestamp)}
+                    {game.biggestWin.amount.toLocaleString()}{" "}
+                    {game.biggestWin.currency} •{" "}
+                    {formatTime(game.biggestWin.timestamp)}
                   </div>
                 </div>
               </div>
@@ -188,20 +213,20 @@ export function TableGameThumbnail({ game, onPlay, size = 'medium' }: TableGameT
 
           {/* Play Buttons */}
           <div className="flex gap-2 pt-2">
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               className="flex-1 bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground hover:from-yellow-400 hover:to-gold"
-              onClick={() => handlePlayClick('GC')}
+              onClick={() => handlePlayClick("GC")}
               disabled={game.currentPlayers >= game.maxPlayers}
             >
               <Coins className="h-3 w-3 mr-1" />
               Play GC
             </Button>
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               variant="outline"
               className="flex-1 border-sweep text-sweep hover:bg-sweep/10"
-              onClick={() => handlePlayClick('SC')}
+              onClick={() => handlePlayClick("SC")}
               disabled={game.currentPlayers >= game.maxPlayers}
             >
               <Star className="h-3 w-3 mr-1" />
@@ -225,39 +250,50 @@ export function TableGameThumbnail({ game, onPlay, size = 'medium' }: TableGameT
               <span className="text-gold">CoinKrazy</span>.com
             </DialogTitle>
             <DialogDescription className="text-center text-lg">
-              You Selected to play <strong>{game.name}</strong> with{' '}
-              <span className={selectedCurrency === 'GC' ? 'text-gold font-bold' : 'text-sweep font-bold'}>
-                {selectedCurrency === 'GC' ? 'Gold Coins' : 'Sweeps Coins'}
+              You Selected to play <strong>{game.name}</strong> with{" "}
+              <span
+                className={
+                  selectedCurrency === "GC"
+                    ? "text-gold font-bold"
+                    : "text-sweep font-bold"
+                }
+              >
+                {selectedCurrency === "GC" ? "Gold Coins" : "Sweeps Coins"}
               </span>
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
-            {selectedCurrency === 'GC' ? (
+            {selectedCurrency === "GC" ? (
               <div className="space-y-4">
                 <div className="p-4 bg-gold/10 border border-gold/20 rounded-lg">
-                  <h4 className="font-semibold text-gold mb-2">Gold Coins Table Game</h4>
+                  <h4 className="font-semibold text-gold mb-2">
+                    Gold Coins Table Game
+                  </h4>
                   <ul className="text-sm space-y-1 text-muted-foreground">
                     <li>• Play with Gold Coins for entertainment</li>
                     <li>• Win additional Gold Coins only</li>
                     <li>• No cash value - for fun only</li>
-                    <li>• Table limits: ${game.minBet} - ${game.maxBet}</li>
+                    <li>
+                      • Table limits: ${game.minBet} - ${game.maxBet}
+                    </li>
                   </ul>
                 </div>
 
                 <div className="text-center text-sm text-muted-foreground">
-                  By continuing, you accept the Terms of Service of CoinKrazy.com
+                  By continuing, you accept the Terms of Service of
+                  CoinKrazy.com
                 </div>
 
                 <div className="flex gap-2">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="flex-1"
                     onClick={() => setShowCurrencyDialog(false)}
                   >
                     Cancel
                   </Button>
-                  <Button 
+                  <Button
                     className="flex-1 bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground hover:from-yellow-400 hover:to-gold"
                     onClick={handleConfirmPlay}
                   >
@@ -269,24 +305,30 @@ export function TableGameThumbnail({ game, onPlay, size = 'medium' }: TableGameT
             ) : (
               <div className="space-y-4">
                 <div className="p-4 bg-sweep/10 border border-sweep/20 rounded-lg">
-                  <h4 className="font-semibold text-sweep mb-2">Sweeps Coins Table Game</h4>
+                  <h4 className="font-semibold text-sweep mb-2">
+                    Sweeps Coins Table Game
+                  </h4>
                   <ul className="text-sm space-y-1 text-muted-foreground">
-                    <li>• Play with Sweeps Coins (1 SC = $1 redeemable value)</li>
+                    <li>
+                      • Play with Sweeps Coins (1 SC = $1 redeemable value)
+                    </li>
                     <li>• Win additional Sweeps Coins</li>
                     <li>• Cannot be purchased - only earned or won</li>
-                    <li>• Table limits: ${game.minBet} - ${game.maxBet}</li>
+                    <li>
+                      • Table limits: ${game.minBet} - ${game.maxBet}
+                    </li>
                   </ul>
                 </div>
 
                 <div className="flex gap-2">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="flex-1"
                     onClick={() => setShowCurrencyDialog(false)}
                   >
                     Cancel
                   </Button>
-                  <Button 
+                  <Button
                     className="flex-1 bg-gradient-to-r from-sweep to-purple-600 text-sweep-foreground hover:from-purple-600 hover:to-sweep"
                     onClick={handleConfirmPlay}
                   >

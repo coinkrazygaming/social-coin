@@ -24,9 +24,9 @@ export interface PurchaseTransaction {
   goldCoinsAwarded: number;
   sweepsCoinsBonus: number;
   amountPaid: number;
-  paymentMethod: 'paypal' | 'stripe' | 'crypto';
+  paymentMethod: "paypal" | "stripe" | "crypto";
   paymentReference: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed' | 'refunded';
+  status: "pending" | "processing" | "completed" | "failed" | "refunded";
   createdAt: Date;
   completedAt?: Date;
   failureReason?: string;
@@ -62,7 +62,11 @@ export interface StoreSettings {
 export interface StorePromotion {
   id: string;
   name: string;
-  type: 'bonus_multiplier' | 'fixed_bonus' | 'discount_percentage' | 'buy_one_get_one';
+  type:
+    | "bonus_multiplier"
+    | "fixed_bonus"
+    | "discount_percentage"
+    | "buy_one_get_one";
   value: number;
   targetPackages: string[]; // Empty array means all packages
   startDate: Date;
@@ -77,9 +81,15 @@ export interface AdminLog {
   id: string;
   adminId: string;
   adminUsername: string;
-  action: 'package_created' | 'package_updated' | 'package_deleted' | 'settings_updated' | 'promotion_created' | 'transaction_refunded';
+  action:
+    | "package_created"
+    | "package_updated"
+    | "package_deleted"
+    | "settings_updated"
+    | "promotion_created"
+    | "transaction_refunded";
   targetId: string;
-  targetType: 'package' | 'settings' | 'promotion' | 'transaction';
+  targetType: "package" | "settings" | "promotion" | "transaction";
   oldValue?: any;
   newValue?: any;
   description: string;
@@ -95,13 +105,13 @@ export interface UserPurchaseHistory {
   totalSweepsCoins: number;
   firstPurchase: Date;
   lastPurchase: Date;
-  vipStatus: 'none' | 'bronze' | 'silver' | 'gold' | 'platinum';
+  vipStatus: "none" | "bronze" | "silver" | "gold" | "platinum";
 }
 
 export interface PaymentProvider {
   id: string;
   name: string;
-  type: 'paypal' | 'stripe' | 'crypto';
+  type: "paypal" | "stripe" | "crypto";
   enabled: boolean;
   config: Record<string, any>;
   processingFee: number; // Percentage
@@ -116,7 +126,7 @@ export interface RefundRequest {
   username: string;
   reason: string;
   requestedAmount: number;
-  status: 'pending' | 'approved' | 'denied' | 'processed';
+  status: "pending" | "approved" | "denied" | "processed";
   requestedAt: Date;
   reviewedAt?: Date;
   reviewedBy?: string;
