@@ -46,11 +46,11 @@ export const handleGetTickerItems: RequestHandler = (req, res) => {
       )
       .slice(0, 20); // Limit to 20 most recent/important items
 
-    res.setHeader('Content-Type', 'application/json');
+    res.setHeader("Content-Type", "application/json");
     res.json(items);
   } catch (error) {
-    console.error('Error in handleGetTickerItems:', error);
-    res.status(500).json({ error: 'Failed to fetch ticker items' });
+    console.error("Error in handleGetTickerItems:", error);
+    res.status(500).json({ error: "Failed to fetch ticker items" });
   }
 };
 

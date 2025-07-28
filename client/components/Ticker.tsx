@@ -11,26 +11,26 @@ export function Ticker() {
   // Fallback ticker items when API is unavailable
   const fallbackItems: TickerItem[] = [
     {
-      id: 'fallback-1',
-      type: 'promo',
-      content: '🎉 Welcome to CoinKrazy - Play 700+ slot games for FREE!',
+      id: "fallback-1",
+      type: "promo",
+      content: "🎉 Welcome to CoinKrazy - Play 700+ slot games for FREE!",
       priority: 5,
-      createdAt: new Date()
+      createdAt: new Date(),
     },
     {
-      id: 'fallback-2',
-      type: 'win',
-      content: '💰 Player just won 50,000 Gold Coins on Mega Fortune!',
+      id: "fallback-2",
+      type: "win",
+      content: "💰 Player just won 50,000 Gold Coins on Mega Fortune!",
       priority: 4,
-      createdAt: new Date()
+      createdAt: new Date(),
     },
     {
-      id: 'fallback-3',
-      type: 'sports',
-      content: '🏈 Live NFL betting now available with real-time odds!',
+      id: "fallback-3",
+      type: "sports",
+      content: "🏈 Live NFL betting now available with real-time odds!",
       priority: 3,
-      createdAt: new Date()
-    }
+      createdAt: new Date(),
+    },
   ];
 
   useEffect(() => {
@@ -44,16 +44,16 @@ export function Ticker() {
     try {
       const response = await fetch("/api/ticker");
       if (response.ok) {
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
           const data = await response.json();
           setTickerItems(Array.isArray(data) ? data : []);
         } else {
-          console.warn('Ticker API returned non-JSON response');
+          console.warn("Ticker API returned non-JSON response");
           setTickerItems(fallbackItems);
         }
       } else {
-        console.warn('Ticker API returned error status:', response.status);
+        console.warn("Ticker API returned error status:", response.status);
         setTickerItems(fallbackItems);
       }
     } catch (error) {
@@ -68,7 +68,8 @@ export function Ticker() {
       // Use fallback items on failure
       setTickerItems(fallbackItems);
     } finally {
-      if (retryCount === 0) { // Only set loading false on first attempt
+      if (retryCount === 0) {
+        // Only set loading false on first attempt
         setIsLoading(false);
       }
     }
