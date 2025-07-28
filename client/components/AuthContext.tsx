@@ -77,6 +77,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser(data.user);
         localStorage.setItem("coinkrezy_user", JSON.stringify(data.user));
         await refreshBalance(data.user.id);
+
+        // Role-based redirect
+        setTimeout(() => {
+          if (data.user.role === 'admin') {
+            navigate('/admin');
+          } else if (data.user.role === 'staff') {
+            navigate('/staff');
+          } else {
+            navigate('/dashboard');
+          }
+        }, 500); // Small delay to allow state to update
+
         return true;
       }
       return false;
