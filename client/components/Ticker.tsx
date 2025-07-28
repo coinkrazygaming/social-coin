@@ -100,7 +100,7 @@ export function Ticker() {
             variant="outline"
             className={`flex items-center space-x-2 px-4 py-2 text-sm transition-all duration-500 ${getItemStyle(currentItem.type)}`}
           >
-            {currentItem.icon}
+            {getItemIcon(currentItem.type)}
             <span className="font-medium animate-pulse">{currentItem.content}</span>
           </Badge>
         </div>
