@@ -54,22 +54,7 @@ const App = () => (
 
                 <Route
                   path="/table-games"
-                  element={
-                    <PlaceholderPage
-                      title="Table Games"
-                      description="Classic casino table games with live dealers"
-                      icon={<Dice6 className="h-8 w-8 text-white" />}
-                      features={[
-                        "Live Blackjack tables",
-                        "Roulette (American & European)",
-                        "Poker variants",
-                        "Baccarat rooms",
-                        "Separate GC and SC lobbies",
-                        "Real-time player statistics",
-                        "VIP high-limit tables",
-                      ]}
-                    />
-                  }
+                  element={<TableGames />}
                 />
 
                 <Route
