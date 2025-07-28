@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ColinShots } from "@/components/ColinShots";
 import { Clock, Trophy, Star, Timer, RotateCcw, Gamepad2 } from "lucide-react";
+import { useAuth } from "@/components/AuthContext";
+import { AccessDeniedModal } from "@/components/AccessDeniedModal";
 
 interface MiniGame {
   id: string;
