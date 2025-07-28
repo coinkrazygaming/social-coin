@@ -89,6 +89,26 @@ export function UserDashboard() {
     accountDetails: {},
   });
   const [showKYCUpload, setShowKYCUpload] = useState(false);
+  const [luckyAIMessages, setLuckyAIMessages] = useState<Array<{role: 'user' | 'ai', message: string, timestamp: Date}>>([
+    {
+      role: 'ai',
+      message: 'Hello! I\'m LuckyAI, your personal casino assistant. I\'m here to help you with KYC verification, game strategies, bonus information, and responsible gaming tips. How can I assist you today?',
+      timestamp: new Date()
+    }
+  ]);
+  const [joseyAIMessages, setJoseyAIMessages] = useState<Array<{role: 'user' | 'ai', message: string, timestamp: Date}>>([
+    {
+      role: 'ai',
+      message: 'Hey there! I\'m JoseyAI, your social media content creator! 🎬 I can help you create amazing 30-second video ads to share your wins and promote CoinKrazy. Ready to go viral? Let\'s create something awesome together!',
+      timestamp: new Date()
+    }
+  ]);
+  const [aiInput, setAiInput] = useState('');
+  const [joseyInput, setJoseyInput] = useState('');
+  const [showLuckyAIChat, setShowLuckyAIChat] = useState(false);
+  const [showJoseyAIChat, setShowJoseyAIChat] = useState(false);
+  const [isCreatingVideo, setIsCreatingVideo] = useState(false);
+  const [kycStep, setKycStep] = useState(0);
 
   useEffect(() => {
     if (!user) {
