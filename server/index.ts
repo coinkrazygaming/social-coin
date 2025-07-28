@@ -102,5 +102,16 @@ export function createServer() {
   app.get("/api/leaderboards/achievements", handleGetAchievements);
   app.get("/api/leaderboards/live-updates", handleGetLiveUpdates);
 
+  // Bingo routes
+  app.get("/api/bingo/rooms", handleGetRooms);
+  app.get("/api/bingo/rooms/:roomId/games", handleGetRoomGames);
+  app.get("/api/bingo/games/:gameId", handleGetGame);
+  app.post("/api/bingo/games/:gameId/join", handleJoinGame);
+  app.get("/api/bingo/games/:gameId/cards/:userId", handleGetPlayerCards);
+  app.post("/api/bingo/cards/:cardId/mark", handleMarkNumber);
+  app.get("/api/bingo/patterns", handleGetPatterns);
+  app.post("/api/bingo/games/:gameId/start", handleStartGame);
+  app.get("/api/bingo/games/:gameId/live-updates", handleBingoLiveUpdates);
+
   return app;
 }
