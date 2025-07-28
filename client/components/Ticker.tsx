@@ -8,6 +8,31 @@ export function Ticker() {
   const [tickerItems, setTickerItems] = useState<TickerItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Fallback ticker items when API is unavailable
+  const fallbackItems: TickerItem[] = [
+    {
+      id: 'fallback-1',
+      type: 'promo',
+      content: '🎉 Welcome to CoinKrazy - Play 700+ slot games for FREE!',
+      priority: 5,
+      createdAt: new Date()
+    },
+    {
+      id: 'fallback-2',
+      type: 'win',
+      content: '💰 Player just won 50,000 Gold Coins on Mega Fortune!',
+      priority: 4,
+      createdAt: new Date()
+    },
+    {
+      id: 'fallback-3',
+      type: 'sports',
+      content: '🏈 Live NFL betting now available with real-time odds!',
+      priority: 3,
+      createdAt: new Date()
+    }
+  ];
+
   useEffect(() => {
     fetchTickerItems();
     // Refresh ticker items every 30 seconds
