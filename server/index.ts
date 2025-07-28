@@ -13,6 +13,8 @@ import {
   handleMiniGamePlay,
   handleGetMiniGameHistory,
   handleGetAllMiniGameHistory,
+  handleGetUserSettings,
+  handleUpdateUserSettings,
 } from "./routes/users";
 import {
   handleGetPackages,
