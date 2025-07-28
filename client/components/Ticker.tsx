@@ -65,8 +65,8 @@ export function Ticker() {
         return;
       }
 
-      // Set empty array on failure
-      setTickerItems([]);
+      // Use fallback items on failure
+      setTickerItems(fallbackItems);
     } finally {
       if (retryCount === 0) { // Only set loading false on first attempt
         setIsLoading(false);
