@@ -134,7 +134,7 @@ export default function MiniGames() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId,
+          userId: user?.id,
           gameType: gameId,
           score,
           maxScore: 25, // For Colin Shots
