@@ -620,6 +620,188 @@ export function UserDashboard() {
                 </CardContent>
               </Card>
             )}
+
+            {/* AI Assistants */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* LuckyAI Casino Assistant */}
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Bot className="w-5 h-5 text-blue-400" />
+                    LuckyAI Casino Assistant
+                    <Badge className="bg-blue-600">Online</Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {showLuckyAIChat ? (
+                    <div className="space-y-4">
+                      <div className="h-64 overflow-y-auto space-y-2 p-3 bg-gray-700 rounded">
+                        {luckyAIMessages.map((msg, index) => (
+                          <div
+                            key={index}
+                            className={`p-2 rounded text-sm ${
+                              msg.role === 'ai'
+                                ? 'bg-blue-600 text-white ml-4'
+                                : 'bg-gray-600 text-white mr-4'
+                            }`}
+                          >
+                            {msg.message}
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex gap-2">
+                        <Input
+                          value={aiInput}
+                          onChange={(e) => setAiInput(e.target.value)}
+                          placeholder="Ask about KYC, games, or strategies..."
+                          onKeyPress={(e) => e.key === 'Enter' && sendLuckyAIMessage()}
+                        />
+                        <Button size="sm" onClick={sendLuckyAIMessage}>
+                          <Send className="w-4 h-4" />
+                        </Button>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowLuckyAIChat(false)}
+                      >
+                        Minimize
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <p className="text-gray-300 text-sm">
+                        Your personal casino assistant is here to help with KYC verification,
+                        game strategies, bonus information, and responsible gaming guidance.
+                      </p>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-sm text-gray-400">
+                          <CheckCircle className="w-4 h-4 text-green-400" />
+                          KYC Step-by-step guidance
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-400">
+                          <CheckCircle className="w-4 h-4 text-green-400" />
+                          Game strategy advice
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-400">
+                          <CheckCircle className="w-4 h-4 text-green-400" />
+                          Responsible gaming tips
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-400">
+                          <CheckCircle className="w-4 h-4 text-green-400" />
+                          24/7 availability
+                        </div>
+                      </div>
+                      <Button
+                        onClick={() => setShowLuckyAIChat(true)}
+                        className="w-full bg-blue-600 hover:bg-blue-700"
+                      >
+                        <MessageSquare className="w-4 h-4 mr-2" />
+                        Start Chat with LuckyAI
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* JoseyAI Social Assistant */}
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Bot className="w-5 h-5 text-pink-400" />
+                    JoseyAI Social Creator
+                    <Badge className="bg-pink-600">Creative</Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {showJoseyAIChat ? (
+                    <div className="space-y-4">
+                      <div className="h-64 overflow-y-auto space-y-2 p-3 bg-gray-700 rounded">
+                        {joseyAIMessages.map((msg, index) => (
+                          <div
+                            key={index}
+                            className={`p-2 rounded text-sm ${
+                              msg.role === 'ai'
+                                ? 'bg-pink-600 text-white ml-4'
+                                : 'bg-gray-600 text-white mr-4'
+                            }`}
+                          >
+                            {msg.message}
+                          </div>
+                        ))}
+                        {isCreatingVideo && (
+                          <div className="flex items-center gap-2 p-2 bg-purple-600 rounded text-white text-sm">
+                            <Sparkles className="w-4 h-4 animate-spin" />
+                            Creating video...
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <Input
+                          value={joseyInput}
+                          onChange={(e) => setJoseyInput(e.target.value)}
+                          placeholder="Tell me about your wins for the video..."
+                          onKeyPress={(e) => e.key === 'Enter' && sendJoseyAIMessage()}
+                        />
+                        <Button size="sm" onClick={sendJoseyAIMessage}>
+                          <Send className="w-4 h-4" />
+                        </Button>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          onClick={startVideoCreation}
+                          disabled={isCreatingVideo}
+                          className="bg-purple-600 hover:bg-purple-700"
+                        >
+                          <Video className="w-4 h-4 mr-2" />
+                          Create Video Ad
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setShowJoseyAIChat(false)}
+                        >
+                          Minimize
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <p className="text-gray-300 text-sm">
+                        Create amazing 30-second video ads showcasing your wins and promoting
+                        CoinKrazy with our AI-powered video generator!
+                      </p>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-sm text-gray-400">
+                          <Video className="w-4 h-4 text-pink-400" />
+                          AI-generated video ads
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-400">
+                          <Sparkles className="w-4 h-4 text-pink-400" />
+                          Trending music & effects
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-400">
+                          <Wand2 className="w-4 h-4 text-pink-400" />
+                          Custom win highlights
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-400">
+                          <Target className="w-4 h-4 text-pink-400" />
+                          Social media ready
+                        </div>
+                      </div>
+                      <Button
+                        onClick={() => setShowJoseyAIChat(true)}
+                        className="w-full bg-pink-600 hover:bg-pink-700"
+                      >
+                        <MessageSquare className="w-4 h-4 mr-2" />
+                        Start Creating with JoseyAI
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="transactions" className="space-y-6">
