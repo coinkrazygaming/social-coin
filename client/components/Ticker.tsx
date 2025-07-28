@@ -49,10 +49,46 @@ export function Ticker() {
         return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
       case 'promo':
         return 'bg-sweep/20 text-sweep border-sweep/30 sweep-glow';
+      case 'mini-game':
+        return 'bg-gold/20 text-gold border-gold/30 casino-glow';
       default:
         return 'bg-muted/20 text-muted-foreground border-muted/30';
     }
   };
+
+  const getItemIcon = (type: TickerItem['type']) => {
+    switch (type) {
+      case 'win':
+        return <Trophy className="h-4 w-4" />;
+      case 'jackpot':
+        return <DollarSign className="h-4 w-4" />;
+      case 'sports':
+        return <Target className="h-4 w-4" />;
+      case 'bingo':
+        return <Clock className="h-4 w-4" />;
+      case 'promo':
+        return <Zap className="h-4 w-4" />;
+      case 'mini-game':
+        return <Star className="h-4 w-4" />;
+      default:
+        return <Trophy className="h-4 w-4" />;
+    }
+  };
+
+  if (isLoading || tickerItems.length === 0) {
+    return (
+      <div className="w-full bg-card/50 backdrop-blur border-b border-border/40 overflow-hidden">
+        <div className="container px-4 py-2">
+          <div className="flex items-center justify-center">
+            <Badge variant="outline" className="bg-muted/20 text-muted-foreground border-muted/30 flex items-center space-x-2 px-4 py-2 text-sm">
+              <Zap className="h-4 w-4" />
+              <span className="font-medium">Welcome to CoinKrazy - The Ultimate Social Casino!</span>
+            </Badge>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const currentItem = tickerItems[currentIndex];
 
