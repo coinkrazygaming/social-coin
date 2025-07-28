@@ -61,6 +61,12 @@ import {
   Mail,
   FileText,
   Smartphone,
+  Bot,
+  MessageSquare,
+  Video,
+  Wand2,
+  Sparkles,
+  Send
 } from "lucide-react";
 
 export function UserDashboard() {
