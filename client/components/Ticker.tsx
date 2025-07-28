@@ -30,6 +30,8 @@ export function Ticker() {
   };
 
   useEffect(() => {
+    if (tickerItems.length === 0) return;
+
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % tickerItems.length);
     }, 4000);
