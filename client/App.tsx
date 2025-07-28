@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import MiniGames from "./pages/MiniGames";
 import Store from "./pages/Store";
+import AdminPanel from "./pages/AdminPanel";
 import { Header } from "./components/Header";
 import { Ticker } from "./components/Ticker";
 import { PlaceholderPage } from "./components/PlaceholderPage";
