@@ -450,6 +450,13 @@ export default function MiniGames() {
           </div>
         </div>
       </section>
+
+      {/* Access Denied Modal */}
+      <AccessDeniedModal
+        isOpen={showAccessDenied}
+        onClose={() => setShowAccessDenied(false)}
+        feature="mini-games"
+      />
     </div>
   );
 }
