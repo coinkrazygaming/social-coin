@@ -136,42 +136,77 @@ export function AdminPanel() {
         }),
       ]);
 
+      // Handle packages response
       try {
-        if (packagesRes.ok) setPackages(await packagesRes.json());
+        if (packagesRes.ok && packagesRes.headers.get('content-type')?.includes('application/json')) {
+          setPackages(await packagesRes.json());
+        } else {
+          console.warn('Packages API returned non-JSON response:', packagesRes.status);
+          setPackages([]);
+        }
       } catch (e) {
         console.error('Error parsing packages response:', e);
         setPackages([]);
       }
 
+      // Handle settings response
       try {
-        if (settingsRes.ok) setStoreSettings(await settingsRes.json());
+        if (settingsRes.ok && settingsRes.headers.get('content-type')?.includes('application/json')) {
+          setStoreSettings(await settingsRes.json());
+        } else {
+          console.warn('Settings API returned non-JSON response:', settingsRes.status);
+        }
       } catch (e) {
         console.error('Error parsing settings response:', e);
       }
 
+      // Handle logs response
       try {
-        if (logsRes.ok) setAdminLogs(await logsRes.json());
+        if (logsRes.ok && logsRes.headers.get('content-type')?.includes('application/json')) {
+          setAdminLogs(await logsRes.json());
+        } else {
+          console.warn('Logs API returned non-JSON response:', logsRes.status);
+          setAdminLogs([]);
+        }
       } catch (e) {
         console.error('Error parsing logs response:', e);
         setAdminLogs([]);
       }
 
+      // Handle redemptions response
       try {
-        if (redemptionsRes.ok) setRedemptionRequests(await redemptionsRes.json());
+        if (redemptionsRes.ok && redemptionsRes.headers.get('content-type')?.includes('application/json')) {
+          setRedemptionRequests(await redemptionsRes.json());
+        } else {
+          console.warn('Redemptions API returned non-JSON response:', redemptionsRes.status);
+          setRedemptionRequests([]);
+        }
       } catch (e) {
         console.error('Error parsing redemptions response:', e);
         setRedemptionRequests([]);
       }
 
+      // Handle refunds response
       try {
-        if (refundsRes.ok) setRefundRequests(await refundsRes.json());
+        if (refundsRes.ok && refundsRes.headers.get('content-type')?.includes('application/json')) {
+          setRefundRequests(await refundsRes.json());
+        } else {
+          console.warn('Refunds API returned non-JSON response:', refundsRes.status);
+          setRefundRequests([]);
+        }
       } catch (e) {
         console.error('Error parsing refunds response:', e);
         setRefundRequests([]);
       }
 
+      // Handle stats response
       try {
-        if (statsRes.ok) setPaymentStats(await statsRes.json());
+        if (statsRes.ok && statsRes.headers.get('content-type')?.includes('application/json')) {
+          setPaymentStats(await statsRes.json());
+        } else {
+          console.warn('Stats API returned non-JSON response:', statsRes.status);
+          setPaymentStats(null);
+        }
       } catch (e) {
         console.error('Error parsing stats response:', e);
         setPaymentStats(null);
