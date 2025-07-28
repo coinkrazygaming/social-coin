@@ -34,7 +34,11 @@ export function TableGameThumbnail({ game, onPlay, size = 'medium' }: TableGameT
 
   const handlePlayClick = (currency: 'GC' | 'SC') => {
     if (!user) {
-      setShowAuthModal(true);
+      if (currency === 'SC') {
+        setShowAccessDenied(true);
+      } else {
+        setShowAuthModal(true);
+      }
       return;
     }
     setSelectedCurrency(currency);
