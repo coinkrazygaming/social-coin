@@ -24,12 +24,15 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <div className="min-h-screen">
-          <Ticker />
-          <Header />
-          <main>
+        <AuthProvider>
+          <div className="min-h-screen">
+            <Ticker />
+            <Header />
+            <main>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/mini-games" element={<MiniGames />} />
+              <Route path="/store" element={<Store />} />
 
               {/* Casino Routes */}
               <Route path="/slots" element={
@@ -157,6 +160,7 @@ const App = () => (
             </Routes>
           </main>
         </div>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
