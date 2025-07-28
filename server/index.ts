@@ -28,6 +28,15 @@ import {
   handleDeleteTickerItem,
   handleAddMiniGameWin,
 } from "./routes/ticker";
+import {
+  handleGetLeaderboard,
+  handleGetCategories,
+  handleGetUserPosition,
+  handleGetUserStats,
+  handleUpdateScore,
+  handleGetAchievements,
+  handleGetLiveUpdates,
+} from "./routes/leaderboards";
 
 export function createServer() {
   const app = express();
