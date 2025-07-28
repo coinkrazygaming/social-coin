@@ -1,0 +1,190 @@
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { 
+  Menu, 
+  X, 
+  User, 
+  Settings, 
+  LogOut, 
+  Coins, 
+  Star,
+  Trophy,
+  Gamepad2,
+  Dice6,
+  Target,
+  Grid3X3
+} from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
+
+export function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  
+  // Mock user data - this would come from auth context
+  const user = {
+    username: 'Player123',
+    goldCoins: 25000,
+    sweepsCoins: 45.50,
+    isLoggedIn: true
+  };
+
+  const navigation = [
+    { name: 'Slots', href: '/slots', icon: Gamepad2 },
+    { name: 'Table Games', href: '/table-games', icon: Dice6 },
+    { name: 'Sportsbook', href: '/sportsbook', icon: Target },
+    { name: 'Bingo', href: '/bingo', icon: Grid3X3 },
+    { name: 'Leaderboards', href: '/leaderboards', icon: Trophy },
+  ];
+
+  return (
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center justify-between px-4">
+        {/* Logo */}
+        <Link to="/" className="flex items-center space-x-2">
+          <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-gold to-yellow-400 rounded-lg">
+            <Coins className="h-6 w-6 text-gold-foreground" />
+          </div>
+          <div className="hidden sm:block">
+            <span className="text-xl font-bold bg-gradient-to-r from-gold to-yellow-400 bg-clip-text text-transparent neon-text">
+              CoinKrazy
+            </span>
+            <div className="text-xs text-muted-foreground">.com</div>
+          </div>
+        </Link>
+
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center space-x-6">
+          {navigation.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.name}
+                to={item.href}
+                className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <Icon className="h-4 w-4" />
+                <span>{item.name}</span>
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* User Section */}
+        <div className="flex items-center space-x-4">
+          {user.isLoggedIn ? (
+            <>
+              {/* Balance Display */}
+              <div className="hidden sm:flex items-center space-x-3">
+                <Badge variant="outline" className="casino-glow border-gold text-gold">
+                  <Coins className="h-3 w-3 mr-1" />
+                  {user.goldCoins.toLocaleString()} GC
+                </Badge>
+                <Badge variant="outline" className="sweep-glow border-sweep text-sweep">
+                  <Star className="h-3 w-3 mr-1" />
+                  {user.sweepsCoins.toFixed(2)} SC
+                </Badge>
+              </div>
+
+              {/* Buy Coins Button */}
+              <Button size="sm" className="bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground hover:from-yellow-400 hover:to-gold casino-glow">
+                <Coins className="h-4 w-4 mr-1" />
+                Buy GC
+              </Button>
+
+              {/* User Menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-sweep to-purple-600 flex items-center justify-center">
+                      <User className="h-4 w-4 text-white" />
+                    </div>
+                    <span className="hidden sm:block text-sm">{user.username}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile" className="flex items-center">
+                      <User className="h-4 w-4 mr-2" />
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/settings" className="flex items-center">
+                      <Settings className="h-4 w-4 mr-2" />
+                      Settings
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="text-destructive">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          ) : (
+            <div className="flex items-center space-x-2">
+              <Button variant="ghost" size="sm">Login</Button>
+              <Button size="sm" className="bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground hover:from-yellow-400 hover:to-gold">
+                Sign Up
+              </Button>
+            </div>
+          )}
+
+          {/* Mobile Menu Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="md:hidden"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+        </div>
+      </div>
+
+      {/* Mobile Navigation */}
+      {isMenuOpen && (
+        <div className="md:hidden border-t border-border">
+          <nav className="container px-4 py-4 space-y-2">
+            {user.isLoggedIn && (
+              <div className="flex items-center justify-between py-2 mb-4 border-b border-border">
+                <div className="flex items-center space-x-3">
+                  <Badge variant="outline" className="casino-glow border-gold text-gold">
+                    <Coins className="h-3 w-3 mr-1" />
+                    {user.goldCoins.toLocaleString()} GC
+                  </Badge>
+                  <Badge variant="outline" className="sweep-glow border-sweep text-sweep">
+                    <Star className="h-3 w-3 mr-1" />
+                    {user.sweepsCoins.toFixed(2)} SC
+                  </Badge>
+                </div>
+              </div>
+            )}
+            {navigation.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span className="font-medium">{item.name}</span>
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+      )}
+    </header>
+  );
+}
