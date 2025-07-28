@@ -43,9 +43,20 @@ export function AccessDeniedModal({
       case "poker":
         return "Poker Tournaments";
       case "sportsbook":
+      case "Sportsbook Betting":
         return "Sportsbook Betting";
+      case "Gold Coin Store":
+        return "Gold Coin Store";
+      case "User Dashboard":
+        return "User Dashboard";
+      case "Account Settings":
+        return "Account Settings";
+      case "Admin Panel":
+        return "Admin Panel";
+      case "Staff Panel":
+        return "Staff Panel";
       default:
-        return "Premium Features";
+        return feature || "Premium Features";
     }
   };
 
