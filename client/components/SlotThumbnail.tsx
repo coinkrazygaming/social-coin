@@ -279,10 +279,17 @@ export function SlotThumbnail({ game, onPlay, size = 'medium' }: SlotThumbnailPr
       </Dialog>
 
       {/* Auth Modal */}
-      <AuthModal 
-        isOpen={showAuthModal} 
+      <AuthModal
+        isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         defaultTab="register"
+      />
+
+      {/* Access Denied Modal */}
+      <AccessDeniedModal
+        isOpen={showAccessDenied}
+        onClose={() => setShowAccessDenied(false)}
+        feature="sweeps-coins"
       />
     </>
   );
