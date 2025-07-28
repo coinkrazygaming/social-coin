@@ -17,6 +17,7 @@ import {
 import { TableGame } from '@shared/slotTypes';
 import { useAuth } from './AuthContext';
 import { AuthModal } from './AuthModal';
+import { AccessDeniedModal } from './AccessDeniedModal';
 
 interface TableGameThumbnailProps {
   game: TableGame;
