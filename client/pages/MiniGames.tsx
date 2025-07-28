@@ -148,8 +148,8 @@ export default function MiniGames() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            userId,
-            username,
+            userId: user?.id,
+            username: user?.username,
             gameType: gameId,
             score,
             maxScore: 25,
