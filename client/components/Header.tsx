@@ -141,6 +141,25 @@ export function Header() {
                       Settings
                     </Link>
                   </DropdownMenuItem>
+                  {(user.role === 'staff' || user.role === 'admin') && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link to="/staff" className="flex items-center">
+                          <Shield className="h-4 w-4 mr-2" />
+                          Staff Panel
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                  {user.role === 'admin' && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin" className="flex items-center">
+                        <Crown className="h-4 w-4 mr-2" />
+                        Admin Panel
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="text-destructive"
