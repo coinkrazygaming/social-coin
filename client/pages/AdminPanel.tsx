@@ -655,6 +655,316 @@ export function AdminPanel() {
             </Card>
           </TabsContent>
 
+          <TabsContent value="games" className="space-y-6">
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+              {/* Main Content Area */}
+              <div className="xl:col-span-2 space-y-6">
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-white flex items-center gap-2">
+                        <Crown className="w-6 h-6 text-gold" />
+                        In-House Slot Management
+                        <Badge className="bg-gold text-black font-bold">CoinKrazy Studio</Badge>
+                      </CardTitle>
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          onClick={() => {
+                            setSelectedSlot(null);
+                            setShowSlotEditor(true);
+                          }}
+                          className="bg-gold hover:bg-gold/80 text-black font-bold"
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          Create New Slot
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    {showSlotEditor ? (
+                      <div className="space-y-6">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-xl font-bold text-white">
+                            {selectedSlot ? 'Edit Slot Machine' : 'Create New Slot Machine'}
+                          </h3>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setShowSlotEditor(false);
+                              setSelectedSlot(null);
+                            }}
+                          >
+                            Back to List
+                          </Button>
+                        </div>
+                        <VisualSlotEditor
+                          initialSlot={selectedSlot || undefined}
+                          onSave={async (slot) => {
+                            // Add slot to list and close editor
+                            setInHouseSlots(prev => {
+                              const existing = prev.findIndex(s => s.id === slot.id);
+                              if (existing >= 0) {
+                                const updated = [...prev];
+                                updated[existing] = slot;
+                                return updated;
+                              }
+                              return [...prev, slot];
+                            });
+                            setShowSlotEditor(false);
+                            setSelectedSlot(null);
+                          }}
+                          onPreview={(slot) => {
+                            console.log('Previewing slot:', slot);
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div className="space-y-6">
+                        {/* Slot Machine List */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {inHouseSlots.length === 0 ? (
+                            <div className="col-span-2 text-center py-12">
+                              <Crown className="w-16 h-16 text-gold mx-auto mb-4 opacity-50" />
+                              <h3 className="text-xl font-semibold text-white mb-2">No Slots Created Yet</h3>
+                              <p className="text-gray-400 mb-6">
+                                Create your first in-house slot machine with our visual editor
+                              </p>
+                              <Button
+                                onClick={() => setShowSlotEditor(true)}
+                                className="bg-gold hover:bg-gold/80 text-black font-bold"
+                              >
+                                <Plus className="w-4 h-4 mr-2" />
+                                Create Your First Slot
+                              </Button>
+                            </div>
+                          ) : (
+                            inHouseSlots.map((slot) => (
+                              <Card key={slot.id} className="bg-gray-700 border-gray-600">
+                                <CardHeader>
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center space-x-3">
+                                      <img
+                                        src={slot.thumbnail || '/slot-placeholder.png'}
+                                        alt={slot.name}
+                                        className="w-12 h-12 rounded border border-gold/50"
+                                      />
+                                      <div>
+                                        <CardTitle className="text-white text-lg">{slot.name}</CardTitle>
+                                        <p className="text-gray-400 text-sm">{slot.theme}</p>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <Badge variant={slot.active ? "default" : "secondary"}>
+                                        {slot.active ? "Active" : "Inactive"}
+                                      </Badge>
+                                      {slot.featured && (
+                                        <Badge className="bg-gold text-black">Featured</Badge>
+                                      )}
+                                    </div>
+                                  </div>
+                                </CardHeader>
+                                <CardContent>
+                                  <div className="grid grid-cols-3 gap-4 text-sm mb-4">
+                                    <div>
+                                      <span className="text-gray-400">RTP:</span>
+                                      <div className="text-white font-semibold">{slot.rtp}%</div>
+                                    </div>
+                                    <div>
+                                      <span className="text-gray-400">Volatility:</span>
+                                      <div className="text-white font-semibold capitalize">{slot.volatility}</div>
+                                    </div>
+                                    <div>
+                                      <span className="text-gray-400">Symbols:</span>
+                                      <div className="text-white font-semibold">{slot.symbols.length}</div>
+                                    </div>
+                                  </div>
+                                  <div className="flex space-x-2">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => {
+                                        setSelectedSlot(slot);
+                                        setShowSlotEditor(true);
+                                      }}
+                                    >
+                                      <Edit className="w-4 h-4 mr-1" />
+                                      Edit
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => {
+                                        // Preview slot
+                                        console.log('Preview slot:', slot);
+                                      }}
+                                    >
+                                      <Eye className="w-4 h-4 mr-1" />
+                                      Preview
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => {
+                                        setInHouseSlots(prev => prev.filter(s => s.id !== slot.id));
+                                      }}
+                                    >
+                                      <Trash2 className="w-4 h-4 mr-1" />
+                                      Delete
+                                    </Button>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            ))
+                          )}
+                        </div>
+
+                        {/* Mini Games Management */}
+                        <Card className="bg-gray-800 border-gray-700">
+                          <CardHeader>
+                            <CardTitle className="text-white flex items-center gap-2">
+                              <Zap className="w-5 h-5 text-blue-400" />
+                              Mini Games Management
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <Card className="bg-gray-700 border-gray-600">
+                                <CardContent className="p-4">
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <h4 className="text-white font-semibold">Total Plays</h4>
+                                      <p className="text-2xl font-bold text-blue-400">1,247</p>
+                                    </div>
+                                    <Activity className="w-8 h-8 text-blue-400" />
+                                  </div>
+                                </CardContent>
+                              </Card>
+                              <Card className="bg-gray-700 border-gray-600">
+                                <CardContent className="p-4">
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <h4 className="text-white font-semibold">SC Paid Out</h4>
+                                      <p className="text-2xl font-bold text-gold">$45.67</p>
+                                    </div>
+                                    <DollarSign className="w-8 h-8 text-gold" />
+                                  </div>
+                                </CardContent>
+                              </Card>
+                              <Card className="bg-gray-700 border-gray-600">
+                                <CardContent className="p-4">
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <h4 className="text-white font-semibold">Pending Approvals</h4>
+                                      <p className="text-2xl font-bold text-yellow-400">23</p>
+                                    </div>
+                                    <Clock className="w-8 h-8 text-yellow-400" />
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            </div>
+                            <div className="mt-4">
+                              <Button variant="outline" className="w-full">
+                                <Settings className="w-4 h-4 mr-2" />
+                                Mini Game Settings
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* JoseyAI Assistant Sidebar */}
+              <div className="space-y-6">
+                <JoseyAI
+                  context="slot-editor"
+                  onSuggestionApply={(suggestion) => {
+                    console.log('JoseyAI suggestion:', suggestion);
+                  }}
+                  onCodeGenerate={(code) => {
+                    console.log('JoseyAI generated code:', code);
+                  }}
+                />
+
+                {/* Quick Stats */}
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardHeader>
+                    <CardTitle className="text-white flex items-center gap-2">
+                      <BarChart3 className="w-5 h-5 text-green-400" />
+                      Slot Performance
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">Total Slots</span>
+                        <Badge className="bg-blue-600">{inHouseSlots.length}</Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">Active Slots</span>
+                        <Badge className="bg-green-600">
+                          {inHouseSlots.filter(s => s.active).length}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">Featured</span>
+                        <Badge className="bg-gold text-black">
+                          {inHouseSlots.filter(s => s.featured).length}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">Avg RTP</span>
+                        <Badge variant="outline">
+                          {inHouseSlots.length > 0
+                            ? (inHouseSlots.reduce((acc, s) => acc + s.rtp, 0) / inHouseSlots.length).toFixed(1) + '%'
+                            : 'N/A'
+                          }
+                        </Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Quick Actions */}
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardHeader>
+                    <CardTitle className="text-white flex items-center gap-2">
+                      <Target className="w-5 h-5 text-purple-400" />
+                      Quick Actions
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start"
+                        onClick={() => setShowSlotEditor(true)}
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Create New Slot
+                      </Button>
+                      <Button variant="outline" className="w-full justify-start">
+                        <Download className="w-4 h-4 mr-2" />
+                        Export All Configs
+                      </Button>
+                      <Button variant="outline" className="w-full justify-start">
+                        <Upload className="w-4 h-4 mr-2" />
+                        Import Slot Config
+                      </Button>
+                      <Button variant="outline" className="w-full justify-start">
+                        <Star className="w-4 h-4 mr-2" />
+                        Featured Management
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+
           <TabsContent value="packages" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-white">
