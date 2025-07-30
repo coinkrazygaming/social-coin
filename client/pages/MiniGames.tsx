@@ -9,6 +9,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ColinShots } from "@/components/ColinShots";
+import { JoseysQuackAttack } from "@/components/JoseysQuackAttack";
+import { BethsDarts } from "@/components/BethsDarts";
+import { CoreysFastBlocks } from "@/components/CoreysFastBlocks";
+import { CoreysFastJewels } from "@/components/CoreysFastJewels";
+import { BrensMeow } from "@/components/BrensMeow";
 import { Clock, Trophy, Star, Timer, RotateCcw, Gamepad2 } from "lucide-react";
 import { useAuth } from "@/components/AuthContext";
 import { AccessDeniedModal } from "@/components/AccessDeniedModal";
