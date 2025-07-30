@@ -215,10 +215,15 @@ export default function Index() {
                 CoinKrazy In-House Slots
               </h2>
               <p className="text-muted-foreground">
-                Exclusive slot games powered by CoinKrazy - Built for maximum fun and rewards!
+                Exclusive slot games powered by CoinKrazy - Built for maximum
+                fun and rewards!
               </p>
             </div>
-            <Button variant="outline" asChild className="border-gold text-gold hover:bg-gold/10">
+            <Button
+              variant="outline"
+              asChild
+              className="border-gold text-gold hover:bg-gold/10"
+            >
               <Link to="/slots">View All Slots</Link>
             </Button>
           </div>
@@ -226,46 +231,65 @@ export default function Index() {
           {/* In-House Slots Grid - 5 per row, multiple rows */}
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {/* Show current available slots */}
-            {DEFAULT_COINKRAZY_SLOTS.slice(0, Math.min(DEFAULT_COINKRAZY_SLOTS.length, 25)).map((slot) => (
+            {DEFAULT_COINKRAZY_SLOTS.slice(
+              0,
+              Math.min(DEFAULT_COINKRAZY_SLOTS.length, 25),
+            ).map((slot) => (
               <SlotGameCard
                 key={slot.id}
                 slot={slot}
                 onPlayFreeGC={() => {
-                  console.log('Play Free GC:', slot.name);
+                  console.log("Play Free GC:", slot.name);
                   // Navigate to slot game with GC mode
                 }}
                 onPlayRealSC={() => {
-                  console.log('Play Real SC:', slot.name);
+                  console.log("Play Real SC:", slot.name);
                   // Navigate to slot game with SC mode
                 }}
                 onPlayDemo={() => {
-                  console.log('Play Demo:', slot.name);
+                  console.log("Play Demo:", slot.name);
                   // Open demo modal handled in SlotGameCard
                 }}
               />
             ))}
 
             {/* Fill remaining slots up to 25 with coming soon placeholders */}
-            {Array.from({ length: Math.max(0, 25 - DEFAULT_COINKRAZY_SLOTS.length) }, (_, index) => (
-              <Card key={`placeholder-${index}`} className="opacity-50 border-dashed border-gold/30 hover:opacity-70 transition-opacity">
-                <CardContent className="p-4 text-center">
-                  <div className="h-48 bg-gradient-to-br from-gold/10 to-yellow-400/10 rounded mb-4 flex items-center justify-center">
-                    <div className="text-center">
-                      <Sparkles className="h-12 w-12 text-gold/50 mx-auto mb-2 animate-pulse" />
-                      <p className="text-sm text-gold/70 font-bold">Coming Soon!</p>
+            {Array.from(
+              { length: Math.max(0, 25 - DEFAULT_COINKRAZY_SLOTS.length) },
+              (_, index) => (
+                <Card
+                  key={`placeholder-${index}`}
+                  className="opacity-50 border-dashed border-gold/30 hover:opacity-70 transition-opacity"
+                >
+                  <CardContent className="p-4 text-center">
+                    <div className="h-48 bg-gradient-to-br from-gold/10 to-yellow-400/10 rounded mb-4 flex items-center justify-center">
+                      <div className="text-center">
+                        <Sparkles className="h-12 w-12 text-gold/50 mx-auto mb-2 animate-pulse" />
+                        <p className="text-sm text-gold/70 font-bold">
+                          Coming Soon!
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <h3 className="font-bold text-gold/70 mb-2">New Slot #{DEFAULT_COINKRAZY_SLOTS.length + index + 1}</h3>
-                  <p className="text-xs text-muted-foreground mb-4">
-                    Another amazing CoinKrazy creation in development
-                  </p>
-                  <Button disabled variant="outline" className="w-full border-gold/30 text-gold/50 mb-2">
-                    Coming Soon
-                  </Button>
-                  <p className="text-xs text-gold/50 font-bold">CoinKrazy.com</p>
-                </CardContent>
-              </Card>
-            ))}
+                    <h3 className="font-bold text-gold/70 mb-2">
+                      New Slot #{DEFAULT_COINKRAZY_SLOTS.length + index + 1}
+                    </h3>
+                    <p className="text-xs text-muted-foreground mb-4">
+                      Another amazing CoinKrazy creation in development
+                    </p>
+                    <Button
+                      disabled
+                      variant="outline"
+                      className="w-full border-gold/30 text-gold/50 mb-2"
+                    >
+                      Coming Soon
+                    </Button>
+                    <p className="text-xs text-gold/50 font-bold">
+                      CoinKrazy.com
+                    </p>
+                  </CardContent>
+                </Card>
+              ),
+            )}
           </div>
         </div>
       </section>

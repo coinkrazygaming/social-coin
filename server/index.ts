@@ -86,7 +86,7 @@ import {
   handleDeleteSlot,
   handleSpinSlot,
   handleGetSlotStats,
-  handleGetAllSlotStats
+  handleGetAllSlotStats,
 } from "./routes/slots";
 
 export function createServer() {

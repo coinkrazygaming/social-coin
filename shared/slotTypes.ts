@@ -3,7 +3,7 @@ export interface SlotSymbol {
   name: string;
   image: string;
   value: number;
-  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  rarity: "common" | "uncommon" | "rare" | "epic" | "legendary";
   multiplier: number;
   color: string;
   animation?: string;
@@ -19,7 +19,7 @@ export interface SlotReel {
 export interface SlotPayline {
   id: string;
   name: string;
-  positions: Array<{reel: number, row: number}>;
+  positions: Array<{ reel: number; row: number }>;
   active: boolean;
 }
 
@@ -38,7 +38,7 @@ export interface SlotMachine {
   name: string;
   description: string;
   theme: string;
-  provider: 'CoinKrazy';
+  provider: "CoinKrazy";
   thumbnail: string;
   backgroundImage: string;
   reels: SlotReel[];
@@ -47,7 +47,7 @@ export interface SlotMachine {
   symbols: SlotSymbol[];
   winConditions: SlotWinCondition[];
   rtp: number; // Return to Player percentage
-  volatility: 'low' | 'medium' | 'high';
+  volatility: "low" | "medium" | "high";
   minBet: number;
   maxBet: number;
   jackpot?: number;
@@ -62,7 +62,12 @@ export interface SlotMachine {
 
 export interface SlotBonusFeature {
   id: string;
-  type: 'free_spins' | 'bonus_game' | 'multiplier' | 'expanding_wild' | 'cascading';
+  type:
+    | "free_spins"
+    | "bonus_game"
+    | "multiplier"
+    | "expanding_wild"
+    | "cascading";
   triggerSymbols: string[];
   triggerCount: number;
   description: string;
@@ -135,7 +140,7 @@ export interface JoseyAIResponse {
 
 export interface VisualEditorState {
   selectedSlot: string | null;
-  editMode: 'symbols' | 'reels' | 'paylines' | 'settings' | 'preview';
+  editMode: "symbols" | "reels" | "paylines" | "settings" | "preview";
   unsavedChanges: boolean;
   previewMode: boolean;
 }

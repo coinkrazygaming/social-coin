@@ -1,5 +1,10 @@
 import { RequestHandler } from "express";
-import { SlotMachine, SlotSpin, SlotSession, SlotStats } from "@shared/slotTypes";
+import {
+  SlotMachine,
+  SlotSpin,
+  SlotSession,
+  SlotStats,
+} from "@shared/slotTypes";
 import { DEFAULT_COINKRAZY_SLOTS } from "@shared/defaultSlots";
 
 // In-memory storage for demo purposes
@@ -20,10 +25,12 @@ export const handleGetInHouseSlots: RequestHandler = (req, res) => {
 export const handleCreateSlot: RequestHandler = (req, res) => {
   try {
     const slotData: SlotMachine = req.body;
-    
+
     // Validate required fields
     if (!slotData.name || !slotData.symbols || !slotData.reels) {
-      return res.status(400).json({ error: "Missing required slot configuration" });
+      return res
+        .status(400)
+        .json({ error: "Missing required slot configuration" });
     }
 
     // Assign ID if not provided
@@ -32,7 +39,7 @@ export const handleCreateSlot: RequestHandler = (req, res) => {
     }
 
     // Set provider to CoinKrazy
-    slotData.provider = 'CoinKrazy';
+    slotData.provider = "CoinKrazy";
     slotData.created = new Date();
     slotData.updated = new Date();
 
@@ -40,7 +47,7 @@ export const handleCreateSlot: RequestHandler = (req, res) => {
 
     res.status(201).json({
       success: true,
-      slot: slotData
+      slot: slotData,
     });
   } catch (error) {
     console.error("Error creating slot:", error);
@@ -53,7 +60,7 @@ export const handleUpdateSlot: RequestHandler = (req, res) => {
     const { slotId } = req.params;
     const updates: Partial<SlotMachine> = req.body;
 
-    const slotIndex = inHouseSlots.findIndex(slot => slot.id === slotId);
+    const slotIndex = inHouseSlots.findIndex((slot) => slot.id === slotId);
     if (slotIndex === -1) {
       return res.status(404).json({ error: "Slot not found" });
     }
@@ -62,12 +69,12 @@ export const handleUpdateSlot: RequestHandler = (req, res) => {
     inHouseSlots[slotIndex] = {
       ...inHouseSlots[slotIndex],
       ...updates,
-      updated: new Date()
+      updated: new Date(),
     };
 
     res.json({
       success: true,
-      slot: inHouseSlots[slotIndex]
+      slot: inHouseSlots[slotIndex],
     });
   } catch (error) {
     console.error("Error updating slot:", error);
@@ -79,7 +86,7 @@ export const handleDeleteSlot: RequestHandler = (req, res) => {
   try {
     const { slotId } = req.params;
 
-    const slotIndex = inHouseSlots.findIndex(slot => slot.id === slotId);
+    const slotIndex = inHouseSlots.findIndex((slot) => slot.id === slotId);
     if (slotIndex === -1) {
       return res.status(404).json({ error: "Slot not found" });
     }
@@ -89,7 +96,7 @@ export const handleDeleteSlot: RequestHandler = (req, res) => {
 
     res.json({
       success: true,
-      deletedSlot
+      deletedSlot,
     });
   } catch (error) {
     console.error("Error deleting slot:", error);
@@ -106,13 +113,15 @@ export const handleSpinSlot: RequestHandler = (req, res) => {
       return res.status(400).json({ error: "Invalid spin request" });
     }
 
-    const slot = inHouseSlots.find(s => s.id === slotId);
+    const slot = inHouseSlots.find((s) => s.id === slotId);
     if (!slot || !slot.active) {
       return res.status(404).json({ error: "Slot not found or inactive" });
     }
 
     if (bet < slot.minBet || bet > slot.maxBet) {
-      return res.status(400).json({ error: "Bet amount outside allowed range" });
+      return res
+        .status(400)
+        .json({ error: "Bet amount outside allowed range" });
     }
 
     // Generate spin result
@@ -127,14 +136,14 @@ export const handleSpinSlot: RequestHandler = (req, res) => {
       result,
       winAmount,
       winLines,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
     slotSpins.push(spin);
 
     res.json({
       success: true,
-      spin
+      spin,
     });
   } catch (error) {
     console.error("Error processing slot spin:", error);
@@ -146,23 +155,26 @@ export const handleGetSlotStats: RequestHandler = (req, res) => {
   try {
     const { slotId } = req.params;
 
-    const slot = inHouseSlots.find(s => s.id === slotId);
+    const slot = inHouseSlots.find((s) => s.id === slotId);
     if (!slot) {
       return res.status(404).json({ error: "Slot not found" });
     }
 
-    const slotSpinsForGame = slotSpins.filter(s => s.slotId === slotId);
-    
+    const slotSpinsForGame = slotSpins.filter((s) => s.slotId === slotId);
+
     const stats: SlotStats = {
       slotId,
       totalSpins: slotSpinsForGame.length,
       totalBet: slotSpinsForGame.reduce((sum, spin) => sum + spin.bet, 0),
-      totalPayout: slotSpinsForGame.reduce((sum, spin) => sum + spin.winAmount, 0),
+      totalPayout: slotSpinsForGame.reduce(
+        (sum, spin) => sum + spin.winAmount,
+        0,
+      ),
       rtp: 0,
       popularityScore: slotSpinsForGame.length,
       averageSession: 0,
-      biggestWin: Math.max(...slotSpinsForGame.map(s => s.winAmount), 0),
-      jackpotHits: 0
+      biggestWin: Math.max(...slotSpinsForGame.map((s) => s.winAmount), 0),
+      jackpotHits: 0,
     };
 
     // Calculate RTP
@@ -179,19 +191,22 @@ export const handleGetSlotStats: RequestHandler = (req, res) => {
 
 export const handleGetAllSlotStats: RequestHandler = (req, res) => {
   try {
-    const allStats = inHouseSlots.map(slot => {
-      const slotSpinsForGame = slotSpins.filter(s => s.slotId === slot.id);
-      
+    const allStats = inHouseSlots.map((slot) => {
+      const slotSpinsForGame = slotSpins.filter((s) => s.slotId === slot.id);
+
       const stats: SlotStats = {
         slotId: slot.id,
         totalSpins: slotSpinsForGame.length,
         totalBet: slotSpinsForGame.reduce((sum, spin) => sum + spin.bet, 0),
-        totalPayout: slotSpinsForGame.reduce((sum, spin) => sum + spin.winAmount, 0),
+        totalPayout: slotSpinsForGame.reduce(
+          (sum, spin) => sum + spin.winAmount,
+          0,
+        ),
         rtp: 0,
         popularityScore: slotSpinsForGame.length,
         averageSession: 0,
-        biggestWin: Math.max(...slotSpinsForGame.map(s => s.winAmount), 0),
-        jackpotHits: 0
+        biggestWin: Math.max(...slotSpinsForGame.map((s) => s.winAmount), 0),
+        jackpotHits: 0,
       };
 
       if (stats.totalBet > 0) {
@@ -211,17 +226,20 @@ export const handleGetAllSlotStats: RequestHandler = (req, res) => {
 // Helper functions
 function generateSpinResult(slot: SlotMachine): string[][] {
   const result: string[][] = [];
-  
+
   for (let row = 0; row < slot.rows; row++) {
     result[row] = [];
     for (let reel = 0; reel < slot.reels.length; reel++) {
       const reelConfig = slot.reels[reel];
       const weights = reelConfig.weight;
-      
+
       // Weighted random selection
-      const totalWeight = Object.values(weights).reduce((sum, weight) => sum + weight, 0);
+      const totalWeight = Object.values(weights).reduce(
+        (sum, weight) => sum + weight,
+        0,
+      );
       let random = Math.random() * totalWeight;
-      
+
       let selectedSymbol = reelConfig.symbols[0];
       for (const symbolId of reelConfig.symbols) {
         random -= weights[symbolId] || 1;
@@ -230,15 +248,19 @@ function generateSpinResult(slot: SlotMachine): string[][] {
           break;
         }
       }
-      
+
       result[row][reel] = selectedSymbol;
     }
   }
-  
+
   return result;
 }
 
-function calculateWin(slot: SlotMachine, result: string[][], bet: number): {
+function calculateWin(
+  slot: SlotMachine,
+  result: string[][],
+  bet: number,
+): {
   winAmount: number;
   winLines: Array<{
     paylineId: string;
@@ -249,31 +271,35 @@ function calculateWin(slot: SlotMachine, result: string[][], bet: number): {
   let totalWin = 0;
   const winningLines: any[] = [];
 
-  slot.paylines.forEach(payline => {
+  slot.paylines.forEach((payline) => {
     if (!payline.active) return;
 
     const lineSymbols: string[] = [];
-    payline.positions.forEach(pos => {
+    payline.positions.forEach((pos) => {
       if (result[pos.row] && result[pos.row][pos.reel]) {
         lineSymbols.push(result[pos.row][pos.reel]);
       }
     });
 
     // Check for winning combinations
-    slot.winConditions.forEach(condition => {
-      const matchingSymbols = lineSymbols.filter(symbol => 
-        symbol === condition.symbolId || 
-        (slot.symbols.find(s => s.id === symbol)?.name?.toLowerCase().includes('wild'))
+    slot.winConditions.forEach((condition) => {
+      const matchingSymbols = lineSymbols.filter(
+        (symbol) =>
+          symbol === condition.symbolId ||
+          slot.symbols
+            .find((s) => s.id === symbol)
+            ?.name?.toLowerCase()
+            .includes("wild"),
       );
 
       if (matchingSymbols.length >= condition.count) {
         const winAmount = condition.payout * bet;
         totalWin += winAmount;
-        
+
         winningLines.push({
           paylineId: payline.id,
           symbols: matchingSymbols,
-          payout: winAmount
+          payout: winAmount,
         });
       }
     });

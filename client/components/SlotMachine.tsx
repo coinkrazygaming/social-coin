@@ -1,23 +1,33 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "./ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Progress } from "./ui/progress";
 import { Slider } from "./ui/slider";
-import { 
-  Play, 
-  Pause, 
-  RotateCcw, 
-  Volume2, 
-  VolumeX, 
+import {
+  Play,
+  Pause,
+  RotateCcw,
+  Volume2,
+  VolumeX,
   Settings,
   Trophy,
   Coins,
   Zap,
   Star,
-  Crown
+  Crown,
 } from "lucide-react";
-import { SlotMachine as SlotMachineType, SlotSymbol, SlotSpin } from "@shared/slotTypes";
+import {
+  SlotMachine as SlotMachineType,
+  SlotSymbol,
+  SlotSpin,
+} from "@shared/slotTypes";
 
 interface SlotMachineProps {
   slot: SlotMachineType;
@@ -34,7 +44,13 @@ interface ReelState {
   finalPosition: number;
 }
 
-export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate }: SlotMachineProps) {
+export function SlotMachine({
+  slot,
+  userId,
+  userBalance,
+  onSpin,
+  onBalanceUpdate,
+}: SlotMachineProps) {
   const [reels, setReels] = useState<ReelState[]>([]);
   const [isSpinning, setIsSpinning] = useState(false);
   const [currentBet, setCurrentBet] = useState(slot.minBet);
@@ -56,7 +72,7 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
       symbols: generateReelStrip(reel.symbols, 20), // Generate longer strip for animation
       spinning: false,
       animationOffset: 0,
-      finalPosition: 0
+      finalPosition: 0,
     }));
     setReels(initialReels);
   }, [slot]);
@@ -71,39 +87,42 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
   };
 
   const getSymbolById = (symbolId: string): SlotSymbol | undefined => {
-    return slot.symbols.find(symbol => symbol.id === symbolId);
+    return slot.symbols.find((symbol) => symbol.id === symbolId);
   };
 
-  const calculateWin = (result: string[][]): {amount: number, lines: any[]} => {
+  const calculateWin = (
+    result: string[][],
+  ): { amount: number; lines: any[] } => {
     let totalWin = 0;
     const winningLines: any[] = [];
 
-    slot.paylines.forEach(payline => {
+    slot.paylines.forEach((payline) => {
       if (!payline.active) return;
 
       const lineSymbols: string[] = [];
-      payline.positions.forEach(pos => {
+      payline.positions.forEach((pos) => {
         if (result[pos.row] && result[pos.row][pos.reel]) {
           lineSymbols.push(result[pos.row][pos.reel]);
         }
       });
 
       // Check for winning combinations
-      slot.winConditions.forEach(condition => {
-        const matchingSymbols = lineSymbols.filter(symbol => 
-          symbol === condition.symbolId || 
-          (slot.symbols.find(s => s.id === symbol)?.name === 'Wild')
+      slot.winConditions.forEach((condition) => {
+        const matchingSymbols = lineSymbols.filter(
+          (symbol) =>
+            symbol === condition.symbolId ||
+            slot.symbols.find((s) => s.id === symbol)?.name === "Wild",
         );
 
         if (matchingSymbols.length >= condition.count) {
           const winAmount = condition.payout * currentBet;
           totalWin += winAmount;
-          
+
           winningLines.push({
             paylineId: payline.id,
             symbols: matchingSymbols,
             payout: winAmount,
-            symbolId: condition.symbolId
+            symbolId: condition.symbolId,
           });
         }
       });
@@ -114,17 +133,20 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
 
   const generateSpinResult = (): string[][] => {
     const result: string[][] = [];
-    
+
     for (let row = 0; row < slot.rows; row++) {
       result[row] = [];
       for (let reel = 0; reel < slot.reels.length; reel++) {
         const reelSymbols = slot.reels[reel].symbols;
         const weights = slot.reels[reel].weight;
-        
+
         // Weighted random selection
-        const totalWeight = Object.values(weights).reduce((sum, weight) => sum + weight, 0);
+        const totalWeight = Object.values(weights).reduce(
+          (sum, weight) => sum + weight,
+          0,
+        );
         let random = Math.random() * totalWeight;
-        
+
         let selectedSymbol = reelSymbols[0];
         for (const symbolId of reelSymbols) {
           random -= weights[symbolId] || 1;
@@ -133,11 +155,11 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
             break;
           }
         }
-        
+
         result[row][reel] = selectedSymbol;
       }
     }
-    
+
     return result;
   };
 
@@ -158,19 +180,19 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
     const result = generateSpinResult();
 
     // Animate reels
-    const spinPromises = reels.map((_, index) => 
-      animateReel(index, result[0]?.[index] || slot.reels[index].symbols[0])
+    const spinPromises = reels.map((_, index) =>
+      animateReel(index, result[0]?.[index] || slot.reels[index].symbols[0]),
     );
 
     await Promise.all(spinPromises);
 
     // Calculate wins
     const { amount, lines } = calculateWin(result);
-    
+
     setLastWin(amount);
     setWinLines(lines);
-    setTotalWins(prev => prev + amount);
-    setSpinCount(prev => prev + 1);
+    setTotalWins((prev) => prev + amount);
+    setSpinCount((prev) => prev + 1);
 
     // Update balance
     const newBalance = userBalance - currentBet + amount;
@@ -189,7 +211,10 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
     return result;
   };
 
-  const animateReel = (reelIndex: number, finalSymbol: string): Promise<void> => {
+  const animateReel = (
+    reelIndex: number,
+    finalSymbol: string,
+  ): Promise<void> => {
     return new Promise((resolve) => {
       const reel = reelRefs.current[reelIndex];
       if (!reel) {
@@ -197,15 +222,22 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
         return;
       }
 
-      const spinDuration = slot.animations.spinDuration + (reelIndex * slot.animations.reelDelay);
+      const spinDuration =
+        slot.animations.spinDuration + reelIndex * slot.animations.reelDelay;
       const symbolHeight = 80; // Height of each symbol
-      
+
       // Update reel state
-      setReels(prev => prev.map((r, i) => i === reelIndex ? {
-        ...r,
-        spinning: true,
-        animationOffset: 0
-      } : r));
+      setReels((prev) =>
+        prev.map((r, i) =>
+          i === reelIndex
+            ? {
+                ...r,
+                spinning: true,
+                animationOffset: 0,
+              }
+            : r,
+        ),
+      );
 
       // Animate spinning
       let startTime: number;
@@ -213,26 +245,38 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
         if (!startTime) startTime = currentTime;
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / spinDuration, 1);
-        
+
         // Easing function for natural spin feeling
         const easeOut = 1 - Math.pow(1 - progress, 3);
         const offset = easeOut * symbolHeight * 20; // Spin through many symbols
-        
-        setReels(prev => prev.map((r, i) => i === reelIndex ? {
-          ...r,
-          animationOffset: offset
-        } : r));
+
+        setReels((prev) =>
+          prev.map((r, i) =>
+            i === reelIndex
+              ? {
+                  ...r,
+                  animationOffset: offset,
+                }
+              : r,
+          ),
+        );
 
         if (progress < 1) {
           requestAnimationFrame(animate);
         } else {
           // Stop spinning and show final symbol
-          setReels(prev => prev.map((r, i) => i === reelIndex ? {
-            ...r,
-            spinning: false,
-            animationOffset: 0,
-            finalPosition: 0
-          } : r));
+          setReels((prev) =>
+            prev.map((r, i) =>
+              i === reelIndex
+                ? {
+                    ...r,
+                    spinning: false,
+                    animationOffset: 0,
+                    finalPosition: 0,
+                  }
+                : r,
+            ),
+          );
           resolve();
         }
       };
@@ -243,7 +287,7 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
 
   const handleSpin = async () => {
     if (currentBet > userBalance) return;
-    
+
     try {
       const result = await spinReels();
       if (result.length > 0) {
@@ -251,7 +295,7 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
         await onSpin(currentBet);
       }
     } catch (error) {
-      console.error('Spin error:', error);
+      console.error("Spin error:", error);
       setIsSpinning(false);
     }
   };
@@ -271,15 +315,18 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
       <Card className="overflow-hidden bg-gradient-to-br from-purple-900/20 to-blue-900/20 border-gold/30">
         <CardHeader className="text-center bg-gradient-to-r from-gold/10 to-purple/10 border-b border-gold/20">
           <div className="flex items-center justify-center mb-2">
-            <img 
-              src={slot.thumbnail || '/slot-placeholder.png'} 
+            <img
+              src={slot.thumbnail || "/slot-placeholder.png"}
               alt={slot.name}
               className="w-16 h-16 rounded-lg border-2 border-gold/50 mr-4"
             />
             <div>
               <CardTitle className="text-2xl flex items-center">
                 {slot.name}
-                <Badge variant="outline" className="ml-2 border-gold/50 text-gold">
+                <Badge
+                  variant="outline"
+                  className="ml-2 border-gold/50 text-gold"
+                >
                   <Crown className="h-3 w-3 mr-1" />
                   {slot.provider}
                 </Badge>
@@ -291,19 +338,27 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
           {/* Game Stats */}
           <div className="flex justify-center space-x-6 mt-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-casino-green">${userBalance.toFixed(2)}</div>
+              <div className="text-2xl font-bold text-casino-green">
+                ${userBalance.toFixed(2)}
+              </div>
               <div className="text-sm text-muted-foreground">Balance</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-gold">${currentBet.toFixed(2)}</div>
+              <div className="text-2xl font-bold text-gold">
+                ${currentBet.toFixed(2)}
+              </div>
               <div className="text-sm text-muted-foreground">Bet</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-sweep">${lastWin.toFixed(2)}</div>
+              <div className="text-2xl font-bold text-sweep">
+                ${lastWin.toFixed(2)}
+              </div>
               <div className="text-sm text-muted-foreground">Last Win</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-400">{spinCount}</div>
+              <div className="text-2xl font-bold text-blue-400">
+                {spinCount}
+              </div>
               <div className="text-sm text-muted-foreground">Spins</div>
             </div>
           </div>
@@ -311,12 +366,12 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
 
         <CardContent className="p-6">
           {/* Slot Machine Display */}
-          <div 
+          <div
             className="relative rounded-lg border-4 border-gold/50 p-4 mb-6"
             style={{
-              backgroundImage: `url(${slot.backgroundImage || '/slot-bg.jpg'})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center'
+              backgroundImage: `url(${slot.backgroundImage || "/slot-bg.jpg"})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
             }}
           >
             {/* Paylines overlay */}
@@ -339,14 +394,19 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
             )}
 
             {/* Reels */}
-            <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${slot.reels.length}, 1fr)` }}>
+            <div
+              className="grid gap-2"
+              style={{
+                gridTemplateColumns: `repeat(${slot.reels.length}, 1fr)`,
+              }}
+            >
               {reels.map((reel, reelIndex) => (
                 <div key={reelIndex} className="relative">
-                  <div 
-                    ref={el => reelRefs.current[reelIndex] = el!}
+                  <div
+                    ref={(el) => (reelRefs.current[reelIndex] = el!)}
                     className="h-64 overflow-hidden rounded border-2 border-gold/30 bg-black/50"
                   >
-                    <div 
+                    <div
                       className="transition-transform duration-100"
                       style={{
                         transform: `translateY(-${reel.animationOffset}px)`,
@@ -354,29 +414,42 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
                     >
                       {/* Show current symbols */}
                       {Array.from({ length: slot.rows }, (_, rowIndex) => {
-                        const symbolIndex = Math.floor(reel.animationOffset / 80) + rowIndex;
-                        const symbolId = reel.symbols[symbolIndex % reel.symbols.length];
+                        const symbolIndex =
+                          Math.floor(reel.animationOffset / 80) + rowIndex;
+                        const symbolId =
+                          reel.symbols[symbolIndex % reel.symbols.length];
                         const symbol = getSymbolById(symbolId);
-                        
+
                         return (
-                          <div 
+                          <div
                             key={`${reelIndex}-${rowIndex}`}
                             className={`h-20 flex items-center justify-center border-b border-gold/20 ${
-                              showWinAnimation && winLines.some(line => 
-                                line.symbols.includes(symbolId)
-                              ) ? 'animate-pulse bg-gold/20' : ''
+                              showWinAnimation &&
+                              winLines.some((line) =>
+                                line.symbols.includes(symbolId),
+                              )
+                                ? "animate-pulse bg-gold/20"
+                                : ""
                             }`}
                           >
                             {symbol ? (
                               <div className="text-center">
                                 <div className="text-4xl mb-1">
                                   {symbol.image ? (
-                                    <img src={symbol.image} alt={symbol.name} className="w-12 h-12 mx-auto" />
+                                    <img
+                                      src={symbol.image}
+                                      alt={symbol.name}
+                                      className="w-12 h-12 mx-auto"
+                                    />
                                   ) : (
-                                    <span style={{ color: symbol.color }}>{symbol.name[0]}</span>
+                                    <span style={{ color: symbol.color }}>
+                                      {symbol.name[0]}
+                                    </span>
                                   )}
                                 </div>
-                                <div className="text-xs text-white/80">{symbol.name}</div>
+                                <div className="text-xs text-white/80">
+                                  {symbol.name}
+                                </div>
                               </div>
                             ) : (
                               <div className="text-2xl text-white">?</div>
@@ -386,7 +459,7 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
                       })}
                     </div>
                   </div>
-                  
+
                   {/* Reel number */}
                   <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs text-gold font-bold">
                     Reel {reelIndex + 1}
@@ -407,7 +480,8 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
                     ${lastWin.toFixed(2)}
                   </div>
                   <div className="text-sm text-muted-foreground mt-2">
-                    {winLines.length} winning line{winLines.length !== 1 ? 's' : ''}
+                    {winLines.length} winning line
+                    {winLines.length !== 1 ? "s" : ""}
                   </div>
                 </div>
               </div>
@@ -427,7 +501,7 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
                 <Coins className="h-5 w-5 mr-2 text-gold" />
                 Betting
               </h3>
-              
+
               <div>
                 <label className="text-sm text-muted-foreground mb-2 block">
                   Bet Amount: ${currentBet.toFixed(2)}
@@ -448,7 +522,7 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
               </div>
 
               <div className="flex space-x-2">
-                <Button 
+                <Button
                   onClick={() => adjustBet(currentBet / 2)}
                   disabled={isSpinning}
                   variant="outline"
@@ -456,15 +530,15 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
                 >
                   1/2 Bet
                 </Button>
-                <Button 
+                <Button
                   onClick={() => adjustBet(currentBet * 2)}
                   disabled={isSpinning}
-                  variant="outline" 
+                  variant="outline"
                   size="sm"
                 >
                   2x Bet
                 </Button>
-                <Button 
+                <Button
                   onClick={maxBet}
                   disabled={isSpinning}
                   variant="outline"
@@ -488,7 +562,11 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
                   variant="outline"
                   size="sm"
                 >
-                  {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+                  {soundEnabled ? (
+                    <Volume2 className="h-4 w-4" />
+                  ) : (
+                    <VolumeX className="h-4 w-4" />
+                  )}
                 </Button>
                 <Button
                   onClick={() => setAutoPlay(!autoPlay)}
@@ -496,7 +574,11 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
                   size="sm"
                   disabled={isSpinning}
                 >
-                  {autoPlay ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                  {autoPlay ? (
+                    <Pause className="h-4 w-4" />
+                  ) : (
+                    <Play className="h-4 w-4" />
+                  )}
                   Auto
                 </Button>
                 <Button
@@ -543,7 +625,7 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
                 </div>
               )}
             </Button>
-            
+
             {currentBet > userBalance && (
               <p className="text-casino-red text-center mt-2">
                 Insufficient balance for this bet
@@ -558,14 +640,19 @@ export function SlotMachine({ slot, userId, userBalance, onSpin, onBalanceUpdate
               Paytable
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
-              {slot.symbols.map(symbol => (
-                <div key={symbol.id} className="flex items-center space-x-2 p-2 bg-muted/50 rounded">
+              {slot.symbols.map((symbol) => (
+                <div
+                  key={symbol.id}
+                  className="flex items-center space-x-2 p-2 bg-muted/50 rounded"
+                >
                   <div style={{ color: symbol.color }} className="font-bold">
                     {symbol.name[0]}
                   </div>
                   <div>
                     <div className="font-semibold">{symbol.name}</div>
-                    <div className="text-xs text-muted-foreground">{symbol.value}x</div>
+                    <div className="text-xs text-muted-foreground">
+                      {symbol.value}x
+                    </div>
                   </div>
                 </div>
               ))}

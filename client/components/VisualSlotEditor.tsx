@@ -1,25 +1,44 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "./ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { Slider } from "./ui/slider";
 import { Switch } from "./ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { ScrollArea } from "./ui/scroll-area";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
-import { 
-  Save, 
-  Play, 
-  Eye, 
-  Settings, 
-  Palette, 
-  Grid, 
-  Zap, 
-  Upload, 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import {
+  Save,
+  Play,
+  Eye,
+  Settings,
+  Palette,
+  Grid,
+  Zap,
+  Upload,
   Download,
   Plus,
   Trash2,
@@ -32,9 +51,16 @@ import {
   AlertTriangle,
   CheckCircle,
   Crown,
-  Sparkles
+  Sparkles,
 } from "lucide-react";
-import { SlotMachine as SlotMachineType, SlotSymbol, SlotReel, SlotPayline, SlotWinCondition, VisualEditorState } from "@shared/slotTypes";
+import {
+  SlotMachine as SlotMachineType,
+  SlotSymbol,
+  SlotReel,
+  SlotPayline,
+  SlotWinCondition,
+  VisualEditorState,
+} from "@shared/slotTypes";
 import { JoseyAI } from "./JoseyAI";
 import { SlotMachine } from "./SlotMachine";
 
@@ -44,15 +70,19 @@ interface VisualSlotEditorProps {
   onPreview: (slot: SlotMachineType) => void;
 }
 
-export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotEditorProps) {
+export function VisualSlotEditor({
+  initialSlot,
+  onSave,
+  onPreview,
+}: VisualSlotEditorProps) {
   const [slot, setSlot] = useState<SlotMachineType>(
-    initialSlot || createDefaultSlot()
+    initialSlot || createDefaultSlot(),
   );
   const [editorState, setEditorState] = useState<VisualEditorState>({
     selectedSlot: slot.id,
-    editMode: 'settings',
+    editMode: "settings",
     unsavedChanges: false,
-    previewMode: false
+    previewMode: false,
   });
   const [selectedSymbol, setSelectedSymbol] = useState<string | null>(null);
   const [selectedReel, setSelectedReel] = useState<number>(0);
@@ -65,183 +95,192 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
   function createDefaultSlot(): SlotMachineType {
     const defaultSymbols: SlotSymbol[] = [
       {
-        id: 'wild',
-        name: 'CoinKrazy Wild',
-        image: '/symbols/wild.png',
+        id: "wild",
+        name: "CoinKrazy Wild",
+        image: "/symbols/wild.png",
         value: 1000,
-        rarity: 'legendary',
+        rarity: "legendary",
         multiplier: 2,
-        color: '#FFD700',
-        animation: 'sparkle'
+        color: "#FFD700",
+        animation: "sparkle",
       },
       {
-        id: 'scatter',
-        name: 'Scatter',
-        image: '/symbols/scatter.png',
+        id: "scatter",
+        name: "Scatter",
+        image: "/symbols/scatter.png",
         value: 500,
-        rarity: 'epic',
+        rarity: "epic",
         multiplier: 1,
-        color: '#FF6B6B',
-        animation: 'glow'
+        color: "#FF6B6B",
+        animation: "glow",
       },
       {
-        id: 'seven',
-        name: 'Lucky 7',
-        image: '/symbols/seven.png',
+        id: "seven",
+        name: "Lucky 7",
+        image: "/symbols/seven.png",
         value: 250,
-        rarity: 'rare',
+        rarity: "rare",
         multiplier: 1,
-        color: '#4ECDC4'
+        color: "#4ECDC4",
       },
       {
-        id: 'bar',
-        name: 'Bar',
-        image: '/symbols/bar.png',
+        id: "bar",
+        name: "Bar",
+        image: "/symbols/bar.png",
         value: 100,
-        rarity: 'uncommon',
+        rarity: "uncommon",
         multiplier: 1,
-        color: '#45B7D1'
+        color: "#45B7D1",
       },
       {
-        id: 'cherry',
-        name: 'Cherry',
-        image: '/symbols/cherry.png',
+        id: "cherry",
+        name: "Cherry",
+        image: "/symbols/cherry.png",
         value: 50,
-        rarity: 'common',
+        rarity: "common",
         multiplier: 1,
-        color: '#FFA07A'
-      }
+        color: "#FFA07A",
+      },
     ];
 
     const defaultReels: SlotReel[] = Array.from({ length: 5 }, (_, i) => ({
       id: `reel_${i}`,
       position: i,
-      symbols: ['wild', 'scatter', 'seven', 'bar', 'cherry'],
+      symbols: ["wild", "scatter", "seven", "bar", "cherry"],
       weight: {
-        'wild': 1,
-        'scatter': 2,
-        'seven': 5,
-        'bar': 15,
-        'cherry': 25
-      }
+        wild: 1,
+        scatter: 2,
+        seven: 5,
+        bar: 15,
+        cherry: 25,
+      },
     }));
 
     const defaultPaylines: SlotPayline[] = [
       {
-        id: 'line_1',
-        name: 'Center Line',
+        id: "line_1",
+        name: "Center Line",
         positions: [
-          { reel: 0, row: 1 }, { reel: 1, row: 1 }, { reel: 2, row: 1 }, 
-          { reel: 3, row: 1 }, { reel: 4, row: 1 }
+          { reel: 0, row: 1 },
+          { reel: 1, row: 1 },
+          { reel: 2, row: 1 },
+          { reel: 3, row: 1 },
+          { reel: 4, row: 1 },
         ],
-        active: true
+        active: true,
       },
       {
-        id: 'line_2', 
-        name: 'Top Line',
+        id: "line_2",
+        name: "Top Line",
         positions: [
-          { reel: 0, row: 0 }, { reel: 1, row: 0 }, { reel: 2, row: 0 },
-          { reel: 3, row: 0 }, { reel: 4, row: 0 }
+          { reel: 0, row: 0 },
+          { reel: 1, row: 0 },
+          { reel: 2, row: 0 },
+          { reel: 3, row: 0 },
+          { reel: 4, row: 0 },
         ],
-        active: true
+        active: true,
       },
       {
-        id: 'line_3',
-        name: 'Bottom Line', 
+        id: "line_3",
+        name: "Bottom Line",
         positions: [
-          { reel: 0, row: 2 }, { reel: 1, row: 2 }, { reel: 2, row: 2 },
-          { reel: 3, row: 2 }, { reel: 4, row: 2 }
+          { reel: 0, row: 2 },
+          { reel: 1, row: 2 },
+          { reel: 2, row: 2 },
+          { reel: 3, row: 2 },
+          { reel: 4, row: 2 },
         ],
-        active: true
-      }
+        active: true,
+      },
     ];
 
     return {
       id: `slot_${Date.now()}`,
-      name: 'New CoinKrazy Slot',
-      description: 'A custom slot machine powered by CoinKrazy',
-      theme: 'Classic',
-      provider: 'CoinKrazy',
-      thumbnail: '/thumbnails/default-slot.png',
-      backgroundImage: '/backgrounds/default-bg.jpg',
+      name: "New CoinKrazy Slot",
+      description: "A custom slot machine powered by CoinKrazy",
+      theme: "Classic",
+      provider: "CoinKrazy",
+      thumbnail: "/thumbnails/default-slot.png",
+      backgroundImage: "/backgrounds/default-bg.jpg",
       reels: defaultReels,
       rows: 3,
       paylines: defaultPaylines,
       symbols: defaultSymbols,
       winConditions: [
         {
-          id: 'wild_5',
-          symbolId: 'wild',
+          id: "wild_5",
+          symbolId: "wild",
           count: 5,
           payout: 1000,
-          paylineRequired: true
+          paylineRequired: true,
         },
         {
-          id: 'seven_5',
-          symbolId: 'seven', 
+          id: "seven_5",
+          symbolId: "seven",
           count: 5,
           payout: 250,
-          paylineRequired: true
-        }
+          paylineRequired: true,
+        },
       ],
       rtp: 95.5,
-      volatility: 'medium',
+      volatility: "medium",
       minBet: 0.01,
       maxBet: 100,
       bonusFeatures: [],
       soundEffects: {
-        spinSound: '/sounds/spin.mp3',
-        winSound: '/sounds/win.mp3',
-        bonusSound: '/sounds/bonus.mp3',
-        backgroundMusic: '/sounds/background.mp3',
-        volume: 0.7
+        spinSound: "/sounds/spin.mp3",
+        winSound: "/sounds/win.mp3",
+        bonusSound: "/sounds/bonus.mp3",
+        backgroundMusic: "/sounds/background.mp3",
+        volume: 0.7,
       },
       animations: {
         spinDuration: 2000,
         reelDelay: 200,
         winAnimationDuration: 1500,
-        symbolAnimations: {}
+        symbolAnimations: {},
       },
       created: new Date(),
       updated: new Date(),
       active: true,
-      featured: false
+      featured: false,
     };
   }
 
   const updateSlot = (updates: Partial<SlotMachineType>) => {
-    setSlot(prev => ({ ...prev, ...updates, updated: new Date() }));
-    setEditorState(prev => ({ ...prev, unsavedChanges: true }));
+    setSlot((prev) => ({ ...prev, ...updates, updated: new Date() }));
+    setEditorState((prev) => ({ ...prev, unsavedChanges: true }));
   };
 
   const addSymbol = () => {
     const newSymbol: SlotSymbol = {
       id: `symbol_${Date.now()}`,
-      name: 'New Symbol',
-      image: '',
+      name: "New Symbol",
+      image: "",
       value: 10,
-      rarity: 'common',
+      rarity: "common",
       multiplier: 1,
-      color: '#FFFFFF'
+      color: "#FFFFFF",
     };
 
     updateSlot({
-      symbols: [...slot.symbols, newSymbol]
+      symbols: [...slot.symbols, newSymbol],
     });
     setSelectedSymbol(newSymbol.id);
   };
 
   const updateSymbol = (symbolId: string, updates: Partial<SlotSymbol>) => {
     updateSlot({
-      symbols: slot.symbols.map(symbol => 
-        symbol.id === symbolId ? { ...symbol, ...updates } : symbol
-      )
+      symbols: slot.symbols.map((symbol) =>
+        symbol.id === symbolId ? { ...symbol, ...updates } : symbol,
+      ),
     });
   };
 
   const deleteSymbol = (symbolId: string) => {
     updateSlot({
-      symbols: slot.symbols.filter(symbol => symbol.id !== symbolId)
+      symbols: slot.symbols.filter((symbol) => symbol.id !== symbolId),
     });
     if (selectedSymbol === symbolId) {
       setSelectedSymbol(null);
@@ -252,19 +291,26 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
     const newReel: SlotReel = {
       id: `reel_${slot.reels.length}`,
       position: slot.reels.length,
-      symbols: slot.symbols.map(s => s.id),
-      weight: slot.symbols.reduce((acc, symbol) => {
-        acc[symbol.id] = 10;
-        return acc;
-      }, {} as Record<string, number>)
+      symbols: slot.symbols.map((s) => s.id),
+      weight: slot.symbols.reduce(
+        (acc, symbol) => {
+          acc[symbol.id] = 10;
+          return acc;
+        },
+        {} as Record<string, number>,
+      ),
     };
 
     updateSlot({
-      reels: [...slot.reels, newReel]
+      reels: [...slot.reels, newReel],
     });
   };
 
-  const updateReelWeight = (reelIndex: number, symbolId: string, weight: number) => {
+  const updateReelWeight = (
+    reelIndex: number,
+    symbolId: string,
+    weight: number,
+  ) => {
     const updatedReels = [...slot.reels];
     updatedReels[reelIndex].weight[symbolId] = weight;
     updateSlot({ reels: updatedReels });
@@ -273,13 +319,16 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
   const validateSlot = (): string[] => {
     const errors: string[] = [];
 
-    if (!slot.name.trim()) errors.push('Slot name is required');
-    if (slot.symbols.length < 3) errors.push('At least 3 symbols are required');
-    if (slot.reels.length < 3) errors.push('At least 3 reels are required');
-    if (slot.paylines.length === 0) errors.push('At least 1 payline is required');
-    if (slot.minBet <= 0) errors.push('Minimum bet must be greater than 0');
-    if (slot.maxBet <= slot.minBet) errors.push('Maximum bet must be greater than minimum bet');
-    if (slot.rtp < 85 || slot.rtp > 98) errors.push('RTP should be between 85% and 98%');
+    if (!slot.name.trim()) errors.push("Slot name is required");
+    if (slot.symbols.length < 3) errors.push("At least 3 symbols are required");
+    if (slot.reels.length < 3) errors.push("At least 3 reels are required");
+    if (slot.paylines.length === 0)
+      errors.push("At least 1 payline is required");
+    if (slot.minBet <= 0) errors.push("Minimum bet must be greater than 0");
+    if (slot.maxBet <= slot.minBet)
+      errors.push("Maximum bet must be greater than minimum bet");
+    if (slot.rtp < 85 || slot.rtp > 98)
+      errors.push("RTP should be between 85% and 98%");
 
     return errors;
   };
@@ -293,9 +342,9 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
     setIsSaving(true);
     try {
       await onSave(slot);
-      setEditorState(prev => ({ ...prev, unsavedChanges: false }));
+      setEditorState((prev) => ({ ...prev, unsavedChanges: false }));
     } catch (error) {
-      console.error('Failed to save slot:', error);
+      console.error("Failed to save slot:", error);
     } finally {
       setIsSaving(false);
     }
@@ -322,33 +371,34 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
 
   const exportSlotConfig = () => {
     const dataStr = JSON.stringify(slot, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    
-    const exportFileDefaultName = `${slot.name.replace(/\s+/g, '_')}_config.json`;
-    
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
+    const dataUri =
+      "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
+
+    const exportFileDefaultName = `${slot.name.replace(/\s+/g, "_")}_config.json`;
+
+    const linkElement = document.createElement("a");
+    linkElement.setAttribute("href", dataUri);
+    linkElement.setAttribute("download", exportFileDefaultName);
     linkElement.click();
   };
 
   const handleJoseyAISuggestion = (suggestion: string) => {
     // Apply JoseyAI suggestions to the slot configuration
     const lowerSuggestion = suggestion.toLowerCase();
-    
-    if (lowerSuggestion.includes('add symbol')) {
+
+    if (lowerSuggestion.includes("add symbol")) {
       addSymbol();
-    } else if (lowerSuggestion.includes('video game')) {
+    } else if (lowerSuggestion.includes("video game")) {
       updateSlot({
-        theme: 'Video Game Adventure',
-        name: 'CoinKrazy Gaming Quest',
-        description: 'Epic retro gaming adventure with power-up symbols!'
+        theme: "Video Game Adventure",
+        name: "CoinKrazy Gaming Quest",
+        description: "Epic retro gaming adventure with power-up symbols!",
       });
-    } else if (lowerSuggestion.includes('crypto')) {
+    } else if (lowerSuggestion.includes("crypto")) {
       updateSlot({
-        theme: 'Crypto Fortune',
-        name: 'CoinKrazy Digital Gold',
-        description: 'Mine your way to digital riches!'
+        theme: "Crypto Fortune",
+        name: "CoinKrazy Digital Gold",
+        description: "Mine your way to digital riches!",
       });
     }
   };
@@ -363,12 +413,16 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
               <CardTitle className="text-2xl flex items-center">
                 <Crown className="h-6 w-6 mr-2 text-gold" />
                 Visual Slot Editor
-                <Badge variant="outline" className="ml-2 border-gold/50 text-gold">
+                <Badge
+                  variant="outline"
+                  className="ml-2 border-gold/50 text-gold"
+                >
                   CoinKrazy Studio
                 </Badge>
               </CardTitle>
               <CardDescription>
-                Create and customize your in-house slot machines with advanced tools
+                Create and customize your in-house slot machines with advanced
+                tools
               </CardDescription>
             </div>
             <div className="flex items-center space-x-2">
@@ -402,9 +456,12 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Editor */}
         <div className="lg:col-span-2 space-y-6">
-          <Tabs value={editorState.editMode} onValueChange={(mode) => 
-            setEditorState(prev => ({ ...prev, editMode: mode as any }))
-          }>
+          <Tabs
+            value={editorState.editMode}
+            onValueChange={(mode) =>
+              setEditorState((prev) => ({ ...prev, editMode: mode as any }))
+            }
+          >
             <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="settings">
                 <Settings className="h-4 w-4 mr-2" />
@@ -447,28 +504,43 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
                     </div>
                     <div>
                       <Label htmlFor="theme">Theme</Label>
-                      <Select value={slot.theme} onValueChange={(theme) => updateSlot({ theme })}>
+                      <Select
+                        value={slot.theme}
+                        onValueChange={(theme) => updateSlot({ theme })}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Select theme" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="Classic">Classic</SelectItem>
-                          <SelectItem value="Video Game Adventure">Video Game Adventure</SelectItem>
-                          <SelectItem value="Crypto Fortune">Crypto Fortune</SelectItem>
-                          <SelectItem value="Space Odyssey">Space Odyssey</SelectItem>
-                          <SelectItem value="Wild West Gold">Wild West Gold</SelectItem>
-                          <SelectItem value="Mystic Magic">Mystic Magic</SelectItem>
+                          <SelectItem value="Video Game Adventure">
+                            Video Game Adventure
+                          </SelectItem>
+                          <SelectItem value="Crypto Fortune">
+                            Crypto Fortune
+                          </SelectItem>
+                          <SelectItem value="Space Odyssey">
+                            Space Odyssey
+                          </SelectItem>
+                          <SelectItem value="Wild West Gold">
+                            Wild West Gold
+                          </SelectItem>
+                          <SelectItem value="Mystic Magic">
+                            Mystic Magic
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
-                  
+
                   <div>
                     <Label htmlFor="description">Description</Label>
                     <Textarea
                       id="description"
                       value={slot.description}
-                      onChange={(e) => updateSlot({ description: e.target.value })}
+                      onChange={(e) =>
+                        updateSlot({ description: e.target.value })
+                      }
                       placeholder="Describe your slot machine"
                     />
                   </div>
@@ -480,7 +552,9 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
                         id="rows"
                         type="number"
                         value={slot.rows}
-                        onChange={(e) => updateSlot({ rows: parseInt(e.target.value) })}
+                        onChange={(e) =>
+                          updateSlot({ rows: parseInt(e.target.value) })
+                        }
                         min="3"
                         max="5"
                       />
@@ -492,7 +566,9 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
                         type="number"
                         step="0.01"
                         value={slot.minBet}
-                        onChange={(e) => updateSlot({ minBet: parseFloat(e.target.value) })}
+                        onChange={(e) =>
+                          updateSlot({ minBet: parseFloat(e.target.value) })
+                        }
                       />
                     </div>
                     <div>
@@ -502,7 +578,9 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
                         type="number"
                         step="0.01"
                         value={slot.maxBet}
-                        onChange={(e) => updateSlot({ maxBet: parseFloat(e.target.value) })}
+                        onChange={(e) =>
+                          updateSlot({ maxBet: parseFloat(e.target.value) })
+                        }
                       />
                     </div>
                   </div>
@@ -524,7 +602,12 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
                     </div>
                     <div>
                       <Label htmlFor="volatility">Volatility</Label>
-                      <Select value={slot.volatility} onValueChange={(volatility: any) => updateSlot({ volatility })}>
+                      <Select
+                        value={slot.volatility}
+                        onValueChange={(volatility: any) =>
+                          updateSlot({ volatility })
+                        }
+                      >
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
@@ -572,23 +655,32 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {slot.symbols.map((symbol) => (
-                      <Card 
-                        key={symbol.id} 
+                      <Card
+                        key={symbol.id}
                         className={`cursor-pointer transition-all ${
-                          selectedSymbol === symbol.id ? 'ring-2 ring-gold' : ''
+                          selectedSymbol === symbol.id ? "ring-2 ring-gold" : ""
                         }`}
                         onClick={() => setSelectedSymbol(symbol.id)}
                       >
                         <CardContent className="p-4">
                           <div className="flex items-center space-x-3">
-                            <div 
+                            <div
                               className="w-12 h-12 rounded border-2 flex items-center justify-center"
-                              style={{ backgroundColor: symbol.color, borderColor: symbol.color }}
+                              style={{
+                                backgroundColor: symbol.color,
+                                borderColor: symbol.color,
+                              }}
                             >
                               {symbol.image ? (
-                                <img src={symbol.image} alt={symbol.name} className="w-8 h-8" />
+                                <img
+                                  src={symbol.image}
+                                  alt={symbol.name}
+                                  className="w-8 h-8"
+                                />
                               ) : (
-                                <span className="text-white font-bold">{symbol.name[0]}</span>
+                                <span className="text-white font-bold">
+                                  {symbol.name[0]}
+                                </span>
                               )}
                             </div>
                             <div className="flex-1">
@@ -633,7 +725,9 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
                       </CardHeader>
                       <CardContent>
                         {(() => {
-                          const symbol = slot.symbols.find(s => s.id === selectedSymbol);
+                          const symbol = slot.symbols.find(
+                            (s) => s.id === selectedSymbol,
+                          );
                           if (!symbol) return null;
 
                           return (
@@ -643,7 +737,11 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
                                   <Label>Symbol Name</Label>
                                   <Input
                                     value={symbol.name}
-                                    onChange={(e) => updateSymbol(symbol.id, { name: e.target.value })}
+                                    onChange={(e) =>
+                                      updateSymbol(symbol.id, {
+                                        name: e.target.value,
+                                      })
+                                    }
                                   />
                                 </div>
                                 <div>
@@ -651,7 +749,11 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
                                   <Input
                                     type="number"
                                     value={symbol.value}
-                                    onChange={(e) => updateSymbol(symbol.id, { value: parseInt(e.target.value) })}
+                                    onChange={(e) =>
+                                      updateSymbol(symbol.id, {
+                                        value: parseInt(e.target.value),
+                                      })
+                                    }
                                   />
                                 </div>
                               </div>
@@ -659,19 +761,27 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
                               <div className="grid grid-cols-2 gap-4">
                                 <div>
                                   <Label>Rarity</Label>
-                                  <Select 
-                                    value={symbol.rarity} 
-                                    onValueChange={(rarity: any) => updateSymbol(symbol.id, { rarity })}
+                                  <Select
+                                    value={symbol.rarity}
+                                    onValueChange={(rarity: any) =>
+                                      updateSymbol(symbol.id, { rarity })
+                                    }
                                   >
                                     <SelectTrigger>
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                      <SelectItem value="common">Common</SelectItem>
-                                      <SelectItem value="uncommon">Uncommon</SelectItem>
+                                      <SelectItem value="common">
+                                        Common
+                                      </SelectItem>
+                                      <SelectItem value="uncommon">
+                                        Uncommon
+                                      </SelectItem>
                                       <SelectItem value="rare">Rare</SelectItem>
                                       <SelectItem value="epic">Epic</SelectItem>
-                                      <SelectItem value="legendary">Legendary</SelectItem>
+                                      <SelectItem value="legendary">
+                                        Legendary
+                                      </SelectItem>
                                     </SelectContent>
                                   </Select>
                                 </div>
@@ -681,12 +791,20 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
                                     <Input
                                       type="color"
                                       value={symbol.color}
-                                      onChange={(e) => updateSymbol(symbol.id, { color: e.target.value })}
+                                      onChange={(e) =>
+                                        updateSymbol(symbol.id, {
+                                          color: e.target.value,
+                                        })
+                                      }
                                       className="w-16"
                                     />
                                     <Input
                                       value={symbol.color}
-                                      onChange={(e) => updateSymbol(symbol.id, { color: e.target.value })}
+                                      onChange={(e) =>
+                                        updateSymbol(symbol.id, {
+                                          color: e.target.value,
+                                        })
+                                      }
                                       placeholder="#FFFFFF"
                                     />
                                   </div>
@@ -698,14 +816,20 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
                                 <div className="flex items-center space-x-2 mt-2">
                                   <Button
                                     variant="outline"
-                                    onClick={() => fileInputRef.current?.click()}
+                                    onClick={() =>
+                                      fileInputRef.current?.click()
+                                    }
                                   >
                                     <Upload className="h-4 w-4 mr-2" />
                                     Upload Image
                                   </Button>
                                   <Input
-                                    value={symbol.image || ''}
-                                    onChange={(e) => updateSymbol(symbol.id, { image: e.target.value })}
+                                    value={symbol.image || ""}
+                                    onChange={(e) =>
+                                      updateSymbol(symbol.id, {
+                                        image: e.target.value,
+                                      })
+                                    }
                                     placeholder="Or enter image URL"
                                   />
                                   <input
@@ -714,7 +838,8 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
                                     accept="image/*"
                                     onChange={(e) => {
                                       const file = e.target.files?.[0];
-                                      if (file) handleImageUpload(file, symbol.id);
+                                      if (file)
+                                        handleImageUpload(file, symbol.id);
                                     }}
                                     className="hidden"
                                   />
@@ -746,9 +871,11 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
                   <div className="space-y-4">
                     <div>
                       <Label>Selected Reel</Label>
-                      <Select 
-                        value={selectedReel.toString()} 
-                        onValueChange={(value) => setSelectedReel(parseInt(value))}
+                      <Select
+                        value={selectedReel.toString()}
+                        onValueChange={(value) =>
+                          setSelectedReel(parseInt(value))
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue />
@@ -766,14 +893,19 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
                     {slot.reels[selectedReel] && (
                       <Card>
                         <CardHeader>
-                          <CardTitle>Reel {selectedReel + 1} Symbol Weights</CardTitle>
+                          <CardTitle>
+                            Reel {selectedReel + 1} Symbol Weights
+                          </CardTitle>
                         </CardHeader>
                         <CardContent>
                           <div className="space-y-4">
                             {slot.symbols.map((symbol) => (
-                              <div key={symbol.id} className="flex items-center space-x-4">
+                              <div
+                                key={symbol.id}
+                                className="flex items-center space-x-4"
+                              >
                                 <div className="flex items-center space-x-2 flex-1">
-                                  <div 
+                                  <div
                                     className="w-8 h-8 rounded flex items-center justify-center text-xs font-bold"
                                     style={{ backgroundColor: symbol.color }}
                                   >
@@ -783,9 +915,17 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
                                 </div>
                                 <div className="flex-1">
                                   <Slider
-                                    value={[slot.reels[selectedReel].weight[symbol.id] || 1]}
-                                    onValueChange={(value) => 
-                                      updateReelWeight(selectedReel, symbol.id, value[0])
+                                    value={[
+                                      slot.reels[selectedReel].weight[
+                                        symbol.id
+                                      ] || 1,
+                                    ]}
+                                    onValueChange={(value) =>
+                                      updateReelWeight(
+                                        selectedReel,
+                                        symbol.id,
+                                        value[0],
+                                      )
                                     }
                                     min={1}
                                     max={50}
@@ -794,7 +934,8 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
                                   />
                                 </div>
                                 <div className="w-12 text-right text-sm">
-                                  {slot.reels[selectedReel].weight[symbol.id] || 1}
+                                  {slot.reels[selectedReel].weight[symbol.id] ||
+                                    1}
                                 </div>
                               </div>
                             ))}
@@ -817,7 +958,9 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
                   <div className="text-center text-muted-foreground py-8">
                     <Grid className="h-12 w-12 mx-auto mb-4 opacity-50" />
                     <p>Payline editor coming soon!</p>
-                    <p className="text-sm">Currently using default payline configuration.</p>
+                    <p className="text-sm">
+                      Currently using default payline configuration.
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -873,7 +1016,7 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
             currentSlot={slot}
             onSuggestionApply={handleJoseyAISuggestion}
             onCodeGenerate={(code) => {
-              console.log('Generated code:', code);
+              console.log("Generated code:", code);
               // Apply generated code logic here
             }}
           />
@@ -912,7 +1055,7 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
                 <div className="flex justify-between">
                   <span>Status</span>
                   <Badge variant={slot.active ? "default" : "secondary"}>
-                    {slot.active ? 'Active' : 'Inactive'}
+                    {slot.active ? "Active" : "Inactive"}
                   </Badge>
                 </div>
               </div>
@@ -936,14 +1079,18 @@ export function VisualSlotEditor({ initialSlot, onSave, onPreview }: VisualSlotE
               userId="preview"
               userBalance={1000}
               onSpin={async (bet) => ({
-                id: 'preview',
-                userId: 'preview',
+                id: "preview",
+                userId: "preview",
                 slotId: slot.id,
                 bet,
-                result: [['wild', 'seven', 'bar'], ['seven', 'seven', 'seven'], ['bar', 'wild', 'cherry']],
+                result: [
+                  ["wild", "seven", "bar"],
+                  ["seven", "seven", "seven"],
+                  ["bar", "wild", "cherry"],
+                ],
                 winAmount: bet * 5,
                 winLines: [],
-                timestamp: new Date()
+                timestamp: new Date(),
               })}
               onBalanceUpdate={() => {}}
             />

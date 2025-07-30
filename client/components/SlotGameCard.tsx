@@ -1,18 +1,31 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 import { Badge } from "./ui/badge";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
-import { 
-  Play, 
-  Star, 
-  Crown, 
-  Coins, 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import {
+  Play,
+  Star,
+  Crown,
+  Coins,
   Trophy,
   Eye,
   Info,
   Sparkles,
-  Gift
+  Gift,
 } from "lucide-react";
 import { SlotMachine as SlotMachineType } from "@shared/slotTypes";
 import { SlotMachine } from "./SlotMachine";
@@ -25,26 +38,31 @@ interface SlotGameCardProps {
   onPlayDemo?: () => void;
 }
 
-export function SlotGameCard({ slot, onPlayFreeGC, onPlayRealSC, onPlayDemo }: SlotGameCardProps) {
+export function SlotGameCard({
+  slot,
+  onPlayFreeGC,
+  onPlayRealSC,
+  onPlayDemo,
+}: SlotGameCardProps) {
   const { user } = useAuth();
   const [showPreview, setShowPreview] = useState(false);
   const [previewBalance, setPreviewBalance] = useState(1000);
 
-  const handleGameModeClick = (mode: 'free' | 'real' | 'demo') => {
-    if (!user && (mode === 'free' || mode === 'real')) {
+  const handleGameModeClick = (mode: "free" | "real" | "demo") => {
+    if (!user && (mode === "free" || mode === "real")) {
       // Redirect to signup
-      window.location.href = '/signup';
+      window.location.href = "/signup";
       return;
     }
 
     switch (mode) {
-      case 'free':
+      case "free":
         onPlayFreeGC?.();
         break;
-      case 'real':
+      case "real":
         onPlayRealSC?.();
         break;
-      case 'demo':
+      case "demo":
         setShowPreview(true);
         break;
     }
@@ -52,17 +70,21 @@ export function SlotGameCard({ slot, onPlayFreeGC, onPlayRealSC, onPlayDemo }: S
 
   const getRarityColor = (rtp: number) => {
     if (rtp >= 96) return "text-purple-400";
-    if (rtp >= 95) return "text-blue-400"; 
+    if (rtp >= 95) return "text-blue-400";
     if (rtp >= 94) return "text-green-400";
     return "text-yellow-400";
   };
 
   const getVolatilityIcon = (volatility: string) => {
     switch (volatility) {
-      case 'low': return "🟢";
-      case 'medium': return "🟡";
-      case 'high': return "🔴";
-      default: return "⚪";
+      case "low":
+        return "🟢";
+      case "medium":
+        return "🟡";
+      case "high":
+        return "🔴";
+      default:
+        return "⚪";
     }
   };
 
@@ -71,15 +93,15 @@ export function SlotGameCard({ slot, onPlayFreeGC, onPlayRealSC, onPlayDemo }: S
       <Card className="group relative overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl border-gold/30 bg-gradient-to-br from-gray-900/90 to-gray-800/90">
         {/* Thumbnail */}
         <div className="relative">
-          <img 
-            src={slot.thumbnail} 
+          <img
+            src={slot.thumbnail}
             alt={slot.name}
             className="w-full h-48 object-cover"
           />
-          
+
           {/* Overlays */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-          
+
           {/* Provider Badge */}
           <div className="absolute top-3 left-3">
             <Badge className="bg-gold text-black font-bold border-0">
@@ -100,10 +122,16 @@ export function SlotGameCard({ slot, onPlayFreeGC, onPlayRealSC, onPlayDemo }: S
 
           {/* Quick Stats Overlay */}
           <div className="absolute bottom-3 left-3 flex items-center space-x-2">
-            <Badge variant="outline" className="border-white/50 text-white bg-black/50">
+            <Badge
+              variant="outline"
+              className="border-white/50 text-white bg-black/50"
+            >
               RTP: <span className={getRarityColor(slot.rtp)}>{slot.rtp}%</span>
             </Badge>
-            <Badge variant="outline" className="border-white/50 text-white bg-black/50">
+            <Badge
+              variant="outline"
+              className="border-white/50 text-white bg-black/50"
+            >
               {getVolatilityIcon(slot.volatility)} {slot.volatility}
             </Badge>
           </div>
@@ -132,14 +160,16 @@ export function SlotGameCard({ slot, onPlayFreeGC, onPlayRealSC, onPlayDemo }: S
               </CardDescription>
             </div>
           </div>
-          
+
           {/* Theme and Details */}
           <div className="flex items-center justify-between mt-2">
             <Badge variant="secondary" className="text-xs">
               {slot.theme}
             </Badge>
             <div className="flex items-center space-x-1 text-xs text-gray-400">
-              <span>{slot.reels.length}x{slot.rows}</span>
+              <span>
+                {slot.reels.length}x{slot.rows}
+              </span>
               <span>•</span>
               <span>{slot.paylines.length} lines</span>
             </div>
@@ -152,7 +182,7 @@ export function SlotGameCard({ slot, onPlayFreeGC, onPlayRealSC, onPlayDemo }: S
             {/* Play for Real Prizes with SC */}
             {user && (
               <Button
-                onClick={() => handleGameModeClick('real')}
+                onClick={() => handleGameModeClick("real")}
                 className="w-full bg-gradient-to-r from-gold to-yellow-400 text-black font-bold hover:from-yellow-400 hover:to-gold transition-all duration-300"
                 size="sm"
               >
@@ -164,7 +194,7 @@ export function SlotGameCard({ slot, onPlayFreeGC, onPlayRealSC, onPlayDemo }: S
             {/* Play for Free with GC */}
             {user && (
               <Button
-                onClick={() => handleGameModeClick('free')}
+                onClick={() => handleGameModeClick("free")}
                 variant="outline"
                 className="w-full border-green-400 text-green-400 hover:bg-green-400 hover:text-black transition-all duration-300"
                 size="sm"
@@ -176,7 +206,7 @@ export function SlotGameCard({ slot, onPlayFreeGC, onPlayRealSC, onPlayDemo }: S
 
             {/* Play Demo Mode */}
             <Button
-              onClick={() => handleGameModeClick('demo')}
+              onClick={() => handleGameModeClick("demo")}
               variant="outline"
               className="w-full border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-black transition-all duration-300"
               size="sm"
@@ -189,7 +219,10 @@ export function SlotGameCard({ slot, onPlayFreeGC, onPlayRealSC, onPlayDemo }: S
             {!user && (
               <div className="text-center mt-2">
                 <p className="text-xs text-gray-400">
-                  <a href="/signup" className="text-gold hover:underline">Sign up</a> to play for real prizes!
+                  <a href="/signup" className="text-gold hover:underline">
+                    Sign up
+                  </a>{" "}
+                  to play for real prizes!
                 </p>
               </div>
             )}
@@ -198,10 +231,12 @@ export function SlotGameCard({ slot, onPlayFreeGC, onPlayRealSC, onPlayDemo }: S
           {/* Betting Range */}
           <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-700">
             <div className="text-xs text-gray-400">
-              <span className="font-semibold text-white">Bet:</span> ${slot.minBet} - ${slot.maxBet}
+              <span className="font-semibold text-white">Bet:</span> $
+              {slot.minBet} - ${slot.maxBet}
             </div>
             <div className="text-xs text-gray-400">
-              <span className="font-semibold text-white">Max Win:</span> {slot.symbols[0]?.value || 1000}x
+              <span className="font-semibold text-white">Max Win:</span>{" "}
+              {slot.symbols[0]?.value || 1000}x
             </div>
           </div>
 
@@ -223,7 +258,8 @@ export function SlotGameCard({ slot, onPlayFreeGC, onPlayRealSC, onPlayDemo }: S
               {slot.name} - Demo Mode
             </DialogTitle>
             <DialogDescription className="text-gray-300">
-              Try out this CoinKrazy slot machine with virtual credits. No real money required!
+              Try out this CoinKrazy slot machine with virtual credits. No real
+              money required!
             </DialogDescription>
           </DialogHeader>
           <div className="mt-4">
@@ -232,32 +268,60 @@ export function SlotGameCard({ slot, onPlayFreeGC, onPlayRealSC, onPlayDemo }: S
               userId="demo"
               userBalance={previewBalance}
               onSpin={async (bet) => ({
-                id: 'demo',
-                userId: 'demo',
+                id: "demo",
+                userId: "demo",
                 slotId: slot.id,
                 bet,
                 result: [
-                  [slot.symbols[Math.floor(Math.random() * slot.symbols.length)]?.id || 'wild', 
-                   slot.symbols[Math.floor(Math.random() * slot.symbols.length)]?.id || 'wild', 
-                   slot.symbols[Math.floor(Math.random() * slot.symbols.length)]?.id || 'wild'],
-                  [slot.symbols[Math.floor(Math.random() * slot.symbols.length)]?.id || 'wild', 
-                   slot.symbols[Math.floor(Math.random() * slot.symbols.length)]?.id || 'wild', 
-                   slot.symbols[Math.floor(Math.random() * slot.symbols.length)]?.id || 'wild'],
-                  [slot.symbols[Math.floor(Math.random() * slot.symbols.length)]?.id || 'wild', 
-                   slot.symbols[Math.floor(Math.random() * slot.symbols.length)]?.id || 'wild', 
-                   slot.symbols[Math.floor(Math.random() * slot.symbols.length)]?.id || 'wild']
+                  [
+                    slot.symbols[
+                      Math.floor(Math.random() * slot.symbols.length)
+                    ]?.id || "wild",
+                    slot.symbols[
+                      Math.floor(Math.random() * slot.symbols.length)
+                    ]?.id || "wild",
+                    slot.symbols[
+                      Math.floor(Math.random() * slot.symbols.length)
+                    ]?.id || "wild",
+                  ],
+                  [
+                    slot.symbols[
+                      Math.floor(Math.random() * slot.symbols.length)
+                    ]?.id || "wild",
+                    slot.symbols[
+                      Math.floor(Math.random() * slot.symbols.length)
+                    ]?.id || "wild",
+                    slot.symbols[
+                      Math.floor(Math.random() * slot.symbols.length)
+                    ]?.id || "wild",
+                  ],
+                  [
+                    slot.symbols[
+                      Math.floor(Math.random() * slot.symbols.length)
+                    ]?.id || "wild",
+                    slot.symbols[
+                      Math.floor(Math.random() * slot.symbols.length)
+                    ]?.id || "wild",
+                    slot.symbols[
+                      Math.floor(Math.random() * slot.symbols.length)
+                    ]?.id || "wild",
+                  ],
                 ],
-                winAmount: Math.random() > 0.7 ? bet * (Math.random() * 10 + 1) : 0,
+                winAmount:
+                  Math.random() > 0.7 ? bet * (Math.random() * 10 + 1) : 0,
                 winLines: [],
-                timestamp: new Date()
+                timestamp: new Date(),
               })}
               onBalanceUpdate={(newBalance) => setPreviewBalance(newBalance)}
             />
           </div>
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-400">
-              This is demo mode with virtual credits. 
-              <a href="/signup" className="text-gold hover:underline ml-1">Sign up</a> to play for real prizes!
+              This is demo mode with virtual credits.
+              <a href="/signup" className="text-gold hover:underline ml-1">
+                Sign up
+              </a>{" "}
+              to play for real prizes!
             </p>
           </div>
         </DialogContent>
