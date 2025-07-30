@@ -187,5 +187,14 @@ export function createServer() {
   app.post("/api/store/refund-requests/:refundId/process", handleProcessRefund);
   app.get("/api/store/payment-stats", handleGetPaymentStats);
 
+  // In-house slots routes
+  app.get("/api/slots/in-house", handleGetInHouseSlots);
+  app.post("/api/slots/in-house", handleCreateSlot);
+  app.put("/api/slots/in-house/:slotId", handleUpdateSlot);
+  app.delete("/api/slots/in-house/:slotId", handleDeleteSlot);
+  app.post("/api/slots/:slotId/spin", handleSpinSlot);
+  app.get("/api/slots/:slotId/stats", handleGetSlotStats);
+  app.get("/api/slots/stats", handleGetAllSlotStats);
+
   return app;
 }
