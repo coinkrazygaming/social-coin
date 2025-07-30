@@ -104,6 +104,7 @@ import {
   Trophy,
   Award,
   Gift,
+  Bug,
 } from "lucide-react";
 
 interface EnhancedAdminPanelProps {
