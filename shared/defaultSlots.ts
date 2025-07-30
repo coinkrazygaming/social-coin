@@ -176,7 +176,7 @@ export const DEFAULT_COINKRAZY_SLOTS: SlotMachine[] = [
         id: "reel_3",
         position: 3,
         symbols: ["wild", "scatter", "powerUp", "controller", "coin", "mushroom", "star"],
-        weight: { "wild\": 1, \"scatter\": 2, \"powerUp\": 4, \"controller\": 6, \"coin\": 10, \"mushroom\", \"star": 15 }
+        weight: { "wild": 1, "scatter": 2, "powerUp": 4, "controller": 6, "coin": 10, "mushroom": 12, "star": 15 }
       },
       {
         id: "reel_4",
