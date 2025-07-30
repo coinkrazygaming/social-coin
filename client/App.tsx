@@ -41,12 +41,12 @@ const App = () => (
                 <Route path="/" element={<Index />} />
                 <Route path="/mini-games" element={<MiniGames />} />
                 <Route path="/store" element={<Store />} />
-                <Route path="/admin" element={<AdminPanel />} />
+                <Route path="/admin" element={<EnhancedAdminPanel />} />
                 <Route path="/staff" element={<StaffPanel />} />
 
                 {/* Casino Routes */}
                 <Route path="/slots" element={<Slots />} />
-                <Route path="/table-games" element={<TableGames />} />
+                <Route path="/table-games" element={<EnhancedTableGames />} />
                 <Route path="/sportsbook" element={<Sportsbook />} />
                 <Route path="/bingo" element={<Bingo />} />
                 <Route path="/leaderboards" element={<Leaderboards />} />
