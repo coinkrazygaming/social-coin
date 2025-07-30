@@ -1,115 +1,141 @@
-export interface SlotGame {
+export interface SlotSymbol {
   id: string;
   name: string;
-  provider: string;
+  image: string;
+  value: number;
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  multiplier: number;
+  color: string;
+  animation?: string;
+}
+
+export interface SlotReel {
+  id: string;
+  position: number;
+  symbols: string[]; // Array of symbol IDs
+  weight: Record<string, number>; // Symbol weight for probability
+}
+
+export interface SlotPayline {
+  id: string;
+  name: string;
+  positions: Array<{reel: number, row: number}>;
+  active: boolean;
+}
+
+export interface SlotWinCondition {
+  id: string;
+  symbolId: string;
+  count: number;
+  payout: number;
+  paylineRequired?: boolean;
+  scatterPay?: boolean;
+  wildMultiplier?: number;
+}
+
+export interface SlotMachine {
+  id: string;
+  name: string;
+  description: string;
+  theme: string;
+  provider: 'CoinKrazy';
   thumbnail: string;
-  category: "classic" | "video" | "progressive" | "featured" | "new";
-  rtp: number; // Between 92-96%
-  maxWin: number; // In SC
-  liveSCEarned: number; // Real-time SC earned by all players
-  lastWinner: {
-    firstName: string;
-    lastInitial: string;
-    amount: number;
-    currency: "GC" | "SC";
-    timestamp: Date;
-  } | null;
-  biggestWin: {
-    firstName: string;
-    lastInitial: string;
-    amount: number;
-    currency: "GC" | "SC";
-    timestamp: Date;
-  } | null;
-  isActive: boolean;
+  backgroundImage: string;
+  reels: SlotReel[];
+  rows: number;
+  paylines: SlotPayline[];
+  symbols: SlotSymbol[];
+  winConditions: SlotWinCondition[];
+  rtp: number; // Return to Player percentage
+  volatility: 'low' | 'medium' | 'high';
   minBet: number;
   maxBet: number;
-  paylines: number;
-  features: string[];
+  jackpot?: number;
+  bonusFeatures: SlotBonusFeature[];
+  soundEffects: SlotSoundConfig;
+  animations: SlotAnimationConfig;
+  created: Date;
+  updated: Date;
+  active: boolean;
+  featured: boolean;
+}
+
+export interface SlotBonusFeature {
+  id: string;
+  type: 'free_spins' | 'bonus_game' | 'multiplier' | 'expanding_wild' | 'cascading';
+  triggerSymbols: string[];
+  triggerCount: number;
   description: string;
-  volatility: "low" | "medium" | "high";
+  settings: Record<string, any>;
 }
 
-export interface SlotProvider {
+export interface SlotSoundConfig {
+  spinSound: string;
+  winSound: string;
+  bonusSound: string;
+  backgroundMusic: string;
+  volume: number;
+}
+
+export interface SlotAnimationConfig {
+  spinDuration: number;
+  reelDelay: number;
+  winAnimationDuration: number;
+  symbolAnimations: Record<string, string>;
+}
+
+export interface SlotSpin {
   id: string;
-  name: string;
-  apiEndpoint: string;
-  isActive: boolean;
-  games: SlotGame[];
-}
-
-export interface TableGame {
-  id: string;
-  name: string;
-  type: "card" | "poker" | "specialty";
-  thumbnail: string;
-  maxPlayers: number;
-  currentPlayers: number;
-  minBet: number;
-  maxBet: number;
-  rtp: number;
-  lastWinner: {
-    firstName: string;
-    lastInitial: string;
-    amount: number;
-    currency: "GC" | "SC";
-    timestamp: Date;
-  } | null;
-  biggestWin: {
-    firstName: string;
-    lastInitial: string;
-    amount: number;
-    currency: "GC" | "SC";
-    timestamp: Date;
-  } | null;
-  isActive: boolean;
-  description: string;
-  rules: string;
-}
-
-export interface PokerTable {
-  id: string;
-  name: string;
-  gameType: "texas-holdem" | "omaha" | "seven-card-stud" | "blackjack";
-  maxSeats: number;
-  seats: PokerSeat[];
-  blinds: {
-    small: number;
-    big: number;
-  };
-  buyIn: {
-    min: number;
-    max: number;
-  };
-  currency: "GC" | "SC";
-  isActive: boolean;
-  currentPot: number;
-}
-
-export interface PokerSeat {
-  seatNumber: number;
-  player: {
-    id: string;
-    username: string;
-    avatar?: string;
-  } | null;
-  chipCount: number;
-  isDealer: boolean;
-  isActive: boolean;
-}
-
-export interface GameSelection {
-  gameId: string;
-  gameType: "slot" | "table" | "poker";
-  currency: "GC" | "SC";
-  betAmount?: number;
-}
-
-export interface LuckyAIMessage {
-  id: string;
-  message: string;
-  type: "welcome" | "help" | "win" | "info" | "warning";
+  userId: string;
+  slotId: string;
+  bet: number;
+  result: string[][]; // 2D array of symbol IDs
+  winAmount: number;
+  winLines: Array<{
+    paylineId: string;
+    symbols: string[];
+    payout: number;
+  }>;
+  bonusTriggered?: string;
   timestamp: Date;
-  tableId?: string;
-  userId?: string;
+}
+
+export interface SlotSession {
+  id: string;
+  userId: string;
+  slotId: string;
+  startTime: Date;
+  endTime?: Date;
+  totalSpins: number;
+  totalBet: number;
+  totalWin: number;
+  biggestWin: number;
+  bonusRounds: number;
+}
+
+export interface SlotStats {
+  slotId: string;
+  totalSpins: number;
+  totalBet: number;
+  totalPayout: number;
+  rtp: number;
+  popularityScore: number;
+  averageSession: number;
+  biggestWin: number;
+  jackpotHits: number;
+}
+
+export interface JoseyAIResponse {
+  message: string;
+  suggestions: string[];
+  codeExample?: string;
+  nextSteps: string[];
+  confidence: number;
+}
+
+export interface VisualEditorState {
+  selectedSlot: string | null;
+  editMode: 'symbols' | 'reels' | 'paylines' | 'settings' | 'preview';
+  unsavedChanges: boolean;
+  previewMode: boolean;
 }
