@@ -26,6 +26,8 @@ import {
 import { Switch } from "../components/ui/switch";
 import { useAuth } from "../components/AuthContext";
 import { AccessDeniedModal } from "../components/AccessDeniedModal";
+import { VisualSlotEditor } from "../components/VisualSlotEditor";
+import { JoseyAI } from "../components/JoseyAI";
 import {
   GoldCoinPackage,
   StoreSettings,
@@ -33,6 +35,7 @@ import {
   RefundRequest,
 } from "@shared/storeTypes";
 import { RedemptionRequest } from "@shared/userTypes";
+import { SlotMachine as SlotMachineType } from "@shared/slotTypes";
 import {
   Settings,
   Package,
