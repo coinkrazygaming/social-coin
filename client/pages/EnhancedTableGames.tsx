@@ -32,11 +32,11 @@ import {
   Eye,
   RefreshCw,
 } from "lucide-react";
-import { 
-  enhancedCardGames, 
-  enhancedPokerTables, 
+import {
+  enhancedCardGames,
+  enhancedPokerTables,
   getAllTableProfits,
-  getTableDailyStats 
+  getTableDailyStats,
 } from "@shared/enhancedTableGameData";
 import { TableGame, PokerTable } from "@shared/slotTypes";
 import { useAuth } from "@/components/AuthContext";
@@ -45,25 +45,29 @@ export default function EnhancedTableGames() {
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState<string>("all");
-  const [filteredCardGames, setFilteredCardGames] = useState<TableGame[]>(enhancedCardGames);
-  const [filteredPokerTables, setFilteredPokerTables] = useState<PokerTable[]>(enhancedPokerTables);
+  const [filteredCardGames, setFilteredCardGames] =
+    useState<TableGame[]>(enhancedCardGames);
+  const [filteredPokerTables, setFilteredPokerTables] =
+    useState<PokerTable[]>(enhancedPokerTables);
   const [realTimeUpdate, setRealTimeUpdate] = useState(true);
   const [lastUpdate, setLastUpdate] = useState(new Date());
 
   // Real-time updates simulation
   useEffect(() => {
     if (!realTimeUpdate) return;
-    
+
     const interval = setInterval(() => {
       // Simulate real-time seat changes
-      setFilteredPokerTables(prev => 
-        prev.map(table => ({
+      setFilteredPokerTables((prev) =>
+        prev.map((table) => ({
           ...table,
-          seats: table.seats.map(seat => ({
+          seats: table.seats.map((seat) => ({
             ...seat,
-            chipCount: seat.player ? seat.chipCount + Math.floor(Math.random() * 200 - 100) : 0
-          }))
-        }))
+            chipCount: seat.player
+              ? seat.chipCount + Math.floor(Math.random() * 200 - 100)
+              : 0,
+          })),
+        })),
       );
       setLastUpdate(new Date());
     }, 5000);
@@ -139,7 +143,7 @@ export default function EnhancedTableGames() {
 
   const totalDailyProfits = getAllTableProfits().reduce(
     (sum, table) => sum + table.dailyProfit,
-    0
+    0,
   );
 
   const totalTables = enhancedCardGames.length + enhancedPokerTables.length;
@@ -159,7 +163,8 @@ export default function EnhancedTableGames() {
                   <span className="text-gold">CoinKrazy</span> Table Games
                 </h1>
                 <p className="text-purple-200 text-xl">
-                  Premium live tables with real-time seat selection and profit tracking
+                  Premium live tables with real-time seat selection and profit
+                  tracking
                 </p>
               </div>
             </div>
@@ -170,42 +175,34 @@ export default function EnhancedTableGames() {
                 <div className="text-3xl font-bold text-gold mb-1">
                   {totalTables}
                 </div>
-                <div className="text-sm text-gray-400">
-                  Live Tables
-                </div>
+                <div className="text-sm text-gray-400">Live Tables</div>
               </div>
               <div className="text-center bg-gray-800/50 backdrop-blur-sm rounded-lg p-4">
                 <div className="text-3xl font-bold text-green-400 mb-1">
                   {totalActivePlayers}
                 </div>
-                <div className="text-sm text-gray-400">
-                  Players Online
-                </div>
+                <div className="text-sm text-gray-400">Players Online</div>
               </div>
               <div className="text-center bg-gray-800/50 backdrop-blur-sm rounded-lg p-4">
                 <div className="text-3xl font-bold text-blue-400 mb-1">
                   {totalAvailableSeats}
                 </div>
-                <div className="text-sm text-gray-400">
-                  Available Seats
-                </div>
+                <div className="text-sm text-gray-400">Available Seats</div>
               </div>
               <div className="text-center bg-gray-800/50 backdrop-blur-sm rounded-lg p-4">
                 <div className="text-3xl font-bold text-purple-400 mb-1">
                   ${totalDailyProfits.toLocaleString()}
                 </div>
-                <div className="text-sm text-gray-400">
-                  Daily Revenue
-                </div>
+                <div className="text-sm text-gray-400">Daily Revenue</div>
               </div>
               <div className="text-center bg-gray-800/50 backdrop-blur-sm rounded-lg p-4">
                 <div className="flex items-center justify-center mb-1">
-                  <div className={`w-3 h-3 rounded-full ${realTimeUpdate ? 'bg-green-400 animate-pulse' : 'bg-gray-400'} mr-2`} />
+                  <div
+                    className={`w-3 h-3 rounded-full ${realTimeUpdate ? "bg-green-400 animate-pulse" : "bg-gray-400"} mr-2`}
+                  />
                   <div className="text-xl font-bold text-green-400">LIVE</div>
                 </div>
-                <div className="text-sm text-gray-400">
-                  Real-Time
-                </div>
+                <div className="text-sm text-gray-400">Real-Time</div>
               </div>
             </div>
           </div>
@@ -235,7 +232,9 @@ export default function EnhancedTableGames() {
                 variant={realTimeUpdate ? "default" : "outline"}
                 size="sm"
                 onClick={() => setRealTimeUpdate(!realTimeUpdate)}
-                className={realTimeUpdate ? "bg-green-600 hover:bg-green-700" : ""}
+                className={
+                  realTimeUpdate ? "bg-green-600 hover:bg-green-700" : ""
+                }
               >
                 {realTimeUpdate ? (
                   <Activity className="h-4 w-4 mr-2 animate-pulse" />
@@ -244,7 +243,7 @@ export default function EnhancedTableGames() {
                 )}
                 {realTimeUpdate ? "Live Updates" : "Static Mode"}
               </Button>
-              
+
               {/* CoinKrazy.com Branding */}
               <Badge className="text-lg px-4 py-2 bg-gradient-to-r from-gold to-yellow-400 text-black font-bold">
                 CoinKrazy.com Premium Tables
@@ -255,7 +254,8 @@ export default function EnhancedTableGames() {
           {/* Last Update Info */}
           {realTimeUpdate && (
             <div className="text-center text-sm text-gray-400 mb-4">
-              Last updated: {lastUpdate.toLocaleTimeString()} • Auto-refresh every 5 seconds
+              Last updated: {lastUpdate.toLocaleTimeString()} • Auto-refresh
+              every 5 seconds
             </div>
           )}
 
@@ -289,10 +289,16 @@ export default function EnhancedTableGames() {
         <div className="container px-4">
           <Tabs defaultValue="poker-tables" className="space-y-8">
             <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto bg-gray-800/50 backdrop-blur-sm">
-              <TabsTrigger value="poker-tables" className="text-white data-[state=active]:bg-gold data-[state=active]:text-black">
+              <TabsTrigger
+                value="poker-tables"
+                className="text-white data-[state=active]:bg-gold data-[state=active]:text-black"
+              >
                 5-Seat Poker Tables
               </TabsTrigger>
-              <TabsTrigger value="card-games" className="text-white data-[state=active]:bg-gold data-[state=active]:text-black">
+              <TabsTrigger
+                value="card-games"
+                className="text-white data-[state=active]:bg-gold data-[state=active]:text-black"
+              >
                 Card Games
               </TabsTrigger>
             </TabsList>
@@ -306,7 +312,8 @@ export default function EnhancedTableGames() {
                     Premium 5-Seat Poker Tables
                   </h2>
                   <p className="text-gray-300 mt-2">
-                    Exclusive CoinKrazy.com tables with real-time seat selection and profit tracking
+                    Exclusive CoinKrazy.com tables with real-time seat selection
+                    and profit tracking
                   </p>
                 </div>
                 <div className="flex items-center space-x-4">
@@ -321,8 +328,8 @@ export default function EnhancedTableGames() {
                     variant="outline"
                     className="text-lg px-4 py-2 bg-green-600/20 text-green-400 border-green-600/30"
                   >
-                    <DollarSign className="h-4 w-4 mr-2" />
-                    ${totalDailyProfits.toLocaleString()} Daily Profit
+                    <DollarSign className="h-4 w-4 mr-2" />$
+                    {totalDailyProfits.toLocaleString()} Daily Profit
                   </Badge>
                 </div>
               </div>
@@ -361,7 +368,8 @@ export default function EnhancedTableGames() {
                     CoinKrazy Card Games
                   </h2>
                   <p className="text-gray-300 mt-2">
-                    Championship level card games with enhanced CoinKrazy features
+                    Championship level card games with enhanced CoinKrazy
+                    features
                   </p>
                 </div>
                 <Badge
@@ -421,7 +429,9 @@ export default function EnhancedTableGames() {
                     {totalActivePlayers}
                   </CardTitle>
                 </div>
-                <CardDescription className="text-gray-300">Active Players</CardDescription>
+                <CardDescription className="text-gray-300">
+                  Active Players
+                </CardDescription>
               </CardHeader>
             </Card>
 
@@ -433,7 +443,9 @@ export default function EnhancedTableGames() {
                     {totalAvailableSeats}
                   </CardTitle>
                 </div>
-                <CardDescription className="text-gray-300">Available Seats</CardDescription>
+                <CardDescription className="text-gray-300">
+                  Available Seats
+                </CardDescription>
               </CardHeader>
             </Card>
 
@@ -445,7 +457,9 @@ export default function EnhancedTableGames() {
                     ${totalDailyProfits.toLocaleString()}
                   </CardTitle>
                 </div>
-                <CardDescription className="text-gray-300">Daily Revenue</CardDescription>
+                <CardDescription className="text-gray-300">
+                  Daily Revenue
+                </CardDescription>
               </CardHeader>
             </Card>
 
@@ -454,10 +468,17 @@ export default function EnhancedTableGames() {
                 <div className="flex items-center justify-center mb-2">
                   <Activity className="h-6 w-6 text-purple-400 mr-2" />
                   <CardTitle className="text-2xl font-bold text-purple-400">
-                    {Math.round((totalActivePlayers / (totalActivePlayers + totalAvailableSeats)) * 100)}%
+                    {Math.round(
+                      (totalActivePlayers /
+                        (totalActivePlayers + totalAvailableSeats)) *
+                        100,
+                    )}
+                    %
                   </CardTitle>
                 </div>
-                <CardDescription className="text-gray-300">Table Occupancy</CardDescription>
+                <CardDescription className="text-gray-300">
+                  Table Occupancy
+                </CardDescription>
               </CardHeader>
             </Card>
           </div>
@@ -481,10 +502,13 @@ export default function EnhancedTableGames() {
               <div className="w-20 h-20 bg-gradient-to-br from-gold to-yellow-400 rounded-full flex items-center justify-center mx-auto shadow-xl">
                 <Coins className="h-10 w-10 text-black" />
               </div>
-              <h3 className="text-2xl font-semibold text-white">Dual Currency System</h3>
+              <h3 className="text-2xl font-semibold text-white">
+                Dual Currency System
+              </h3>
               <p className="text-gray-300 leading-relaxed">
-                Play with Gold Coins (GC) for entertainment or Sweeps Coins (SC) for real prizes. 
-                Each table supports both currencies with separate buy-in tracking.
+                Play with Gold Coins (GC) for entertainment or Sweeps Coins (SC)
+                for real prizes. Each table supports both currencies with
+                separate buy-in tracking.
               </p>
             </div>
 
@@ -492,10 +516,13 @@ export default function EnhancedTableGames() {
               <div className="w-20 h-20 bg-gradient-to-br from-green-600 to-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-xl">
                 <Eye className="h-10 w-10 text-white" />
               </div>
-              <h3 className="text-2xl font-semibold text-white">Real-Time Seat Selection</h3>
+              <h3 className="text-2xl font-semibold text-white">
+                Real-Time Seat Selection
+              </h3>
               <p className="text-gray-300 leading-relaxed">
-                View live table layouts with exactly 5 seats per poker table. 
-                See real-time availability and select your preferred seat instantly.
+                View live table layouts with exactly 5 seats per poker table.
+                See real-time availability and select your preferred seat
+                instantly.
               </p>
             </div>
 
@@ -503,10 +530,13 @@ export default function EnhancedTableGames() {
               <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-violet-500 rounded-full flex items-center justify-center mx-auto shadow-xl">
                 <BarChart3 className="h-10 w-10 text-white" />
               </div>
-              <h3 className="text-2xl font-semibold text-white">Profit Tracking</h3>
+              <h3 className="text-2xl font-semibold text-white">
+                Profit Tracking
+              </h3>
               <p className="text-gray-300 leading-relaxed">
-                Advanced buy-in tracking and profit calculations. 
-                Administrators can monitor daily profits and performance metrics for each table.
+                Advanced buy-in tracking and profit calculations. Administrators
+                can monitor daily profits and performance metrics for each
+                table.
               </p>
             </div>
           </div>

@@ -74,7 +74,11 @@ export function EnhancedPokerTableThumbnail({
   };
 
   const handleConfirmBuyIn = () => {
-    if (selectedSeat && buyInAmount >= table.buyIn.min && buyInAmount <= table.buyIn.max) {
+    if (
+      selectedSeat &&
+      buyInAmount >= table.buyIn.min &&
+      buyInAmount <= table.buyIn.max
+    ) {
       onJoinTable(table.id, selectedSeat, table.currency);
       setShowSeatSelection(false);
       setShowBuyInDialog(false);
@@ -164,7 +168,9 @@ export function EnhancedPokerTableThumbnail({
                     left: `${x}%`,
                     top: `${y}%`,
                     backgroundColor: seat.player ? "#EF4444" : "#10B981",
-                    boxShadow: seat.player ? "0 0 10px rgba(239, 68, 68, 0.5)" : "0 0 10px rgba(16, 185, 129, 0.5)",
+                    boxShadow: seat.player
+                      ? "0 0 10px rgba(239, 68, 68, 0.5)"
+                      : "0 0 10px rgba(16, 185, 129, 0.5)",
                   }}
                 >
                   {seat.seatNumber}
@@ -219,7 +225,8 @@ export function EnhancedPokerTableThumbnail({
             <div className="flex justify-between items-center text-sm">
               <span className="text-gray-400">Buy-in Range:</span>
               <span className="font-bold text-purple-400">
-                {table.buyIn.min.toLocaleString()}-{table.buyIn.max.toLocaleString()} {table.currency}
+                {table.buyIn.min.toLocaleString()}-
+                {table.buyIn.max.toLocaleString()} {table.currency}
               </span>
             </div>
 
@@ -350,7 +357,9 @@ export function EnhancedPokerTableThumbnail({
                             {seat.player.username.length > 8 ? "..." : ""}
                           </div>
                         ) : (
-                          <div className="text-xs mt-1 opacity-90">Available</div>
+                          <div className="text-xs mt-1 opacity-90">
+                            Available
+                          </div>
                         )}
                         {seat.player && (
                           <div className="text-xs opacity-75">
@@ -381,11 +390,15 @@ export function EnhancedPokerTableThumbnail({
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Game Type:</span>
-                  <span className="font-medium text-white">{getGameTypeDisplay()}</span>
+                  <span className="font-medium text-white">
+                    {getGameTypeDisplay()}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Currency:</span>
-                  <span className="font-medium text-white">{table.currency}</span>
+                  <span className="font-medium text-white">
+                    {table.currency}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Available Seats:</span>
@@ -406,7 +419,8 @@ export function EnhancedPokerTableThumbnail({
                 <div className="flex justify-between">
                   <span className="text-gray-400">Buy-in Range:</span>
                   <span className="font-medium text-white">
-                    {table.buyIn.min.toLocaleString()}-{table.buyIn.max.toLocaleString()} {table.currency}
+                    {table.buyIn.min.toLocaleString()}-
+                    {table.buyIn.max.toLocaleString()} {table.currency}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -449,7 +463,8 @@ export function EnhancedPokerTableThumbnail({
                 {table.name} - Seat {selectedSeat}
               </div>
               <div className="text-sm text-gray-400">
-                Range: {table.buyIn.min.toLocaleString()} - {table.buyIn.max.toLocaleString()} {table.currency}
+                Range: {table.buyIn.min.toLocaleString()} -{" "}
+                {table.buyIn.max.toLocaleString()} {table.currency}
               </div>
             </div>
 
@@ -485,7 +500,9 @@ export function EnhancedPokerTableThumbnail({
                     : "bg-gradient-to-r from-purple-600 to-violet-600 text-white hover:from-violet-600 hover:to-purple-600"
                 }`}
                 onClick={handleConfirmBuyIn}
-                disabled={buyInAmount < table.buyIn.min || buyInAmount > table.buyIn.max}
+                disabled={
+                  buyInAmount < table.buyIn.min || buyInAmount > table.buyIn.max
+                }
               >
                 <ShoppingCart className="h-4 w-4 mr-2" />
                 Confirm Buy-in

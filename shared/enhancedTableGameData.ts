@@ -59,8 +59,10 @@ export const enhancedCardGames: TableGame[] = [
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 4),
     },
     isActive: true,
-    description: "Championship level partnership spades with CoinKrazy tournament rules",
-    rules: "CoinKrazy partnership spades with bidding, nil bids, and bonus scoring. First team to 500 points wins!",
+    description:
+      "Championship level partnership spades with CoinKrazy tournament rules",
+    rules:
+      "CoinKrazy partnership spades with bidding, nil bids, and bonus scoring. First team to 500 points wins!",
   },
   {
     id: "coinkrazy-uno-blitz",
@@ -123,8 +125,10 @@ export const enhancedCardGames: TableGame[] = [
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 8),
     },
     isActive: true,
-    description: "Fast-paced CoinKrazy UNO with special power-ups and instant wins",
-    rules: "CoinKrazy UNO with timer rounds, bonus multipliers, and special CoinKrazy wild cards!",
+    description:
+      "Fast-paced CoinKrazy UNO with special power-ups and instant wins",
+    rules:
+      "CoinKrazy UNO with timer rounds, bonus multipliers, and special CoinKrazy wild cards!",
   },
   {
     id: "coinkrazy-hearts-royal",
@@ -183,8 +187,10 @@ export const enhancedCardGames: TableGame[] = [
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 18),
     },
     isActive: true,
-    description: "Royal tournament hearts with CoinKrazy bonus scoring and moon shots",
-    rules: "CoinKrazy hearts with royal bonuses, moon shot multipliers, and special penalty avoidance cards.",
+    description:
+      "Royal tournament hearts with CoinKrazy bonus scoring and moon shots",
+    rules:
+      "CoinKrazy hearts with royal bonuses, moon shot multipliers, and special penalty avoidance cards.",
   },
 ];
 
@@ -244,7 +250,7 @@ export const enhancedPokerTables: PokerTable[] = [
   {
     id: "coinkrazy-holdem-casual",
     name: "CoinKrazy Casual Hold'em",
-    gameType: "texas-holdem", 
+    gameType: "texas-holdem",
     maxSeats: 5,
     seats: [
       {
@@ -499,32 +505,35 @@ export const enhancedPokerTables: PokerTable[] = [
 ];
 
 export const allEnhancedTableGames = [...enhancedCardGames];
-export const activeEnhancedPokerTables = enhancedPokerTables.filter((table) => table.isActive);
+export const activeEnhancedPokerTables = enhancedPokerTables.filter(
+  (table) => table.isActive,
+);
 
 // Table profit tracking functions
 export const getTableDailyStats = (tableId: string) => {
-  const table = enhancedPokerTables.find(t => t.id === tableId);
+  const table = enhancedPokerTables.find((t) => t.id === tableId);
   if (!table) return null;
-  
+
   return {
     dailyProfit: table.dailyProfit || 0,
     totalBuyIns: table.totalBuyIns || 0,
     averageBuyIn: table.averageBuyIn || 0,
-    occupancyRate: (table.seats.filter(s => s.player).length / table.maxSeats) * 100,
-    currentPlayers: table.seats.filter(s => s.player).length,
+    occupancyRate:
+      (table.seats.filter((s) => s.player).length / table.maxSeats) * 100,
+    currentPlayers: table.seats.filter((s) => s.player).length,
   };
 };
 
 // Get all table profits for admin tracking
 export const getAllTableProfits = () => {
-  return enhancedPokerTables.map(table => ({
+  return enhancedPokerTables.map((table) => ({
     tableId: table.id,
     tableName: table.name,
     currency: table.currency,
     dailyProfit: table.dailyProfit || 0,
     totalBuyIns: table.totalBuyIns || 0,
     averageBuyIn: table.averageBuyIn || 0,
-    currentPlayers: table.seats.filter(s => s.player).length,
+    currentPlayers: table.seats.filter((s) => s.player).length,
     maxSeats: table.maxSeats,
   }));
 };
