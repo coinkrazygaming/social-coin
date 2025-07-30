@@ -260,29 +260,31 @@ export default function Slots() {
               </div>
 
               {/* Coming Soon Slots */}
-              <div className="mt-8">
-                <h3 className="text-xl font-bold mb-4 flex items-center">
-                  <Clock className="h-5 w-5 mr-2 text-blue-400" />
-                  Coming Soon
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                  {Array.from({ length: 20 }, (_, index) => (
-                    <Card key={`coming-soon-${index}`} className="opacity-50 border-dashed border-gold/30">
-                      <CardContent className="p-4 text-center">
-                        <div className="h-32 bg-gradient-to-br from-gold/10 to-yellow-400/10 rounded mb-3 flex items-center justify-center">
-                          <Sparkles className="h-8 w-8 text-gold/50" />
-                        </div>
-                        <h4 className="font-bold text-gold/70 text-sm mb-1">Slot #{index + 6}</h4>
-                        <p className="text-xs text-muted-foreground mb-3">In Development</p>
-                        <Button disabled size="sm" variant="outline" className="w-full border-gold/30 text-gold/50 text-xs">
-                          Coming Soon
-                        </Button>
-                        <p className="text-xs text-gold/50 font-bold mt-2">CoinKrazy.com</p>
-                      </CardContent>
-                    </Card>
-                  ))}
+              {DEFAULT_COINKRAZY_SLOTS.length < 25 && (
+                <div className="mt-8">
+                  <h3 className="text-xl font-bold mb-4 flex items-center">
+                    <Clock className="h-5 w-5 mr-2 text-blue-400" />
+                    Coming Soon ({25 - DEFAULT_COINKRAZY_SLOTS.length} more slots)
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                    {Array.from({ length: 25 - DEFAULT_COINKRAZY_SLOTS.length }, (_, index) => (
+                      <Card key={`coming-soon-${index}`} className="opacity-50 border-dashed border-gold/30 hover:opacity-70 transition-opacity">
+                        <CardContent className="p-4 text-center">
+                          <div className="h-32 bg-gradient-to-br from-gold/10 to-yellow-400/10 rounded mb-3 flex items-center justify-center">
+                            <Sparkles className="h-8 w-8 text-gold/50 animate-pulse" />
+                          </div>
+                          <h4 className="font-bold text-gold/70 text-sm mb-1">Slot #{DEFAULT_COINKRAZY_SLOTS.length + index + 1}</h4>
+                          <p className="text-xs text-muted-foreground mb-3">In Development</p>
+                          <Button disabled size="sm" variant="outline" className="w-full border-gold/30 text-gold/50 text-xs">
+                            Coming Soon
+                          </Button>
+                          <p className="text-xs text-gold/50 font-bold mt-2">CoinKrazy.com</p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* CoinKrazy Features */}
               <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
