@@ -1,4 +1,5 @@
 import { SlotMachine } from "./slotTypes";
+import { ADDITIONAL_COINKRAZY_SLOTS } from "./additionalSlots";
 
 export const DEFAULT_COINKRAZY_SLOTS: SlotMachine[] = [
   {
