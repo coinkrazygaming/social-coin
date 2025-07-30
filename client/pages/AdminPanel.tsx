@@ -97,6 +97,9 @@ export function AdminPanel() {
     isActive: true,
   });
   const [paymentStats, setPaymentStats] = useState<any>(null);
+  const [inHouseSlots, setInHouseSlots] = useState<SlotMachineType[]>([]);
+  const [selectedSlot, setSelectedSlot] = useState<SlotMachineType | null>(null);
+  const [showSlotEditor, setShowSlotEditor] = useState(false);
 
   useEffect(() => {
     if (!user || user.role !== "admin") {
