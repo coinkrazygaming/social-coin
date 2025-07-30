@@ -208,8 +208,12 @@ export default function Slots() {
       {/* Games Section */}
       <section className="py-16">
         <div className="container px-4">
-          <Tabs defaultValue="all" className="space-y-8">
-            <TabsList className="grid w-full grid-cols-4 max-w-2xl mx-auto">
+          <Tabs defaultValue="coinkrazy" className="space-y-8">
+            <TabsList className="grid w-full grid-cols-5 max-w-3xl mx-auto">
+              <TabsTrigger value="coinkrazy" className="text-gold">
+                <Crown className="h-4 w-4 mr-2" />
+                CoinKrazy
+              </TabsTrigger>
               <TabsTrigger value="all">All Games</TabsTrigger>
               <TabsTrigger value="featured">Featured</TabsTrigger>
               <TabsTrigger value="popular">Popular</TabsTrigger>
