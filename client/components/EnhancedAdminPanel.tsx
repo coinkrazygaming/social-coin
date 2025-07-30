@@ -1656,6 +1656,21 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Testing Tab */}
+          <TabsContent value="testing" className="space-y-6">
+            <Card className="bg-gray-800/50 border-gray-700 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center">
+                  <Bug className="h-6 w-6 mr-2 text-red-400" />
+                  Platform Testing & Bug Detection
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <SystemTester />
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
 
         {/* Slot Editor Modal */}
