@@ -348,7 +348,8 @@ export const ADDITIONAL_COINKRAZY_SLOTS: SlotMachine[] = [
   {
     id: "coinkrazy_candy_kingdom",
     name: "Candy Kingdom",
-    description: "Enter a sweet world of sugar-coated wins and candy-filled jackpots!",
+    description:
+      "Enter a sweet world of sugar-coated wins and candy-filled jackpots!",
     theme: "Sweet Treats",
     provider: "CoinKrazy",
     thumbnail:
@@ -358,7 +359,15 @@ export const ADDITIONAL_COINKRAZY_SLOTS: SlotMachine[] = [
     reels: Array.from({ length: 5 }, (_, i) => ({
       id: `reel_${i}`,
       position: i,
-      symbols: ["wild", "scatter", "lollipop", "cupcake", "gummy", "chocolate", "candy"],
+      symbols: [
+        "wild",
+        "scatter",
+        "lollipop",
+        "cupcake",
+        "gummy",
+        "chocolate",
+        "candy",
+      ],
       weight: {
         wild: 1,
         scatter: 2,
@@ -515,7 +524,8 @@ export const ADDITIONAL_COINKRAZY_SLOTS: SlotMachine[] = [
   {
     id: "coinkrazy_arctic_adventure",
     name: "Arctic Adventure",
-    description: "Journey to the frozen north for icy treasures and polar bear wins!",
+    description:
+      "Journey to the frozen north for icy treasures and polar bear wins!",
     theme: "Arctic Expedition",
     provider: "CoinKrazy",
     thumbnail:
@@ -525,7 +535,15 @@ export const ADDITIONAL_COINKRAZY_SLOTS: SlotMachine[] = [
     reels: Array.from({ length: 5 }, (_, i) => ({
       id: `reel_${i}`,
       position: i,
-      symbols: ["wild", "scatter", "polarbear", "penguin", "snowflake", "igloo", "fish"],
+      symbols: [
+        "wild",
+        "scatter",
+        "polarbear",
+        "penguin",
+        "snowflake",
+        "igloo",
+        "fish",
+      ],
       weight: {
         wild: 1,
         scatter: 2,
@@ -849,7 +867,8 @@ export const ADDITIONAL_COINKRAZY_SLOTS: SlotMachine[] = [
   {
     id: "coinkrazy_jungle_fever",
     name: "Jungle Fever",
-    description: "Swing through the treetops for wild animal wins and hidden treasures!",
+    description:
+      "Swing through the treetops for wild animal wins and hidden treasures!",
     theme: "Tropical Jungle",
     provider: "CoinKrazy",
     thumbnail:
@@ -859,7 +878,15 @@ export const ADDITIONAL_COINKRAZY_SLOTS: SlotMachine[] = [
     reels: Array.from({ length: 5 }, (_, i) => ({
       id: `reel_${i}`,
       position: i,
-      symbols: ["wild", "scatter", "tiger", "monkey", "parrot", "snake", "vine"],
+      symbols: [
+        "wild",
+        "scatter",
+        "tiger",
+        "monkey",
+        "parrot",
+        "snake",
+        "vine",
+      ],
       weight: {
         wild: 1,
         scatter: 2,
@@ -1016,7 +1043,8 @@ export const ADDITIONAL_COINKRAZY_SLOTS: SlotMachine[] = [
   {
     id: "coinkrazy_royal_palace",
     name: "Royal Palace",
-    description: "Live like royalty with crowns, jewels, and majestic castle wins!",
+    description:
+      "Live like royalty with crowns, jewels, and majestic castle wins!",
     theme: "Royal Kingdom",
     provider: "CoinKrazy",
     thumbnail:
@@ -1026,7 +1054,15 @@ export const ADDITIONAL_COINKRAZY_SLOTS: SlotMachine[] = [
     reels: Array.from({ length: 5 }, (_, i) => ({
       id: `reel_${i}`,
       position: i,
-      symbols: ["wild", "scatter", "crown", "jewel", "scepter", "castle", "shield"],
+      symbols: [
+        "wild",
+        "scatter",
+        "crown",
+        "jewel",
+        "scepter",
+        "castle",
+        "shield",
+      ],
       weight: {
         wild: 1,
         scatter: 2,
@@ -1183,7 +1219,8 @@ export const ADDITIONAL_COINKRAZY_SLOTS: SlotMachine[] = [
   {
     id: "coinkrazy_pyramid_mystery",
     name: "Pyramid Mystery",
-    description: "Uncover ancient Egyptian secrets and pharaoh's golden treasures!",
+    description:
+      "Uncover ancient Egyptian secrets and pharaoh's golden treasures!",
     theme: "Ancient Egypt",
     provider: "CoinKrazy",
     thumbnail:
@@ -1193,7 +1230,15 @@ export const ADDITIONAL_COINKRAZY_SLOTS: SlotMachine[] = [
     reels: Array.from({ length: 5 }, (_, i) => ({
       id: `reel_${i}`,
       position: i,
-      symbols: ["wild", "scatter", "pharaoh", "anubis", "scarab", "ankh", "eye"],
+      symbols: [
+        "wild",
+        "scatter",
+        "pharaoh",
+        "anubis",
+        "scarab",
+        "ankh",
+        "eye",
+      ],
       weight: {
         wild: 1,
         scatter: 2,
@@ -1350,7 +1395,8 @@ export const ADDITIONAL_COINKRAZY_SLOTS: SlotMachine[] = [
   {
     id: "coinkrazy_rainbow_riches",
     name: "Rainbow Riches",
-    description: "Follow the rainbow to a pot of gold and lucky leprechaun wins!",
+    description:
+      "Follow the rainbow to a pot of gold and lucky leprechaun wins!",
     theme: "Irish Luck",
     provider: "CoinKrazy",
     thumbnail:
@@ -1360,7 +1406,15 @@ export const ADDITIONAL_COINKRAZY_SLOTS: SlotMachine[] = [
     reels: Array.from({ length: 5 }, (_, i) => ({
       id: `reel_${i}`,
       position: i,
-      symbols: ["wild", "scatter", "leprechaun", "pot", "shamrock", "horseshoe", "coin"],
+      symbols: [
+        "wild",
+        "scatter",
+        "leprechaun",
+        "pot",
+        "shamrock",
+        "horseshoe",
+        "coin",
+      ],
       weight: {
         wild: 1,
         scatter: 2,
@@ -1517,7 +1571,8 @@ export const ADDITIONAL_COINKRAZY_SLOTS: SlotMachine[] = [
   {
     id: "coinkrazy_pirate_treasure",
     name: "Pirate Treasure",
-    description: "Sail the seven seas for buried treasure and swashbuckling wins!",
+    description:
+      "Sail the seven seas for buried treasure and swashbuckling wins!",
     theme: "Pirate Adventure",
     provider: "CoinKrazy",
     thumbnail:
@@ -1527,7 +1582,15 @@ export const ADDITIONAL_COINKRAZY_SLOTS: SlotMachine[] = [
     reels: Array.from({ length: 5 }, (_, i) => ({
       id: `reel_${i}`,
       position: i,
-      symbols: ["wild", "scatter", "pirate", "ship", "treasure", "sword", "anchor"],
+      symbols: [
+        "wild",
+        "scatter",
+        "pirate",
+        "ship",
+        "treasure",
+        "sword",
+        "anchor",
+      ],
       weight: {
         wild: 1,
         scatter: 2,
@@ -1684,7 +1747,8 @@ export const ADDITIONAL_COINKRAZY_SLOTS: SlotMachine[] = [
   {
     id: "coinkrazy_space_wars",
     name: "Space Wars",
-    description: "Battle across the galaxy for cosmic treasures and alien victories!",
+    description:
+      "Battle across the galaxy for cosmic treasures and alien victories!",
     theme: "Galactic Battle",
     provider: "CoinKrazy",
     thumbnail:
@@ -1694,7 +1758,15 @@ export const ADDITIONAL_COINKRAZY_SLOTS: SlotMachine[] = [
     reels: Array.from({ length: 5 }, (_, i) => ({
       id: `reel_${i}`,
       position: i,
-      symbols: ["wild", "scatter", "spaceship", "alien", "laser", "planet", "asteroid"],
+      symbols: [
+        "wild",
+        "scatter",
+        "spaceship",
+        "alien",
+        "laser",
+        "planet",
+        "asteroid",
+      ],
       weight: {
         wild: 1,
         scatter: 2,
@@ -1861,7 +1933,15 @@ export const ADDITIONAL_COINKRAZY_SLOTS: SlotMachine[] = [
     reels: Array.from({ length: 5 }, (_, i) => ({
       id: `reel_${i}`,
       position: i,
-      symbols: ["wild", "scatter", "watermelon", "grape", "orange", "lemon", "cherry"],
+      symbols: [
+        "wild",
+        "scatter",
+        "watermelon",
+        "grape",
+        "orange",
+        "lemon",
+        "cherry",
+      ],
       weight: {
         wild: 1,
         scatter: 2,
@@ -2018,7 +2098,8 @@ export const ADDITIONAL_COINKRAZY_SLOTS: SlotMachine[] = [
   {
     id: "coinkrazy_diamond_rush",
     name: "Diamond Rush",
-    description: "Strike it rich with sparkling diamonds and precious gem combinations!",
+    description:
+      "Strike it rich with sparkling diamonds and precious gem combinations!",
     theme: "Precious Gems",
     provider: "CoinKrazy",
     thumbnail:
@@ -2028,7 +2109,15 @@ export const ADDITIONAL_COINKRAZY_SLOTS: SlotMachine[] = [
     reels: Array.from({ length: 5 }, (_, i) => ({
       id: `reel_${i}`,
       position: i,
-      symbols: ["wild", "scatter", "diamond", "ruby", "emerald", "sapphire", "pearl"],
+      symbols: [
+        "wild",
+        "scatter",
+        "diamond",
+        "ruby",
+        "emerald",
+        "sapphire",
+        "pearl",
+      ],
       weight: {
         wild: 1,
         scatter: 2,
@@ -2185,7 +2274,8 @@ export const ADDITIONAL_COINKRAZY_SLOTS: SlotMachine[] = [
   {
     id: "coinkrazy_monster_mayhem",
     name: "Monster Mayhem",
-    description: "Battle fearsome creatures for monstrous wins and supernatural rewards!",
+    description:
+      "Battle fearsome creatures for monstrous wins and supernatural rewards!",
     theme: "Monster Horror",
     provider: "CoinKrazy",
     thumbnail:
@@ -2195,7 +2285,15 @@ export const ADDITIONAL_COINKRAZY_SLOTS: SlotMachine[] = [
     reels: Array.from({ length: 5 }, (_, i) => ({
       id: `reel_${i}`,
       position: i,
-      symbols: ["wild", "scatter", "vampire", "werewolf", "ghost", "zombie", "bat"],
+      symbols: [
+        "wild",
+        "scatter",
+        "vampire",
+        "werewolf",
+        "ghost",
+        "zombie",
+        "bat",
+      ],
       weight: {
         wild: 1,
         scatter: 2,
@@ -2352,7 +2450,8 @@ export const ADDITIONAL_COINKRAZY_SLOTS: SlotMachine[] = [
   {
     id: "coinkrazy_lucky_fortune",
     name: "Lucky Fortune",
-    description: "Experience the ultimate luck with fortune cookies and golden wins!",
+    description:
+      "Experience the ultimate luck with fortune cookies and golden wins!",
     theme: "Asian Fortune",
     provider: "CoinKrazy",
     thumbnail:
@@ -2362,7 +2461,15 @@ export const ADDITIONAL_COINKRAZY_SLOTS: SlotMachine[] = [
     reels: Array.from({ length: 5 }, (_, i) => ({
       id: `reel_${i}`,
       position: i,
-      symbols: ["wild", "scatter", "dragon", "coin", "lantern", "bamboo", "lotus"],
+      symbols: [
+        "wild",
+        "scatter",
+        "dragon",
+        "coin",
+        "lantern",
+        "bamboo",
+        "lotus",
+      ],
       weight: {
         wild: 1,
         scatter: 2,

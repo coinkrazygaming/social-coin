@@ -1,18 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "./ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
@@ -131,8 +121,18 @@ interface SystemStats {
   avgRTP: number;
   totalSpins: number;
   totalWins: number;
-  popularSlots: Array<{ id: string; name: string; plays: number; revenue: number }>;
-  recentActivity: Array<{ timestamp: Date; action: string; user: string; details: string }>;
+  popularSlots: Array<{
+    id: string;
+    name: string;
+    plays: number;
+    revenue: number;
+  }>;
+  recentActivity: Array<{
+    timestamp: Date;
+    action: string;
+    user: string;
+    details: string;
+  }>;
 }
 
 interface GameAnalytics {
@@ -192,14 +192,16 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [subTab, setSubTab] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  
+
   // State management
   const [allSlots, setAllSlots] = useState<SlotMachineType[]>([]);
-  const [selectedSlot, setSelectedSlot] = useState<SlotMachineType | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<SlotMachineType | null>(
+    null,
+  );
   const [editingSlot, setEditingSlot] = useState<SlotMachineType | null>(null);
   const [showSlotEditor, setShowSlotEditor] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  
+
   // Analytics and metrics
   const [systemStats, setSystemStats] = useState<SystemStats>({
     totalUsers: 12847,
@@ -216,7 +218,7 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
     popularSlots: [],
     recentActivity: [],
   });
-  
+
   const [gameAnalytics, setGameAnalytics] = useState<GameAnalytics[]>([]);
   const [userMetrics, setUserMetrics] = useState<UserMetrics[]>([]);
   const [adminSettings, setAdminSettings] = useState<AdminSettings>({
@@ -264,7 +266,10 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
 
   useEffect(() => {
     // Combine all slot games
-    const combinedSlots = [...DEFAULT_COINKRAZY_SLOTS, ...ADDITIONAL_COINKRAZY_SLOTS];
+    const combinedSlots = [
+      ...DEFAULT_COINKRAZY_SLOTS,
+      ...ADDITIONAL_COINKRAZY_SLOTS,
+    ];
     setAllSlots(combinedSlots);
     generateMockAnalytics(combinedSlots);
     setIsLoading(false);
@@ -301,7 +306,9 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
       maxWin: Math.floor(Math.random() * 10000) + 1000,
       popularity: Math.random() * 100,
       retention: Math.random() * 100,
-      performance: ["excellent", "good", "average", "poor"][Math.floor(Math.random() * 4)] as any,
+      performance: ["excellent", "good", "average", "poor"][
+        Math.floor(Math.random() * 4)
+      ] as any,
     }));
     setGameAnalytics(analytics);
 
@@ -309,19 +316,19 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
     const popularSlots = analytics
       .sort((a, b) => b.plays - a.plays)
       .slice(0, 5)
-      .map(a => ({
+      .map((a) => ({
         id: a.slotId,
         name: a.name,
         plays: a.plays,
         revenue: a.revenue,
       }));
-    
-    setSystemStats(prev => ({ ...prev, popularSlots }));
+
+    setSystemStats((prev) => ({ ...prev, popularSlots }));
   };
 
   const updateRealTimeData = () => {
     // Simulate real-time data updates
-    setSystemStats(prev => ({
+    setSystemStats((prev) => ({
       ...prev,
       activeUsers: prev.activeUsers + Math.floor(Math.random() * 20) - 10,
       todayRevenue: prev.todayRevenue + Math.random() * 100,
@@ -330,10 +337,12 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
   };
 
   const filteredSlots = useMemo(() => {
-    return allSlots.filter(slot => {
-      const matchesSearch = slot.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           slot.theme.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesProvider = selectedProvider === "all" || slot.provider === selectedProvider;
+    return allSlots.filter((slot) => {
+      const matchesSearch =
+        slot.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        slot.theme.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesProvider =
+        selectedProvider === "all" || slot.provider === selectedProvider;
       return matchesSearch && matchesProvider;
     });
   }, [allSlots, searchTerm, selectedProvider]);
@@ -341,11 +350,16 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
   const sortedAnalytics = useMemo(() => {
     return [...gameAnalytics].sort((a, b) => {
       switch (sortBy) {
-        case "revenue": return b.revenue - a.revenue;
-        case "plays": return b.plays - a.plays;
-        case "rtp": return b.rtp - a.rtp;
-        case "popularity": return b.popularity - a.popularity;
-        default: return 0;
+        case "revenue":
+          return b.revenue - a.revenue;
+        case "plays":
+          return b.plays - a.plays;
+        case "rtp":
+          return b.rtp - a.rtp;
+        case "popularity":
+          return b.popularity - a.popularity;
+        default:
+          return 0;
       }
     });
   }, [gameAnalytics, sortBy]);
@@ -371,11 +385,14 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
           id: "line_1",
           name: "Center Line",
           positions: [
-            { reel: 0, row: 1 }, { reel: 1, row: 1 }, { reel: 2, row: 1 },
-            { reel: 3, row: 1 }, { reel: 4, row: 1 }
+            { reel: 0, row: 1 },
+            { reel: 1, row: 1 },
+            { reel: 2, row: 1 },
+            { reel: 3, row: 1 },
+            { reel: 4, row: 1 },
           ],
           active: true,
-        }
+        },
       ],
       symbols: [
         {
@@ -428,8 +445,8 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
 
   const handleSlotSave = async (slot: SlotMachineType) => {
     try {
-      setAllSlots(prev => {
-        const existing = prev.findIndex(s => s.id === slot.id);
+      setAllSlots((prev) => {
+        const existing = prev.findIndex((s) => s.id === slot.id);
         if (existing >= 0) {
           const updated = [...prev];
           updated[existing] = slot;
@@ -504,9 +521,11 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
           </div>
           <div className="flex items-center gap-4 text-white">
             <div className="flex items-center gap-2">
-              <div className={`w-3 h-3 rounded-full ${realTimeEnabled ? 'bg-green-400 animate-pulse' : 'bg-gray-400'}`} />
+              <div
+                className={`w-3 h-3 rounded-full ${realTimeEnabled ? "bg-green-400 animate-pulse" : "bg-gray-400"}`}
+              />
               <span className="text-sm">
-                {realTimeEnabled ? 'Live Updates' : 'Static Mode'}
+                {realTimeEnabled ? "Live Updates" : "Static Mode"}
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -522,7 +541,9 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-400">Total Revenue</p>
+                  <p className="text-sm font-medium text-gray-400">
+                    Total Revenue
+                  </p>
                   <div className="flex items-center">
                     <p className="text-2xl font-bold text-green-400">
                       ${systemStats.totalRevenue.toLocaleString()}
@@ -542,7 +563,9 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-400">Active Users</p>
+                  <p className="text-sm font-medium text-gray-400">
+                    Active Users
+                  </p>
                   <div className="flex items-center">
                     <p className="text-2xl font-bold text-blue-400">
                       {systemStats.activeUsers.toLocaleString()}
@@ -562,7 +585,9 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-400">Total Spins</p>
+                  <p className="text-sm font-medium text-gray-400">
+                    Total Spins
+                  </p>
                   <div className="flex items-center">
                     <p className="text-2xl font-bold text-purple-400">
                       {systemStats.totalSpins.toLocaleString()}
@@ -627,23 +652,34 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {systemStats.popularSlots.slice(0, 5).map((slot, index) => (
-                        <div key={slot.id} className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg">
-                          <div className="flex items-center space-x-3">
-                            <div className="flex items-center justify-center w-8 h-8 bg-gold/20 rounded-full text-gold font-bold">
-                              {index + 1}
+                      {systemStats.popularSlots
+                        .slice(0, 5)
+                        .map((slot, index) => (
+                          <div
+                            key={slot.id}
+                            className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg"
+                          >
+                            <div className="flex items-center space-x-3">
+                              <div className="flex items-center justify-center w-8 h-8 bg-gold/20 rounded-full text-gold font-bold">
+                                {index + 1}
+                              </div>
+                              <div>
+                                <p className="text-white font-medium">
+                                  {slot.name}
+                                </p>
+                                <p className="text-sm text-gray-400">
+                                  {slot.plays.toLocaleString()} plays
+                                </p>
+                              </div>
                             </div>
-                            <div>
-                              <p className="text-white font-medium">{slot.name}</p>
-                              <p className="text-sm text-gray-400">{slot.plays.toLocaleString()} plays</p>
+                            <div className="text-right">
+                              <p className="text-green-400 font-bold">
+                                ${slot.revenue.toLocaleString()}
+                              </p>
+                              <p className="text-xs text-gray-400">revenue</p>
                             </div>
                           </div>
-                          <div className="text-right">
-                            <p className="text-green-400 font-bold">${slot.revenue.toLocaleString()}</p>
-                            <p className="text-xs text-gray-400">revenue</p>
-                          </div>
-                        </div>
-                      ))}
+                        ))}
                     </div>
                   </CardContent>
                 </Card>
@@ -659,15 +695,21 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                   <CardContent>
                     <div className="grid grid-cols-3 gap-4 mb-6">
                       <div className="text-center">
-                        <p className="text-2xl font-bold text-green-400">${systemStats.todayRevenue.toFixed(2)}</p>
+                        <p className="text-2xl font-bold text-green-400">
+                          ${systemStats.todayRevenue.toFixed(2)}
+                        </p>
                         <p className="text-sm text-gray-400">Today</p>
                       </div>
                       <div className="text-center">
-                        <p className="text-2xl font-bold text-blue-400">${systemStats.weekRevenue.toFixed(2)}</p>
+                        <p className="text-2xl font-bold text-blue-400">
+                          ${systemStats.weekRevenue.toFixed(2)}
+                        </p>
                         <p className="text-sm text-gray-400">This Week</p>
                       </div>
                       <div className="text-center">
-                        <p className="text-2xl font-bold text-purple-400">${systemStats.monthRevenue.toFixed(2)}</p>
+                        <p className="text-2xl font-bold text-purple-400">
+                          ${systemStats.monthRevenue.toFixed(2)}
+                        </p>
                         <p className="text-sm text-gray-400">This Month</p>
                       </div>
                     </div>
@@ -687,7 +729,9 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                     stats: systemStats,
                     slots: allSlots,
                   }}
-                  onSuggestionApply={(suggestion) => console.log("Admin suggestion:", suggestion)}
+                  onSuggestionApply={(suggestion) =>
+                    console.log("Admin suggestion:", suggestion)
+                  }
                   onCodeGenerate={handleJoseyAICodeGenerate}
                   onComponentGenerate={handleJoseyAIComponentGenerate}
                   onTodoCreate={handleJoseyAITodoCreate}
@@ -831,7 +875,10 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                           className="bg-gray-700/50 border-gray-600"
                         />
                       </div>
-                      <Select value={selectedProvider} onValueChange={setSelectedProvider}>
+                      <Select
+                        value={selectedProvider}
+                        onValueChange={setSelectedProvider}
+                      >
                         <SelectTrigger className="w-40">
                           <SelectValue placeholder="Provider" />
                         </SelectTrigger>
@@ -856,7 +903,9 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                     {/* Slot Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {filteredSlots.map((slot) => {
-                        const analytics = gameAnalytics.find(a => a.slotId === slot.id);
+                        const analytics = gameAnalytics.find(
+                          (a) => a.slotId === slot.id,
+                        );
                         return (
                           <Card
                             key={slot.id}
@@ -883,8 +932,12 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                                 </div>
                                 <div className="absolute bottom-2 right-2">
                                   <Badge
-                                    variant={slot.active ? "default" : "secondary"}
-                                    className={slot.active ? "bg-green-600" : ""}
+                                    variant={
+                                      slot.active ? "default" : "secondary"
+                                    }
+                                    className={
+                                      slot.active ? "bg-green-600" : ""
+                                    }
                                   >
                                     {slot.active ? "Active" : "Inactive"}
                                   </Badge>
@@ -898,16 +951,20 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                                 <p className="text-sm text-gray-400 line-clamp-2">
                                   {slot.description}
                                 </p>
-                                
+
                                 {analytics && (
                                   <div className="grid grid-cols-2 gap-2 text-xs">
                                     <div className="text-center p-2 bg-gray-800/50 rounded">
                                       <p className="text-gray-400">Plays</p>
-                                      <p className="text-white font-bold">{analytics.plays.toLocaleString()}</p>
+                                      <p className="text-white font-bold">
+                                        {analytics.plays.toLocaleString()}
+                                      </p>
                                     </div>
                                     <div className="text-center p-2 bg-gray-800/50 rounded">
                                       <p className="text-gray-400">Revenue</p>
-                                      <p className="text-green-400 font-bold">${analytics.revenue.toLocaleString()}</p>
+                                      <p className="text-green-400 font-bold">
+                                        ${analytics.revenue.toLocaleString()}
+                                      </p>
                                     </div>
                                   </div>
                                 )}
@@ -956,7 +1013,7 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                                       created: new Date(),
                                       updated: new Date(),
                                     };
-                                    setAllSlots(prev => [...prev, cloned]);
+                                    setAllSlots((prev) => [...prev, cloned]);
                                   }}
                                 >
                                   <Copy className="h-3 w-3" />
@@ -971,7 +1028,9 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                     {filteredSlots.length === 0 && (
                       <div className="text-center py-12">
                         <Search className="h-12 w-12 text-gray-500 mx-auto mb-4" />
-                        <p className="text-gray-400">No slots found matching your criteria</p>
+                        <p className="text-gray-400">
+                          No slots found matching your criteria
+                        </p>
                       </div>
                     )}
                   </CardContent>
@@ -985,9 +1044,11 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                   currentProject={{
                     type: "slot_management",
                     totalSlots: allSlots.length,
-                    activeSlots: allSlots.filter(s => s.active).length,
+                    activeSlots: allSlots.filter((s) => s.active).length,
                   }}
-                  onSuggestionApply={(suggestion) => console.log("Slot suggestion:", suggestion)}
+                  onSuggestionApply={(suggestion) =>
+                    console.log("Slot suggestion:", suggestion)
+                  }
                   onCodeGenerate={handleJoseyAICodeGenerate}
                   onComponentGenerate={handleJoseyAIComponentGenerate}
                   onTodoCreate={handleJoseyAITodoCreate}
@@ -1010,27 +1071,30 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Active Slots</span>
                       <Badge className="bg-green-600">
-                        {allSlots.filter(s => s.active).length}
+                        {allSlots.filter((s) => s.active).length}
                       </Badge>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Featured</span>
                       <Badge className="bg-gold text-black">
-                        {allSlots.filter(s => s.featured).length}
+                        {allSlots.filter((s) => s.featured).length}
                       </Badge>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Avg RTP</span>
                       <Badge variant="outline">
                         {allSlots.length > 0
-                          ? (allSlots.reduce((acc, s) => acc + s.rtp, 0) / allSlots.length).toFixed(1) + "%"
+                          ? (
+                              allSlots.reduce((acc, s) => acc + s.rtp, 0) /
+                              allSlots.length
+                            ).toFixed(1) + "%"
                           : "N/A"}
                       </Badge>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">High Volatility</span>
                       <Badge variant="outline">
-                        {allSlots.filter(s => s.volatility === "high").length}
+                        {allSlots.filter((s) => s.volatility === "high").length}
                       </Badge>
                     </div>
                   </CardContent>
@@ -1048,7 +1112,9 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                     <div className="p-3 bg-green-900/30 border border-green-500/30 rounded-lg">
                       <div className="flex items-center">
                         <Trophy className="h-4 w-4 text-green-400 mr-2" />
-                        <span className="text-sm text-green-300">Top Performer</span>
+                        <span className="text-sm text-green-300">
+                          Top Performer
+                        </span>
                       </div>
                       <p className="text-xs text-green-200 mt-1">
                         Lucky Fortune generating highest revenue
@@ -1057,7 +1123,9 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                     <div className="p-3 bg-yellow-900/30 border border-yellow-500/30 rounded-lg">
                       <div className="flex items-center">
                         <AlertTriangle className="h-4 w-4 text-yellow-400 mr-2" />
-                        <span className="text-sm text-yellow-300">Needs Attention</span>
+                        <span className="text-sm text-yellow-300">
+                          Needs Attention
+                        </span>
                       </div>
                       <p className="text-xs text-yellow-200 mt-1">
                         3 slots with low engagement rates
@@ -1066,7 +1134,9 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                     <div className="p-3 bg-blue-900/30 border border-blue-500/30 rounded-lg">
                       <div className="flex items-center">
                         <Lightbulb className="h-4 w-4 text-blue-400 mr-2" />
-                        <span className="text-sm text-blue-300">Recommendation</span>
+                        <span className="text-sm text-blue-300">
+                          Recommendation
+                        </span>
                       </div>
                       <p className="text-xs text-blue-200 mt-1">
                         Consider adding more themed slots
@@ -1091,16 +1161,26 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Game Performance Table */}
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-4">Game Performance</h3>
+                    <h3 className="text-lg font-semibold text-white mb-4">
+                      Game Performance
+                    </h3>
                     <div className="max-h-96 overflow-y-auto">
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead className="text-gray-400">Game</TableHead>
-                            <TableHead className="text-gray-400">Plays</TableHead>
-                            <TableHead className="text-gray-400">Revenue</TableHead>
+                            <TableHead className="text-gray-400">
+                              Game
+                            </TableHead>
+                            <TableHead className="text-gray-400">
+                              Plays
+                            </TableHead>
+                            <TableHead className="text-gray-400">
+                              Revenue
+                            </TableHead>
                             <TableHead className="text-gray-400">RTP</TableHead>
-                            <TableHead className="text-gray-400">Status</TableHead>
+                            <TableHead className="text-gray-400">
+                              Status
+                            </TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -1124,17 +1204,17 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                                     analytics.performance === "excellent"
                                       ? "default"
                                       : analytics.performance === "good"
-                                      ? "secondary"
-                                      : "outline"
+                                        ? "secondary"
+                                        : "outline"
                                   }
                                   className={
                                     analytics.performance === "excellent"
                                       ? "bg-green-600"
                                       : analytics.performance === "good"
-                                      ? "bg-blue-600"
-                                      : analytics.performance === "average"
-                                      ? "bg-yellow-600"
-                                      : "bg-red-600"
+                                        ? "bg-blue-600"
+                                        : analytics.performance === "average"
+                                          ? "bg-yellow-600"
+                                          : "bg-red-600"
                                   }
                                 >
                                   {analytics.performance}
@@ -1150,15 +1230,23 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                   {/* Analytics Charts */}
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-lg font-semibold text-white mb-4">Revenue Distribution</h3>
+                      <h3 className="text-lg font-semibold text-white mb-4">
+                        Revenue Distribution
+                      </h3>
                       <div className="h-48 bg-gray-700/30 rounded-lg flex items-center justify-center">
-                        <p className="text-gray-400">Revenue Chart Placeholder</p>
+                        <p className="text-gray-400">
+                          Revenue Chart Placeholder
+                        </p>
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-white mb-4">User Engagement</h3>
+                      <h3 className="text-lg font-semibold text-white mb-4">
+                        User Engagement
+                      </h3>
                       <div className="h-48 bg-gray-700/30 rounded-lg flex items-center justify-center">
-                        <p className="text-gray-400">Engagement Chart Placeholder</p>
+                        <p className="text-gray-400">
+                          Engagement Chart Placeholder
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -1184,9 +1272,17 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                       currentProject={{
                         type: "full_platform",
                         adminLevel: "enhanced",
-                        features: ["slots", "table_games", "bingo", "payments", "analytics"],
+                        features: [
+                          "slots",
+                          "table_games",
+                          "bingo",
+                          "payments",
+                          "analytics",
+                        ],
                       }}
-                      onSuggestionApply={(suggestion) => console.log("Development suggestion:", suggestion)}
+                      onSuggestionApply={(suggestion) =>
+                        console.log("Development suggestion:", suggestion)
+                      }
                       onCodeGenerate={handleJoseyAICodeGenerate}
                       onComponentGenerate={handleJoseyAIComponentGenerate}
                       onTodoCreate={handleJoseyAITodoCreate}
@@ -1208,23 +1304,60 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                   <CardContent>
                     <div className="grid grid-cols-1 gap-4">
                       {[
-                        { name: "SlotAI Manager", icon: "🎰", desc: "Manages slot optimization and RTP", status: "online" },
-                        { name: "TableAI Manager", icon: "🃏", desc: "Oversees table games and dealers", status: "online" },
-                        { name: "BingoAI Manager", icon: "🎱", desc: "Handles bingo hall operations", status: "online" },
-                        { name: "PaymentAI Manager", icon: "💳", desc: "Processes payments and fraud detection", status: "online" },
-                        { name: "SecurityAI Manager", icon: "🛡️", desc: "Monitors security and compliance", status: "online" },
-                        { name: "AnalyticsAI Manager", icon: "📊", desc: "Generates insights and reports", status: "online" },
+                        {
+                          name: "SlotAI Manager",
+                          icon: "🎰",
+                          desc: "Manages slot optimization and RTP",
+                          status: "online",
+                        },
+                        {
+                          name: "TableAI Manager",
+                          icon: "🃏",
+                          desc: "Oversees table games and dealers",
+                          status: "online",
+                        },
+                        {
+                          name: "BingoAI Manager",
+                          icon: "🎱",
+                          desc: "Handles bingo hall operations",
+                          status: "online",
+                        },
+                        {
+                          name: "PaymentAI Manager",
+                          icon: "💳",
+                          desc: "Processes payments and fraud detection",
+                          status: "online",
+                        },
+                        {
+                          name: "SecurityAI Manager",
+                          icon: "🛡️",
+                          desc: "Monitors security and compliance",
+                          status: "online",
+                        },
+                        {
+                          name: "AnalyticsAI Manager",
+                          icon: "📊",
+                          desc: "Generates insights and reports",
+                          status: "online",
+                        },
                       ].map((ai) => (
-                        <div key={ai.name} className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg">
+                        <div
+                          key={ai.name}
+                          className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg"
+                        >
                           <div className="flex items-center space-x-3">
                             <div className="text-2xl">{ai.icon}</div>
                             <div>
-                              <p className="text-white font-medium">{ai.name}</p>
+                              <p className="text-white font-medium">
+                                {ai.name}
+                              </p>
                               <p className="text-sm text-gray-400">{ai.desc}</p>
                             </div>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <div className={`w-2 h-2 rounded-full ${ai.status === 'online' ? 'bg-green-400' : 'bg-red-400'}`} />
+                            <div
+                              className={`w-2 h-2 rounded-full ${ai.status === "online" ? "bg-green-400" : "bg-red-400"}`}
+                            />
                             <Button size="sm" variant="outline">
                               <MessageSquare className="h-3 w-3 mr-1" />
                               Chat
@@ -1268,7 +1401,9 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                     </div>
                     <div>
                       <div className="flex justify-between text-sm mb-1">
-                        <span className="text-gray-400">Security Monitoring</span>
+                        <span className="text-gray-400">
+                          Security Monitoring
+                        </span>
                         <span className="text-white">99%</span>
                       </div>
                       <Progress value={99} className="h-2" />
@@ -1293,28 +1428,40 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                   {/* Platform Settings */}
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-lg font-semibold text-white mb-4">Platform Settings</h3>
+                      <h3 className="text-lg font-semibold text-white mb-4">
+                        Platform Settings
+                      </h3>
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <Label className="text-white">Maintenance Mode</Label>
                           <Switch
                             checked={adminSettings.maintenance}
                             onCheckedChange={(checked) =>
-                              setAdminSettings(prev => ({ ...prev, maintenance: checked }))
+                              setAdminSettings((prev) => ({
+                                ...prev,
+                                maintenance: checked,
+                              }))
                             }
                           />
                         </div>
                         <div className="flex items-center justify-between">
-                          <Label className="text-white">New User Registration</Label>
+                          <Label className="text-white">
+                            New User Registration
+                          </Label>
                           <Switch
                             checked={adminSettings.newUserRegistration}
                             onCheckedChange={(checked) =>
-                              setAdminSettings(prev => ({ ...prev, newUserRegistration: checked }))
+                              setAdminSettings((prev) => ({
+                                ...prev,
+                                newUserRegistration: checked,
+                              }))
                             }
                           />
                         </div>
                         <div className="flex items-center justify-between">
-                          <Label className="text-white">Real-time Updates</Label>
+                          <Label className="text-white">
+                            Real-time Updates
+                          </Label>
                           <Switch
                             checked={realTimeEnabled}
                             onCheckedChange={setRealTimeEnabled}
@@ -1324,17 +1471,21 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                     </div>
 
                     <div>
-                      <h3 className="text-lg font-semibold text-white mb-4">Betting Limits</h3>
+                      <h3 className="text-lg font-semibold text-white mb-4">
+                        Betting Limits
+                      </h3>
                       <div className="space-y-4">
                         <div>
-                          <Label className="text-white">Maximum Bet Limit ($)</Label>
+                          <Label className="text-white">
+                            Maximum Bet Limit ($)
+                          </Label>
                           <Input
                             type="number"
                             value={adminSettings.maxBetLimit}
                             onChange={(e) =>
-                              setAdminSettings(prev => ({
+                              setAdminSettings((prev) => ({
                                 ...prev,
-                                maxBetLimit: parseFloat(e.target.value)
+                                maxBetLimit: parseFloat(e.target.value),
                               }))
                             }
                             className="mt-1"
@@ -1347,9 +1498,12 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                               type="number"
                               value={adminSettings.rtpRange.min}
                               onChange={(e) =>
-                                setAdminSettings(prev => ({
+                                setAdminSettings((prev) => ({
                                   ...prev,
-                                  rtpRange: { ...prev.rtpRange, min: parseFloat(e.target.value) }
+                                  rtpRange: {
+                                    ...prev.rtpRange,
+                                    min: parseFloat(e.target.value),
+                                  },
                                 }))
                               }
                               placeholder="Min RTP"
@@ -1358,9 +1512,12 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                               type="number"
                               value={adminSettings.rtpRange.max}
                               onChange={(e) =>
-                                setAdminSettings(prev => ({
+                                setAdminSettings((prev) => ({
                                   ...prev,
-                                  rtpRange: { ...prev.rtpRange, max: parseFloat(e.target.value) }
+                                  rtpRange: {
+                                    ...prev.rtpRange,
+                                    max: parseFloat(e.target.value),
+                                  },
                                 }))
                               }
                               placeholder="Max RTP"
@@ -1374,49 +1531,66 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                   {/* Security Settings */}
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-lg font-semibold text-white mb-4">Security Settings</h3>
+                      <h3 className="text-lg font-semibold text-white mb-4">
+                        Security Settings
+                      </h3>
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                          <Label className="text-white">Two-Factor Authentication Required</Label>
+                          <Label className="text-white">
+                            Two-Factor Authentication Required
+                          </Label>
                           <Switch
-                            checked={adminSettings.securitySettings.twoFactorRequired}
+                            checked={
+                              adminSettings.securitySettings.twoFactorRequired
+                            }
                             onCheckedChange={(checked) =>
-                              setAdminSettings(prev => ({
+                              setAdminSettings((prev) => ({
                                 ...prev,
-                                securitySettings: { ...prev.securitySettings, twoFactorRequired: checked }
+                                securitySettings: {
+                                  ...prev.securitySettings,
+                                  twoFactorRequired: checked,
+                                },
                               }))
                             }
                           />
                         </div>
                         <div>
-                          <Label className="text-white">Session Timeout (minutes)</Label>
+                          <Label className="text-white">
+                            Session Timeout (minutes)
+                          </Label>
                           <Input
                             type="number"
-                            value={adminSettings.securitySettings.sessionTimeout}
+                            value={
+                              adminSettings.securitySettings.sessionTimeout
+                            }
                             onChange={(e) =>
-                              setAdminSettings(prev => ({
+                              setAdminSettings((prev) => ({
                                 ...prev,
                                 securitySettings: {
                                   ...prev.securitySettings,
-                                  sessionTimeout: parseInt(e.target.value)
-                                }
+                                  sessionTimeout: parseInt(e.target.value),
+                                },
                               }))
                             }
                             className="mt-1"
                           />
                         </div>
                         <div>
-                          <Label className="text-white">Max Login Attempts</Label>
+                          <Label className="text-white">
+                            Max Login Attempts
+                          </Label>
                           <Input
                             type="number"
-                            value={adminSettings.securitySettings.maxLoginAttempts}
+                            value={
+                              adminSettings.securitySettings.maxLoginAttempts
+                            }
                             onChange={(e) =>
-                              setAdminSettings(prev => ({
+                              setAdminSettings((prev) => ({
                                 ...prev,
                                 securitySettings: {
                                   ...prev.securitySettings,
-                                  maxLoginAttempts: parseInt(e.target.value)
-                                }
+                                  maxLoginAttempts: parseInt(e.target.value),
+                                },
                               }))
                             }
                             className="mt-1"
@@ -1426,32 +1600,41 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                     </div>
 
                     <div>
-                      <h3 className="text-lg font-semibold text-white mb-4">Game Settings</h3>
+                      <h3 className="text-lg font-semibold text-white mb-4">
+                        Game Settings
+                      </h3>
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                          <Label className="text-white">Enable Quick Spin</Label>
+                          <Label className="text-white">
+                            Enable Quick Spin
+                          </Label>
                           <Switch
                             checked={adminSettings.gameSettings.enableQuickSpin}
                             onCheckedChange={(checked) =>
-                              setAdminSettings(prev => ({
+                              setAdminSettings((prev) => ({
                                 ...prev,
-                                gameSettings: { ...prev.gameSettings, enableQuickSpin: checked }
+                                gameSettings: {
+                                  ...prev.gameSettings,
+                                  enableQuickSpin: checked,
+                                },
                               }))
                             }
                           />
                         </div>
                         <div>
-                          <Label className="text-white">Autoplay Max Spins</Label>
+                          <Label className="text-white">
+                            Autoplay Max Spins
+                          </Label>
                           <Input
                             type="number"
                             value={adminSettings.gameSettings.autoplayMaxSpins}
                             onChange={(e) =>
-                              setAdminSettings(prev => ({
+                              setAdminSettings((prev) => ({
                                 ...prev,
                                 gameSettings: {
                                   ...prev.gameSettings,
-                                  autoplayMaxSpins: parseInt(e.target.value)
-                                }
+                                  autoplayMaxSpins: parseInt(e.target.value),
+                                },
                               }))
                             }
                             className="mt-1"
@@ -1481,7 +1664,8 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                 {editingSlot ? `Edit ${editingSlot.name}` : "Create New Slot"}
               </DialogTitle>
               <DialogDescription>
-                Use the advanced visual editor to create and customize your slot machine
+                Use the advanced visual editor to create and customize your slot
+                machine
               </DialogDescription>
             </DialogHeader>
             <div className="mt-4">
@@ -1533,7 +1717,11 @@ interface EnhancedSlotEditorProps {
   onCancel: () => void;
 }
 
-function EnhancedSlotEditor({ initialSlot, onSave, onCancel }: EnhancedSlotEditorProps) {
+function EnhancedSlotEditor({
+  initialSlot,
+  onSave,
+  onCancel,
+}: EnhancedSlotEditorProps) {
   const [slot, setSlot] = useState<SlotMachineType>(initialSlot);
   const [activeTab, setActiveTab] = useState("basic");
   const [isSaving, setIsSaving] = useState(false);
@@ -1550,7 +1738,7 @@ function EnhancedSlotEditor({ initialSlot, onSave, onCancel }: EnhancedSlotEdito
   };
 
   const updateSlot = (updates: Partial<SlotMachineType>) => {
-    setSlot(prev => ({ ...prev, ...updates, updated: new Date() }));
+    setSlot((prev) => ({ ...prev, ...updates, updated: new Date() }));
   };
 
   return (
@@ -1565,7 +1753,11 @@ function EnhancedSlotEditor({ initialSlot, onSave, onCancel }: EnhancedSlotEdito
           <Button variant="outline" onClick={onCancel}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={isSaving} className="bg-gold text-black">
+          <Button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="bg-gold text-black"
+          >
             {isSaving ? (
               <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
             ) : (
@@ -1637,7 +1829,9 @@ function EnhancedSlotEditor({ initialSlot, onSave, onCancel }: EnhancedSlotEdito
                   <Input
                     type="number"
                     value={slot.rows}
-                    onChange={(e) => updateSlot({ rows: parseInt(e.target.value) })}
+                    onChange={(e) =>
+                      updateSlot({ rows: parseInt(e.target.value) })
+                    }
                     min="3"
                     max="5"
                   />
@@ -1648,7 +1842,9 @@ function EnhancedSlotEditor({ initialSlot, onSave, onCancel }: EnhancedSlotEdito
                     type="number"
                     step="0.01"
                     value={slot.minBet}
-                    onChange={(e) => updateSlot({ minBet: parseFloat(e.target.value) })}
+                    onChange={(e) =>
+                      updateSlot({ minBet: parseFloat(e.target.value) })
+                    }
                   />
                 </div>
                 <div>
@@ -1657,7 +1853,9 @@ function EnhancedSlotEditor({ initialSlot, onSave, onCancel }: EnhancedSlotEdito
                     type="number"
                     step="0.01"
                     value={slot.maxBet}
-                    onChange={(e) => updateSlot({ maxBet: parseFloat(e.target.value) })}
+                    onChange={(e) =>
+                      updateSlot({ maxBet: parseFloat(e.target.value) })
+                    }
                   />
                 </div>
               </div>
@@ -1678,7 +1876,9 @@ function EnhancedSlotEditor({ initialSlot, onSave, onCancel }: EnhancedSlotEdito
                   <Label>Volatility</Label>
                   <Select
                     value={slot.volatility}
-                    onValueChange={(volatility: any) => updateSlot({ volatility })}
+                    onValueChange={(volatility: any) =>
+                      updateSlot({ volatility })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -1718,7 +1918,9 @@ function EnhancedSlotEditor({ initialSlot, onSave, onCancel }: EnhancedSlotEdito
               <div className="text-center py-8 text-gray-400">
                 <Sparkles className="h-12 w-12 mx-auto mb-4" />
                 <p>Symbol editor interface would go here</p>
-                <p className="text-sm">Configure symbol values, rarities, and appearances</p>
+                <p className="text-sm">
+                  Configure symbol values, rarities, and appearances
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -1730,7 +1932,9 @@ function EnhancedSlotEditor({ initialSlot, onSave, onCancel }: EnhancedSlotEdito
               <div className="text-center py-8 text-gray-400">
                 <Grid className="h-12 w-12 mx-auto mb-4" />
                 <p>Reel configuration interface would go here</p>
-                <p className="text-sm">Set up reel weights and symbol distributions</p>
+                <p className="text-sm">
+                  Set up reel weights and symbol distributions
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -1742,7 +1946,9 @@ function EnhancedSlotEditor({ initialSlot, onSave, onCancel }: EnhancedSlotEdito
               <div className="text-center py-8 text-gray-400">
                 <Zap className="h-12 w-12 mx-auto mb-4" />
                 <p>Payline editor interface would go here</p>
-                <p className="text-sm">Define winning combinations and payouts</p>
+                <p className="text-sm">
+                  Define winning combinations and payouts
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -1754,7 +1960,9 @@ function EnhancedSlotEditor({ initialSlot, onSave, onCancel }: EnhancedSlotEdito
               <div className="text-center py-8 text-gray-400">
                 <Star className="h-12 w-12 mx-auto mb-4" />
                 <p>Bonus features configuration would go here</p>
-                <p className="text-sm">Add special features, animations, and sound effects</p>
+                <p className="text-sm">
+                  Add special features, animations, and sound effects
+                </p>
               </div>
             </CardContent>
           </Card>

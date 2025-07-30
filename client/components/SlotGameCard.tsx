@@ -325,7 +325,7 @@ export function SlotGameCard({
                 if (newBalance <= 0) {
                   setTimeout(() => {
                     setShowPreview(false);
-                    window.location.href = '/signup';
+                    window.location.href = "/signup";
                   }, 2000);
                 }
               }}
@@ -353,7 +353,8 @@ export function SlotGameCard({
                   ⚠️ Low demo credits!
                   <a href="/signup" className="text-gold hover:underline ml-1">
                     Sign up
-                  </a> to continue playing.
+                  </a>{" "}
+                  to continue playing.
                 </p>
               </div>
             )}

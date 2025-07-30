@@ -150,7 +150,7 @@ export function EnhancedJoseyAI({
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingProgress, setProcessingProgress] = useState(0);
   const [currentTask, setCurrentTask] = useState<string>("");
-  
+
   const [aiSettings, setAiSettings] = useState<AISettings>({
     llmModel: "gpt-4",
     temperature: 0.7,
@@ -182,10 +182,14 @@ export function EnhancedJoseyAI({
   const initializeAI = async () => {
     const welcomeMessage = await getEnhancedWelcomeMessage();
     setMessages([welcomeMessage]);
-    
+
     // Create initial restore point
     if (aiSettings.autoCreateBackups) {
-      createRestorePoint("Initial State", "Automatic backup on JoseyAI startup", true);
+      createRestorePoint(
+        "Initial State",
+        "Automatic backup on JoseyAI startup",
+        true,
+      );
     }
   };
 
@@ -234,7 +238,7 @@ Ready to build something amazing? What's your vision?`,
           "Configure project settings",
         ],
       },
-      "admin": {
+      admin: {
         message: `🛠️ **JoseyAI Admin & DevOps Assistant**
 
 Your advanced casino platform management AI is online! I can help with:
@@ -270,7 +274,7 @@ What administrative challenge shall we tackle?`,
           "Optimize database performance",
         ],
       },
-      "development": {
+      development: {
         message: `🚀 **JoseyAI Full-Stack Development Assistant**
 
 Advanced development AI ready for enterprise-level casino platform development!
@@ -375,11 +379,17 @@ How can I accelerate your development today?`,
       response = await handleGenerationRequest(userMessage);
     } else if (lowerMessage.includes("todo") || lowerMessage.includes("task")) {
       response = await handleTodoRequest(userMessage);
-    } else if (lowerMessage.includes("restore") || lowerMessage.includes("backup")) {
+    } else if (
+      lowerMessage.includes("restore") ||
+      lowerMessage.includes("backup")
+    ) {
       response = await handleRestoreRequest(userMessage);
     } else if (lowerMessage.includes("component")) {
       response = await handleComponentRequest(userMessage);
-    } else if (lowerMessage.includes("optimize") || lowerMessage.includes("improve")) {
+    } else if (
+      lowerMessage.includes("optimize") ||
+      lowerMessage.includes("improve")
+    ) {
       response = await handleOptimizationRequest(userMessage);
     } else {
       response = await handleGeneralRequest(userMessage);
@@ -394,16 +404,18 @@ How can I accelerate your development today?`,
       createRestorePoint(
         `AI Generated: ${userMessage.slice(0, 30)}...`,
         `Response to: ${userMessage}`,
-        true
+        true,
       );
     }
 
     return response;
   };
 
-  const handleGenerationRequest = async (userMessage: string): Promise<ChatMessage> => {
+  const handleGenerationRequest = async (
+    userMessage: string,
+  ): Promise<ChatMessage> => {
     const timestamp = new Date();
-    
+
     if (userMessage.toLowerCase().includes("slot")) {
       return {
         id: timestamp.getTime().toString(),
@@ -696,7 +708,11 @@ export default CoinKrazySlot;`,
           type: "SlotMachine",
           name: "CoinKrazySlot",
           description: "Complete production-ready slot machine component",
-          dependencies: ["@shared/slotTypes", "@hooks/useSlotEngine", "@hooks/useAnimation"],
+          dependencies: [
+            "@shared/slotTypes",
+            "@hooks/useSlotEngine",
+            "@hooks/useAnimation",
+          ],
           props: ["slotConfig", "userBalance", "onBalanceUpdate", "onWin"],
         },
         tags: ["generation", "slot", "production", "component"],
@@ -725,7 +741,9 @@ What specific component or system would you like me to create?`,
     };
   };
 
-  const handleTodoRequest = async (userMessage: string): Promise<ChatMessage> => {
+  const handleTodoRequest = async (
+    userMessage: string,
+  ): Promise<ChatMessage> => {
     const newTodo: TodoItem = {
       id: Date.now().toString(),
       title: extractTodoTitle(userMessage),
@@ -741,7 +759,7 @@ What specific component or system would you like me to create?`,
     };
 
     setTodos((prev) => [...prev, newTodo]);
-    
+
     if (onTodoCreate) {
       onTodoCreate(newTodo);
     }
@@ -777,7 +795,9 @@ The todo has been added to your project management system. I can break this down
     };
   };
 
-  const handleRestoreRequest = async (userMessage: string): Promise<ChatMessage> => {
+  const handleRestoreRequest = async (
+    userMessage: string,
+  ): Promise<ChatMessage> => {
     return {
       id: Date.now().toString(),
       type: "ai",
@@ -793,8 +813,8 @@ I manage automatic restore points to protect your work. Here's what I can do:
 
 **📊 Current Status:**
 • Active restore points: ${restorePoints.length}
-• Last backup: ${restorePoints.length > 0 ? restorePoints[restorePoints.length - 1].timestamp.toLocaleString() : 'Never'}
-• Auto-backup: ${aiSettings.autoCreateBackups ? 'Enabled' : 'Disabled'}
+• Last backup: ${restorePoints.length > 0 ? restorePoints[restorePoints.length - 1].timestamp.toLocaleString() : "Never"}
+• Auto-backup: ${aiSettings.autoCreateBackups ? "Enabled" : "Disabled"}
 
 Would you like me to create a restore point now or restore from a previous state?`,
       timestamp: new Date(),
@@ -814,9 +834,11 @@ Would you like me to create a restore point now or restore from a previous state
     };
   };
 
-  const handleComponentRequest = async (userMessage: string): Promise<ChatMessage> => {
+  const handleComponentRequest = async (
+    userMessage: string,
+  ): Promise<ChatMessage> => {
     const componentType = extractComponentType(userMessage);
-    
+
     return {
       id: Date.now().toString(),
       type: "ai",
@@ -856,7 +878,9 @@ Ready to generate the component code?`,
     };
   };
 
-  const handleOptimizationRequest = async (userMessage: string): Promise<ChatMessage> => {
+  const handleOptimizationRequest = async (
+    userMessage: string,
+  ): Promise<ChatMessage> => {
     return {
       id: Date.now().toString(),
       type: "ai",
@@ -958,7 +982,9 @@ export const OptimizedSlotGrid = memo(({ slots, onSlotSelect }) => {
     };
   };
 
-  const handleGeneralRequest = async (userMessage: string): Promise<ChatMessage> => {
+  const handleGeneralRequest = async (
+    userMessage: string,
+  ): Promise<ChatMessage> => {
     return {
       id: Date.now().toString(),
       type: "ai",
@@ -996,7 +1022,11 @@ Could you provide more specific details about what you'd like to accomplish? The
     };
   };
 
-  const createRestorePoint = (name: string, description: string, autoGenerated: boolean = false) => {
+  const createRestorePoint = (
+    name: string,
+    description: string,
+    autoGenerated: boolean = false,
+  ) => {
     const restorePoint: RestorePoint = {
       id: Date.now().toString(),
       name,
@@ -1013,7 +1043,7 @@ Could you provide more specific details about what you'd like to accomplish? The
     };
 
     setRestorePoints((prev) => [...prev, restorePoint]);
-    
+
     if (onRestorePoint) {
       onRestorePoint(restorePoint);
     }
@@ -1026,7 +1056,7 @@ Could you provide more specific details about what you'd like to accomplish? The
     setMessages(point.data.messages || []);
     setTodos(point.data.todos || []);
     setAiSettings(point.data.settings || aiSettings);
-    
+
     // Add system message about restoration
     const restoreMessage: ChatMessage = {
       id: Date.now().toString(),
@@ -1041,12 +1071,18 @@ Could you provide more specific details about what you'd like to accomplish? The
 
   // Utility functions
   const extractTodoTitle = (message: string): string => {
-    const titleMatch = message.match(/(?:create|add|make)\s+(?:a\s+)?(?:todo\s+)?(?:for\s+)?(.+)/i);
+    const titleMatch = message.match(
+      /(?:create|add|make)\s+(?:a\s+)?(?:todo\s+)?(?:for\s+)?(.+)/i,
+    );
     return titleMatch ? titleMatch[1].trim() : message.slice(0, 50) + "...";
   };
 
   const extractPriority = (message: string): "low" | "medium" | "high" => {
-    if (message.toLowerCase().includes("urgent") || message.toLowerCase().includes("critical")) return "high";
+    if (
+      message.toLowerCase().includes("urgent") ||
+      message.toLowerCase().includes("critical")
+    )
+      return "high";
     if (message.toLowerCase().includes("important")) return "medium";
     return "low";
   };
@@ -1054,7 +1090,8 @@ Could you provide more specific details about what you'd like to accomplish? The
   const estimateTime = (message: string): number => {
     const complexity = message.toLowerCase();
     if (complexity.includes("simple") || complexity.includes("quick")) return 1;
-    if (complexity.includes("complex") || complexity.includes("advanced")) return 8;
+    if (complexity.includes("complex") || complexity.includes("advanced"))
+      return 8;
     return 4; // Default
   };
 
@@ -1064,7 +1101,11 @@ Could you provide more specific details about what you'd like to accomplish? The
     if (message.toLowerCase().includes("component")) tags.push("component");
     if (message.toLowerCase().includes("api")) tags.push("api");
     if (message.toLowerCase().includes("test")) tags.push("testing");
-    if (message.toLowerCase().includes("fix") || message.toLowerCase().includes("bug")) tags.push("bug");
+    if (
+      message.toLowerCase().includes("fix") ||
+      message.toLowerCase().includes("bug")
+    )
+      tags.push("bug");
     return tags.length > 0 ? tags : ["general"];
   };
 
@@ -1098,9 +1139,14 @@ Could you provide more specific details about what you'd like to accomplish? The
       const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         type: "ai",
-        message: "Sorry, I encountered an error processing your request. Please try again!",
+        message:
+          "Sorry, I encountered an error processing your request. Please try again!",
         timestamp: new Date(),
-        suggestions: ["Try rephrasing", "Check connection", "Restart conversation"],
+        suggestions: [
+          "Try rephrasing",
+          "Check connection",
+          "Restart conversation",
+        ],
         tags: ["error"],
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -1132,7 +1178,9 @@ Could you provide more specific details about what you'd like to accomplish? The
               key={message.id}
               className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}
             >
-              <div className={`max-w-[80%] ${message.type === "user" ? "order-2" : "order-1"}`}>
+              <div
+                className={`max-w-[80%] ${message.type === "user" ? "order-2" : "order-1"}`}
+              >
                 {message.type === "ai" && (
                   <div className="flex items-center mb-2">
                     <Bot className="h-4 w-4 text-gold mr-2" />
@@ -1152,8 +1200,8 @@ Could you provide more specific details about what you'd like to accomplish? The
                     message.type === "user"
                       ? "bg-gold/20 text-gold-foreground border border-gold/30"
                       : message.type === "system"
-                      ? "bg-blue-500/20 text-blue-100 border border-blue-500/30"
-                      : "bg-muted/50 border border-muted"
+                        ? "bg-blue-500/20 text-blue-100 border border-blue-500/30"
+                        : "bg-muted/50 border border-muted"
                   }`}
                 >
                   <div className="whitespace-pre-wrap text-sm markdown">
@@ -1167,8 +1215,8 @@ Could you provide more specific details about what you'd like to accomplish? The
                         message.priority === "high"
                           ? "destructive"
                           : message.priority === "medium"
-                          ? "default"
-                          : "secondary"
+                            ? "default"
+                            : "secondary"
                       }
                       className="mt-2"
                     >
@@ -1199,7 +1247,9 @@ Could you provide more specific details about what you'd like to accomplish? The
                           <Button
                             size="sm"
                             variant="ghost"
-                            onClick={() => copyCode(message.codeExample!, "component")}
+                            onClick={() =>
+                              copyCode(message.codeExample!, "component")
+                            }
                             className="h-6 text-xs"
                           >
                             <Code className="h-3 w-3 mr-1" />
@@ -1209,7 +1259,9 @@ Could you provide more specific details about what you'd like to accomplish? The
                             <Button
                               size="sm"
                               variant="ghost"
-                              onClick={() => onComponentGenerate?.(message.component)}
+                              onClick={() =>
+                                onComponentGenerate?.(message.component)
+                              }
                               className="h-6 text-xs"
                             >
                               <Component className="h-3 w-3 mr-1" />
@@ -1235,17 +1287,27 @@ Could you provide more specific details about what you'd like to accomplish? The
                         <Button
                           size="sm"
                           variant="ghost"
-                          onClick={() => onComponentGenerate?.(message.component)}
+                          onClick={() =>
+                            onComponentGenerate?.(message.component)
+                          }
                           className="h-6 text-xs text-purple-300"
                         >
                           Generate Component
                         </Button>
                       </div>
                       <div className="text-xs text-purple-200">
-                        <p><strong>Name:</strong> {message.component.name}</p>
-                        <p><strong>Description:</strong> {message.component.description}</p>
+                        <p>
+                          <strong>Name:</strong> {message.component.name}
+                        </p>
+                        <p>
+                          <strong>Description:</strong>{" "}
+                          {message.component.description}
+                        </p>
                         {message.component.dependencies && (
-                          <p><strong>Dependencies:</strong> {message.component.dependencies.join(", ")}</p>
+                          <p>
+                            <strong>Dependencies:</strong>{" "}
+                            {message.component.dependencies.join(", ")}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -1278,7 +1340,9 @@ Could you provide more specific details about what you'd like to accomplish? The
                   {/* Next Steps */}
                   {message.nextSteps && message.nextSteps.length > 0 && (
                     <div className="mt-3">
-                      <span className="text-xs text-muted-foreground">Next Steps:</span>
+                      <span className="text-xs text-muted-foreground">
+                        Next Steps:
+                      </span>
                       <ul className="text-xs mt-1 space-y-1">
                         {message.nextSteps.map((step, idx) => (
                           <li key={idx} className="flex items-center">
@@ -1344,7 +1408,11 @@ Could you provide more specific details about what you'd like to accomplish? The
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask JoseyAI anything... I can generate code, manage todos, create backups, and more!"
-            onKeyPress={(e) => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), sendMessage())}
+            onKeyPress={(e) =>
+              e.key === "Enter" &&
+              !e.shiftKey &&
+              (e.preventDefault(), sendMessage())
+            }
             className="flex-1 border-gold/30 focus:border-gold resize-none"
             rows={2}
           />
@@ -1375,7 +1443,12 @@ Could you provide more specific details about what you'd like to accomplish? The
             <Button
               size="sm"
               variant="ghost"
-              onClick={() => createRestorePoint("Manual Backup", "User-created restore point")}
+              onClick={() =>
+                createRestorePoint(
+                  "Manual Backup",
+                  "User-created restore point",
+                )
+              }
               className="text-xs"
             >
               <Save className="h-3 w-3 mr-1" />
@@ -1417,10 +1490,10 @@ Could you provide more specific details about what you'd like to accomplish? The
               todo.status === "completed"
                 ? "bg-green-500/20 border-green-500/30"
                 : todo.status === "in_progress"
-                ? "bg-blue-500/20 border-blue-500/30"
-                : todo.status === "blocked"
-                ? "bg-red-500/20 border-red-500/30"
-                : "bg-muted/50 border-muted"
+                  ? "bg-blue-500/20 border-blue-500/30"
+                  : todo.status === "blocked"
+                    ? "bg-red-500/20 border-red-500/30"
+                    : "bg-muted/50 border-muted"
             }`}
           >
             <div className="flex items-start justify-between">
@@ -1432,8 +1505,8 @@ Could you provide more specific details about what you'd like to accomplish? The
                       todo.priority === "high"
                         ? "destructive"
                         : todo.priority === "medium"
-                        ? "default"
-                        : "secondary"
+                          ? "default"
+                          : "secondary"
                     }
                     className="text-xs"
                   >
@@ -1445,8 +1518,8 @@ Could you provide more specific details about what you'd like to accomplish? The
                       todo.status === "completed"
                         ? "border-green-400 text-green-400"
                         : todo.status === "in_progress"
-                        ? "border-blue-400 text-blue-400"
-                        : "border-gray-400 text-gray-400"
+                          ? "border-blue-400 text-blue-400"
+                          : "border-gray-400 text-gray-400"
                     }`}
                   >
                     {todo.status.replace("_", " ")}
@@ -1484,11 +1557,13 @@ Could you provide more specific details about what you'd like to accomplish? The
                           ? {
                               ...t,
                               status:
-                                t.status === "completed" ? "pending" : "completed",
+                                t.status === "completed"
+                                  ? "pending"
+                                  : "completed",
                               updated: new Date(),
                             }
-                          : t
-                      )
+                          : t,
+                      ),
                     );
                   }}
                   className="h-6 w-6 p-0"
@@ -1526,7 +1601,9 @@ Could you provide more specific details about what you'd like to accomplish? The
         <h3 className="text-lg font-bold text-gold">Restore Points</h3>
         <Button
           size="sm"
-          onClick={() => createRestorePoint("Manual Backup", "User-created restore point")}
+          onClick={() =>
+            createRestorePoint("Manual Backup", "User-created restore point")
+          }
           className="bg-gold/20 text-gold"
         >
           <Save className="h-4 w-4 mr-1" />
@@ -1583,7 +1660,9 @@ Could you provide more specific details about what you'd like to accomplish? The
                   size="sm"
                   variant="ghost"
                   onClick={() => {
-                    navigator.clipboard.writeText(JSON.stringify(point.data, null, 2));
+                    navigator.clipboard.writeText(
+                      JSON.stringify(point.data, null, 2),
+                    );
                   }}
                   className="h-6 text-xs"
                 >
@@ -1593,7 +1672,9 @@ Could you provide more specific details about what you'd like to accomplish? The
                   size="sm"
                   variant="ghost"
                   onClick={() => {
-                    setRestorePoints((prev) => prev.filter((p) => p.id !== point.id));
+                    setRestorePoints((prev) =>
+                      prev.filter((p) => p.id !== point.id),
+                    );
                   }}
                   className="h-6 text-xs text-red-400"
                 >
@@ -1607,7 +1688,9 @@ Could you provide more specific details about what you'd like to accomplish? The
         {restorePoints.length === 0 && (
           <div className="text-center py-8 text-muted-foreground">
             <History className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>No restore points yet. I'll create them automatically as you work!</p>
+            <p>
+              No restore points yet. I'll create them automatically as you work!
+            </p>
           </div>
         )}
       </div>
@@ -1617,7 +1700,7 @@ Could you provide more specific details about what you'd like to accomplish? The
   const renderSettingsTab = () => (
     <div className="p-4 h-80 overflow-auto">
       <h3 className="text-lg font-bold text-gold mb-4">AI Settings</h3>
-      
+
       <div className="space-y-4">
         <div>
           <label className="text-sm font-medium mb-2 block">LLM Model</label>
@@ -1698,7 +1781,10 @@ Could you provide more specific details about what you'd like to accomplish? The
             <Switch
               checked={aiSettings.enableTodoManagement}
               onCheckedChange={(checked) =>
-                setAiSettings((prev) => ({ ...prev, enableTodoManagement: checked }))
+                setAiSettings((prev) => ({
+                  ...prev,
+                  enableTodoManagement: checked,
+                }))
               }
             />
           </div>
@@ -1708,7 +1794,10 @@ Could you provide more specific details about what you'd like to accomplish? The
             <Switch
               checked={aiSettings.autoCreateBackups}
               onCheckedChange={(checked) =>
-                setAiSettings((prev) => ({ ...prev, autoCreateBackups: checked }))
+                setAiSettings((prev) => ({
+                  ...prev,
+                  autoCreateBackups: checked,
+                }))
               }
             />
           </div>
@@ -1728,7 +1817,10 @@ Could you provide more specific details about what you'd like to accomplish? The
             <Switch
               checked={aiSettings.realTimeAnalysis}
               onCheckedChange={(checked) =>
-                setAiSettings((prev) => ({ ...prev, realTimeAnalysis: checked }))
+                setAiSettings((prev) => ({
+                  ...prev,
+                  realTimeAnalysis: checked,
+                }))
               }
             />
           </div>
@@ -1750,7 +1842,7 @@ Could you provide more specific details about what you'd like to accomplish? The
   const renderAnalyticsTab = () => (
     <div className="p-4 h-80 overflow-auto">
       <h3 className="text-lg font-bold text-gold mb-4">AI Analytics</h3>
-      
+
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div className="bg-muted/50 rounded-lg p-3 text-center">
           <div className="text-2xl font-bold text-gold">{messages.length}</div>
@@ -1761,12 +1853,14 @@ Could you provide more specific details about what you'd like to accomplish? The
           <div className="text-xs text-muted-foreground">Todos</div>
         </div>
         <div className="bg-muted/50 rounded-lg p-3 text-center">
-          <div className="text-2xl font-bold text-green-400">{restorePoints.length}</div>
+          <div className="text-2xl font-bold text-green-400">
+            {restorePoints.length}
+          </div>
           <div className="text-xs text-muted-foreground">Backups</div>
         </div>
         <div className="bg-muted/50 rounded-lg p-3 text-center">
           <div className="text-2xl font-bold text-purple-400">
-            {messages.filter(m => m.codeExample).length}
+            {messages.filter((m) => m.codeExample).length}
           </div>
           <div className="text-xs text-muted-foreground">Code Generated</div>
         </div>
@@ -1776,10 +1870,19 @@ Could you provide more specific details about what you'd like to accomplish? The
         <div>
           <div className="flex justify-between text-sm mb-2">
             <span>Todos Completed</span>
-            <span>{todos.filter(t => t.status === "completed").length}/{todos.length}</span>
+            <span>
+              {todos.filter((t) => t.status === "completed").length}/
+              {todos.length}
+            </span>
           </div>
-          <Progress 
-            value={todos.length > 0 ? (todos.filter(t => t.status === "completed").length / todos.length) * 100 : 0} 
+          <Progress
+            value={
+              todos.length > 0
+                ? (todos.filter((t) => t.status === "completed").length /
+                    todos.length) *
+                  100
+                : 0
+            }
           />
         </div>
 
@@ -1804,7 +1907,10 @@ Could you provide more specific details about what you'd like to accomplish? The
         <h4 className="font-semibold mb-2">Recent Activity</h4>
         <div className="space-y-2 text-xs">
           {messages.slice(-5).map((msg, idx) => (
-            <div key={idx} className="flex items-center space-x-2 text-muted-foreground">
+            <div
+              key={idx}
+              className="flex items-center space-x-2 text-muted-foreground"
+            >
               <Clock className="h-3 w-3" />
               <span>{msg.timestamp.toLocaleTimeString()}</span>
               <span>-</span>
@@ -1838,7 +1944,10 @@ Could you provide more specific details about what you'd like to accomplish? The
               <CardTitle className="text-lg flex items-center">
                 JoseyAI Enhanced
                 <Sparkles className="h-4 w-4 ml-2 text-gold animate-pulse" />
-                <Badge variant="outline" className="ml-2 border-gold/50 text-gold text-xs">
+                <Badge
+                  variant="outline"
+                  className="ml-2 border-gold/50 text-gold text-xs"
+                >
                   {aiSettings.llmModel}
                 </Badge>
               </CardTitle>
@@ -1860,7 +1969,11 @@ Could you provide more specific details about what you'd like to accomplish? The
               <Settings className="h-4 w-4" />
             </Button>
             <Button variant="ghost" size="sm">
-              {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              {isExpanded ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
             </Button>
           </div>
         </div>
