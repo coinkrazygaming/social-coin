@@ -205,18 +205,87 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Featured Slots */}
+      {/* CoinKrazy In-House Slots */}
       <section className="py-16">
         <div className="container px-4">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-3xl font-bold">Featured Slots</h2>
+              <h2 className="text-3xl font-bold flex items-center">
+                <Sparkles className="h-8 w-8 mr-3 text-gold animate-pulse" />
+                CoinKrazy In-House Slots
+              </h2>
               <p className="text-muted-foreground">
-                Hottest games with biggest jackpots
+                Exclusive slot games powered by CoinKrazy - Built for maximum fun and rewards!
+              </p>
+            </div>
+            <Button variant="outline" asChild className="border-gold text-gold hover:bg-gold/10">
+              <Link to="/slots">View All Slots</Link>
+            </Button>
+          </div>
+
+          {/* In-House Slots Grid - 5 per row, 5 rows */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+            {DEFAULT_COINKRAZY_SLOTS.map((slot) => (
+              <SlotGameCard
+                key={slot.id}
+                slot={slot}
+                onPlayFreeGC={() => {
+                  console.log('Play Free GC:', slot.name);
+                  // Navigate to slot game with GC mode
+                }}
+                onPlayRealSC={() => {
+                  console.log('Play Real SC:', slot.name);
+                  // Navigate to slot game with SC mode
+                }}
+                onPlayDemo={() => {
+                  console.log('Play Demo:', slot.name);
+                  // Open demo modal handled in SlotGameCard
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Placeholder for additional rows */}
+          <div className="mt-8 text-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+              {/* Add more slots to reach 25 total (5 rows of 5) */}
+              {Array.from({ length: 20 }, (_, index) => (
+                <Card key={`placeholder-${index}`} className="opacity-50 border-dashed border-gold/30">
+                  <CardContent className="p-6 text-center">
+                    <div className="h-48 bg-gradient-to-br from-gold/10 to-yellow-400/10 rounded mb-4 flex items-center justify-center">
+                      <div className="text-center">
+                        <Sparkles className="h-12 w-12 text-gold/50 mx-auto mb-2" />
+                        <p className="text-sm text-gold/70 font-bold">Coming Soon!</p>
+                      </div>
+                    </div>
+                    <h3 className="font-bold text-gold/70 mb-2">New Slot #{index + 6}</h3>
+                    <p className="text-xs text-muted-foreground mb-4">
+                      Another amazing CoinKrazy creation in development
+                    </p>
+                    <Button disabled variant="outline" className="w-full border-gold/30 text-gold/50">
+                      Coming Soon
+                    </Button>
+                    <p className="text-xs text-gold/50 font-bold mt-2">CoinKrazy.com</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Traditional Featured Slots */}
+      <section className="py-16 bg-card/30">
+        <div className="container px-4">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-3xl font-bold">Partner Slots</h2>
+              <p className="text-muted-foreground">
+                Premium games from our casino partners
               </p>
             </div>
             <Button variant="outline" asChild>
-              <Link to="/slots">View All Slots</Link>
+              <Link to="/slots">View All Partner Games</Link>
             </Button>
           </div>
 
