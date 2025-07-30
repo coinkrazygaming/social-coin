@@ -36,6 +36,7 @@ import { ScrollArea } from "./ui/scroll-area";
 import { useAuth } from "./AuthContext";
 import { AccessDeniedModal } from "./AccessDeniedModal";
 import { EnhancedJoseyAI } from "./EnhancedJoseyAI";
+import { SystemTester } from "./SystemTester";
 import {
   SlotMachine as SlotMachineType,
   SlotSymbol,
