@@ -46,7 +46,7 @@ export function SlotGameCard({
 }: SlotGameCardProps) {
   const { user } = useAuth();
   const [showPreview, setShowPreview] = useState(false);
-  const [previewBalance, setPreviewBalance] = useState(1000);
+  const [previewBalance, setPreviewBalance] = useState(100);
 
   const handleGameModeClick = (mode: "free" | "real" | "demo") => {
     if (!user && (mode === "free" || mode === "real")) {
@@ -267,62 +267,96 @@ export function SlotGameCard({
               slot={slot}
               userId="demo"
               userBalance={previewBalance}
-              onSpin={async (bet) => ({
-                id: "demo",
-                userId: "demo",
-                slotId: slot.id,
-                bet,
-                result: [
-                  [
-                    slot.symbols[
-                      Math.floor(Math.random() * slot.symbols.length)
-                    ]?.id || "wild",
-                    slot.symbols[
-                      Math.floor(Math.random() * slot.symbols.length)
-                    ]?.id || "wild",
-                    slot.symbols[
-                      Math.floor(Math.random() * slot.symbols.length)
-                    ]?.id || "wild",
+              onSpin={async (bet) => {
+                // Demo mode with limited credits
+                if (previewBalance < bet) {
+                  throw new Error("Insufficient demo credits");
+                }
+
+                return {
+                  id: "demo",
+                  userId: "demo",
+                  slotId: slot.id,
+                  bet,
+                  result: [
+                    [
+                      slot.symbols[
+                        Math.floor(Math.random() * slot.symbols.length)
+                      ]?.id || "wild",
+                      slot.symbols[
+                        Math.floor(Math.random() * slot.symbols.length)
+                      ]?.id || "wild",
+                      slot.symbols[
+                        Math.floor(Math.random() * slot.symbols.length)
+                      ]?.id || "wild",
+                    ],
+                    [
+                      slot.symbols[
+                        Math.floor(Math.random() * slot.symbols.length)
+                      ]?.id || "wild",
+                      slot.symbols[
+                        Math.floor(Math.random() * slot.symbols.length)
+                      ]?.id || "wild",
+                      slot.symbols[
+                        Math.floor(Math.random() * slot.symbols.length)
+                      ]?.id || "wild",
+                    ],
+                    [
+                      slot.symbols[
+                        Math.floor(Math.random() * slot.symbols.length)
+                      ]?.id || "wild",
+                      slot.symbols[
+                        Math.floor(Math.random() * slot.symbols.length)
+                      ]?.id || "wild",
+                      slot.symbols[
+                        Math.floor(Math.random() * slot.symbols.length)
+                      ]?.id || "wild",
+                    ],
                   ],
-                  [
-                    slot.symbols[
-                      Math.floor(Math.random() * slot.symbols.length)
-                    ]?.id || "wild",
-                    slot.symbols[
-                      Math.floor(Math.random() * slot.symbols.length)
-                    ]?.id || "wild",
-                    slot.symbols[
-                      Math.floor(Math.random() * slot.symbols.length)
-                    ]?.id || "wild",
-                  ],
-                  [
-                    slot.symbols[
-                      Math.floor(Math.random() * slot.symbols.length)
-                    ]?.id || "wild",
-                    slot.symbols[
-                      Math.floor(Math.random() * slot.symbols.length)
-                    ]?.id || "wild",
-                    slot.symbols[
-                      Math.floor(Math.random() * slot.symbols.length)
-                    ]?.id || "wild",
-                  ],
-                ],
-                winAmount:
-                  Math.random() > 0.7 ? bet * (Math.random() * 10 + 1) : 0,
-                winLines: [],
-                timestamp: new Date(),
-              })}
-              onBalanceUpdate={(newBalance) => setPreviewBalance(newBalance)}
+                  winAmount:
+                    Math.random() > 0.7 ? bet * (Math.random() * 2 + 1) : 0,
+                  winLines: [],
+                  timestamp: new Date(),
+                };
+              }}
+              onBalanceUpdate={(newBalance) => {
+                setPreviewBalance(Math.max(0, newBalance));
+                // If balance reaches 0 or below, show signup prompt
+                if (newBalance <= 0) {
+                  setTimeout(() => {
+                    setShowPreview(false);
+                    window.location.href = '/signup';
+                  }, 2000);
+                }
+              }}
             />
           </div>
-          <div className="mt-4 text-center">
+          <div className="mt-4 text-center space-y-2">
+            <div className="bg-orange-900/50 border border-orange-500/50 rounded-lg p-3">
+              <p className="text-sm text-orange-300 font-semibold">
+                🎮 Demo Mode - {previewBalance} Credits Remaining
+              </p>
+              <p className="text-xs text-orange-200 mt-1">
+                This is for testing only. No real money involved.
+              </p>
+            </div>
             <p className="text-sm text-gray-400">
-              This is demo mode with virtual credits.
+              Want to play for real prizes?
               <a href="/signup" className="text-gold hover:underline ml-1">
-                Sign up
+                Sign up now
               </a>{" "}
-              to play for real prizes!
+              and get bonus credits!
             </p>
+            {previewBalance <= 10 && (
+              <div className="bg-red-900/50 border border-red-500/50 rounded-lg p-2">
+                <p className="text-sm text-red-300">
+                  ⚠️ Low demo credits!
+                  <a href="/signup" className="text-gold hover:underline ml-1">
+                    Sign up
+                  </a> to continue playing.
+                </p>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
