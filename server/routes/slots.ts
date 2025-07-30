@@ -1,9 +1,10 @@
 import { RequestHandler } from "express";
 import { SlotMachine, SlotSpin, SlotSession, SlotStats } from "@shared/slotTypes";
+import { DEFAULT_COINKRAZY_SLOTS } from "@shared/defaultSlots";
 
 // In-memory storage for demo purposes
 // In production, this would be stored in a database
-let inHouseSlots: SlotMachine[] = [];
+let inHouseSlots: SlotMachine[] = [...DEFAULT_COINKRAZY_SLOTS];
 let slotSpins: SlotSpin[] = [];
 let slotSessions: SlotSession[] = [];
 
