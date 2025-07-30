@@ -361,5 +361,6 @@ export const DEFAULT_COINKRAZY_SLOTS: SlotMachine[] = [
     updated: new Date(),
     active: true,
     featured: true
-  }
+  },
+  ...ADDITIONAL_COINKRAZY_SLOTS
 ];
