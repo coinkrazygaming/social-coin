@@ -1,22 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { ScrollArea } from './ui/scroll-area';
-import { Separator } from './ui/separator';
-import { Input } from './ui/input';
-import { Textarea } from './ui/textarea';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from './ui/popover';
+import React, { useState, useEffect, useRef } from "react";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+import { ScrollArea } from "./ui/scroll-area";
+import { Separator } from "./ui/separator";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from './ui/dialog';
+} from "./ui/dialog";
 import {
   Bell,
   MessageSquare,
@@ -37,17 +33,17 @@ import {
   Volume2,
   VolumeX,
   Filter,
-} from 'lucide-react';
-import { useAuth } from './AuthContext';
-import { 
-  DatabaseService, 
-  subscribeToNotifications, 
+} from "lucide-react";
+import { useAuth } from "./AuthContext";
+import {
+  DatabaseService,
+  subscribeToNotifications,
   subscribeToGlobalNotifications,
   subscribeToAdminAlerts,
-  Notification, 
-  ChatMessage, 
-  AdminAlert 
-} from '@shared/database';
+  Notification,
+  ChatMessage,
+  AdminAlert,
+} from "@shared/database";
 
 interface NotificationCenterProps {
   className?: string;
@@ -63,12 +59,18 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [showAdminAlerts, setShowAdminAlerts] = useState(false);
-  const [activeTab, setActiveTab] = useState<'notifications' | 'chat' | 'alerts'>('notifications');
+  const [activeTab, setActiveTab] = useState<
+    "notifications" | "chat" | "alerts"
+  >("notifications");
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [chatMessage, setChatMessage] = useState('');
-  const [chatChannel, setChatChannel] = useState<'global' | 'support' | 'vip'>('global');
-  const [notificationFilter, setNotificationFilter] = useState<'all' | 'unread' | 'system' | 'ai' | 'admin'>('all');
-  
+  const [chatMessage, setChatMessage] = useState("");
+  const [chatChannel, setChatChannel] = useState<"global" | "support" | "vip">(
+    "global",
+  );
+  const [notificationFilter, setNotificationFilter] = useState<
+    "all" | "unread" | "system" | "ai" | "admin"
+  >("all");
+
   const audioRef = useRef<HTMLAudioElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -77,17 +79,23 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
     if (!user?.id) return;
 
     loadNotifications();
-    if (user.role === 'admin' || user.role === 'staff') {
+    if (user.role === "admin" || user.role === "staff") {
       loadAdminAlerts();
     }
     loadChatMessages();
 
     // Subscribe to real-time updates
-    const notificationSub = subscribeToNotifications(user.id, handleNewNotification);
-    const globalNotificationSub = subscribeToGlobalNotifications(handleNewNotification);
-    const adminAlertSub = user.role === 'admin' || user.role === 'staff' 
-      ? subscribeToAdminAlerts(handleNewAdminAlert) 
-      : null;
+    const notificationSub = subscribeToNotifications(
+      user.id,
+      handleNewNotification,
+    );
+    const globalNotificationSub = subscribeToGlobalNotifications(
+      handleNewNotification,
+    );
+    const adminAlertSub =
+      user.role === "admin" || user.role === "staff"
+        ? subscribeToAdminAlerts(handleNewAdminAlert)
+        : null;
 
     return () => {
       notificationSub.unsubscribe();
@@ -98,18 +106,18 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
 
   // Auto-scroll chat to bottom
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages]);
 
   const loadNotifications = async () => {
     if (!user?.id) return;
-    
+
     try {
       const data = await DatabaseService.getUserNotifications(user.id);
       setNotifications(data);
-      setUnreadCount(data.filter(n => !n.read).length);
+      setUnreadCount(data.filter((n) => !n.read).length);
     } catch (error) {
-      console.error('Error loading notifications:', error);
+      console.error("Error loading notifications:", error);
     }
   };
 
@@ -117,9 +125,9 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
     try {
       const data = await DatabaseService.getAdminAlerts();
       setAdminAlerts(data);
-      setUnreadAlertsCount(data.filter(a => a.status === 'pending').length);
+      setUnreadAlertsCount(data.filter((a) => a.status === "pending").length);
     } catch (error) {
-      console.error('Error loading admin alerts:', error);
+      console.error("Error loading admin alerts:", error);
     }
   };
 
@@ -128,21 +136,21 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
     // For now, use mock data
     setChatMessages([
       {
-        id: '1',
-        sender_name: 'JoseyAI',
-        sender_type: 'ai_assistant',
-        message: 'Welcome to CoinKrazy! I\'m here to help with any questions.',
-        channel: 'global',
+        id: "1",
+        sender_name: "JoseyAI",
+        sender_type: "ai_assistant",
+        message: "Welcome to CoinKrazy! I'm here to help with any questions.",
+        channel: "global",
         is_private: false,
         created_at: new Date(Date.now() - 300000).toISOString(),
       },
       {
-        id: '2',
-        user_id: 'staff1',
-        sender_name: 'CasinoSupport',
-        sender_type: 'staff',
-        message: 'New slot games have been added! Check them out.',
-        channel: 'global',
+        id: "2",
+        user_id: "staff1",
+        sender_name: "CasinoSupport",
+        sender_type: "staff",
+        message: "New slot games have been added! Check them out.",
+        channel: "global",
         is_private: false,
         created_at: new Date(Date.now() - 120000).toISOString(),
       },
@@ -150,41 +158,45 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
   };
 
   const handleNewNotification = (notification: Notification) => {
-    setNotifications(prev => [notification, ...prev]);
-    setUnreadCount(prev => prev + 1);
-    
+    setNotifications((prev) => [notification, ...prev]);
+    setUnreadCount((prev) => prev + 1);
+
     if (soundEnabled && audioRef.current) {
       audioRef.current.play();
     }
 
     // Show toast for high priority notifications
-    if (notification.priority === 'high' || notification.priority === 'urgent') {
+    if (
+      notification.priority === "high" ||
+      notification.priority === "urgent"
+    ) {
       showNotificationToast(notification);
     }
   };
 
   const handleNewAdminAlert = (alert: AdminAlert) => {
-    setAdminAlerts(prev => [alert, ...prev]);
-    setUnreadAlertsCount(prev => prev + 1);
-    
+    setAdminAlerts((prev) => [alert, ...prev]);
+    setUnreadAlertsCount((prev) => prev + 1);
+
     if (soundEnabled && audioRef.current) {
       audioRef.current.play();
     }
   };
 
   const markAsRead = async (notificationId: string) => {
-    const success = await DatabaseService.markNotificationAsRead(notificationId);
+    const success =
+      await DatabaseService.markNotificationAsRead(notificationId);
     if (success) {
-      setNotifications(prev => 
-        prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n)),
       );
-      setUnreadCount(prev => Math.max(0, prev - 1));
+      setUnreadCount((prev) => Math.max(0, prev - 1));
     }
   };
 
   const markAllAsRead = async () => {
     // TODO: Implement bulk mark as read
-    const unreadNotifications = notifications.filter(n => !n.read);
+    const unreadNotifications = notifications.filter((n) => !n.read);
     for (const notification of unreadNotifications) {
       await markAsRead(notification.id);
     }
@@ -197,22 +209,22 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
       id: Date.now().toString(),
       user_id: user.id,
       sender_name: user.username,
-      sender_type: 'user',
+      sender_type: "user",
       message: chatMessage,
       channel: chatChannel,
       is_private: false,
       created_at: new Date().toISOString(),
     };
 
-    setChatMessages(prev => [...prev, newMessage]);
-    setChatMessage('');
+    setChatMessages((prev) => [...prev, newMessage]);
+    setChatMessage("");
 
     // TODO: Send to database and broadcast to other users
   };
 
   const showNotificationToast = (notification: Notification) => {
     // Create sliding notification toast
-    const toast = document.createElement('div');
+    const toast = document.createElement("div");
     toast.className = `fixed top-4 right-4 z-50 bg-gray-800 border border-gray-700 rounded-lg p-4 shadow-xl transform translate-x-full transition-transform duration-300`;
     toast.innerHTML = `
       <div class="flex items-start space-x-3">
@@ -230,57 +242,78 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
         </button>
       </div>
     `;
-    
+
     document.body.appendChild(toast);
-    
+
     // Slide in
     setTimeout(() => {
-      toast.style.transform = 'translateX(0)';
+      toast.style.transform = "translateX(0)";
     }, 100);
-    
+
     // Auto-remove after 5 seconds
     setTimeout(() => {
-      toast.style.transform = 'translateX(full)';
+      toast.style.transform = "translateX(full)";
       setTimeout(() => toast.remove(), 300);
     }, 5000);
   };
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case 'success': return '<div class="w-4 h-4 text-green-400">✓</div>';
-      case 'warning': return '<div class="w-4 h-4 text-yellow-400">⚠</div>';
-      case 'error': return '<div class="w-4 h-4 text-red-400">✕</div>';
-      case 'info': return '<div class="w-4 h-4 text-blue-400">ℹ</div>';
-      default: return '<div class="w-4 h-4 text-gray-400">•</div>';
+      case "success":
+        return '<div class="w-4 h-4 text-green-400">✓</div>';
+      case "warning":
+        return '<div class="w-4 h-4 text-yellow-400">⚠</div>';
+      case "error":
+        return '<div class="w-4 h-4 text-red-400">✕</div>';
+      case "info":
+        return '<div class="w-4 h-4 text-blue-400">ℹ</div>';
+      default:
+        return '<div class="w-4 h-4 text-gray-400">•</div>';
     }
   };
 
   const getSenderIcon = (senderType: string) => {
     switch (senderType) {
-      case 'ai_assistant': return <Bot className="h-4 w-4 text-blue-400" />;
-      case 'admin': return <Crown className="h-4 w-4 text-gold" />;
-      case 'staff': return <Shield className="h-4 w-4 text-green-400" />;
-      case 'system': return <Settings className="h-4 w-4 text-gray-400" />;
-      default: return <User className="h-4 w-4 text-gray-400" />;
+      case "ai_assistant":
+        return <Bot className="h-4 w-4 text-blue-400" />;
+      case "admin":
+        return <Crown className="h-4 w-4 text-gold" />;
+      case "staff":
+        return <Shield className="h-4 w-4 text-green-400" />;
+      case "system":
+        return <Settings className="h-4 w-4 text-gray-400" />;
+      default:
+        return <User className="h-4 w-4 text-gray-400" />;
     }
   };
 
   const getNotificationTypeIcon = (type: string) => {
     switch (type) {
-      case 'success': return <CheckCircle className="h-4 w-4 text-green-400" />;
-      case 'warning': return <AlertTriangle className="h-4 w-4 text-yellow-400" />;
-      case 'error': return <X className="h-4 w-4 text-red-400" />;
-      case 'promotion': return <Star className="h-4 w-4 text-purple-400" />;
-      default: return <Info className="h-4 w-4 text-blue-400" />;
+      case "success":
+        return <CheckCircle className="h-4 w-4 text-green-400" />;
+      case "warning":
+        return <AlertTriangle className="h-4 w-4 text-yellow-400" />;
+      case "error":
+        return <X className="h-4 w-4 text-red-400" />;
+      case "promotion":
+        return <Star className="h-4 w-4 text-purple-400" />;
+      default:
+        return <Info className="h-4 w-4 text-blue-400" />;
     }
   };
 
-  const filteredNotifications = notifications.filter(notification => {
-    if (notificationFilter === 'all') return true;
-    if (notificationFilter === 'unread') return !notification.read;
-    if (notificationFilter === 'system') return notification.sender_type === 'system';
-    if (notificationFilter === 'ai') return notification.sender_type === 'ai_assistant';
-    if (notificationFilter === 'admin') return notification.sender_type === 'admin' || notification.sender_type === 'staff';
+  const filteredNotifications = notifications.filter((notification) => {
+    if (notificationFilter === "all") return true;
+    if (notificationFilter === "unread") return !notification.read;
+    if (notificationFilter === "system")
+      return notification.sender_type === "system";
+    if (notificationFilter === "ai")
+      return notification.sender_type === "ai_assistant";
+    if (notificationFilter === "admin")
+      return (
+        notification.sender_type === "admin" ||
+        notification.sender_type === "staff"
+      );
     return true;
   });
 
@@ -289,13 +322,13 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
     const now = new Date();
     const diff = now.getTime() - date.getTime();
     const minutes = Math.floor(diff / (1000 * 60));
-    
-    if (minutes < 1) return 'Just now';
+
+    if (minutes < 1) return "Just now";
     if (minutes < 60) return `${minutes}m ago`;
-    
+
     const hours = Math.floor(minutes / 60);
     if (hours < 24) return `${hours}h ago`;
-    
+
     const days = Math.floor(hours / 24);
     return `${days}d ago`;
   };
@@ -319,14 +352,15 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
               className="relative hover:bg-gray-800"
             >
               <MessageSquare className="h-5 w-5 text-gray-300" />
-              <Badge
-                className="absolute -top-1 -right-1 h-5 w-5 p-0 bg-blue-600 text-white text-xs"
-              >
+              <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 bg-blue-600 text-white text-xs">
                 <Users className="h-3 w-3" />
               </Badge>
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-96 p-0 bg-gray-900 border-gray-700" align="end">
+          <PopoverContent
+            className="w-96 p-0 bg-gray-900 border-gray-700"
+            align="end"
+          >
             <div className="flex items-center justify-between p-4 border-b border-gray-700">
               <h3 className="text-lg font-semibold text-white">
                 CoinKrazy Global Chat
@@ -388,7 +422,7 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
                   onChange={(e) => setChatMessage(e.target.value)}
                   placeholder="Type a message..."
                   className="flex-1 bg-gray-800 border-gray-600 text-white"
-                  onKeyPress={(e) => e.key === 'Enter' && sendChatMessage()}
+                  onKeyPress={(e) => e.key === "Enter" && sendChatMessage()}
                 />
                 <Button onClick={sendChatMessage} size="sm">
                   <Send className="h-4 w-4" />
@@ -411,17 +445,20 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
             >
               <Bell className="h-5 w-5 text-gray-300" />
               {unreadCount > 0 && (
-                <Badge
-                  className="absolute -top-1 -right-1 h-5 w-5 p-0 bg-red-600 text-white text-xs"
-                >
-                  {unreadCount > 99 ? '99+' : unreadCount}
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 bg-red-600 text-white text-xs">
+                  {unreadCount > 99 ? "99+" : unreadCount}
                 </Badge>
               )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-96 p-0 bg-gray-900 border-gray-700" align="end">
+          <PopoverContent
+            className="w-96 p-0 bg-gray-900 border-gray-700"
+            align="end"
+          >
             <div className="flex items-center justify-between p-4 border-b border-gray-700">
-              <h3 className="text-lg font-semibold text-white">Notifications</h3>
+              <h3 className="text-lg font-semibold text-white">
+                Notifications
+              </h3>
               <div className="flex items-center space-x-2">
                 <select
                   value={notificationFilter}
@@ -467,9 +504,9 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
                       <div
                         key={notification.id}
                         className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                          notification.read 
-                            ? 'bg-gray-800/50 hover:bg-gray-800' 
-                            : 'bg-blue-900/20 border border-blue-600/20 hover:bg-blue-900/30'
+                          notification.read
+                            ? "bg-gray-800/50 hover:bg-gray-800"
+                            : "bg-blue-900/20 border border-blue-600/20 hover:bg-blue-900/30"
                         }`}
                         onClick={() => markAsRead(notification.id)}
                       >
@@ -493,7 +530,7 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
                               <div className="flex items-center space-x-1 mt-1">
                                 {getSenderIcon(notification.sender_type)}
                                 <span className="text-xs text-gray-500 capitalize">
-                                  {notification.sender_type.replace('_', ' ')}
+                                  {notification.sender_type.replace("_", " ")}
                                 </span>
                               </div>
                             )}
@@ -509,7 +546,7 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
         </Popover>
 
         {/* Admin Alerts Button (Admin/Staff Only) */}
-        {(user?.role === 'admin' || user?.role === 'staff') && (
+        {(user?.role === "admin" || user?.role === "staff") && (
           <Popover open={showAdminAlerts} onOpenChange={setShowAdminAlerts}>
             <PopoverTrigger asChild>
               <Button
@@ -519,18 +556,19 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
               >
                 <Shield className="h-5 w-5 text-gold" />
                 {unreadAlertsCount > 0 && (
-                  <Badge
-                    className="absolute -top-1 -right-1 h-5 w-5 p-0 bg-orange-600 text-white text-xs"
-                  >
-                    {unreadAlertsCount > 99 ? '99+' : unreadAlertsCount}
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 bg-orange-600 text-white text-xs">
+                    {unreadAlertsCount > 99 ? "99+" : unreadAlertsCount}
                   </Badge>
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-96 p-0 bg-gray-900 border-gray-700" align="end">
+            <PopoverContent
+              className="w-96 p-0 bg-gray-900 border-gray-700"
+              align="end"
+            >
               <div className="flex items-center justify-between p-4 border-b border-gray-700">
                 <h3 className="text-lg font-semibold text-gold">
-                  {user?.role === 'admin' ? 'Admin Alerts' : 'Staff Alerts'}
+                  {user?.role === "admin" ? "Admin Alerts" : "Staff Alerts"}
                 </h3>
                 <Button
                   variant="ghost"
@@ -554,11 +592,11 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
                         <div
                           key={alert.id}
                           className={`p-3 rounded-lg border ${
-                            alert.priority === 'urgent' 
-                              ? 'bg-red-900/20 border-red-600/20' 
-                              : alert.priority === 'high'
-                              ? 'bg-orange-900/20 border-orange-600/20'
-                              : 'bg-gray-800/50 border-gray-700'
+                            alert.priority === "urgent"
+                              ? "bg-red-900/20 border-red-600/20"
+                              : alert.priority === "high"
+                                ? "bg-orange-900/20 border-orange-600/20"
+                                : "bg-gray-800/50 border-gray-700"
                           }`}
                         >
                           <div className="flex items-start justify-between">
@@ -573,11 +611,11 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
                                 <Badge
                                   variant="outline"
                                   className={`text-xs ${
-                                    alert.priority === 'urgent' 
-                                      ? 'border-red-400 text-red-400'
-                                      : alert.priority === 'high'
-                                      ? 'border-orange-400 text-orange-400'
-                                      : 'border-gray-400 text-gray-400'
+                                    alert.priority === "urgent"
+                                      ? "border-red-400 text-red-400"
+                                      : alert.priority === "high"
+                                        ? "border-orange-400 text-orange-400"
+                                        : "border-gray-400 text-gray-400"
                                   }`}
                                 >
                                   {alert.priority.toUpperCase()}

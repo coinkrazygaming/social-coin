@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent } from './ui/card';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
+import React, { useState, useEffect } from "react";
+import { Card, CardContent } from "./ui/card";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from './ui/dialog';
+} from "./ui/dialog";
 import {
   Coins,
   Star,
@@ -22,22 +22,32 @@ import {
   Activity,
   Eye,
   EyeOff,
-} from 'lucide-react';
-import { useAuth } from './AuthContext';
-import { DatabaseService, subscribeToWalletUpdates, Wallet, Transaction } from '@shared/database';
+} from "lucide-react";
+import { useAuth } from "./AuthContext";
+import {
+  DatabaseService,
+  subscribeToWalletUpdates,
+  Wallet,
+  Transaction,
+} from "@shared/database";
 
 interface RealTimeWalletProps {
   compact?: boolean;
   showDetails?: boolean;
 }
 
-export function RealTimeWallet({ compact = false, showDetails = true }: RealTimeWalletProps) {
+export function RealTimeWallet({
+  compact = false,
+  showDetails = true,
+}: RealTimeWalletProps) {
   const { user } = useAuth();
   const [wallet, setWallet] = useState<Wallet | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showBalances, setShowBalances] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
-  const [recentTransactions, setRecentTransactions] = useState<Transaction[]>([]);
+  const [recentTransactions, setRecentTransactions] = useState<Transaction[]>(
+    [],
+  );
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Load wallet data
@@ -48,7 +58,7 @@ export function RealTimeWallet({ compact = false, showDetails = true }: RealTime
     }
 
     loadWalletData();
-    
+
     // Subscribe to real-time updates
     const subscription = subscribeToWalletUpdates(user.id, (updatedWallet) => {
       setWallet(updatedWallet);
@@ -69,7 +79,7 @@ export function RealTimeWallet({ compact = false, showDetails = true }: RealTime
       setWallet(walletData);
       setLastUpdate(new Date());
     } catch (error) {
-      console.error('Error loading wallet:', error);
+      console.error("Error loading wallet:", error);
     } finally {
       setIsLoading(false);
     }
@@ -82,7 +92,7 @@ export function RealTimeWallet({ compact = false, showDetails = true }: RealTime
   };
 
   const formatBalance = (amount: number): string => {
-    return amount.toLocaleString('en-US', {
+    return amount.toLocaleString("en-US", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
@@ -92,13 +102,13 @@ export function RealTimeWallet({ compact = false, showDetails = true }: RealTime
     const now = new Date();
     const diff = now.getTime() - date.getTime();
     const minutes = Math.floor(diff / (1000 * 60));
-    
-    if (minutes < 1) return 'Just now';
+
+    if (minutes < 1) return "Just now";
     if (minutes < 60) return `${minutes}m ago`;
-    
+
     const hours = Math.floor(minutes / 60);
     if (hours < 24) return `${hours}h ago`;
-    
+
     const days = Math.floor(hours / 24);
     return `${days}d ago`;
   };
@@ -141,7 +151,7 @@ export function RealTimeWallet({ compact = false, showDetails = true }: RealTime
         <div className="flex items-center space-x-2 bg-gold/10 border border-gold/20 rounded-lg px-3 py-1">
           <Coins className="h-4 w-4 text-gold" />
           <span className="text-sm font-bold text-gold">
-            {showBalances ? formatBalance(wallet.gold_coins) : '••••••'}
+            {showBalances ? formatBalance(wallet.gold_coins) : "••••••"}
           </span>
           <span className="text-xs text-gold/70">GC</span>
         </div>
@@ -150,7 +160,7 @@ export function RealTimeWallet({ compact = false, showDetails = true }: RealTime
         <div className="flex items-center space-x-2 bg-purple-600/10 border border-purple-600/20 rounded-lg px-3 py-1">
           <Star className="h-4 w-4 text-purple-400" />
           <span className="text-sm font-bold text-purple-400">
-            {showBalances ? formatBalance(wallet.sweeps_coins) : '••••••'}
+            {showBalances ? formatBalance(wallet.sweeps_coins) : "••••••"}
           </span>
           <span className="text-xs text-purple-400/70">SC</span>
         </div>
@@ -181,7 +191,7 @@ export function RealTimeWallet({ compact = false, showDetails = true }: RealTime
             <Coins className="h-4 w-4 text-gold" />
             <div className="text-right">
               <div className="text-sm font-bold text-gold">
-                {showBalances ? formatBalance(wallet.gold_coins) : '••••••'}
+                {showBalances ? formatBalance(wallet.gold_coins) : "••••••"}
               </div>
               <div className="text-xs text-gold/70">Gold Coins</div>
             </div>
@@ -192,7 +202,7 @@ export function RealTimeWallet({ compact = false, showDetails = true }: RealTime
             <Star className="h-4 w-4 text-purple-400" />
             <div className="text-right">
               <div className="text-sm font-bold text-purple-400">
-                {showBalances ? formatBalance(wallet.sweeps_coins) : '••••••'}
+                {showBalances ? formatBalance(wallet.sweeps_coins) : "••••••"}
               </div>
               <div className="text-xs text-purple-400/70">Sweeps Coins</div>
             </div>
@@ -241,7 +251,7 @@ export function RealTimeWallet({ compact = false, showDetails = true }: RealTime
                   </Button>
                 </div>
                 <div className="text-2xl font-bold text-white mb-1">
-                  {showBalances ? formatBalance(wallet.gold_coins) : '••••••••'}
+                  {showBalances ? formatBalance(wallet.gold_coins) : "••••••••"}
                 </div>
                 <div className="text-sm text-gray-400">
                   Entertainment value only
@@ -254,7 +264,9 @@ export function RealTimeWallet({ compact = false, showDetails = true }: RealTime
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center space-x-2">
                     <Star className="h-5 w-5 text-purple-400" />
-                    <span className="font-medium text-purple-400">Sweeps Coins</span>
+                    <span className="font-medium text-purple-400">
+                      Sweeps Coins
+                    </span>
                   </div>
                   <Button
                     variant="ghost"
@@ -270,7 +282,9 @@ export function RealTimeWallet({ compact = false, showDetails = true }: RealTime
                   </Button>
                 </div>
                 <div className="text-2xl font-bold text-white mb-1">
-                  {showBalances ? formatBalance(wallet.sweeps_coins) : '••••••••'}
+                  {showBalances
+                    ? formatBalance(wallet.sweeps_coins)
+                    : "••••••••"}
                 </div>
                 <div className="text-sm text-gray-400">
                   Redeemable for prizes
@@ -310,7 +324,10 @@ export function RealTimeWallet({ compact = false, showDetails = true }: RealTime
               <Plus className="h-4 w-4 mr-2" />
               Add Funds
             </Button>
-            <Button variant="outline" className="flex-1 border-purple-600 text-purple-400 hover:bg-purple-600/10">
+            <Button
+              variant="outline"
+              className="flex-1 border-purple-600 text-purple-400 hover:bg-purple-600/10"
+            >
               <Minus className="h-4 w-4 mr-2" />
               Withdraw
             </Button>
@@ -320,7 +337,9 @@ export function RealTimeWallet({ compact = false, showDetails = true }: RealTime
               disabled={isRefreshing}
               className="border-gray-600 text-gray-300 hover:bg-gray-700"
             >
-              <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
+              />
             </Button>
           </div>
 
@@ -330,9 +349,7 @@ export function RealTimeWallet({ compact = false, showDetails = true }: RealTime
               <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
               <span>Real-time updates active</span>
             </div>
-            <div>
-              Last update: {formatTimeAgo(lastUpdate)}
-            </div>
+            <div>Last update: {formatTimeAgo(lastUpdate)}</div>
           </div>
         </div>
       </DialogContent>
@@ -341,45 +358,45 @@ export function RealTimeWallet({ compact = false, showDetails = true }: RealTime
 }
 
 // Wallet balance display for other components
-export function WalletBalance({ 
-  currency, 
-  amount, 
-  size = 'sm' 
-}: { 
-  currency: 'GC' | 'SC'; 
-  amount: number; 
-  size?: 'xs' | 'sm' | 'md' | 'lg' 
+export function WalletBalance({
+  currency,
+  amount,
+  size = "sm",
+}: {
+  currency: "GC" | "SC";
+  amount: number;
+  size?: "xs" | "sm" | "md" | "lg";
 }) {
   const sizeClasses = {
-    xs: 'text-xs',
-    sm: 'text-sm',
-    md: 'text-base',
-    lg: 'text-lg',
+    xs: "text-xs",
+    sm: "text-sm",
+    md: "text-base",
+    lg: "text-lg",
   };
 
   const iconSizes = {
-    xs: 'h-3 w-3',
-    sm: 'h-4 w-4',
-    md: 'h-5 w-5',
-    lg: 'h-6 w-6',
+    xs: "h-3 w-3",
+    sm: "h-4 w-4",
+    md: "h-5 w-5",
+    lg: "h-6 w-6",
   };
 
   return (
-    <div className={`flex items-center space-x-1 ${currency === 'GC' ? 'text-gold' : 'text-purple-400'}`}>
-      {currency === 'GC' ? (
+    <div
+      className={`flex items-center space-x-1 ${currency === "GC" ? "text-gold" : "text-purple-400"}`}
+    >
+      {currency === "GC" ? (
         <Coins className={iconSizes[size]} />
       ) : (
         <Star className={iconSizes[size]} />
       )}
       <span className={`font-bold ${sizeClasses[size]}`}>
-        {amount.toLocaleString('en-US', {
+        {amount.toLocaleString("en-US", {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         })}
       </span>
-      <span className={`${sizeClasses[size]} opacity-70`}>
-        {currency}
-      </span>
+      <span className={`${sizeClasses[size]} opacity-70`}>{currency}</span>
     </div>
   );
 }
