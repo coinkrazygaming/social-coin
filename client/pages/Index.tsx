@@ -223,9 +223,10 @@ export default function Index() {
             </Button>
           </div>
 
-          {/* In-House Slots Grid - 5 per row, 5 rows */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-            {DEFAULT_COINKRAZY_SLOTS.map((slot) => (
+          {/* In-House Slots Grid - 5 per row, multiple rows */}
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            {/* Show current available slots */}
+            {DEFAULT_COINKRAZY_SLOTS.slice(0, Math.min(DEFAULT_COINKRAZY_SLOTS.length, 25)).map((slot) => (
               <SlotGameCard
                 key={slot.id}
                 slot={slot}
@@ -243,33 +244,28 @@ export default function Index() {
                 }}
               />
             ))}
-          </div>
 
-          {/* Placeholder for additional rows */}
-          <div className="mt-8 text-center">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-              {/* Add more slots to reach 25 total (5 rows of 5) */}
-              {Array.from({ length: 20 }, (_, index) => (
-                <Card key={`placeholder-${index}`} className="opacity-50 border-dashed border-gold/30">
-                  <CardContent className="p-6 text-center">
-                    <div className="h-48 bg-gradient-to-br from-gold/10 to-yellow-400/10 rounded mb-4 flex items-center justify-center">
-                      <div className="text-center">
-                        <Sparkles className="h-12 w-12 text-gold/50 mx-auto mb-2" />
-                        <p className="text-sm text-gold/70 font-bold">Coming Soon!</p>
-                      </div>
+            {/* Fill remaining slots up to 25 with coming soon placeholders */}
+            {Array.from({ length: Math.max(0, 25 - DEFAULT_COINKRAZY_SLOTS.length) }, (_, index) => (
+              <Card key={`placeholder-${index}`} className="opacity-50 border-dashed border-gold/30 hover:opacity-70 transition-opacity">
+                <CardContent className="p-4 text-center">
+                  <div className="h-48 bg-gradient-to-br from-gold/10 to-yellow-400/10 rounded mb-4 flex items-center justify-center">
+                    <div className="text-center">
+                      <Sparkles className="h-12 w-12 text-gold/50 mx-auto mb-2 animate-pulse" />
+                      <p className="text-sm text-gold/70 font-bold">Coming Soon!</p>
                     </div>
-                    <h3 className="font-bold text-gold/70 mb-2">New Slot #{index + 6}</h3>
-                    <p className="text-xs text-muted-foreground mb-4">
-                      Another amazing CoinKrazy creation in development
-                    </p>
-                    <Button disabled variant="outline" className="w-full border-gold/30 text-gold/50">
-                      Coming Soon
-                    </Button>
-                    <p className="text-xs text-gold/50 font-bold mt-2">CoinKrazy.com</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                  </div>
+                  <h3 className="font-bold text-gold/70 mb-2">New Slot #{DEFAULT_COINKRAZY_SLOTS.length + index + 1}</h3>
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Another amazing CoinKrazy creation in development
+                  </p>
+                  <Button disabled variant="outline" className="w-full border-gold/30 text-gold/50 mb-2">
+                    Coming Soon
+                  </Button>
+                  <p className="text-xs text-gold/50 font-bold">CoinKrazy.com</p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
