@@ -144,3 +144,65 @@ export interface VisualEditorState {
   unsavedChanges: boolean;
   previewMode: boolean;
 }
+
+// Table Game Interfaces
+export interface TableGameWinner {
+  firstName: string;
+  lastInitial: string;
+  amount: number;
+  currency: "GC" | "SC";
+  timestamp: Date;
+}
+
+export interface TableGame {
+  id: string;
+  name: string;
+  type: "card" | "poker";
+  thumbnail: string;
+  maxPlayers: number;
+  currentPlayers: number;
+  minBet: number;
+  maxBet: number;
+  rtp: number;
+  lastWinner?: TableGameWinner;
+  biggestWin?: TableGameWinner;
+  isActive: boolean;
+  description: string;
+  rules: string;
+}
+
+export interface PokerPlayer {
+  id: string;
+  username: string;
+}
+
+export interface PokerSeat {
+  seatNumber: number;
+  player: PokerPlayer | null;
+  chipCount: number;
+  isDealer: boolean;
+  isActive: boolean;
+}
+
+export interface PokerTable {
+  id: string;
+  name: string;
+  gameType: "texas-holdem" | "omaha" | "seven-card-stud" | "blackjack";
+  maxSeats: number;
+  seats: PokerSeat[];
+  blinds: {
+    small: number;
+    big: number;
+  };
+  buyIn: {
+    min: number;
+    max: number;
+  };
+  currency: "GC" | "SC";
+  isActive: boolean;
+  currentPot: number;
+  // Enhanced profit tracking fields
+  dailyProfit?: number;
+  totalBuyIns?: number;
+  averageBuyIn?: number;
+}
