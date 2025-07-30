@@ -9,7 +9,9 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SlotThumbnail } from "@/components/SlotThumbnail";
+import { SlotGameCard } from "@/components/SlotGameCard";
 import { featuredSlots } from "@shared/slotData";
+import { DEFAULT_COINKRAZY_SLOTS } from "@shared/defaultSlots";
 import {
   Gamepad2,
   Dice6,
