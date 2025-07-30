@@ -84,23 +84,13 @@ export function Header() {
         <div className="flex items-center space-x-4">
           {user ? (
             <>
-              {/* Balance Display */}
-              <div className="hidden sm:flex items-center space-x-3">
-                <Badge
-                  variant="outline"
-                  className="casino-glow border-gold text-gold"
-                >
-                  <Coins className="h-3 w-3 mr-1" />
-                  {balance?.goldCoins.toLocaleString() || "0"} GC
-                </Badge>
-                <Badge
-                  variant="outline"
-                  className="sweep-glow border-sweep text-sweep"
-                >
-                  <Star className="h-3 w-3 mr-1" />
-                  {balance?.sweepsCoins.toFixed(2) || "0.00"} SC
-                </Badge>
+              {/* Real-time Wallet Display */}
+              <div className="hidden sm:block">
+                <RealTimeWallet compact />
               </div>
+
+              {/* Notification Center */}
+              <NotificationCenter />
 
               {/* Buy Coins Button */}
               <Button
