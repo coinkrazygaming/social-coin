@@ -12,7 +12,6 @@ import Slots from "./pages/Slots";
 import TableGames from "./pages/TableGames";
 import Leaderboards from "./pages/Leaderboards";
 import Bingo from "./pages/Bingo";
-import { Sportsbook } from "./pages/Sportsbook";
 import { UserDashboard } from "./pages/UserDashboard";
 import { AccountSettings } from "./pages/AccountSettings";
 import { StaffPanel } from "./pages/StaffPanel";
@@ -20,6 +19,9 @@ import { Header } from "./components/Header";
 import { Ticker } from "./components/Ticker";
 import { PlaceholderPage } from "./components/PlaceholderPage";
 import { AuthProvider } from "./components/AuthContext";
+import Sportsbook from "./pages/Sportsbook";
+import EnhancedTableGames from "./pages/EnhancedTableGames";
+import { EnhancedAdminPanel } from "./components/EnhancedAdminPanel";
 import { Settings } from "lucide-react";
 
 const queryClient = new QueryClient();
