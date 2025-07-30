@@ -4,6 +4,8 @@ import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { useAuth } from "./AuthContext";
 import { AuthModal } from "./AuthModal";
+import { RealTimeWallet } from "./RealTimeWallet";
+import { NotificationCenter } from "./NotificationCenter";
 import {
   Menu,
   X,
