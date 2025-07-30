@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SlotThumbnail } from "@/components/SlotThumbnail";
+import { SlotGameCard } from "@/components/SlotGameCard";
 import {
   Search,
   Filter,
@@ -22,6 +23,7 @@ import {
   Trophy,
   Clock,
   DollarSign,
+  Sparkles,
 } from "lucide-react";
 import {
   slotGames,
@@ -30,6 +32,7 @@ import {
   popularSlots,
 } from "@shared/slotData";
 import { SlotGame } from "@shared/slotTypes";
+import { DEFAULT_COINKRAZY_SLOTS } from "@shared/defaultSlots";
 import { useAuth } from "@/components/AuthContext";
 
 export default function Slots() {
