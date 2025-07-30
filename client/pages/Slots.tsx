@@ -220,6 +220,102 @@ export default function Slots() {
               <TabsTrigger value="new">New Games</TabsTrigger>
             </TabsList>
 
+            {/* CoinKrazy In-House Games */}
+            <TabsContent value="coinkrazy" className="space-y-8">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold flex items-center">
+                  <Sparkles className="h-6 w-6 mr-3 text-gold animate-pulse" />
+                  CoinKrazy In-House Slots
+                </h2>
+                <Badge className="bg-gold text-black font-bold">
+                  <Crown className="h-3 w-3 mr-1" />
+                  Exclusive
+                </Badge>
+              </div>
+
+              <p className="text-muted-foreground">
+                Our exclusive collection of handcrafted slot games, designed and developed by CoinKrazy.
+                Each game features unique themes, balanced gameplay, and exciting bonus features!
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                {DEFAULT_COINKRAZY_SLOTS.map((slot) => (
+                  <SlotGameCard
+                    key={slot.id}
+                    slot={slot}
+                    onPlayFreeGC={() => {
+                      console.log('Play Free GC:', slot.name);
+                      // Navigate to slot game with GC mode
+                    }}
+                    onPlayRealSC={() => {
+                      console.log('Play Real SC:', slot.name);
+                      // Navigate to slot game with SC mode
+                    }}
+                    onPlayDemo={() => {
+                      console.log('Play Demo:', slot.name);
+                      // Demo handled in SlotGameCard
+                    }}
+                  />
+                ))}
+              </div>
+
+              {/* Coming Soon Slots */}
+              <div className="mt-8">
+                <h3 className="text-xl font-bold mb-4 flex items-center">
+                  <Clock className="h-5 w-5 mr-2 text-blue-400" />
+                  Coming Soon
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                  {Array.from({ length: 20 }, (_, index) => (
+                    <Card key={`coming-soon-${index}`} className="opacity-50 border-dashed border-gold/30">
+                      <CardContent className="p-4 text-center">
+                        <div className="h-32 bg-gradient-to-br from-gold/10 to-yellow-400/10 rounded mb-3 flex items-center justify-center">
+                          <Sparkles className="h-8 w-8 text-gold/50" />
+                        </div>
+                        <h4 className="font-bold text-gold/70 text-sm mb-1">Slot #{index + 6}</h4>
+                        <p className="text-xs text-muted-foreground mb-3">In Development</p>
+                        <Button disabled size="sm" variant="outline" className="w-full border-gold/30 text-gold/50 text-xs">
+                          Coming Soon
+                        </Button>
+                        <p className="text-xs text-gold/50 font-bold mt-2">CoinKrazy.com</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+
+              {/* CoinKrazy Features */}
+              <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card className="bg-gradient-to-br from-gold/10 to-yellow-400/10 border-gold/30">
+                  <CardContent className="p-6 text-center">
+                    <Crown className="h-12 w-12 text-gold mx-auto mb-4" />
+                    <h3 className="font-bold text-gold mb-2">Exclusive Games</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Unique slot machines you won't find anywhere else, crafted specifically for CoinKrazy players.
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-500/30">
+                  <CardContent className="p-6 text-center">
+                    <Zap className="h-12 w-12 text-purple-400 mx-auto mb-4" />
+                    <h3 className="font-bold text-purple-400 mb-2">Optimized RTP</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Carefully balanced return-to-player rates designed for fair and exciting gameplay.
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-500/30">
+                  <CardContent className="p-6 text-center">
+                    <Trophy className="h-12 w-12 text-green-400 mx-auto mb-4" />
+                    <h3 className="font-bold text-green-400 mb-2">Regular Updates</h3>
+                    <p className="text-sm text-muted-foreground">
+                      New themes, features, and games added regularly based on player feedback.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
             {/* All Games */}
             <TabsContent value="all" className="space-y-8">
               <div className="flex items-center justify-between">
