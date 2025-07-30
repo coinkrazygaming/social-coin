@@ -627,7 +627,7 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
 
         {/* Main Admin Interface */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-8 bg-gray-800/50 backdrop-blur-sm">
+          <TabsList className="grid w-full grid-cols-9 bg-gray-800/50 backdrop-blur-sm">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="slots">Slot Management</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
@@ -636,6 +636,7 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
             <TabsTrigger value="security">Security</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
             <TabsTrigger value="ai">AI Control</TabsTrigger>
+            <TabsTrigger value="testing">Testing</TabsTrigger>
           </TabsList>
 
           {/* Dashboard Tab */}
