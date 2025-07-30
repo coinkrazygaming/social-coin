@@ -79,6 +79,15 @@ import {
   handleProcessRefund,
   handleGetPaymentStats,
 } from "./routes/store";
+import {
+  handleGetInHouseSlots,
+  handleCreateSlot,
+  handleUpdateSlot,
+  handleDeleteSlot,
+  handleSpinSlot,
+  handleGetSlotStats,
+  handleGetAllSlotStats
+} from "./routes/slots";
 
 export function createServer() {
   const app = express();
