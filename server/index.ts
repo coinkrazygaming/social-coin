@@ -104,6 +104,16 @@ import {
   handleUpdateSecurityEvent,
   handleGetGameAnalytics
 } from "./routes/miniGamesAPI";
+import {
+  handleGetAIEmployees,
+  handleGetAIEmployeeStatus,
+  handleGetAIAlerts,
+  handleAlertAction,
+  handleGetAIMessages,
+  handleSendMessageToAI,
+  handleLogSessionToAI,
+  handleAnalyzeSecurityEvents
+} from "./routes/aiEmployees";
 
 export function createServer() {
   const app = express();
