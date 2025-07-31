@@ -408,13 +408,14 @@ export const AdminNotifications: React.FC<AdminNotificationsProps> = ({ classNam
 
   return (
     <>
-      {/* Notification Sound */}
+      {/* Notification Sound - Hidden audio element for manual trigger */}
       <audio
         ref={audioRef}
         preload="auto"
-        loop
-        src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAAA3wSRH/OQAA//JEAklA//JEAklB//JEAklB"
-      />
+        muted={!soundEnabled}
+      >
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmgdCEMKX7TSfj1BfDI+xr/RHLjLfkQnxeW4ILa9eU8+Afjgmrm+bj1/aTPk9NKfnTAGGoDNq2EfYTAKlNPu54o+" type="audio/wav" />
+      </audio>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
