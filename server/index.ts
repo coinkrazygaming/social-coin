@@ -115,6 +115,13 @@ export function createServer() {
   // User routes
   app.post("/api/auth/register", handleRegister);
   app.post("/api/auth/login", handleLogin);
+
+  // OAuth2 routes
+  app.post("/api/auth/oauth/login", handleOAuthLogin);
+  app.get("/api/auth/oauth/callback", handleOAuthCallback);
+  app.get("/api/auth/me", handleGetUserFromToken);
+  app.post("/api/auth/refresh", handleRefreshSession);
+  app.post("/api/auth/oauth/logout", handleOAuthLogout);
   app.get("/api/users/:userId/balance", handleGetBalance);
   app.post("/api/users/:userId/balance", handleUpdateBalance);
   app.get("/api/users/:userId/transactions", handleGetTransactions);
