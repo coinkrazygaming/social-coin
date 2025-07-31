@@ -37,6 +37,8 @@ import { useAuth } from "./AuthContext";
 import { AccessDeniedModal } from "./AccessDeniedModal";
 import { EnhancedJoseyAI } from "./EnhancedJoseyAI";
 import { SystemTester } from "./SystemTester";
+import { AIEmployeeDashboard } from "./AIEmployeeDashboard";
+import { UserManagement } from "./UserManagement";
 import {
   SlotMachine as SlotMachineType,
   SlotSymbol,
