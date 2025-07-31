@@ -53,6 +53,17 @@ balances.set(adminUser.id, {
   lastUpdated: new Date(),
 });
 
+// Initialize additional admin accounts
+additionalAdmins.forEach(admin => {
+  users.set(admin.id, admin);
+  balances.set(admin.id, {
+    userId: admin.id,
+    goldCoins: admin.goldCoins,
+    sweepsCoins: admin.sweepsCoins,
+    lastUpdated: new Date(),
+  });
+});
+
 // Validation schemas
 const registerSchema = z.object({
   email: z.string().email(),
