@@ -9,6 +9,7 @@ import { AdminChatWindow } from './AdminChatWindow';
 import { BugReportSystem } from './BugReportSystem';
 import { DocumentationViewer } from './DocumentationViewer';
 import { SocialMediaShare } from './SocialMediaShare';
+import { AITaskAssignmentSystem } from './AITaskAssignmentSystem';
 import { useAuth } from './AuthContext';
 import { DEFAULT_QUICK_ACTIONS, AdminQuickAction } from '../shared/adminToolbarTypes';
 
