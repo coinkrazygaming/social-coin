@@ -445,6 +445,21 @@ export class DatabaseService {
 
   static async getAdminAlerts(): Promise<AdminAlert[]> {
     try {
+      if (!supabase) {
+        console.warn("Supabase client not available - returning mock admin alerts");
+        return [
+          {
+            id: "mock_alert_1",
+            type: "approval_needed",
+            title: "User Registration Pending",
+            description: "New user requires manual approval",
+            priority: "medium",
+            status: "pending",
+            created_at: new Date().toISOString(),
+          }
+        ];
+      }
+
       const { data, error } = await supabase
         .from("admin_alerts")
         .select("*")
