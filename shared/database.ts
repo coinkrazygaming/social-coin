@@ -213,6 +213,11 @@ export interface SportsBet {
 export class DatabaseService {
   static async createUser(userData: Partial<User>): Promise<User | null> {
     try {
+      if (!supabase) {
+        console.warn("Supabase client not available - using mock data");
+        return null;
+      }
+
       const { data, error } = await supabase
         .from("users")
         .insert([
