@@ -348,7 +348,7 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
                       className="text-gray-400 hover:text-white"
                       title="Mark all as unread"
                     >
-                      <MarkMessageUnread className="w-4 h-4" />
+                      <Mail className="w-4 h-4" />
                     </Button>
                     <Button
                       size="sm"
