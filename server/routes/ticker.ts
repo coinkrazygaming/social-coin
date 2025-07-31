@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { TickerItem } from "@shared/types";
+import { TickerItem } from "../../shared/types";
 
 // In-memory storage (replace with real database)
 const tickerItems: Map<string, TickerItem> = new Map();
