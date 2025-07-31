@@ -32,6 +32,8 @@ import {
 } from "lucide-react";
 
 export default function Index() {
+  const [showWelcomeBonus, setShowWelcomeBonus] = useState(false);
+
   const gameCategories = [
     {
       title: "Slot Games",
