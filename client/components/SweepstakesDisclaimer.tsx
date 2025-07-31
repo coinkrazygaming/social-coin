@@ -293,9 +293,11 @@ function FullDisclaimerContent() {
             <p className="text-muted-foreground">
               CoinKrazy Free Sweeps Coins Request
               <br />
-              P.O. Box 12345
+              Howes Networks, LLC
               <br />
-              Las Vegas, NV 89123
+              228 Blondeau St
+              <br />
+              Keokuk, IA 52632
               <br />
               <br />
               Include: Full name, mailing address, email, and phone number
