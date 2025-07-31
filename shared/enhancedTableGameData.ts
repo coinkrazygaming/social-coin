@@ -6,7 +6,9 @@ export const enhancedCardGames: TableGame[] = [
     id: "coinkrazy-spades-championship",
     name: "CoinKrazy Spades Championship",
     type: "card",
-    thumbnail: `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(`
+    thumbnail: `data:image/svg+xml;base64,${btoa(
+      unescape(
+        encodeURIComponent(`
       <svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -38,7 +40,9 @@ export const enhancedCardGames: TableGame[] = [
         <circle cx="350" cy="250" r="15" fill="#8b5cf6"/>
         <text x="350" y="255" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle" fill="white">SC</text>
       </svg>
-    `)))}`,
+    `),
+      ),
+    )}`,
     maxPlayers: 4,
     currentPlayers: 3,
     minBet: 1,
@@ -134,7 +138,9 @@ export const enhancedCardGames: TableGame[] = [
     id: "coinkrazy-hearts-royal",
     name: "CoinKrazy Hearts Royal",
     type: "card",
-    thumbnail: `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(`
+    thumbnail: `data:image/svg+xml;base64,${btoa(
+      unescape(
+        encodeURIComponent(`
       <svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -166,7 +172,9 @@ export const enhancedCardGames: TableGame[] = [
         <circle cx="350" cy="250" r="15" fill="#8b5cf6"/>
         <text x="350" y="255" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle" fill="white">SC</text>
       </svg>
-    `)))}`,
+    `),
+      ),
+    )}`,
     maxPlayers: 4,
     currentPlayers: 4,
     minBet: 2,

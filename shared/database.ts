@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 
 // Environment variables for database connections
 // Check if running in Node.js environment
-const isServer = typeof process !== 'undefined' && process.env;
+const isServer = typeof process !== "undefined" && process.env;
 
 export const SUPABASE_URL = isServer
   ? process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co"
