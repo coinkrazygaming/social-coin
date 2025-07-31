@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Progress } from "./ui/progress";
-import { Timer, Trophy, Play, RotateCcw, Gem } from "lucide-react";
+import { Timer, Target, Trophy, Play, RotateCcw } from "lucide-react";
 
 interface CoreysFastJewelsProps {
   userId: string;
@@ -11,268 +11,102 @@ interface CoreysFastJewelsProps {
   onGameComplete: (score: number, scEarned: number) => void;
 }
 
-interface Jewel {
-  id: string;
+interface Gem {
   type: number;
-  color: string;
-  emoji: string;
+  x: number;
+  y: number;
+  falling: boolean;
+  matched: boolean;
+  eliminating: boolean;
+}
+
+interface SelectedGem {
   x: number;
   y: number;
 }
 
-interface Match {
-  jewels: Jewel[];
-  direction: 'horizontal' | 'vertical';
-}
-
-const BOARD_SIZE = 8;
-const JEWEL_TYPES = [
-  { type: 0, color: '#ff0000', emoji: '💎' },
-  { type: 1, color: '#00ff00', emoji: '🟢' },
-  { type: 2, color: '#0000ff', emoji: '🔵' },
-  { type: 3, color: '#ffff00', emoji: '🟡' },
-  { type: 4, color: '#ff00ff', emoji: '🟣' },
-  { type: 5, color: '#00ffff', emoji: '🔷' },
+const GEM_TYPES = 6;
+const GRID_SIZE = 8;
+const GEM_COLORS = [
+  '#FF0000', // Red
+  '#00FF00', // Green
+  '#0000FF', // Blue
+  '#FFFF00', // Yellow
+  '#FF00FF', // Magenta
+  '#00FFFF', // Cyan
 ];
 
 export function CoreysFastJewels({ userId, username, onGameComplete }: CoreysFastJewelsProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
+  const [score, setScore] = useState(0);
+  const [moves, setMoves] = useState(0);
   const [matches, setMatches] = useState(0);
-  const [badMoves, setBadMoves] = useState(0);
-  const [scEarned, setScEarned] = useState(0);
-  const [board, setBoard] = useState<Jewel[][]>([]);
-  const [selectedJewel, setSelectedJewel] = useState<{x: number, y: number} | null>(null);
+  const [grid, setGrid] = useState<Gem[][]>([]);
+  const [selectedGem, setSelectedGem] = useState<SelectedGem | null>(null);
   const [gameStarted, setGameStarted] = useState(false);
-  const [gameCompleted, setGameCompleted] = useState(false);
-  const [lastAction, setLastAction] = useState<string>("");
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [gameEnded, setGameEnded] = useState(false);
+  const [combo, setCombo] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const gameAreaRef = useRef<HTMLDivElement>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationRef = useRef<number>();
+  const gameTimerRef = useRef<NodeJS.Timeout>();
 
-  const GAME_DURATION = 60;
+  // Game dimensions
+  const CANVAS_WIDTH = 480;
+  const CANVAS_HEIGHT = 480;
+  const GEM_SIZE = CANVAS_WIDTH / GRID_SIZE;
 
-  const createJewel = (x: number, y: number): Jewel => {
-    const type = Math.floor(Math.random() * JEWEL_TYPES.length);
-    const jewelType = JEWEL_TYPES[type];
+  const createRandomGem = useCallback((x: number, y: number): Gem => {
     return {
-      id: `${x}-${y}-${Date.now()}-${Math.random()}`,
-      type,
-      color: jewelType.color,
-      emoji: jewelType.emoji,
+      type: Math.floor(Math.random() * GEM_TYPES),
       x,
       y,
+      falling: false,
+      matched: false,
+      eliminating: false,
     };
-  };
-
-  const initializeBoard = (): Jewel[][] => {
-    const newBoard: Jewel[][] = [];
-    
-    for (let y = 0; y < BOARD_SIZE; y++) {
-      newBoard[y] = [];
-      for (let x = 0; x < BOARD_SIZE; x++) {
-        newBoard[y][x] = createJewel(x, y);
-      }
-    }
-    
-    return newBoard;
-  };
-
-  const findMatches = (gameBoard: Jewel[][]): Match[] => {
-    const matches: Match[] = [];
-    
-    // Check horizontal matches
-    for (let y = 0; y < BOARD_SIZE; y++) {
-      let currentMatch: Jewel[] = [gameBoard[y][0]];
-      
-      for (let x = 1; x < BOARD_SIZE; x++) {
-        if (gameBoard[y][x].type === currentMatch[0].type) {
-          currentMatch.push(gameBoard[y][x]);
-        } else {
-          if (currentMatch.length >= 3) {
-            matches.push({ jewels: currentMatch, direction: 'horizontal' });
-          }
-          currentMatch = [gameBoard[y][x]];
-        }
-      }
-      
-      if (currentMatch.length >= 3) {
-        matches.push({ jewels: currentMatch, direction: 'horizontal' });
-      }
-    }
-    
-    // Check vertical matches
-    for (let x = 0; x < BOARD_SIZE; x++) {
-      let currentMatch: Jewel[] = [gameBoard[0][x]];
-      
-      for (let y = 1; y < BOARD_SIZE; y++) {
-        if (gameBoard[y][x].type === currentMatch[0].type) {
-          currentMatch.push(gameBoard[y][x]);
-        } else {
-          if (currentMatch.length >= 3) {
-            matches.push({ jewels: currentMatch, direction: 'vertical' });
-          }
-          currentMatch = [gameBoard[y][x]];
-        }
-      }
-      
-      if (currentMatch.length >= 3) {
-        matches.push({ jewels: currentMatch, direction: 'vertical' });
-      }
-    }
-    
-    return matches;
-  };
-
-  const removeMatches = (gameBoard: Jewel[][], matchesToRemove: Match[]): Jewel[][] => {
-    const newBoard = gameBoard.map(row => [...row]);
-    
-    matchesToRemove.forEach(match => {
-      match.jewels.forEach(jewel => {
-        newBoard[jewel.y][jewel.x] = null as any;
-      });
-    });
-    
-    return newBoard;
-  };
-
-  const applyGravity = (gameBoard: Jewel[][]): Jewel[][] => {
-    const newBoard = gameBoard.map(row => [...row]);
-    
-    for (let x = 0; x < BOARD_SIZE; x++) {
-      // Get all non-null jewels in this column
-      const column = [];
-      for (let y = BOARD_SIZE - 1; y >= 0; y--) {
-        if (newBoard[y][x]) {
-          column.push(newBoard[y][x]);
-        }
-      }
-      
-      // Clear the column
-      for (let y = 0; y < BOARD_SIZE; y++) {
-        newBoard[y][x] = null as any;
-      }
-      
-      // Place jewels from bottom up
-      for (let i = 0; i < column.length; i++) {
-        const jewel = column[i];
-        jewel.y = BOARD_SIZE - 1 - i;
-        newBoard[BOARD_SIZE - 1 - i][x] = jewel;
-      }
-      
-      // Fill empty spaces with new jewels
-      for (let y = 0; y < BOARD_SIZE - column.length; y++) {
-        newBoard[y][x] = createJewel(x, y);
-      }
-    }
-    
-    return newBoard;
-  };
-
-  const isValidMove = (board1: Jewel[][], x1: number, y1: number, x2: number, y2: number): boolean => {
-    // Check if positions are adjacent
-    const dx = Math.abs(x1 - x2);
-    const dy = Math.abs(y1 - y2);
-    if ((dx === 1 && dy === 0) || (dx === 0 && dy === 1)) {
-      // Temporarily swap jewels
-      const tempBoard = board1.map(row => [...row]);
-      const temp = tempBoard[y1][x1];
-      tempBoard[y1][x1] = tempBoard[y2][x2];
-      tempBoard[y2][x2] = temp;
-      
-      // Check if this creates any matches
-      const matches = findMatches(tempBoard);
-      return matches.length > 0;
-    }
-    return false;
-  };
-
-  const processMatches = useCallback(async (gameBoard: Jewel[][]): Promise<Jewel[][]> => {
-    let currentBoard = gameBoard;
-    let totalMatches = 0;
-    
-    while (true) {
-      const matches = findMatches(currentBoard);
-      if (matches.length === 0) break;
-      
-      totalMatches += matches.reduce((sum, match) => sum + match.jewels.length, 0);
-      currentBoard = removeMatches(currentBoard, matches);
-      currentBoard = applyGravity(currentBoard);
-      
-      // Small delay for animation effect
-      await new Promise(resolve => setTimeout(resolve, 300));
-    }
-    
-    if (totalMatches > 0) {
-      setMatches(prev => prev + Math.floor(totalMatches / 3));
-      setScEarned(prev => prev + Math.floor(totalMatches / 3) * 0.01);
-      setLastAction(`+${Math.floor(totalMatches / 3)} matches! +${(Math.floor(totalMatches / 3) * 0.01).toFixed(2)} SC`);
-    }
-    
-    return currentBoard;
   }, []);
 
-  const handleJewelClick = useCallback(async (x: number, y: number) => {
-    if (!isPlaying || isAnimating) return;
-
-    if (!selectedJewel) {
-      setSelectedJewel({ x, y });
-      return;
+  const initializeGrid = useCallback(() => {
+    const newGrid: Gem[][] = [];
+    
+    for (let y = 0; y < GRID_SIZE; y++) {
+      newGrid[y] = [];
+      for (let x = 0; x < GRID_SIZE; x++) {
+        let gem: Gem;
+        do {
+          gem = createRandomGem(x, y);
+        } while (
+          // Avoid creating initial matches
+          (x >= 2 && newGrid[y][x - 1].type === gem.type && newGrid[y][x - 2].type === gem.type) ||
+          (y >= 2 && newGrid[y - 1][x].type === gem.type && newGrid[y - 2][x].type === gem.type)
+        );
+        newGrid[y][x] = gem;
+      }
     }
+    
+    return newGrid;
+  }, [createRandomGem]);
 
-    if (selectedJewel.x === x && selectedJewel.y === y) {
-      setSelectedJewel(null);
-      return;
-    }
-
-    setIsAnimating(true);
-
-    if (isValidMove(board, selectedJewel.x, selectedJewel.y, x, y)) {
-      // Valid move - swap jewels
-      const newBoard = board.map(row => [...row]);
-      const temp = newBoard[selectedJewel.y][selectedJewel.x];
-      newBoard[selectedJewel.y][selectedJewel.x] = newBoard[y][x];
-      newBoard[y][x] = temp;
-      
-      // Update positions
-      newBoard[selectedJewel.y][selectedJewel.x].x = selectedJewel.x;
-      newBoard[selectedJewel.y][selectedJewel.x].y = selectedJewel.y;
-      newBoard[y][x].x = x;
-      newBoard[y][x].y = y;
-      
-      setBoard(newBoard);
-      
-      // Process matches
-      const finalBoard = await processMatches(newBoard);
-      setBoard(finalBoard);
-    } else {
-      // Invalid move
-      setBadMoves(prev => prev + 1);
-      setLastAction("Invalid move! -0.01 SC penalty");
-      setScEarned(prev => Math.max(0, prev - 0.01));
-    }
-
-    setSelectedJewel(null);
-    setIsAnimating(false);
-  }, [isPlaying, isAnimating, selectedJewel, board, processMatches]);
-
-  const startGame = () => {
-    setGameStarted(true);
+  const startGame = useCallback(() => {
     setIsPlaying(true);
-    setTimeLeft(GAME_DURATION);
+    setGameStarted(true);
+    setGameEnded(false);
+    setTimeLeft(60);
+    setScore(0);
+    setMoves(0);
     setMatches(0);
-    setBadMoves(0);
-    setScEarned(0);
-    setGameCompleted(false);
-    setSelectedJewel(null);
-    setLastAction("");
+    setCombo(0);
+    setSelectedGem(null);
+    setIsProcessing(false);
+    
+    const newGrid = initializeGrid();
+    setGrid(newGrid);
 
-    const newBoard = initializeBoard();
-    setBoard(newBoard);
-
-    timerRef.current = setInterval(() => {
-      setTimeLeft(prev => {
+    gameTimerRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
         if (prev <= 1) {
           endGame();
           return 0;
@@ -280,213 +114,486 @@ export function CoreysFastJewels({ userId, username, onGameComplete }: CoreysFas
         return prev - 1;
       });
     }, 1000);
-  };
+  }, [initializeGrid]);
 
   const endGame = useCallback(() => {
     setIsPlaying(false);
-    setGameCompleted(true);
+    setGameEnded(true);
+    
+    if (gameTimerRef.current) {
+      clearInterval(gameTimerRef.current);
+    }
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
 
-    if (timerRef.current) clearInterval(timerRef.current);
+    // Calculate SC earned based on score
+    let scEarned = 0;
+    if (score >= 3000) scEarned = 0.25;
+    else if (score >= 2500) scEarned = 0.20;
+    else if (score >= 2000) scEarned = 0.15;
+    else if (score >= 1500) scEarned = 0.10;
+    else if (score >= 1000) scEarned = 0.05;
 
-    const finalSC = Math.min(0.25, Math.max(0, scEarned));
-    onGameComplete(matches, finalSC);
-  }, [matches, scEarned, onGameComplete]);
+    setTimeout(() => {
+      onGameComplete(score, scEarned);
+    }, 2000);
+  }, [score, onGameComplete]);
 
-  const resetGame = () => {
-    setGameStarted(false);
-    setIsPlaying(false);
-    setGameCompleted(false);
-    setTimeLeft(GAME_DURATION);
-    setMatches(0);
-    setBadMoves(0);
-    setScEarned(0);
-    setBoard([]);
-    setSelectedJewel(null);
-    setLastAction("");
+  const findMatches = useCallback((grid: Gem[][]): { x: number; y: number }[] => {
+    const matches: { x: number; y: number }[] = [];
+    
+    // Check horizontal matches
+    for (let y = 0; y < GRID_SIZE; y++) {
+      let count = 1;
+      let currentType = grid[y][0].type;
+      
+      for (let x = 1; x < GRID_SIZE; x++) {
+        if (grid[y][x].type === currentType) {
+          count++;
+        } else {
+          if (count >= 3) {
+            for (let i = x - count; i < x; i++) {
+              matches.push({ x: i, y });
+            }
+          }
+          count = 1;
+          currentType = grid[y][x].type;
+        }
+      }
+      
+      if (count >= 3) {
+        for (let i = GRID_SIZE - count; i < GRID_SIZE; i++) {
+          matches.push({ x: i, y });
+        }
+      }
+    }
+    
+    // Check vertical matches
+    for (let x = 0; x < GRID_SIZE; x++) {
+      let count = 1;
+      let currentType = grid[0][x].type;
+      
+      for (let y = 1; y < GRID_SIZE; y++) {
+        if (grid[y][x].type === currentType) {
+          count++;
+        } else {
+          if (count >= 3) {
+            for (let i = y - count; i < y; i++) {
+              matches.push({ x, y: i });
+            }
+          }
+          count = 1;
+          currentType = grid[y][x].type;
+        }
+      }
+      
+      if (count >= 3) {
+        for (let i = GRID_SIZE - count; i < GRID_SIZE; i++) {
+          matches.push({ x, y: i });
+        }
+      }
+    }
+    
+    return matches;
+  }, []);
 
-    if (timerRef.current) clearInterval(timerRef.current);
-  };
+  const removeMatches = useCallback((grid: Gem[][], matches: { x: number; y: number }[]): Gem[][] => {
+    const newGrid = grid.map(row => [...row]);
+    
+    matches.forEach(({ x, y }) => {
+      newGrid[y][x].eliminating = true;
+    });
+    
+    return newGrid;
+  }, []);
+
+  const dropGems = useCallback((grid: Gem[][]): Gem[][] => {
+    const newGrid = grid.map(row => [...row]);
+    
+    for (let x = 0; x < GRID_SIZE; x++) {
+      let writeIndex = GRID_SIZE - 1;
+      
+      // Drop existing gems
+      for (let y = GRID_SIZE - 1; y >= 0; y--) {
+        if (!newGrid[y][x].eliminating) {
+          if (writeIndex !== y) {
+            newGrid[writeIndex][x] = { ...newGrid[y][x], y: writeIndex };
+            newGrid[y][x] = createRandomGem(x, y);
+          }
+          writeIndex--;
+        }
+      }
+      
+      // Fill empty spaces with new gems
+      for (let y = writeIndex; y >= 0; y--) {
+        newGrid[y][x] = createRandomGem(x, y);
+      }
+    }
+    
+    return newGrid;
+  }, [createRandomGem]);
+
+  const processMatches = useCallback(async () => {
+    if (isProcessing) return;
+    
+    setIsProcessing(true);
+    let currentGrid = [...grid];
+    let totalMatches = 0;
+    let currentCombo = 0;
+    
+    while (true) {
+      const matches = findMatches(currentGrid);
+      if (matches.length === 0) break;
+      
+      totalMatches += matches.length;
+      currentCombo++;
+      
+      // Calculate score with combo multiplier
+      const baseScore = matches.length * 10;
+      const comboBonus = currentCombo > 1 ? baseScore * (currentCombo - 1) : 0;
+      setScore(prev => prev + baseScore + comboBonus);
+      
+      setMatches(prev => prev + matches.length);
+      setCombo(currentCombo);
+      
+      // Remove matches
+      currentGrid = removeMatches(currentGrid, matches);
+      setGrid(currentGrid);
+      
+      // Wait for animation
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      // Drop gems
+      currentGrid = dropGems(currentGrid);
+      setGrid(currentGrid);
+      
+      // Wait for drop animation
+      await new Promise(resolve => setTimeout(resolve, 300));
+    }
+    
+    setCombo(0);
+    setIsProcessing(false);
+  }, [grid, isProcessing, findMatches, removeMatches, dropGems]);
+
+  const swapGems = useCallback((x1: number, y1: number, x2: number, y2: number) => {
+    const newGrid = grid.map(row => [...row]);
+    const temp = newGrid[y1][x1];
+    newGrid[y1][x1] = newGrid[y2][x2];
+    newGrid[y2][x2] = temp;
+    
+    // Update positions
+    newGrid[y1][x1].x = x1;
+    newGrid[y1][x1].y = y1;
+    newGrid[y2][x2].x = x2;
+    newGrid[y2][x2].y = y2;
+    
+    return newGrid;
+  }, [grid]);
+
+  const isValidSwap = useCallback((x1: number, y1: number, x2: number, y2: number): boolean => {
+    const testGrid = swapGems(x1, y1, x2, y2);
+    const matches = findMatches(testGrid);
+    return matches.length > 0;
+  }, [swapGems, findMatches]);
+
+  const handleCanvasClick = useCallback((event: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!isPlaying || isProcessing) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    const clickX = Math.floor(((event.clientX - rect.left) * scaleX) / GEM_SIZE);
+    const clickY = Math.floor(((event.clientY - rect.top) * scaleY) / GEM_SIZE);
+
+    if (clickX < 0 || clickX >= GRID_SIZE || clickY < 0 || clickY >= GRID_SIZE) return;
+
+    if (!selectedGem) {
+      setSelectedGem({ x: clickX, y: clickY });
+    } else {
+      const { x: sx, y: sy } = selectedGem;
+      
+      if (sx === clickX && sy === clickY) {
+        // Deselect if clicking the same gem
+        setSelectedGem(null);
+      } else {
+        // Check if gems are adjacent
+        const dx = Math.abs(sx - clickX);
+        const dy = Math.abs(sy - clickY);
+        
+        if ((dx === 1 && dy === 0) || (dx === 0 && dy === 1)) {
+          // Valid adjacent swap
+          if (isValidSwap(sx, sy, clickX, clickY)) {
+            const newGrid = swapGems(sx, sy, clickX, clickY);
+            setGrid(newGrid);
+            setMoves(prev => prev + 1);
+            setSelectedGem(null);
+            
+            // Process matches after a short delay
+            setTimeout(() => {
+              processMatches();
+            }, 100);
+          } else {
+            // Invalid swap, animate back
+            setSelectedGem(null);
+          }
+        } else {
+          // Not adjacent, select new gem
+          setSelectedGem({ x: clickX, y: clickY });
+        }
+      }
+    }
+  }, [isPlaying, isProcessing, selectedGem, isValidSwap, swapGems, processMatches]);
+
+  const draw = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Clear canvas
+    ctx.fillStyle = '#1a1a2e';
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    // Draw grid background
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 1;
+    for (let x = 0; x <= GRID_SIZE; x++) {
+      ctx.beginPath();
+      ctx.moveTo(x * GEM_SIZE, 0);
+      ctx.lineTo(x * GEM_SIZE, CANVAS_HEIGHT);
+      ctx.stroke();
+    }
+    for (let y = 0; y <= GRID_SIZE; y++) {
+      ctx.beginPath();
+      ctx.moveTo(0, y * GEM_SIZE);
+      ctx.lineTo(CANVAS_WIDTH, y * GEM_SIZE);
+      ctx.stroke();
+    }
+
+    // Draw gems
+    for (let y = 0; y < GRID_SIZE; y++) {
+      for (let x = 0; x < GRID_SIZE; x++) {
+        const gem = grid[y] && grid[y][x];
+        if (!gem) continue;
+
+        const drawX = x * GEM_SIZE;
+        const drawY = y * GEM_SIZE;
+        
+        // Gem background
+        if (gem.eliminating) {
+          ctx.fillStyle = '#FF0000';
+          ctx.globalAlpha = 0.5;
+        } else {
+          ctx.fillStyle = GEM_COLORS[gem.type];
+          ctx.globalAlpha = 1;
+        }
+        
+        // Draw gem shape (diamond)
+        ctx.beginPath();
+        ctx.moveTo(drawX + GEM_SIZE / 2, drawY + 5);
+        ctx.lineTo(drawX + GEM_SIZE - 5, drawY + GEM_SIZE / 2);
+        ctx.lineTo(drawX + GEM_SIZE / 2, drawY + GEM_SIZE - 5);
+        ctx.lineTo(drawX + 5, drawY + GEM_SIZE / 2);
+        ctx.closePath();
+        ctx.fill();
+        
+        // Add gem highlight
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.beginPath();
+        ctx.moveTo(drawX + GEM_SIZE / 2, drawY + 5);
+        ctx.lineTo(drawX + GEM_SIZE - 5, drawY + GEM_SIZE / 2);
+        ctx.lineTo(drawX + GEM_SIZE / 2, drawY + GEM_SIZE / 3);
+        ctx.lineTo(drawX + 5, drawY + GEM_SIZE / 2);
+        ctx.closePath();
+        ctx.fill();
+        
+        // Draw selection highlight
+        if (selectedGem && selectedGem.x === x && selectedGem.y === y) {
+          ctx.strokeStyle = '#FFD700';
+          ctx.lineWidth = 4;
+          ctx.strokeRect(drawX + 2, drawY + 2, GEM_SIZE - 4, GEM_SIZE - 4);
+        }
+        
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    // Draw combo indicator
+    if (combo > 1) {
+      ctx.fillStyle = '#FFD700';
+      ctx.font = 'bold 24px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(`COMBO x${combo}!`, CANVAS_WIDTH / 2, 30);
+    }
+  }, [grid, selectedGem, combo]);
+
+  const animate = useCallback(() => {
+    draw();
+    animationRef.current = requestAnimationFrame(animate);
+  }, [draw]);
 
   useEffect(() => {
-    if (gameStarted && board.length === 0) {
-      const newBoard = initializeBoard();
-      setBoard(newBoard);
+    if (gameStarted && !gameEnded) {
+      animate();
     }
-  }, [gameStarted, board]);
+    
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [gameStarted, gameEnded, animate]);
 
-  const netScore = matches - badMoves;
+  useEffect(() => {
+    return () => {
+      if (gameTimerRef.current) {
+        clearInterval(gameTimerRef.current);
+      }
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, []);
+
+  const averageScore = moves > 0 ? Math.round(score / moves) : 0;
+
+  if (!gameStarted) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[600px] space-y-6">
+        <Card className="w-full max-w-md text-center">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-center space-x-2">
+              <span className="text-4xl">💎</span>
+              <span>Corey's Fast Jewels</span>
+            </CardTitle>
+            <CardDescription>
+              Match gems quickly - create combos to earn SC!
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="text-sm text-muted-foreground space-y-2">
+              <p>• Click gems to select, then click an adjacent gem to swap</p>
+              <p>• Match 3 or more gems in a row or column</p>
+              <p>• Create combos for bonus points</p>
+              <p>• Higher scores = more Sweeps Coins!</p>
+            </div>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="bg-muted p-3 rounded-lg">
+                <div className="text-gold font-semibold">3000+ Points</div>
+                <div className="text-xs">0.25 SC</div>
+              </div>
+              <div className="bg-muted p-3 rounded-lg">
+                <div className="text-yellow-400 font-semibold">2500+ Points</div>
+                <div className="text-xs">0.20 SC</div>
+              </div>
+            </div>
+            <Button 
+              onClick={startGame} 
+              className="w-full bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground"
+            >
+              <Play className="h-4 w-4 mr-2" />
+              Start Game
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <Card className="overflow-hidden">
-        <CardHeader className="text-center bg-gradient-to-r from-gold/20 to-sweep/20">
-          <div className="flex items-center justify-center mb-2">
-            <div className="w-12 h-12 bg-gradient-to-br from-gold to-yellow-400 rounded-full flex items-center justify-center mr-3">
-              💎
-            </div>
-            <div>
-              <CardTitle className="text-2xl">Corey's Fast Jewels</CardTitle>
-              <CardDescription>Match gems to earn Sweeps Coins!</CardDescription>
-            </div>
-          </div>
+    <div className="space-y-6">
+      {/* Game Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-gold">{score}</div>
+            <div className="text-sm text-muted-foreground">Score</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-sweep">{matches}</div>
+            <div className="text-sm text-muted-foreground">Gems Matched</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-blue-400">{moves}</div>
+            <div className="text-sm text-muted-foreground">Moves</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-green-400">{averageScore}</div>
+            <div className="text-sm text-muted-foreground">Avg/Move</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-casino-red">{timeLeft}s</div>
+            <div className="text-sm text-muted-foreground">Time Left</div>
+          </CardContent>
+        </Card>
+      </div>
 
-          <div className="flex justify-center space-x-6 mt-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-casino-green">{matches}</div>
-              <div className="text-sm text-muted-foreground">Matches</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-casino-red">{badMoves}</div>
-              <div className="text-sm text-muted-foreground">Bad Moves</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gold">{scEarned.toFixed(2)}</div>
-              <div className="text-sm text-muted-foreground">SC Earned</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-400">{timeLeft}s</div>
-              <div className="text-sm text-muted-foreground">Time Left</div>
-            </div>
-          </div>
-
-          <div className="mt-4 space-y-2">
-            <Progress value={(timeLeft / GAME_DURATION) * 100} className="h-2" />
-            {lastAction && (
-              <div className="text-sm font-semibold text-gold animate-pulse">
-                {lastAction}
+      {/* Game Canvas */}
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex flex-col items-center space-y-4">
+            <canvas
+              ref={canvasRef}
+              width={CANVAS_WIDTH}
+              height={CANVAS_HEIGHT}
+              className="border border-border rounded-lg cursor-pointer"
+              onClick={handleCanvasClick}
+              style={{ maxWidth: '100%', height: 'auto' }}
+            />
+            
+            {isPlaying && (
+              <div className="text-center space-y-2">
+                <div className="text-lg font-semibold">
+                  {selectedGem ? 'Click an adjacent gem to swap!' : 'Click a gem to select it!'}
+                </div>
+                <Progress value={(60 - timeLeft) / 60 * 100} className="w-64" />
+                {combo > 1 && (
+                  <Badge variant="secondary" className="bg-gold/20 text-gold">
+                    COMBO x{combo}!
+                  </Badge>
+                )}
+                {isProcessing && (
+                  <Badge variant="secondary" className="animate-pulse">
+                    Processing matches...
+                  </Badge>
+                )}
               </div>
             )}
-          </div>
-        </CardHeader>
 
-        <CardContent className="p-4">
-          <div className="flex justify-center">
-            <div
-              ref={gameAreaRef}
-              className="relative bg-gradient-to-br from-purple-900 to-blue-900 border-4 border-gold rounded-lg p-4"
-              style={{
-                width: BOARD_SIZE * 50 + 32,
-                height: BOARD_SIZE * 50 + 32,
-              }}
-            >
-              {/* Game Board */}
-              <div className="grid grid-cols-8 gap-1">
-                {board.map((row, y) =>
-                  row.map((jewel, x) => (
-                    <div
-                      key={`${x}-${y}`}
-                      className={`
-                        w-12 h-12 flex items-center justify-center text-2xl cursor-pointer
-                        border-2 rounded-lg transition-all duration-200 hover:scale-110
-                        ${selectedJewel?.x === x && selectedJewel?.y === y 
-                          ? 'border-gold bg-gold/20 scale-110' 
-                          : 'border-white/20 bg-black/20'
-                        }
-                        ${isAnimating ? 'pointer-events-none' : ''}
-                      `}
-                      onClick={() => handleJewelClick(x, y)}
-                      style={{
-                        backgroundColor: jewel ? `${jewel.color}20` : '#1a1a1a',
-                      }}
-                    >
-                      {jewel?.emoji}
-                    </div>
-                  ))
-                )}
-              </div>
-
-              {/* Game Instructions Overlay */}
-              {!gameStarted && (
-                <div className="absolute inset-0 bg-black/80 flex items-center justify-center rounded">
-                  <div className="text-center text-white space-y-4 p-4">
-                    <h3 className="text-lg font-bold">Corey's Fast Jewels</h3>
-                    <div className="space-y-2 text-sm">
-                      <p>💎 Click two adjacent gems to swap them</p>
-                      <p>✨ Match 3+ in a row to score</p>
-                      <p>💰 Each match = 0.01 SC</p>
-                      <p>❌ Bad moves = -0.01 SC penalty</p>
-                      <p>⏱️ 60 seconds of fast matching!</p>
-                    </div>
+            {gameEnded && (
+              <div className="text-center space-y-4 p-6 bg-card/50 rounded-lg">
+                <Trophy className="h-16 w-16 text-gold mx-auto" />
+                <h3 className="text-2xl font-bold">Game Complete!</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <div className="text-xl font-bold text-gold">{score}</div>
+                    <div className="text-muted-foreground">Final Score</div>
+                  </div>
+                  <div>
+                    <div className="text-xl font-bold text-sweep">{matches}</div>
+                    <div className="text-muted-foreground">Gems Matched</div>
                   </div>
                 </div>
-              )}
-
-              {/* Game Over Overlay */}
-              {gameCompleted && (
-                <div className="absolute inset-0 bg-black/90 flex items-center justify-center rounded">
-                  <div className="text-center text-white space-y-4 p-4">
-                    <Trophy className="w-12 h-12 mx-auto text-gold" />
-                    <h3 className="text-xl font-bold">Time's Up!</h3>
-                    <div className="space-y-2">
-                      <p>Matches: <span className="text-casino-green font-bold">{matches}</span></p>
-                      <p>Bad Moves: <span className="text-casino-red font-bold">{badMoves}</span></p>
-                      <p>Net Score: <span className="text-gold font-bold">{netScore}</span></p>
-                      <p>SC Earned: <span className="text-casino-green font-bold">{Math.min(0.25, Math.max(0, scEarned)).toFixed(2)}</span></p>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-4">
-                      You will be credited after admin approval
-                    </p>
-                    <p className="text-xs text-gold">
-                      Come Back Tomorrow and do it again!
-                    </p>
-                  </div>
+                <div className="text-lg">
+                  You earned{" "}
+                  <span className="text-gold font-bold">
+                    {score >= 3000 ? "0.25" : score >= 2500 ? "0.20" : score >= 2000 ? "0.15" : score >= 1500 ? "0.10" : score >= 1000 ? "0.05" : "0.00"} SC
+                  </span>
                 </div>
-              )}
-            </div>
-          </div>
-
-          {/* Game Stats */}
-          <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-card rounded-lg p-3 text-center border">
-              <div className="text-lg font-bold text-casino-green">{matches}</div>
-              <div className="text-xs text-muted-foreground">Successful Matches</div>
-            </div>
-            <div className="bg-card rounded-lg p-3 text-center border">
-              <div className="text-lg font-bold text-casino-red">{badMoves}</div>
-              <div className="text-xs text-muted-foreground">Penalty Moves</div>
-            </div>
-            <div className="bg-card rounded-lg p-3 text-center border">
-              <div className="text-lg font-bold text-gold">{netScore}</div>
-              <div className="text-xs text-muted-foreground">Net Score</div>
-            </div>
-            <div className="bg-card rounded-lg p-3 text-center border">
-              <div className="text-lg font-bold text-sweep">{scEarned.toFixed(2)}</div>
-              <div className="text-xs text-muted-foreground">SC Total</div>
-            </div>
-          </div>
-
-          {/* Main Game Button */}
-          <div className="mt-6">
-            {!gameStarted ? (
-              <Button
-                onClick={startGame}
-                className="w-full bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground hover:from-yellow-400 hover:to-gold text-lg py-6"
-                size="lg"
-              >
-                <Play className="h-5 w-5 mr-2" />
-                Start Jewel Matching
-              </Button>
-            ) : gameCompleted ? (
-              <Button
-                onClick={resetGame}
-                variant="outline"
-                className="w-full border-gold text-gold hover:bg-gold/10 text-lg py-6"
-                size="lg"
-              >
-                <RotateCcw className="h-5 w-5 mr-2" />
-                Play Again Tomorrow
-              </Button>
-            ) : (
-              <div className="text-center space-y-2">
-                <p className="text-lg font-semibold">Match those gems!</p>
-                <p className="text-sm text-muted-foreground">
-                  Click two adjacent gems to swap them and create matches
-                </p>
-                {selectedJewel && (
-                  <p className="text-sm text-gold">
-                    Selected gem at ({selectedJewel.x + 1}, {selectedJewel.y + 1}) - click an adjacent gem to swap
-                  </p>
-                )}
               </div>
             )}
           </div>
