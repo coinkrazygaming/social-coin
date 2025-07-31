@@ -363,6 +363,11 @@ export class DatabaseService {
     notificationData: Partial<Notification>,
   ): Promise<boolean> {
     try {
+      if (!supabase) {
+        console.warn("Supabase client not available - using mock notification");
+        return true;
+      }
+
       const { error } = await supabase.from("notifications").insert([
         {
           ...notificationData,
