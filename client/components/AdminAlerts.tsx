@@ -411,42 +411,27 @@ export const AdminAlerts: React.FC<AdminAlertsProps> = ({ className = '' }) => {
   const playAlarmSound = () => {
     if (soundEnabled && userHasInteracted) {
       try {
-        // Create a pleasant notification sound using Web Audio API
+        // Create a single long beep notification sound using Web Audio API
         const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
 
-        // Create a ding sound (800Hz for 300ms)
-        const oscillator1 = audioContext.createOscillator();
-        const gainNode1 = audioContext.createGain();
+        // Create a single long beep (800Hz for 1.5 seconds)
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
 
-        oscillator1.connect(gainNode1);
-        gainNode1.connect(audioContext.destination);
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
 
-        oscillator1.frequency.setValueAtTime(800, audioContext.currentTime);
-        oscillator1.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.3);
+        // Set frequency to 800Hz (pleasant notification tone)
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
 
-        gainNode1.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode1.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+        // Set volume - start at 0.4, sustain, then fade out in last 200ms
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.4, audioContext.currentTime + 0.05); // Quick fade in
+        gainNode.gain.setValueAtTime(0.4, audioContext.currentTime + 1.3); // Sustain for most of the duration
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.5); // Fade out
 
-        oscillator1.start(audioContext.currentTime);
-        oscillator1.stop(audioContext.currentTime + 0.3);
-
-        // Create a bubble pop sound (higher frequency, shorter duration)
-        setTimeout(() => {
-          const oscillator2 = audioContext.createOscillator();
-          const gainNode2 = audioContext.createGain();
-
-          oscillator2.connect(gainNode2);
-          gainNode2.connect(audioContext.destination);
-
-          oscillator2.frequency.setValueAtTime(1200, audioContext.currentTime);
-          oscillator2.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
-
-          gainNode2.gain.setValueAtTime(0.2, audioContext.currentTime);
-          gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-
-          oscillator2.start(audioContext.currentTime);
-          oscillator2.stop(audioContext.currentTime + 0.1);
-        }, 100);
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 1.5);
 
       } catch (error) {
         // Fallback to the HTML audio element if Web Audio API fails
