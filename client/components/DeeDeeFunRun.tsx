@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Progress } from "./ui/progress";
-import { Timer, Trophy, Play, RotateCcw, Zap } from "lucide-react";
+import { Timer, Target, Trophy, Play, RotateCcw } from "lucide-react";
 
 interface DeeDeeFunRunProps {
   userId: string;
@@ -14,24 +14,20 @@ interface DeeDeeFunRunProps {
 interface Player {
   x: number;
   y: number;
-  vx: number;
-  vy: number;
-  onGround: boolean;
-  width: number;
-  height: number;
+  velocityY: number;
+  isJumping: boolean;
+  isOnGround: boolean;
 }
 
 interface Obstacle {
-  id: number;
   x: number;
   y: number;
   width: number;
   height: number;
-  type: 'block' | 'spike' | 'gap';
+  type: 'cactus' | 'rock' | 'pit';
 }
 
 interface Coin {
-  id: number;
   x: number;
   y: number;
   collected: boolean;
@@ -42,240 +38,45 @@ export function DeeDeeFunRun({ userId, username, onGameComplete }: DeeDeeFunRunP
   const [timeLeft, setTimeLeft] = useState(60);
   const [score, setScore] = useState(0);
   const [distance, setDistance] = useState(0);
-  const [coins, setCoins] = useState(0);
-  const [player, setPlayer] = useState<Player>({
-    x: 100,
-    y: 300,
-    vx: 0,
-    vy: 0,
-    onGround: true,
-    width: 30,
-    height: 40,
-  });
+  const [coinsCollected, setCoinsCollected] = useState(0);
+  const [player, setPlayer] = useState<Player>({ x: 100, y: 400, velocityY: 0, isJumping: false, isOnGround: true });
   const [obstacles, setObstacles] = useState<Obstacle[]>([]);
-  const [gameCoins, setGameCoins] = useState<Coin[]>([]);
+  const [coins, setCoins] = useState<Coin[]>([]);
   const [gameStarted, setGameStarted] = useState(false);
-  const [gameCompleted, setGameCompleted] = useState(false);
-  const [gameSpeed, setGameSpeed] = useState(3);
-  const [isJumping, setIsJumping] = useState(false);
-  const [keysPressed, setKeysPressed] = useState<Set<string>>(new Set());
+  const [gameEnded, setGameEnded] = useState(false);
+  const [gameSpeed, setGameSpeed] = useState(5);
+  const [isGameOver, setIsGameOver] = useState(false);
 
-  const gameAreaRef = useRef<HTMLDivElement>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
-  const obstacleIdCounter = useRef(0);
-  const coinIdCounter = useRef(0);
+  const gameTimerRef = useRef<NodeJS.Timeout>();
+  const keysRef = useRef<Set<string>>(new Set());
 
-  const GAME_DURATION = 60;
-  const GROUND_Y = 340;
+  // Game dimensions
+  const CANVAS_WIDTH = 800;
+  const CANVAS_HEIGHT = 400;
+  const GROUND_Y = 350;
+  const PLAYER_WIDTH = 40;
+  const PLAYER_HEIGHT = 60;
   const GRAVITY = 0.8;
-  const JUMP_POWER = -15;
+  const JUMP_FORCE = -15;
 
-  const spawnObstacle = useCallback(() => {
-    if (!gameAreaRef.current) return;
-
-    const rect = gameAreaRef.current.getBoundingClientRect();
-    const types: ('block' | 'spike' | 'gap')[] = ['block', 'spike', 'gap'];
-    const type = types[Math.floor(Math.random() * types.length)];
-    
-    let obstacle: Obstacle;
-    
-    switch (type) {
-      case 'block':
-        obstacle = {
-          id: obstacleIdCounter.current++,
-          x: rect.width + 50,
-          y: GROUND_Y - 40,
-          width: 40,
-          height: 40,
-          type: 'block',
-        };
-        break;
-      case 'spike':
-        obstacle = {
-          id: obstacleIdCounter.current++,
-          x: rect.width + 50,
-          y: GROUND_Y - 30,
-          width: 30,
-          height: 30,
-          type: 'spike',
-        };
-        break;
-      case 'gap':
-        obstacle = {
-          id: obstacleIdCounter.current++,
-          x: rect.width + 50,
-          y: GROUND_Y,
-          width: 80,
-          height: 60,
-          type: 'gap',
-        };
-        break;
-    }
-
-    setObstacles(prev => [...prev, obstacle]);
-  }, []);
-
-  const spawnCoin = useCallback(() => {
-    if (!gameAreaRef.current) return;
-
-    const rect = gameAreaRef.current.getBoundingClientRect();
-    const coin: Coin = {
-      id: coinIdCounter.current++,
-      x: rect.width + 50,
-      y: GROUND_Y - 60 - Math.random() * 100,
-      collected: false,
-    };
-
-    setGameCoins(prev => [...prev, coin]);
-  }, []);
-
-  const jump = useCallback(() => {
-    if (player.onGround && isPlaying) {
-      setPlayer(prev => ({
-        ...prev,
-        vy: JUMP_POWER,
-        onGround: false,
-      }));
-      setIsJumping(true);
-      setTimeout(() => setIsJumping(false), 200);
-    }
-  }, [player.onGround, isPlaying]);
-
-  const updatePlayer = useCallback(() => {
-    setPlayer(prev => {
-      let newY = prev.y + prev.vy;
-      let newVy = prev.vy + GRAVITY;
-      let onGround = false;
-
-      // Ground collision
-      if (newY >= GROUND_Y - prev.height) {
-        newY = GROUND_Y - prev.height;
-        newVy = 0;
-        onGround = true;
-      }
-
-      return {
-        ...prev,
-        y: newY,
-        vy: newVy,
-        onGround,
-      };
-    });
-  }, []);
-
-  const updateObstacles = useCallback(() => {
-    setObstacles(prev => prev.map(obstacle => ({
-      ...obstacle,
-      x: obstacle.x - gameSpeed,
-    })).filter(obstacle => obstacle.x > -100));
-  }, [gameSpeed]);
-
-  const updateCoins = useCallback(() => {
-    setGameCoins(prev => prev.map(coin => ({
-      ...coin,
-      x: coin.x - gameSpeed,
-    })).filter(coin => coin.x > -50 && !coin.collected));
-  }, [gameSpeed]);
-
-  const checkCollisions = useCallback(() => {
-    // Check obstacle collisions
-    obstacles.forEach(obstacle => {
-      if (obstacle.x < player.x + player.width &&
-          obstacle.x + obstacle.width > player.x &&
-          obstacle.y < player.y + player.height &&
-          obstacle.y + obstacle.height > player.y) {
-        
-        if (obstacle.type === 'gap' && player.y + player.height >= GROUND_Y) {
-          // Fell into gap
-          endGame();
-        } else if (obstacle.type !== 'gap') {
-          // Hit obstacle
-          endGame();
-        }
-      }
-    });
-
-    // Check coin collisions
-    setGameCoins(prev => prev.map(coin => {
-      if (!coin.collected &&
-          coin.x < player.x + player.width &&
-          coin.x + 20 > player.x &&
-          coin.y < player.y + player.height &&
-          coin.y + 20 > player.y) {
-        
-        setCoins(c => c + 1);
-        setScore(s => s + 10);
-        return { ...coin, collected: true };
-      }
-      return coin;
-    }));
-  }, [obstacles, gameCoins, player]);
-
-  const endGame = useCallback(() => {
-    setIsPlaying(false);
-    setGameCompleted(true);
-
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (animationRef.current) cancelAnimationFrame(animationRef.current);
-
-    // Score calculation: distance + coins
-    const finalScore = Math.floor(distance / 10) + coins * 10;
-    const scEarned = Math.min(0.25, finalScore * 0.001);
-    
-    setScore(finalScore);
-    onGameComplete(finalScore, scEarned);
-  }, [distance, coins, onGameComplete]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      setKeysPressed(prev => new Set([...prev, e.key]));
-      if (e.key === ' ' || e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
-        e.preventDefault();
-        jump();
-      }
-    };
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-      setKeysPressed(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(e.key);
-        return newSet;
-      });
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, [jump]);
-
-  const startGame = () => {
-    setGameStarted(true);
+  const startGame = useCallback(() => {
     setIsPlaying(true);
-    setTimeLeft(GAME_DURATION);
+    setGameStarted(true);
+    setGameEnded(false);
+    setTimeLeft(60);
     setScore(0);
     setDistance(0);
-    setCoins(0);
+    setCoinsCollected(0);
+    setGameSpeed(5);
+    setIsGameOver(false);
+    setPlayer({ x: 100, y: GROUND_Y - PLAYER_HEIGHT, velocityY: 0, isJumping: false, isOnGround: true });
     setObstacles([]);
-    setGameCoins([]);
-    setGameCompleted(false);
-    setGameSpeed(3);
-    setPlayer({
-      x: 100,
-      y: GROUND_Y - 40,
-      vx: 0,
-      vy: 0,
-      onGround: true,
-      width: 30,
-      height: 40,
-    });
+    setCoins([]);
 
-    timerRef.current = setInterval(() => {
-      setTimeLeft(prev => {
+    gameTimerRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
         if (prev <= 1) {
           endGame();
           return 0;
@@ -283,288 +84,504 @@ export function DeeDeeFunRun({ userId, username, onGameComplete }: DeeDeeFunRunP
         return prev - 1;
       });
     }, 1000);
+  }, []);
 
-    // Spawn obstacles and coins
-    const obstacleInterval = setInterval(() => {
-      if (Math.random() < 0.7) spawnObstacle();
-    }, 2000);
-
-    const coinInterval = setInterval(() => {
-      if (Math.random() < 0.8) spawnCoin();
-    }, 1500);
-
-    // Increase speed over time
-    const speedInterval = setInterval(() => {
-      setGameSpeed(prev => Math.min(prev + 0.1, 8));
-    }, 5000);
-
-    return () => {
-      clearInterval(obstacleInterval);
-      clearInterval(coinInterval);
-      clearInterval(speedInterval);
-    };
-  };
-
-  const resetGame = () => {
-    setGameStarted(false);
+  const endGame = useCallback(() => {
     setIsPlaying(false);
-    setGameCompleted(false);
-    setTimeLeft(GAME_DURATION);
-    setScore(0);
-    setDistance(0);
-    setCoins(0);
-    setObstacles([]);
-    setGameCoins([]);
-    setGameSpeed(3);
-    setKeysPressed(new Set());
-
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (animationRef.current) cancelAnimationFrame(animationRef.current);
-  };
-
-  useEffect(() => {
-    const animate = () => {
-      if (isPlaying) {
-        updatePlayer();
-        updateObstacles();
-        updateCoins();
-        checkCollisions();
-        setDistance(prev => prev + gameSpeed);
-        animationRef.current = requestAnimationFrame(animate);
-      }
-    };
-
-    if (isPlaying) {
-      animationRef.current = requestAnimationFrame(animate);
+    setGameEnded(true);
+    
+    if (gameTimerRef.current) {
+      clearInterval(gameTimerRef.current);
+    }
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
     }
 
+    // Calculate SC earned based on score
+    let scEarned = 0;
+    if (score >= 2500) scEarned = 0.25;
+    else if (score >= 2000) scEarned = 0.20;
+    else if (score >= 1500) scEarned = 0.15;
+    else if (score >= 1000) scEarned = 0.10;
+    else if (score >= 500) scEarned = 0.05;
+
+    setTimeout(() => {
+      onGameComplete(score, scEarned);
+    }, 2000);
+  }, [score, onGameComplete]);
+
+  const generateObstacle = useCallback((x: number): Obstacle => {
+    const types: ('cactus' | 'rock' | 'pit')[] = ['cactus', 'rock', 'pit'];
+    const type = types[Math.floor(Math.random() * types.length)];
+    
+    let width, height, y;
+    
+    switch (type) {
+      case 'cactus':
+        width = 30;
+        height = 60;
+        y = GROUND_Y - height;
+        break;
+      case 'rock':
+        width = 50;
+        height = 40;
+        y = GROUND_Y - height;
+        break;
+      case 'pit':
+        width = 80;
+        height = 30;
+        y = GROUND_Y;
+        break;
+    }
+    
+    return { x, y, width, height, type };
+  }, []);
+
+  const generateCoin = useCallback((x: number): Coin => {
+    const y = GROUND_Y - 80 - Math.random() * 100;
+    return { x, y, collected: false };
+  }, []);
+
+  const updateGame = useCallback(() => {
+    if (!isPlaying || isGameOver) return;
+
+    // Update distance and speed
+    setDistance(prev => prev + gameSpeed);
+    setGameSpeed(prev => Math.min(prev + 0.002, 12)); // Gradually increase speed
+
+    // Update player physics
+    setPlayer(prev => {
+      let newY = prev.y + prev.velocityY;
+      let newVelocityY = prev.velocityY + GRAVITY;
+      let newIsOnGround = false;
+      let newIsJumping = prev.isJumping;
+
+      // Ground collision
+      if (newY >= GROUND_Y - PLAYER_HEIGHT) {
+        newY = GROUND_Y - PLAYER_HEIGHT;
+        newVelocityY = 0;
+        newIsOnGround = true;
+        newIsJumping = false;
+      }
+
+      // Jump input
+      if (keysRef.current.has(' ') || keysRef.current.has('ArrowUp')) {
+        if (newIsOnGround && !newIsJumping) {
+          newVelocityY = JUMP_FORCE;
+          newIsJumping = true;
+          newIsOnGround = false;
+        }
+      }
+
+      return {
+        ...prev,
+        y: newY,
+        velocityY: newVelocityY,
+        isOnGround: newIsOnGround,
+        isJumping: newIsJumping,
+      };
+    });
+
+    // Generate obstacles and coins
+    setObstacles(prev => {
+      let newObstacles = [...prev];
+      
+      // Remove off-screen obstacles
+      newObstacles = newObstacles.filter(obstacle => obstacle.x > -100);
+      
+      // Add new obstacles
+      const lastObstacle = newObstacles[newObstacles.length - 1];
+      const lastX = lastObstacle ? lastObstacle.x : 0;
+      
+      if (lastX < CANVAS_WIDTH + 200) {
+        const newX = Math.max(CANVAS_WIDTH, lastX + 200 + Math.random() * 300);
+        newObstacles.push(generateObstacle(newX));
+      }
+      
+      // Move obstacles
+      return newObstacles.map(obstacle => ({
+        ...obstacle,
+        x: obstacle.x - gameSpeed,
+      }));
+    });
+
+    setCoins(prev => {
+      let newCoins = [...prev];
+      
+      // Remove off-screen coins
+      newCoins = newCoins.filter(coin => coin.x > -50);
+      
+      // Add new coins
+      const lastCoin = newCoins[newCoins.length - 1];
+      const lastX = lastCoin ? lastCoin.x : 0;
+      
+      if (lastX < CANVAS_WIDTH + 100 && Math.random() < 0.3) {
+        const newX = Math.max(CANVAS_WIDTH, lastX + 150 + Math.random() * 200);
+        newCoins.push(generateCoin(newX));
+      }
+      
+      // Move coins
+      return newCoins.map(coin => ({
+        ...coin,
+        x: coin.x - gameSpeed,
+      }));
+    });
+  }, [isPlaying, isGameOver, gameSpeed, generateObstacle, generateCoin]);
+
+  const checkCollisions = useCallback(() => {
+    // Check obstacle collisions
+    obstacles.forEach(obstacle => {
+      if (
+        player.x < obstacle.x + obstacle.width &&
+        player.x + PLAYER_WIDTH > obstacle.x &&
+        player.y < obstacle.y + obstacle.height &&
+        player.y + PLAYER_HEIGHT > obstacle.y
+      ) {
+        setIsGameOver(true);
+        setTimeout(endGame, 1000);
+      }
+    });
+
+    // Check coin collisions
+    setCoins(prevCoins =>
+      prevCoins.map(coin => {
+        if (
+          !coin.collected &&
+          player.x < coin.x + 20 &&
+          player.x + PLAYER_WIDTH > coin.x &&
+          player.y < coin.y + 20 &&
+          player.y + PLAYER_HEIGHT > coin.y
+        ) {
+          setCoinsCollected(prev => prev + 1);
+          setScore(prev => prev + 50);
+          return { ...coin, collected: true };
+        }
+        return coin;
+      })
+    );
+
+    // Distance points
+    setScore(prev => prev + Math.floor(gameSpeed / 2));
+  }, [player, obstacles, endGame]);
+
+  const draw = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Clear canvas with sky gradient
+    const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+    gradient.addColorStop(0, '#87CEEB');
+    gradient.addColorStop(1, '#E0F6FF');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    // Draw clouds
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+    for (let i = 0; i < 5; i++) {
+      const cloudX = (i * 200 + distance * 0.2) % (CANVAS_WIDTH + 100) - 50;
+      const cloudY = 50 + i * 20;
+      
+      ctx.beginPath();
+      ctx.arc(cloudX, cloudY, 20, 0, Math.PI * 2);
+      ctx.arc(cloudX + 20, cloudY, 25, 0, Math.PI * 2);
+      ctx.arc(cloudX + 40, cloudY, 20, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Draw ground
+    ctx.fillStyle = '#8B7355';
+    ctx.fillRect(0, GROUND_Y, CANVAS_WIDTH, CANVAS_HEIGHT - GROUND_Y);
+    
+    // Ground texture
+    ctx.fillStyle = '#A0895A';
+    for (let x = 0; x < CANVAS_WIDTH; x += 20) {
+      ctx.fillRect(x, GROUND_Y, 10, 2);
+    }
+
+    // Draw obstacles
+    obstacles.forEach(obstacle => {
+      switch (obstacle.type) {
+        case 'cactus':
+          ctx.fillStyle = '#228B22';
+          ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+          
+          // Cactus spikes
+          ctx.fillStyle = '#32CD32';
+          for (let i = 0; i < 5; i++) {
+            const spikeY = obstacle.y + i * 12;
+            ctx.fillRect(obstacle.x - 5, spikeY, 10, 3);
+            ctx.fillRect(obstacle.x + obstacle.width - 5, spikeY, 10, 3);
+          }
+          break;
+          
+        case 'rock':
+          ctx.fillStyle = '#696969';
+          ctx.beginPath();
+          ctx.ellipse(
+            obstacle.x + obstacle.width / 2,
+            obstacle.y + obstacle.height / 2,
+            obstacle.width / 2,
+            obstacle.height / 2,
+            0, 0, Math.PI * 2
+          );
+          ctx.fill();
+          break;
+          
+        case 'pit':
+          ctx.fillStyle = '#000000';
+          ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+          
+          // Pit edges
+          ctx.strokeStyle = '#654321';
+          ctx.lineWidth = 3;
+          ctx.strokeRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+          break;
+      }
+    });
+
+    // Draw coins
+    coins.forEach(coin => {
+      if (!coin.collected) {
+        ctx.fillStyle = '#FFD700';
+        ctx.beginPath();
+        ctx.arc(coin.x + 10, coin.y + 10, 10, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Coin shine
+        ctx.fillStyle = '#FFFF00';
+        ctx.beginPath();
+        ctx.arc(coin.x + 7, coin.y + 7, 4, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // $ symbol
+        ctx.fillStyle = '#DAA520';
+        ctx.font = 'bold 12px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('$', coin.x + 10, coin.y + 15);
+      }
+    });
+
+    // Draw player (DeeDee)
+    ctx.fillStyle = isGameOver ? '#FF0000' : '#FF69B4';
+    
+    // Body
+    ctx.fillRect(player.x + 10, player.y + 20, 20, 30);
+    
+    // Head
+    ctx.beginPath();
+    ctx.arc(player.x + 20, player.y + 15, 15, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Hair
+    ctx.fillStyle = '#FFD700';
+    ctx.fillRect(player.x + 8, player.y, 24, 10);
+    
+    // Eyes
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.arc(player.x + 15, player.y + 12, 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(player.x + 25, player.y + 12, 2, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Arms
+    ctx.fillStyle = '#FF69B4';
+    ctx.fillRect(player.x + 5, player.y + 25, 8, 20);
+    ctx.fillRect(player.x + 27, player.y + 25, 8, 20);
+    
+    // Legs (animated running)
+    const legOffset = Math.sin(distance * 0.3) * 3;
+    ctx.fillRect(player.x + 12, player.y + 50, 6, 10 + legOffset);
+    ctx.fillRect(player.x + 22, player.y + 50, 6, 10 - legOffset);
+
+    // Game over effect
+    if (isGameOver) {
+      ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 48px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('GAME OVER!', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
+    }
+  }, [player, obstacles, coins, distance, isGameOver]);
+
+  const animate = useCallback(() => {
+    updateGame();
+    checkCollisions();
+    draw();
+    animationRef.current = requestAnimationFrame(animate);
+  }, [updateGame, checkCollisions, draw]);
+
+  const handleKeyDown = useCallback((event: KeyboardEvent) => {
+    keysRef.current.add(event.key);
+  }, []);
+
+  const handleKeyUp = useCallback((event: KeyboardEvent) => {
+    keysRef.current.delete(event.key);
+  }, []);
+
+  useEffect(() => {
+    if (gameStarted && !gameEnded) {
+      animate();
+    }
+    
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isPlaying, updatePlayer, updateObstacles, updateCoins, checkCollisions, gameSpeed]);
+  }, [gameStarted, gameEnded, animate]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [handleKeyDown, handleKeyUp]);
+
+  useEffect(() => {
+    return () => {
+      if (gameTimerRef.current) {
+        clearInterval(gameTimerRef.current);
+      }
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, []);
+
+  if (!gameStarted) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[600px] space-y-6">
+        <Card className="w-full max-w-md text-center">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-center space-x-2">
+              <span className="text-4xl">🏃‍♀️</span>
+              <span>DeeDee's Fun Run</span>
+            </CardTitle>
+            <CardDescription>
+              Endless runner adventure - jump over obstacles and collect coins!
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="text-sm text-muted-foreground space-y-2">
+              <p>• Press SPACEBAR or UP ARROW to jump</p>
+              <p>• Avoid cacti, rocks, and pits</p>
+              <p>• Collect golden coins for bonus points</p>
+              <p>• Game speed increases over time</p>
+              <p>• Survive as long as possible!</p>
+            </div>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="bg-muted p-3 rounded-lg">
+                <div className="text-gold font-semibold">2500+ Points</div>
+                <div className="text-xs">0.25 SC</div>
+              </div>
+              <div className="bg-muted p-3 rounded-lg">
+                <div className="text-yellow-400 font-semibold">2000+ Points</div>
+                <div className="text-xs">0.20 SC</div>
+              </div>
+            </div>
+            <Button 
+              onClick={startGame} 
+              className="w-full bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground"
+            >
+              <Play className="h-4 w-4 mr-2" />
+              Start Game
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <Card className="overflow-hidden">
-        <CardHeader className="text-center bg-gradient-to-r from-gold/20 to-sweep/20">
-          <div className="flex items-center justify-center mb-2">
-            <div className="w-12 h-12 bg-gradient-to-br from-gold to-yellow-400 rounded-full flex items-center justify-center mr-3">
-              🏃‍♀️
-            </div>
-            <div>
-              <CardTitle className="text-2xl">DeeDee's Fun Run</CardTitle>
-              <CardDescription>Endless runner - jump and collect coins!</CardDescription>
-            </div>
-          </div>
+    <div className="space-y-6">
+      {/* Game Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-gold">{score}</div>
+            <div className="text-sm text-muted-foreground">Score</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-sweep">{Math.floor(distance / 10)}m</div>
+            <div className="text-sm text-muted-foreground">Distance</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-blue-400">{coinsCollected}</div>
+            <div className="text-sm text-muted-foreground">Coins</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-casino-red">{timeLeft}s</div>
+            <div className="text-sm text-muted-foreground">Time Left</div>
+          </CardContent>
+        </Card>
+      </div>
 
-          <div className="flex justify-center space-x-6 mt-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-casino-green">{Math.floor(distance / 10)}</div>
-              <div className="text-sm text-muted-foreground">Distance</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gold">{coins}</div>
-              <div className="text-sm text-muted-foreground">Coins</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-sweep">{score}</div>
-              <div className="text-sm text-muted-foreground">Score</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-400">{timeLeft}s</div>
-              <div className="text-sm text-muted-foreground">Time Left</div>
-            </div>
-          </div>
-
-          <div className="mt-4 space-y-2">
-            <Progress value={(timeLeft / GAME_DURATION) * 100} className="h-2" />
-            <div className="text-xs text-muted-foreground">
-              Speed: {gameSpeed.toFixed(1)}x • Distance + Coins = SC
-            </div>
-          </div>
-        </CardHeader>
-
-        <CardContent className="p-0">
-          <div
-            ref={gameAreaRef}
-            className="relative w-full h-96 bg-gradient-to-b from-sky-400 via-sky-300 to-green-400 overflow-hidden"
-            style={{
-              backgroundImage: `
-                linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
-              `,
-              backgroundSize: "50px 50px",
-              animation: isPlaying ? 'scrollBackground 1s linear infinite' : 'none',
-            }}
-          >
-            {/* Ground */}
-            <div 
-              className="absolute w-full bg-green-600 border-t-4 border-green-700"
-              style={{ 
-                bottom: 0, 
-                height: 60,
-              }}
+      {/* Game Canvas */}
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex flex-col items-center space-y-4">
+            <canvas
+              ref={canvasRef}
+              width={CANVAS_WIDTH}
+              height={CANVAS_HEIGHT}
+              className="border border-border rounded-lg"
+              style={{ maxWidth: '100%', height: 'auto' }}
             />
-
-            {/* Player */}
-            <div
-              className={`absolute transition-all duration-100 ${isJumping ? 'animate-pulse' : ''}`}
-              style={{
-                left: player.x,
-                top: player.y,
-                width: player.width,
-                height: player.height,
-              }}
-            >
-              <div className="w-full h-full flex items-center justify-center text-2xl">
-                🏃‍♀️
-              </div>
-            </div>
-
-            {/* Obstacles */}
-            {obstacles.map(obstacle => (
-              <div
-                key={obstacle.id}
-                className={`absolute ${
-                  obstacle.type === 'block' ? 'bg-red-600 border-2 border-red-800' :
-                  obstacle.type === 'spike' ? 'bg-gray-600 border-2 border-gray-800' :
-                  'bg-black'
-                }`}
-                style={{
-                  left: obstacle.x,
-                  top: obstacle.y,
-                  width: obstacle.width,
-                  height: obstacle.height,
-                }}
-              >
-                {obstacle.type === 'block' && (
-                  <div className="w-full h-full flex items-center justify-center text-white font-bold">
-                    ⬛
-                  </div>
-                )}
-                {obstacle.type === 'spike' && (
-                  <div className="w-full h-full flex items-center justify-center text-white">
-                    ⚠️
-                  </div>
-                )}
-              </div>
-            ))}
-
-            {/* Coins */}
-            {gameCoins.map(coin => !coin.collected && (
-              <div
-                key={coin.id}
-                className="absolute w-5 h-5 text-2xl animate-spin"
-                style={{
-                  left: coin.x,
-                  top: coin.y,
-                }}
-              >
-                🪙
-              </div>
-            ))}
-
-            {/* Game Instructions */}
-            {!gameStarted && (
-              <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
-                <div className="text-center text-white space-y-4 p-6 bg-black/50 rounded-lg">
-                  <h3 className="text-xl font-bold">DeeDee's Fun Run</h3>
-                  <div className="space-y-2 text-sm">
-                    <p>🏃‍♀️ Endless runner challenge!</p>
-                    <p>⬆️ Press SPACE or UP arrow to jump</p>
-                    <p>🪙 Collect coins for bonus points</p>
-                    <p>🚫 Avoid obstacles and gaps</p>
-                    <p>⚡ Speed increases over time</p>
-                    <p>💰 Distance + coins = SC earned</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Game Over Screen */}
-            {gameCompleted && (
-              <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
-                <div className="text-center text-white space-y-4 p-6 bg-black/70 rounded-lg">
-                  <Trophy className="w-16 h-16 mx-auto text-gold" />
-                  <h3 className="text-2xl font-bold">Run Complete!</h3>
-                  <div className="space-y-2">
-                    <p className="text-lg">
-                      Distance: <span className="text-gold font-bold">{Math.floor(distance / 10)}</span>
-                    </p>
-                    <p className="text-lg">
-                      Coins: <span className="text-gold font-bold">{coins}</span>
-                    </p>
-                    <p className="text-lg">
-                      Final Score: <span className="text-sweep font-bold">{score}</span>
-                    </p>
-                    <p className="text-lg">
-                      SC Earned: <span className="text-casino-green font-bold">{Math.min(0.25, score * 0.001).toFixed(3)}</span>
-                    </p>
-                    <p className="text-sm text-muted-foreground mt-4">
-                      You will be credited after admin approval
-                    </p>
-                    <p className="text-sm text-gold">
-                      Come Back Tomorrow and do it again!
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* CoinKrazy Branding */}
-            <div className="absolute top-2 right-2 text-xs font-bold text-white opacity-70">
-              CoinKrazy.com
-            </div>
-          </div>
-
-          <div className="p-6 bg-card/50">
-            {!gameStarted ? (
-              <Button
-                onClick={startGame}
-                className="w-full bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground hover:from-yellow-400 hover:to-gold text-lg py-6"
-                size="lg"
-              >
-                <Play className="h-5 w-5 mr-2" />
-                Start Fun Run
-              </Button>
-            ) : gameCompleted ? (
-              <Button
-                onClick={resetGame}
-                variant="outline"
-                className="w-full border-gold text-gold hover:bg-gold/10 text-lg py-6"
-                size="lg"
-              >
-                <RotateCcw className="h-5 w-5 mr-2" />
-                Play Again Tomorrow
-              </Button>
-            ) : (
+            
+            {isPlaying && !isGameOver && (
               <div className="text-center space-y-2">
-                <p className="text-lg font-semibold">Keep running!</p>
-                <p className="text-sm text-muted-foreground">
-                  Press SPACE or UP arrow to jump over obstacles
-                </p>
-                <Button
-                  onClick={jump}
-                  className="mt-2 bg-casino-green hover:bg-casino-green/80"
-                  size="sm"
-                >
-                  <Zap className="h-4 w-4 mr-2" />
-                  Jump
-                </Button>
+                <div className="text-lg font-semibold">
+                  Press SPACEBAR or ↑ to jump!
+                </div>
+                <Progress value={(60 - timeLeft) / 60 * 100} className="w-64" />
+                <div className="flex space-x-4 text-sm">
+                  <Badge variant="outline">Speed: {gameSpeed.toFixed(1)}</Badge>
+                  <Badge variant="outline">Distance: {Math.floor(distance / 10)}m</Badge>
+                </div>
+              </div>
+            )}
+
+            {gameEnded && (
+              <div className="text-center space-y-4 p-6 bg-card/50 rounded-lg">
+                <Trophy className="h-16 w-16 text-gold mx-auto" />
+                <h3 className="text-2xl font-bold">Game Complete!</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <div className="text-xl font-bold text-gold">{score}</div>
+                    <div className="text-muted-foreground">Final Score</div>
+                  </div>
+                  <div>
+                    <div className="text-xl font-bold text-sweep">{Math.floor(distance / 10)}m</div>
+                    <div className="text-muted-foreground">Distance Run</div>
+                  </div>
+                </div>
+                <div className="text-lg">
+                  You earned{" "}
+                  <span className="text-gold font-bold">
+                    {score >= 2500 ? "0.25" : score >= 2000 ? "0.20" : score >= 1500 ? "0.15" : score >= 1000 ? "0.10" : score >= 500 ? "0.05" : "0.00"} SC
+                  </span>
+                </div>
               </div>
             )}
           </div>
         </CardContent>
       </Card>
-
-      <style jsx>{`
-        @keyframes scrollBackground {
-          from { background-position-x: 0; }
-          to { background-position-x: 50px; }
-        }
-      `}</style>
     </div>
   );
 }
