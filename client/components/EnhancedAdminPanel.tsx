@@ -907,13 +907,13 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
 
                     {/* Slot Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {filteredSlots.map((slot) => {
+                      {filteredSlots.map((slot, index) => {
                         const analytics = gameAnalytics.find(
                           (a) => a.slotId === slot.id,
                         );
                         return (
                           <Card
-                            key={slot.id}
+                            key={`filtered-${slot.id}-${index}`}
                             className="bg-gray-700/50 border-gray-600 hover:border-gold/50 transition-all duration-300 group"
                           >
                             <CardContent className="p-4">
