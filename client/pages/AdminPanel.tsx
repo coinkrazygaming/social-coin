@@ -1087,6 +1087,10 @@ export function AdminPanel() {
             </div>
           </TabsContent>
 
+          <TabsContent value="ai-developer" className="space-y-6">
+            <AIGameDeveloper />
+          </TabsContent>
+
           <TabsContent value="packages" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-white">
