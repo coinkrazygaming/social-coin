@@ -7,7 +7,7 @@ import {
   BettingOdds,
   PlayerProp,
   LiveUpdate,
-} from "@shared/sportsbookTypes";
+} from "../../shared/sportsbookTypes";
 
 // In-memory storage (replace with real database)
 const sportEvents: Map<string, SportEvent> = new Map();
