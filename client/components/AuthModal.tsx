@@ -26,6 +26,7 @@ export function AuthModal({
   isOpen,
   onClose,
   defaultTab = "login",
+  onAuthSuccess,
 }: AuthModalProps) {
   const { login, register } = useAuth();
   const [activeTab, setActiveTab] = useState(defaultTab);
