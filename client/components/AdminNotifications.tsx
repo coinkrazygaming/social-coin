@@ -472,6 +472,12 @@ export const AdminNotifications: React.FC<AdminNotificationsProps> = ({
         n.id === notificationId ? { ...n, acknowledged: true } : n,
       ),
     );
+    // Remove from played sounds tracking since it's acknowledged
+    setPlayedSounds(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(notificationId);
+      return newSet;
+    });
     stopAllSounds();
   };
 
