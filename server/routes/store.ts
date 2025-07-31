@@ -7,7 +7,7 @@ import {
   AdminLog,
   UserPurchaseHistory,
   RefundRequest,
-} from "@shared/storeTypes";
+} from "../../shared/storeTypes";
 
 // In-memory storage (replace with real database)
 const packages: Map<string, GoldCoinPackage> = new Map();
