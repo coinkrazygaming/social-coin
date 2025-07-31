@@ -31,6 +31,8 @@ import { JoseyAI } from "../components/JoseyAI";
 import { SecurityTab } from "../components/SecurityTab";
 import { AIEmployeeManagement } from "../components/AIEmployeeManagement";
 import { KYCOnboarding } from "../components/KYCOnboarding";
+import { BonusManagement } from "../components/BonusManagement";
+import { JackpotManagement } from "../components/JackpotManagement";
 import {
   GoldCoinPackage,
   StoreSettings,
