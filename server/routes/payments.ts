@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { PayPalPayment, Transaction } from "@shared/types";
+import { PayPalPayment, Transaction } from "../../shared/types";
 import { z } from "zod";
 
 // In-memory storage (replace with real database)
