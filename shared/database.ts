@@ -711,3 +711,51 @@ export interface ChatMessage {
   userId: string;
   metadata?: Record<string, any>;
 }
+
+// Sports betting interfaces
+export interface SportsEvent {
+  id: string;
+  sport: string;
+  league: string;
+  homeTeam: string;
+  awayTeam: string;
+  startTime: Date;
+  status: 'upcoming' | 'live' | 'finished' | 'postponed';
+  score?: {
+    home: number;
+    away: number;
+  };
+  markets: SportsMarket[];
+  isLive: boolean;
+  metadata?: Record<string, any>;
+}
+
+export interface SportsMarket {
+  id: string;
+  eventId: string;
+  type: 'moneyline' | 'spread' | 'total' | 'props';
+  name: string;
+  outcomes: {
+    id: string;
+    name: string;
+    odds: number;
+    isActive: boolean;
+  }[];
+  isActive: boolean;
+  metadata?: Record<string, any>;
+}
+
+export interface SportsBet {
+  id: string;
+  userId: string;
+  eventId: string;
+  marketId: string;
+  outcomeId: string;
+  amount: number;
+  odds: number;
+  potentialWin: number;
+  status: 'pending' | 'won' | 'lost' | 'voided' | 'cashed_out';
+  placedAt: Date;
+  settledAt?: Date;
+  metadata?: Record<string, any>;
+}
