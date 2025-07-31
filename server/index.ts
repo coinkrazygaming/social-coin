@@ -141,11 +141,20 @@ export function createServer() {
   app.post("/api/users/redemptions/:requestId/review", handleReviewRedemption);
   app.get("/api/users", handleGetAllUsers);
 
-  // Mini game routes
+  // Mini game routes (legacy)
   app.get("/api/mini-games/:userId/:gameType/cooldown", handleCheckCooldown);
   app.post("/api/mini-games/play", handleMiniGamePlay);
   app.get("/api/mini-games/:userId/history", handleGetMiniGameHistory);
   app.get("/api/mini-games/history", handleGetAllMiniGameHistory);
+
+  // Enhanced Mini Games Platform API
+  app.get("/api/mini-games/:userId/:gameId/cooldown", handleCheckGameCooldown);
+  app.post("/api/mini-games/session", handleSubmitGameSession);
+  app.get("/api/mini-games/:userId/sessions", handleGetUserGameHistory);
+  app.get("/api/mini-games/:userId/cooldowns", handleGetUserCooldowns);
+  app.get("/api/mini-games/security/events", handleGetSecurityEvents);
+  app.put("/api/mini-games/security/events/:eventId", handleUpdateSecurityEvent);
+  app.get("/api/mini-games/analytics", handleGetGameAnalytics);
 
   // Payment routes
   app.get("/api/payments/packages", handleGetPackages);
