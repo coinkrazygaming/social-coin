@@ -537,6 +537,11 @@ export const subscribeToWalletUpdates = (
   userId: string,
   callback: (wallet: Wallet) => void,
 ) => {
+  if (!supabase) {
+    console.warn("Supabase client not available - wallet subscriptions disabled");
+    return { unsubscribe: () => {} };
+  }
+
   return supabase
     .channel("wallet_updates")
     .on(
@@ -556,6 +561,11 @@ export const subscribeToNotifications = (
   userId: string,
   callback: (notification: Notification) => void,
 ) => {
+  if (!supabase) {
+    console.warn("Supabase client not available - notification subscriptions disabled");
+    return { unsubscribe: () => {} };
+  }
+
   return supabase
     .channel("user_notifications")
     .on(
@@ -574,6 +584,11 @@ export const subscribeToNotifications = (
 export const subscribeToGlobalNotifications = (
   callback: (notification: Notification) => void,
 ) => {
+  if (!supabase) {
+    console.warn("Supabase client not available - global notification subscriptions disabled");
+    return { unsubscribe: () => {} };
+  }
+
   return supabase
     .channel("global_notifications")
     .on(
@@ -592,6 +607,11 @@ export const subscribeToGlobalNotifications = (
 export const subscribeToAdminAlerts = (
   callback: (alert: AdminAlert) => void,
 ) => {
+  if (!supabase) {
+    console.warn("Supabase client not available - admin alert subscriptions disabled");
+    return { unsubscribe: () => {} };
+  }
+
   return supabase
     .channel("admin_alerts")
     .on(
