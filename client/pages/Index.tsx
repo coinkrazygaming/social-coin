@@ -10,6 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { SlotThumbnail } from "@/components/SlotThumbnail";
 import { SlotGameCard } from "@/components/SlotGameCard";
+import { SweepstakesDisclaimer } from "@/components/SweepstakesDisclaimer";
 import { featuredSlots } from "@shared/slotData";
 import { DEFAULT_COINKRAZY_SLOTS } from "@shared/defaultSlots";
 import {
