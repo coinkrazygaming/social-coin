@@ -552,6 +552,7 @@ export function AdminPanel() {
             <TabsTrigger value="achievements">Achievements</TabsTrigger>
             <TabsTrigger value="banking">Banking</TabsTrigger>
             <TabsTrigger value="usermanagement">Users</TabsTrigger>
+            <TabsTrigger value="ticker">Ticker</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
