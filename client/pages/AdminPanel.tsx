@@ -524,12 +524,14 @@ export function AdminPanel() {
         )}
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-10">
+          <TabsList className="grid w-full grid-cols-12">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="security">Security</TabsTrigger>
             <TabsTrigger value="ai-employees">AI Employees</TabsTrigger>
-            <TabsTrigger value="kyc">KYC Management</TabsTrigger>
-            <TabsTrigger value="games">Game Management</TabsTrigger>
+            <TabsTrigger value="kyc">KYC</TabsTrigger>
+            <TabsTrigger value="bonuses">Bonuses</TabsTrigger>
+            <TabsTrigger value="jackpots">Jackpots</TabsTrigger>
+            <TabsTrigger value="games">Games</TabsTrigger>
             <TabsTrigger value="packages">Packages</TabsTrigger>
             <TabsTrigger value="redemptions">Redemptions</TabsTrigger>
             <TabsTrigger value="refunds">Refunds</TabsTrigger>
