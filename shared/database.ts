@@ -240,6 +240,11 @@ export class DatabaseService {
 
   static async getUserByEmail(email: string): Promise<User | null> {
     try {
+      if (!supabase) {
+        console.warn("Supabase client not available - using mock data");
+        return null;
+      }
+
       const { data, error } = await supabase
         .from("users")
         .select("*")
