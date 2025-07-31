@@ -7,6 +7,7 @@ export function Ticker() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [tickerItems, setTickerItems] = useState<TickerItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
 
   // Fallback ticker items when API is unavailable
   const fallbackItems: TickerItem[] = [
