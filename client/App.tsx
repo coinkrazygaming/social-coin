@@ -22,6 +22,7 @@ import { AuthProvider } from "./components/AuthContext";
 import Sportsbook from "./pages/Sportsbook";
 import EnhancedTableGames from "./pages/EnhancedTableGames";
 import { EnhancedAdminPanel } from "./components/EnhancedAdminPanel";
+import { SmartTickerSystem } from "./components/SmartTickerSystem";
 
 const queryClient = new QueryClient();
 
