@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Progress } from "./ui/progress";
-import { Timer, Trophy, Play, RotateCcw, ArrowLeft, ArrowRight, ArrowDown, RotateCw } from "lucide-react";
+import { Timer, Target, Trophy, Play, RotateCcw } from "lucide-react";
 
 interface CoreysFastBlocksProps {
   userId: string;
@@ -18,232 +18,81 @@ interface Block {
 }
 
 interface Piece {
-  blocks: Block[];
-  type: string;
+  shape: number[][];
+  x: number;
+  y: number;
   color: string;
 }
 
-const BOARD_WIDTH = 10;
-const BOARD_HEIGHT = 20;
-const BLOCK_SIZE = 20;
-
-const TETRIS_PIECES = [
-  // I-piece
-  { blocks: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }, { x: 3, y: 0 }], type: 'I', color: '#00f0f0' },
-  // O-piece
-  { blocks: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }], type: 'O', color: '#f0f000' },
-  // T-piece
-  { blocks: [{ x: 1, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }, { x: 2, y: 1 }], type: 'T', color: '#a000f0' },
-  // S-piece
-  { blocks: [{ x: 1, y: 0 }, { x: 2, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }], type: 'S', color: '#00f000' },
-  // Z-piece
-  { blocks: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 2, y: 1 }], type: 'Z', color: '#f00000' },
-  // J-piece
-  { blocks: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }, { x: 2, y: 1 }], type: 'J', color: '#0000f0' },
-  // L-piece
-  { blocks: [{ x: 2, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }, { x: 2, y: 1 }], type: 'L', color: '#f0a000' },
+const TETROMINOES = [
+  { shape: [[1, 1, 1, 1]], color: '#00FFFF' }, // I
+  { shape: [[1, 1], [1, 1]], color: '#FFFF00' }, // O
+  { shape: [[0, 1, 0], [1, 1, 1]], color: '#800080' }, // T
+  { shape: [[0, 1, 1], [1, 1, 0]], color: '#00FF00' }, // S
+  { shape: [[1, 1, 0], [0, 1, 1]], color: '#FF0000' }, // Z
+  { shape: [[1, 0, 0], [1, 1, 1]], color: '#0000FF' }, // J
+  { shape: [[0, 0, 1], [1, 1, 1]], color: '#FFA500' }, // L
 ];
 
 export function CoreysFastBlocks({ userId, username, onGameComplete }: CoreysFastBlocksProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
-  const [linesCleared, setLinesCleared] = useState(0);
-  const [scEarned, setScEarned] = useState(0);
-  const [board, setBoard] = useState<(string | null)[][]>(() => 
-    Array(BOARD_HEIGHT).fill(null).map(() => Array(BOARD_WIDTH).fill(null))
-  );
+  const [score, setScore] = useState(0);
+  const [lines, setLines] = useState(0);
+  const [level, setLevel] = useState(1);
+  const [grid, setGrid] = useState<(string | null)[][]>([]);
   const [currentPiece, setCurrentPiece] = useState<Piece | null>(null);
-  const [currentPosition, setCurrentPosition] = useState({ x: 4, y: 0 });
+  const [nextPiece, setNextPiece] = useState<Piece | null>(null);
   const [gameStarted, setGameStarted] = useState(false);
-  const [gameCompleted, setGameCompleted] = useState(false);
+  const [gameEnded, setGameEnded] = useState(false);
+  const [dropTime, setDropTime] = useState(500);
 
-  const gameAreaRef = useRef<HTMLDivElement>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const dropTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationRef = useRef<number>();
+  const gameTimerRef = useRef<NodeJS.Timeout>();
+  const dropTimerRef = useRef<NodeJS.Timeout>();
 
-  const GAME_DURATION = 60;
-  const DROP_INTERVAL = 500; // Faster dropping for 60-second game
+  // Game dimensions
+  const CANVAS_WIDTH = 400;
+  const CANVAS_HEIGHT = 600;
+  const GRID_WIDTH = 10;
+  const GRID_HEIGHT = 20;
+  const BLOCK_SIZE = CANVAS_WIDTH / GRID_WIDTH;
 
-  const getRandomPiece = (): Piece => {
-    const piece = TETRIS_PIECES[Math.floor(Math.random() * TETRIS_PIECES.length)];
+  const initializeGrid = useCallback(() => {
+    return Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(null));
+  }, []);
+
+  const createRandomPiece = useCallback(() => {
+    const tetromino = TETROMINOES[Math.floor(Math.random() * TETROMINOES.length)];
     return {
-      blocks: piece.blocks.map(b => ({ ...b })),
-      type: piece.type,
-      color: piece.color
+      shape: tetromino.shape,
+      x: Math.floor(GRID_WIDTH / 2) - Math.floor(tetromino.shape[0].length / 2),
+      y: 0,
+      color: tetromino.color,
     };
-  };
+  }, []);
 
-  const isValidPosition = (piece: Piece, position: { x: number; y: number }, testBoard?: (string | null)[][]): boolean => {
-    const gameBoard = testBoard || board;
-    
-    return piece.blocks.every(block => {
-      const newX = position.x + block.x;
-      const newY = position.y + block.y;
-      
-      return newX >= 0 && 
-             newX < BOARD_WIDTH && 
-             newY >= 0 && 
-             newY < BOARD_HEIGHT && 
-             !gameBoard[newY][newX];
-    });
-  };
-
-  const rotatePiece = (piece: Piece): Piece => {
-    if (piece.type === 'O') return piece; // O-piece doesn't rotate
-    
-    const rotated = piece.blocks.map(block => ({
-      x: -block.y,
-      y: block.x,
-      color: block.color
-    }));
-
-    return { ...piece, blocks: rotated };
-  };
-
-  const placePiece = useCallback(() => {
-    if (!currentPiece) return;
-
-    const newBoard = board.map(row => [...row]);
-    currentPiece.blocks.forEach(block => {
-      const x = currentPosition.x + block.x;
-      const y = currentPosition.y + block.y;
-      if (y >= 0) {
-        newBoard[y][x] = currentPiece.color;
-      }
-    });
-
-    setBoard(newBoard);
-
-    // Check for completed lines
-    const completedLines: number[] = [];
-    for (let y = 0; y < BOARD_HEIGHT; y++) {
-      if (newBoard[y].every(cell => cell !== null)) {
-        completedLines.push(y);
-      }
-    }
-
-    if (completedLines.length > 0) {
-      // Remove completed lines and add new ones at top
-      const clearedBoard = newBoard.filter((_, index) => !completedLines.includes(index));
-      const newLines = Array(completedLines.length).fill(null).map(() => Array(BOARD_WIDTH).fill(null));
-      const finalBoard = [...newLines, ...clearedBoard];
-      
-      setBoard(finalBoard);
-      setLinesCleared(prev => prev + completedLines.length);
-      setScEarned(prev => prev + (completedLines.length * 0.01));
-    }
-
-    // Spawn new piece
-    const newPiece = getRandomPiece();
-    const newPosition = { x: 4, y: 0 };
-
-    if (!isValidPosition(newPiece, newPosition, newBoard)) {
-      // Game over
-      endGame();
-      return;
-    }
-
-    setCurrentPiece(newPiece);
-    setCurrentPosition(newPosition);
-  }, [currentPiece, currentPosition, board]);
-
-  const dropPiece = useCallback(() => {
-    if (!currentPiece) return;
-
-    const newPosition = { x: currentPosition.x, y: currentPosition.y + 1 };
-    
-    if (isValidPosition(currentPiece, newPosition)) {
-      setCurrentPosition(newPosition);
-    } else {
-      placePiece();
-    }
-  }, [currentPiece, currentPosition, placePiece]);
-
-  const movePiece = useCallback((direction: 'left' | 'right' | 'down') => {
-    if (!currentPiece || !isPlaying) return;
-
-    let newPosition = { ...currentPosition };
-    
-    switch (direction) {
-      case 'left':
-        newPosition.x -= 1;
-        break;
-      case 'right':
-        newPosition.x += 1;
-        break;
-      case 'down':
-        newPosition.y += 1;
-        break;
-    }
-
-    if (isValidPosition(currentPiece, newPosition)) {
-      setCurrentPosition(newPosition);
-    } else if (direction === 'down') {
-      placePiece();
-    }
-  }, [currentPiece, currentPosition, isPlaying, placePiece]);
-
-  const rotatePieceHandler = useCallback(() => {
-    if (!currentPiece || !isPlaying) return;
-
-    const rotated = rotatePiece(currentPiece);
-    if (isValidPosition(rotated, currentPosition)) {
-      setCurrentPiece(rotated);
-    }
-  }, [currentPiece, currentPosition, isPlaying]);
-
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (!isPlaying) return;
-
-      switch (e.key) {
-        case 'ArrowLeft':
-        case 'a':
-        case 'A':
-          e.preventDefault();
-          movePiece('left');
-          break;
-        case 'ArrowRight':
-        case 'd':
-        case 'D':
-          e.preventDefault();
-          movePiece('right');
-          break;
-        case 'ArrowDown':
-        case 's':
-        case 'S':
-          e.preventDefault();
-          movePiece('down');
-          break;
-        case 'ArrowUp':
-        case 'w':
-        case 'W':
-        case ' ':
-          e.preventDefault();
-          rotatePieceHandler();
-          break;
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [isPlaying, movePiece, rotatePieceHandler]);
-
-  const startGame = () => {
-    setGameStarted(true);
+  const startGame = useCallback(() => {
     setIsPlaying(true);
-    setTimeLeft(GAME_DURATION);
-    setLinesCleared(0);
-    setScEarned(0);
-    setBoard(Array(BOARD_HEIGHT).fill(null).map(() => Array(BOARD_WIDTH).fill(null)));
-    setGameCompleted(false);
+    setGameStarted(true);
+    setGameEnded(false);
+    setTimeLeft(60);
+    setScore(0);
+    setLines(0);
+    setLevel(1);
+    setDropTime(500);
+    
+    const newGrid = initializeGrid();
+    setGrid(newGrid);
+    
+    const firstPiece = createRandomPiece();
+    const secondPiece = createRandomPiece();
+    setCurrentPiece(firstPiece);
+    setNextPiece(secondPiece);
 
-    const newPiece = getRandomPiece();
-    setCurrentPiece(newPiece);
-    setCurrentPosition({ x: 4, y: 0 });
-
-    timerRef.current = setInterval(() => {
-      setTimeLeft(prev => {
+    gameTimerRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
         if (prev <= 1) {
           endGame();
           return 0;
@@ -251,253 +100,517 @@ export function CoreysFastBlocks({ userId, username, onGameComplete }: CoreysFas
         return prev - 1;
       });
     }, 1000);
-
-    dropTimerRef.current = setInterval(dropPiece, DROP_INTERVAL);
-  };
+  }, [initializeGrid, createRandomPiece]);
 
   const endGame = useCallback(() => {
     setIsPlaying(false);
-    setGameCompleted(true);
-
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (dropTimerRef.current) clearInterval(dropTimerRef.current);
-
-    const finalSC = Math.min(0.25, scEarned);
-    onGameComplete(linesCleared, finalSC);
-  }, [scEarned, linesCleared, onGameComplete]);
-
-  const resetGame = () => {
-    setGameStarted(false);
-    setIsPlaying(false);
-    setGameCompleted(false);
-    setTimeLeft(GAME_DURATION);
-    setLinesCleared(0);
-    setScEarned(0);
-    setBoard(Array(BOARD_HEIGHT).fill(null).map(() => Array(BOARD_WIDTH).fill(null)));
-    setCurrentPiece(null);
-    setCurrentPosition({ x: 4, y: 0 });
-
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (dropTimerRef.current) clearInterval(dropTimerRef.current);
-  };
-
-  const renderBoard = () => {
-    const displayBoard = board.map(row => [...row]);
-
-    // Add current piece to display
-    if (currentPiece && isPlaying) {
-      currentPiece.blocks.forEach(block => {
-        const x = currentPosition.x + block.x;
-        const y = currentPosition.y + block.y;
-        if (x >= 0 && x < BOARD_WIDTH && y >= 0 && y < BOARD_HEIGHT) {
-          displayBoard[y][x] = currentPiece.color;
-        }
-      });
+    setGameEnded(true);
+    
+    if (gameTimerRef.current) {
+      clearInterval(gameTimerRef.current);
+    }
+    if (dropTimerRef.current) {
+      clearTimeout(dropTimerRef.current);
+    }
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
     }
 
-    return displayBoard.map((row, y) => (
-      <div key={y} className="flex">
-        {row.map((cell, x) => (
-          <div
-            key={`${x}-${y}`}
-            className="border border-gray-600"
-            style={{
-              width: BLOCK_SIZE,
-              height: BLOCK_SIZE,
-              backgroundColor: cell || '#1a1a1a',
-            }}
-          />
-        ))}
+    // Calculate SC earned based on score
+    let scEarned = 0;
+    if (score >= 2000) scEarned = 0.25;
+    else if (score >= 1500) scEarned = 0.20;
+    else if (score >= 1000) scEarned = 0.15;
+    else if (score >= 500) scEarned = 0.10;
+    else if (score >= 200) scEarned = 0.05;
+
+    setTimeout(() => {
+      onGameComplete(score, scEarned);
+    }, 2000);
+  }, [score, onGameComplete]);
+
+  const rotatePiece = useCallback((piece: Piece): Piece => {
+    const rotated = piece.shape[0].map((_, index) =>
+      piece.shape.map(row => row[index]).reverse()
+    );
+    return { ...piece, shape: rotated };
+  }, []);
+
+  const isValidMove = useCallback((piece: Piece, deltaX: number, deltaY: number, rotated = false): boolean => {
+    const testPiece = rotated ? rotatePiece(piece) : piece;
+    
+    for (let y = 0; y < testPiece.shape.length; y++) {
+      for (let x = 0; x < testPiece.shape[y].length; x++) {
+        if (testPiece.shape[y][x]) {
+          const newX = testPiece.x + x + deltaX;
+          const newY = testPiece.y + y + deltaY;
+          
+          if (newX < 0 || newX >= GRID_WIDTH || newY >= GRID_HEIGHT) {
+            return false;
+          }
+          
+          if (newY >= 0 && grid[newY] && grid[newY][newX]) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }, [grid, rotatePiece]);
+
+  const placePiece = useCallback(() => {
+    if (!currentPiece) return;
+
+    const newGrid = [...grid];
+    
+    for (let y = 0; y < currentPiece.shape.length; y++) {
+      for (let x = 0; x < currentPiece.shape[y].length; x++) {
+        if (currentPiece.shape[y][x]) {
+          const gridY = currentPiece.y + y;
+          const gridX = currentPiece.x + x;
+          
+          if (gridY >= 0) {
+            newGrid[gridY][gridX] = currentPiece.color;
+          }
+        }
+      }
+    }
+
+    setGrid(newGrid);
+
+    // Check for completed lines
+    const completedLines: number[] = [];
+    for (let y = GRID_HEIGHT - 1; y >= 0; y--) {
+      if (newGrid[y].every(cell => cell !== null)) {
+        completedLines.push(y);
+      }
+    }
+
+    if (completedLines.length > 0) {
+      // Remove completed lines
+      const filteredGrid = newGrid.filter((_, index) => !completedLines.includes(index));
+      
+      // Add new empty lines at the top
+      const emptyLines = Array(completedLines.length).fill(null).map(() => 
+        Array(GRID_WIDTH).fill(null)
+      );
+      
+      const updatedGrid = [...emptyLines, ...filteredGrid];
+      setGrid(updatedGrid);
+      
+      // Update score and lines
+      const points = [0, 100, 300, 500, 800][completedLines.length] * level;
+      setScore(prev => prev + points);
+      setLines(prev => prev + completedLines.length);
+      
+      // Increase level every 10 lines
+      const newLines = lines + completedLines.length;
+      const newLevel = Math.floor(newLines / 10) + 1;
+      if (newLevel > level) {
+        setLevel(newLevel);
+        setDropTime(prev => Math.max(50, prev - 50));
+      }
+    }
+
+    // Generate new piece
+    setCurrentPiece(nextPiece);
+    setNextPiece(createRandomPiece());
+
+    // Check game over
+    if (nextPiece && !isValidMove(nextPiece, 0, 0)) {
+      endGame();
+    }
+  }, [currentPiece, grid, nextPiece, level, lines, isValidMove, createRandomPiece, endGame]);
+
+  const movePiece = useCallback((deltaX: number, deltaY: number) => {
+    if (!currentPiece || !isPlaying) return;
+
+    if (isValidMove(currentPiece, deltaX, deltaY)) {
+      setCurrentPiece(prev => prev ? {
+        ...prev,
+        x: prev.x + deltaX,
+        y: prev.y + deltaY,
+      } : null);
+    } else if (deltaY > 0) {
+      // Piece hit bottom or another piece
+      placePiece();
+    }
+  }, [currentPiece, isPlaying, isValidMove, placePiece]);
+
+  const rotatePieceAction = useCallback(() => {
+    if (!currentPiece || !isPlaying) return;
+
+    if (isValidMove(currentPiece, 0, 0, true)) {
+      setCurrentPiece(prev => prev ? rotatePiece(prev) : null);
+    }
+  }, [currentPiece, isPlaying, isValidMove, rotatePiece]);
+
+  const hardDrop = useCallback(() => {
+    if (!currentPiece || !isPlaying) return;
+
+    let dropDistance = 0;
+    while (isValidMove(currentPiece, 0, dropDistance + 1)) {
+      dropDistance++;
+    }
+
+    setCurrentPiece(prev => prev ? {
+      ...prev,
+      y: prev.y + dropDistance,
+    } : null);
+
+    // Award points for hard drop
+    setScore(prev => prev + dropDistance * 2);
+    
+    setTimeout(() => {
+      placePiece();
+    }, 100);
+  }, [currentPiece, isPlaying, isValidMove, placePiece]);
+
+  const handleKeyPress = useCallback((event: KeyboardEvent) => {
+    if (!isPlaying) return;
+
+    switch (event.key) {
+      case 'ArrowLeft':
+        event.preventDefault();
+        movePiece(-1, 0);
+        break;
+      case 'ArrowRight':
+        event.preventDefault();
+        movePiece(1, 0);
+        break;
+      case 'ArrowDown':
+        event.preventDefault();
+        movePiece(0, 1);
+        setScore(prev => prev + 1);
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        rotatePieceAction();
+        break;
+      case ' ':
+        event.preventDefault();
+        hardDrop();
+        break;
+    }
+  }, [isPlaying, movePiece, rotatePieceAction, hardDrop]);
+
+  const draw = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Clear canvas
+    ctx.fillStyle = '#000011';
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    // Draw grid
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 1;
+    for (let x = 0; x <= GRID_WIDTH; x++) {
+      ctx.beginPath();
+      ctx.moveTo(x * BLOCK_SIZE, 0);
+      ctx.lineTo(x * BLOCK_SIZE, CANVAS_HEIGHT);
+      ctx.stroke();
+    }
+    for (let y = 0; y <= GRID_HEIGHT; y++) {
+      ctx.beginPath();
+      ctx.moveTo(0, y * BLOCK_SIZE);
+      ctx.lineTo(CANVAS_WIDTH, y * BLOCK_SIZE);
+      ctx.stroke();
+    }
+
+    // Draw placed blocks
+    for (let y = 0; y < GRID_HEIGHT; y++) {
+      for (let x = 0; x < GRID_WIDTH; x++) {
+        if (grid[y] && grid[y][x]) {
+          ctx.fillStyle = grid[y][x] as string;
+          ctx.fillRect(
+            x * BLOCK_SIZE + 1,
+            y * BLOCK_SIZE + 1,
+            BLOCK_SIZE - 2,
+            BLOCK_SIZE - 2
+          );
+          
+          // Add block highlight
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+          ctx.fillRect(
+            x * BLOCK_SIZE + 1,
+            y * BLOCK_SIZE + 1,
+            BLOCK_SIZE - 2,
+            4
+          );
+        }
+      }
+    }
+
+    // Draw current piece
+    if (currentPiece) {
+      ctx.fillStyle = currentPiece.color;
+      for (let y = 0; y < currentPiece.shape.length; y++) {
+        for (let x = 0; x < currentPiece.shape[y].length; x++) {
+          if (currentPiece.shape[y][x]) {
+            const drawX = (currentPiece.x + x) * BLOCK_SIZE;
+            const drawY = (currentPiece.y + y) * BLOCK_SIZE;
+            
+            ctx.fillRect(drawX + 1, drawY + 1, BLOCK_SIZE - 2, BLOCK_SIZE - 2);
+            
+            // Add block highlight
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.fillRect(drawX + 1, drawY + 1, BLOCK_SIZE - 2, 4);
+            ctx.fillStyle = currentPiece.color;
+          }
+        }
+      }
+
+      // Draw ghost piece (drop preview)
+      let ghostY = currentPiece.y;
+      while (isValidMove(currentPiece, 0, ghostY - currentPiece.y + 1)) {
+        ghostY++;
+      }
+      
+      if (ghostY > currentPiece.y) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+        for (let y = 0; y < currentPiece.shape.length; y++) {
+          for (let x = 0; x < currentPiece.shape[y].length; x++) {
+            if (currentPiece.shape[y][x]) {
+              const drawX = (currentPiece.x + x) * BLOCK_SIZE;
+              const drawY = (ghostY + y) * BLOCK_SIZE;
+              
+              ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+              ctx.lineWidth = 2;
+              ctx.strokeRect(drawX + 1, drawY + 1, BLOCK_SIZE - 2, BLOCK_SIZE - 2);
+            }
+          }
+        }
+      }
+    }
+  }, [grid, currentPiece, isValidMove]);
+
+  const dropPiece = useCallback(() => {
+    movePiece(0, 1);
+    
+    if (isPlaying) {
+      dropTimerRef.current = setTimeout(dropPiece, dropTime);
+    }
+  }, [movePiece, isPlaying, dropTime]);
+
+  useEffect(() => {
+    if (gameStarted && !gameEnded) {
+      draw();
+    }
+  }, [gameStarted, gameEnded, draw, grid, currentPiece]);
+
+  useEffect(() => {
+    if (isPlaying) {
+      dropTimerRef.current = setTimeout(dropPiece, dropTime);
+    }
+    
+    return () => {
+      if (dropTimerRef.current) {
+        clearTimeout(dropTimerRef.current);
+      }
+    };
+  }, [isPlaying, dropPiece, dropTime]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyPress);
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleKeyPress]);
+
+  useEffect(() => {
+    return () => {
+      if (gameTimerRef.current) {
+        clearInterval(gameTimerRef.current);
+      }
+      if (dropTimerRef.current) {
+        clearTimeout(dropTimerRef.current);
+      }
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, []);
+
+  if (!gameStarted) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[600px] space-y-6">
+        <Card className="w-full max-w-md text-center">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-center space-x-2">
+              <span className="text-4xl">🧩</span>
+              <span>Corey's Fast Blocks</span>
+            </CardTitle>
+            <CardDescription>
+              Fast-paced Tetris - clear lines to earn SC in 60 seconds!
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="text-sm text-muted-foreground space-y-2">
+              <p>• Use arrow keys to move and rotate pieces</p>
+              <p>• Space bar for hard drop</p>
+              <p>• Clear lines to earn points</p>
+              <p>• Game speeds up as you progress!</p>
+            </div>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="bg-muted p-3 rounded-lg">
+                <div className="text-gold font-semibold">2000+ Points</div>
+                <div className="text-xs">0.25 SC</div>
+              </div>
+              <div className="bg-muted p-3 rounded-lg">
+                <div className="text-yellow-400 font-semibold">1500+ Points</div>
+                <div className="text-xs">0.20 SC</div>
+              </div>
+            </div>
+            <Button 
+              onClick={startGame} 
+              className="w-full bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground"
+            >
+              <Play className="h-4 w-4 mr-2" />
+              Start Game
+            </Button>
+          </CardContent>
+        </Card>
       </div>
-    ));
-  };
+    );
+  }
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <Card className="overflow-hidden">
-        <CardHeader className="text-center bg-gradient-to-r from-gold/20 to-sweep/20">
-          <div className="flex items-center justify-center mb-2">
-            <div className="w-12 h-12 bg-gradient-to-br from-gold to-yellow-400 rounded-full flex items-center justify-center mr-3">
-              🧩
-            </div>
-            <div>
-              <CardTitle className="text-2xl">Corey's Fast Blocks</CardTitle>
-              <CardDescription>Clear lines to earn Sweeps Coins!</CardDescription>
-            </div>
-          </div>
+    <div className="space-y-6">
+      {/* Game Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-gold">{score}</div>
+            <div className="text-sm text-muted-foreground">Score</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-sweep">{lines}</div>
+            <div className="text-sm text-muted-foreground">Lines</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-blue-400">{level}</div>
+            <div className="text-sm text-muted-foreground">Level</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-casino-red">{timeLeft}s</div>
+            <div className="text-sm text-muted-foreground">Time Left</div>
+          </CardContent>
+        </Card>
+      </div>
 
-          <div className="flex justify-center space-x-6 mt-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-casino-green">{linesCleared}</div>
-              <div className="text-sm text-muted-foreground">Lines Cleared</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gold">{scEarned.toFixed(2)}</div>
-              <div className="text-sm text-muted-foreground">SC Earned</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-400">{timeLeft}s</div>
-              <div className="text-sm text-muted-foreground">Time Left</div>
-            </div>
-          </div>
-
-          <div className="mt-4 space-y-2">
-            <Progress value={(timeLeft / GAME_DURATION) * 100} className="h-2" />
-            <div className="text-xs text-muted-foreground">
-              0.01 SC per line cleared
-            </div>
-          </div>
-        </CardHeader>
-
-        <CardContent className="p-4">
-          <div className="flex justify-center items-start space-x-8">
-            {/* Game Board */}
-            <div
-              ref={gameAreaRef}
-              className="relative bg-black border-4 border-gold rounded-lg p-2"
-              style={{
-                width: BOARD_WIDTH * BLOCK_SIZE + 16,
-                height: BOARD_HEIGHT * BLOCK_SIZE + 16,
-              }}
-            >
-              {renderBoard()}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Game Canvas */}
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex flex-col items-center space-y-4">
+              <canvas
+                ref={canvasRef}
+                width={CANVAS_WIDTH}
+                height={CANVAS_HEIGHT}
+                className="border border-border rounded-lg"
+                style={{ maxWidth: '100%', height: 'auto' }}
+              />
               
-              {/* Game Instructions Overlay */}
-              {!gameStarted && (
-                <div className="absolute inset-0 bg-black/80 flex items-center justify-center rounded">
-                  <div className="text-center text-white space-y-4 p-4">
-                    <h3 className="text-lg font-bold">Corey's Fast Blocks</h3>
-                    <div className="space-y-2 text-sm">
-                      <p>🧩 Clear horizontal lines to earn SC</p>
-                      <p>💰 Each line = 0.01 SC</p>
-                      <p>⏱️ 60 seconds fast-paced gameplay</p>
-                      <p>🎮 Arrow keys or WASD to control</p>
-                    </div>
+              {isPlaying && (
+                <div className="text-center space-y-2">
+                  <div className="text-sm text-muted-foreground">
+                    Use arrow keys to move, spacebar to drop
                   </div>
-                </div>
-              )}
-
-              {/* Game Over Overlay */}
-              {gameCompleted && (
-                <div className="absolute inset-0 bg-black/90 flex items-center justify-center rounded">
-                  <div className="text-center text-white space-y-4 p-4">
-                    <Trophy className="w-12 h-12 mx-auto text-gold" />
-                    <h3 className="text-xl font-bold">Time's Up!</h3>
-                    <div className="space-y-2">
-                      <p>Lines: <span className="text-gold font-bold">{linesCleared}</span></p>
-                      <p>SC: <span className="text-casino-green font-bold">{Math.min(0.25, scEarned).toFixed(2)}</span></p>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      You will be credited after admin approval
-                    </p>
-                  </div>
+                  <Progress value={(60 - timeLeft) / 60 * 100} className="w-64" />
                 </div>
               )}
             </div>
+          </CardContent>
+        </Card>
 
-            {/* Controls and Info */}
-            <div className="space-y-4">
-              {/* Next Piece Preview */}
-              <div className="bg-card rounded-lg p-4 border">
-                <h4 className="font-semibold mb-2">Current Piece</h4>
-                <div className="w-16 h-16 bg-black rounded border flex items-center justify-center">
-                  {currentPiece && (
-                    <div style={{ color: currentPiece.color, fontSize: '24px' }}>
-                      {currentPiece.type === 'I' ? '▬' : currentPiece.type === 'O' ? '⬛' : '🧩'}
-                    </div>
-                  )}
-                </div>
+        {/* Next Piece and Controls */}
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Next Piece</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="w-24 h-24 border border-border rounded-lg flex items-center justify-center bg-muted/30">
+                {nextPiece && (
+                  <div className="grid gap-1" style={{ 
+                    gridTemplateColumns: `repeat(${nextPiece.shape[0].length}, 1fr)`,
+                    gridTemplateRows: `repeat(${nextPiece.shape.length}, 1fr)`
+                  }}>
+                    {nextPiece.shape.flat().map((cell, index) => (
+                      <div
+                        key={index}
+                        className="w-3 h-3 rounded-sm"
+                        style={{
+                          backgroundColor: cell ? nextPiece.color : 'transparent'
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
+            </CardContent>
+          </Card>
 
-              {/* Mobile Controls */}
-              <div className="bg-card rounded-lg p-4 border">
-                <h4 className="font-semibold mb-4">Controls</h4>
-                <div className="grid grid-cols-3 gap-2">
-                  <div></div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={rotatePieceHandler}
-                    disabled={!isPlaying}
-                  >
-                    <RotateCw className="h-4 w-4" />
-                  </Button>
-                  <div></div>
-                  
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => movePiece('left')}
-                    disabled={!isPlaying}
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => movePiece('down')}
-                    disabled={!isPlaying}
-                  >
-                    <ArrowDown className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => movePiece('right')}
-                    disabled={!isPlaying}
-                  >
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="text-xs text-muted-foreground mt-2 text-center">
-                  Or use arrow keys / WASD
-                </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Controls</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span>Move Left/Right:</span>
+                <Badge variant="outline">← →</Badge>
               </div>
+              <div className="flex justify-between">
+                <span>Soft Drop:</span>
+                <Badge variant="outline">↓</Badge>
+              </div>
+              <div className="flex justify-between">
+                <span>Rotate:</span>
+                <Badge variant="outline">↑</Badge>
+              </div>
+              <div className="flex justify-between">
+                <span>Hard Drop:</span>
+                <Badge variant="outline">Space</Badge>
+              </div>
+            </CardContent>
+          </Card>
 
-              {/* Game Stats */}
-              <div className="bg-card rounded-lg p-4 border">
-                <h4 className="font-semibold mb-2">Stats</h4>
-                <div className="space-y-1 text-sm">
-                  <div>Lines: {linesCleared}</div>
-                  <div>SC Rate: 0.01 per line</div>
-                  <div>Max SC: 0.25</div>
+          {gameEnded && (
+            <Card>
+              <CardContent className="p-6 text-center space-y-4">
+                <Trophy className="h-16 w-16 text-gold mx-auto" />
+                <h3 className="text-2xl font-bold">Game Complete!</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <div className="text-xl font-bold text-gold">{score}</div>
+                    <div className="text-muted-foreground">Final Score</div>
+                  </div>
+                  <div>
+                    <div className="text-xl font-bold text-sweep">{lines}</div>
+                    <div className="text-muted-foreground">Lines Cleared</div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Main Game Button */}
-          <div className="mt-6">
-            {!gameStarted ? (
-              <Button
-                onClick={startGame}
-                className="w-full bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground hover:from-yellow-400 hover:to-gold text-lg py-6"
-                size="lg"
-              >
-                <Play className="h-5 w-5 mr-2" />
-                Start Fast Blocks
-              </Button>
-            ) : gameCompleted ? (
-              <Button
-                onClick={resetGame}
-                variant="outline"
-                className="w-full border-gold text-gold hover:bg-gold/10 text-lg py-6"
-                size="lg"
-              >
-                <RotateCcw className="h-5 w-5 mr-2" />
-                Play Again Tomorrow
-              </Button>
-            ) : (
-              <div className="text-center space-y-2">
-                <p className="text-lg font-semibold">Clear those lines!</p>
-                <p className="text-sm text-muted-foreground">
-                  Use arrow keys or touch controls to play
-                </p>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+                <div className="text-lg">
+                  You earned{" "}
+                  <span className="text-gold font-bold">
+                    {score >= 2000 ? "0.25" : score >= 1500 ? "0.20" : score >= 1000 ? "0.15" : score >= 500 ? "0.10" : score >= 200 ? "0.05" : "0.00"} SC
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
