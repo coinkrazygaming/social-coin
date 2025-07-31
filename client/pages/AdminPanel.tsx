@@ -679,6 +679,14 @@ export function AdminPanel() {
             <KYCOnboarding />
           </TabsContent>
 
+          <TabsContent value="bonuses" className="space-y-6">
+            <BonusManagement />
+          </TabsContent>
+
+          <TabsContent value="jackpots" className="space-y-6">
+            <JackpotManagement />
+          </TabsContent>
+
           <TabsContent value="games" className="space-y-6">
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
               {/* Main Content Area */}
