@@ -457,6 +457,12 @@ export default function Index() {
           </div>
         </div>
       </section>
+
+      {/* Welcome Bonus Modal */}
+      <WelcomeBonusModal
+        isOpen={showWelcomeBonus}
+        onClose={() => setShowWelcomeBonus(false)}
+      />
     </div>
   );
 }
