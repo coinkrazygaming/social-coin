@@ -19,7 +19,7 @@ interface AdminToolbarProps {
 
 export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = '' }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'chat' | 'settings' | 'docs' | 'reports' | 'share'>('chat');
+  const [activeTab, setActiveTab] = useState<'chat' | 'settings' | 'docs' | 'reports' | 'tasks' | 'share'>('chat');
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [pendingReports, setPendingReports] = useState(0);
   const { user, isAdmin } = useAuth();
