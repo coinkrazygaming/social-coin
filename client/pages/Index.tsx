@@ -452,6 +452,13 @@ export default function Index() {
           </div>
         </div>
       </section>
+
+      {/* Sweepstakes Disclaimer */}
+      <section className="py-8 bg-muted/30">
+        <div className="container px-4">
+          <SweepstakesDisclaimer variant="compact" />
+        </div>
+      </section>
     </div>
   );
 }
