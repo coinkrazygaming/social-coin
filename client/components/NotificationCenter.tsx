@@ -70,6 +70,7 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
   const [notificationFilter, setNotificationFilter] = useState<
     "all" | "unread" | "system" | "ai" | "admin"
   >("all");
+  const [userHasInteracted, setUserHasInteracted] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
