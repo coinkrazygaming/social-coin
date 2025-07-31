@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { Badge } from "./ui/badge";
 import { Progress } from "./ui/progress";
-import { Timer, Trophy, Play, RotateCcw, ArrowUp } from "lucide-react";
+import { Timer, Target, Trophy, Play, RotateCcw } from "lucide-react";
 
 interface TheresasFrogzProps {
   userId: string;
@@ -13,289 +14,149 @@ interface TheresasFrogzProps {
 interface Frog {
   x: number;
   y: number;
-  vx: number;
-  vy: number;
-  onLilyPad: boolean;
-  width: number;
-  height: number;
+  targetX: number;
+  targetY: number;
+  isJumping: boolean;
+  jumpProgress: number;
+  onPad: boolean;
 }
 
 interface LilyPad {
-  id: number;
   x: number;
   y: number;
-  width: number;
-  height: number;
-  points: number;
-  visited: boolean;
+  size: number;
+  occupied: boolean;
+  sinking: boolean;
+  sinkProgress: number;
 }
 
 interface Fly {
-  id: number;
   x: number;
   y: number;
   caught: boolean;
+  points: number;
+  type: 'normal' | 'golden' | 'big';
+}
+
+interface Ripple {
+  x: number;
+  y: number;
+  size: number;
+  timestamp: number;
 }
 
 export function TheresasFrogz({ userId, username, onGameComplete }: TheresasFrogzProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
   const [score, setScore] = useState(0);
-  const [jumps, setJumps] = useState(0);
   const [fliesCaught, setFliesCaught] = useState(0);
-  const [frog, setFrog] = useState<Frog>({
-    x: 50,
-    y: 300,
-    vx: 0,
-    vy: 0,
-    onLilyPad: true,
-    width: 40,
-    height: 30,
-  });
+  const [jumps, setJumps] = useState(0);
+  const [frog, setFrog] = useState<Frog>({ x: 100, y: 500, targetX: 100, targetY: 500, isJumping: false, jumpProgress: 0, onPad: false });
   const [lilyPads, setLilyPads] = useState<LilyPad[]>([]);
   const [flies, setFlies] = useState<Fly[]>([]);
+  const [ripples, setRipples] = useState<Ripple[]>([]);
   const [gameStarted, setGameStarted] = useState(false);
-  const [gameCompleted, setGameCompleted] = useState(false);
-  const [isCharging, setIsCharging] = useState(false);
-  const [jumpPower, setJumpPower] = useState(0);
-  const [jumpDirection, setJumpDirection] = useState(0);
+  const [gameEnded, setGameEnded] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
 
-  const gameAreaRef = useRef<HTMLDivElement>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
-  const powerTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const gameTimerRef = useRef<NodeJS.Timeout>();
+  const flySpawnerRef = useRef<NodeJS.Timeout>();
 
-  const GAME_DURATION = 60;
-  const GRAVITY = 0.5;
-  const WATER_LEVEL = 350;
+  // Game dimensions
+  const CANVAS_WIDTH = 800;
+  const CANVAS_HEIGHT = 600;
+  const WATER_LEVEL = 550;
 
-  const generateLevel = useCallback(() => {
+  const generateLilyPads = useCallback(() => {
     const pads: LilyPad[] = [];
-    const gameFlies: Fly[] = [];
     
-    // Starting lily pad
+    // Starting pad
     pads.push({
-      id: 0,
-      x: 20,
-      y: 320,
-      width: 60,
-      height: 20,
-      points: 0,
-      visited: true,
+      x: 100,
+      y: 500,
+      size: 60,
+      occupied: true,
+      sinking: false,
+      sinkProgress: 0,
     });
-
-    // Generate lily pads across the pond
-    for (let i = 1; i < 15; i++) {
-      const x = 100 + (i * 80) + (Math.random() - 0.5) * 40;
-      const y = 280 + Math.random() * 60;
-      const points = Math.floor(Math.random() * 3) + 1; // 1-3 points
+    
+    // Generate random lily pads
+    for (let i = 0; i < 12; i++) {
+      let x, y;
+      let validPosition = false;
+      let attempts = 0;
       
-      pads.push({
-        id: i,
-        x,
-        y,
-        width: 50 + Math.random() * 20,
-        height: 15 + Math.random() * 10,
-        points,
-        visited: false,
-      });
+      do {
+        x = 150 + Math.random() * (CANVAS_WIDTH - 300);
+        y = 100 + Math.random() * 350;
+        
+        validPosition = true;
+        // Check distance from other pads
+        for (const pad of pads) {
+          const distance = Math.sqrt((x - pad.x) ** 2 + (y - pad.y) ** 2);
+          if (distance < 80) {
+            validPosition = false;
+            break;
+          }
+        }
+        attempts++;
+      } while (!validPosition && attempts < 50);
+      
+      if (validPosition) {
+        pads.push({
+          x,
+          y,
+          size: 40 + Math.random() * 30,
+          occupied: false,
+          sinking: false,
+          sinkProgress: 0,
+        });
+      }
     }
-
-    // Generate flies
-    for (let i = 0; i < 8; i++) {
-      gameFlies.push({
-        id: i,
-        x: 150 + Math.random() * 800,
-        y: 100 + Math.random() * 150,
-        caught: false,
-      });
-    }
-
-    setLilyPads(pads);
-    setFlies(gameFlies);
+    
+    return pads;
   }, []);
 
-  const startCharging = useCallback(() => {
-    if (!frog.onLilyPad || !isPlaying) return;
-
-    setIsCharging(true);
-    setJumpPower(0);
-
-    powerTimerRef.current = setInterval(() => {
-      setJumpPower(prev => {
-        if (prev >= 100) return 100;
-        return prev + 2;
-      });
-    }, 20);
-  }, [frog.onLilyPad, isPlaying]);
-
-  const jump = useCallback(() => {
-    if (!isCharging || !isPlaying) return;
-
-    setIsCharging(false);
-    if (powerTimerRef.current) clearInterval(powerTimerRef.current);
-
-    const power = jumpPower / 100;
-    const angle = (jumpDirection * Math.PI) / 180;
-    const speed = 8 + power * 12; // Max speed of 20
-
-    setFrog(prev => ({
-      ...prev,
-      vx: Math.cos(angle) * speed,
-      vy: -Math.sin(angle) * speed,
-      onLilyPad: false,
-    }));
-
-    setJumps(prev => prev + 1);
-    setJumpPower(0);
-  }, [isCharging, jumpPower, jumpDirection, isPlaying]);
-
-  const updateFrog = useCallback(() => {
-    setFrog(prev => {
-      if (prev.onLilyPad) return prev;
-
-      let newX = prev.x + prev.vx;
-      let newY = prev.y + prev.vy;
-      let newVy = prev.vy + GRAVITY;
-      let newVx = prev.vx * 0.99; // Air resistance
-      let onLilyPad = false;
-
-      // Check lily pad collisions
-      lilyPads.forEach(pad => {
-        if (newX + prev.width > pad.x &&
-            newX < pad.x + pad.width &&
-            newY + prev.height > pad.y &&
-            newY + prev.height < pad.y + pad.height + 20 &&
-            newVy > 0) {
-          
-          newY = pad.y - prev.height;
-          newVy = 0;
-          newVx = 0;
-          onLilyPad = true;
-
-          // Score points for new lily pad
-          if (!pad.visited) {
-            setScore(s => s + pad.points * 10);
-            setLilyPads(pads => pads.map(p => 
-              p.id === pad.id ? { ...p, visited: true } : p
-            ));
-          }
-        }
-      });
-
-      // Check fly collisions
-      flies.forEach(fly => {
-        if (!fly.caught &&
-            newX + prev.width > fly.x &&
-            newX < fly.x + 20 &&
-            newY + prev.height > fly.y &&
-            newY < fly.y + 20) {
-          
-          setFliesCaught(f => f + 1);
-          setScore(s => s + 25);
-          setFlies(fs => fs.map(f => 
-            f.id === fly.id ? { ...f, caught: true } : f
-          ));
-        }
-      });
-
-      // Check if fell in water
-      if (newY + prev.height > WATER_LEVEL && !onLilyPad) {
-        // Respawn on last lily pad or starting pad
-        const lastVisitedPad = lilyPads.filter(p => p.visited).pop() || lilyPads[0];
-        newX = lastVisitedPad.x + lastVisitedPad.width / 2 - prev.width / 2;
-        newY = lastVisitedPad.y - prev.height;
-        newVx = 0;
-        newVy = 0;
-        onLilyPad = true;
-        setScore(s => Math.max(0, s - 10)); // Penalty for falling
-      }
-
-      // Keep frog in bounds
-      if (newX < 0) newX = 0;
-      if (newX + prev.width > (gameAreaRef.current?.clientWidth || 1000)) {
-        newX = (gameAreaRef.current?.clientWidth || 1000) - prev.width;
-      }
-
-      return {
-        ...prev,
-        x: newX,
-        y: newY,
-        vx: newVx,
-        vy: newVy,
-        onLilyPad,
-      };
-    });
-  }, [lilyPads, flies]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isPlaying) return;
-
-      switch (e.key) {
-        case ' ':
-        case 'ArrowUp':
-        case 'w':
-        case 'W':
-          e.preventDefault();
-          if (!isCharging) {
-            startCharging();
-          }
-          break;
-        case 'ArrowLeft':
-        case 'a':
-        case 'A':
-          setJumpDirection(prev => Math.max(0, prev - 5));
-          break;
-        case 'ArrowRight':
-        case 'd':
-        case 'D':
-          setJumpDirection(prev => Math.min(90, prev + 5));
-          break;
-      }
+  const generateFly = useCallback(() => {
+    const types: ('normal' | 'golden' | 'big')[] = ['normal', 'normal', 'normal', 'golden', 'big'];
+    const type = types[Math.floor(Math.random() * types.length)];
+    
+    let points = 50;
+    if (type === 'golden') points = 200;
+    else if (type === 'big') points = 100;
+    
+    return {
+      x: 50 + Math.random() * (CANVAS_WIDTH - 100),
+      y: 50 + Math.random() * 400,
+      caught: false,
+      points,
+      type,
     };
+  }, []);
 
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (!isPlaying) return;
-
-      if (e.key === ' ' || e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
-        jump();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, [isPlaying, isCharging, startCharging, jump]);
-
-  const startGame = () => {
-    setGameStarted(true);
+  const startGame = useCallback(() => {
     setIsPlaying(true);
-    setTimeLeft(GAME_DURATION);
+    setGameStarted(true);
+    setGameEnded(false);
+    setGameOver(false);
+    setTimeLeft(60);
     setScore(0);
-    setJumps(0);
     setFliesCaught(0);
-    setGameCompleted(false);
-    setJumpDirection(45);
+    setJumps(0);
+    setFrog({ x: 100, y: 500, targetX: 100, targetY: 500, isJumping: false, jumpProgress: 0, onPad: true });
+    setRipples([]);
+    
+    const pads = generateLilyPads();
+    setLilyPads(pads);
+    
+    // Generate initial flies
+    const initialFlies = Array.from({ length: 5 }, generateFly);
+    setFlies(initialFlies);
 
-    setFrog({
-      x: 50,
-      y: 300,
-      vx: 0,
-      vy: 0,
-      onLilyPad: true,
-      width: 40,
-      height: 30,
-    });
-
-    generateLevel();
-
-    timerRef.current = setInterval(() => {
-      setTimeLeft(prev => {
+    gameTimerRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
         if (prev <= 1) {
           endGame();
           return 0;
@@ -303,284 +164,527 @@ export function TheresasFrogz({ userId, username, onGameComplete }: TheresasFrog
         return prev - 1;
       });
     }, 1000);
-  };
+
+    // Spawn flies periodically
+    flySpawnerRef.current = setInterval(() => {
+      setFlies(prev => {
+        const activeFlies = prev.filter(f => !f.caught);
+        if (activeFlies.length < 6) {
+          return [...prev, generateFly()];
+        }
+        return prev;
+      });
+    }, 2000);
+  }, [generateLilyPads, generateFly]);
 
   const endGame = useCallback(() => {
     setIsPlaying(false);
-    setGameCompleted(true);
-
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (powerTimerRef.current) clearInterval(powerTimerRef.current);
-    if (animationRef.current) cancelAnimationFrame(animationRef.current);
-
-    const scEarned = Math.min(0.25, score * 0.01);
-    onGameComplete(score, scEarned);
-  }, [score, onGameComplete]);
-
-  const resetGame = () => {
-    setGameStarted(false);
-    setIsPlaying(false);
-    setGameCompleted(false);
-    setTimeLeft(GAME_DURATION);
-    setScore(0);
-    setJumps(0);
-    setFliesCaught(0);
-    setIsCharging(false);
-    setJumpPower(0);
-    setJumpDirection(45);
-
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (powerTimerRef.current) clearInterval(powerTimerRef.current);
-    if (animationRef.current) cancelAnimationFrame(animationRef.current);
-  };
-
-  useEffect(() => {
-    const animate = () => {
-      if (isPlaying) {
-        updateFrog();
-        animationRef.current = requestAnimationFrame(animate);
-      }
-    };
-
-    if (isPlaying) {
-      animationRef.current = requestAnimationFrame(animate);
+    setGameEnded(true);
+    
+    if (gameTimerRef.current) {
+      clearInterval(gameTimerRef.current);
+    }
+    if (flySpawnerRef.current) {
+      clearInterval(flySpawnerRef.current);
+    }
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
     }
 
+    // Calculate SC earned based on score
+    let scEarned = 0;
+    if (score >= 2000) scEarned = 0.25;
+    else if (score >= 1600) scEarned = 0.20;
+    else if (score >= 1200) scEarned = 0.15;
+    else if (score >= 800) scEarned = 0.10;
+    else if (score >= 400) scEarned = 0.05;
+
+    setTimeout(() => {
+      onGameComplete(score, scEarned);
+    }, 2000);
+  }, [score, onGameComplete]);
+
+  const handleCanvasClick = useCallback((event: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!isPlaying || frog.isJumping || gameOver) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    const clickX = (event.clientX - rect.left) * scaleX;
+    const clickY = (event.clientY - rect.top) * scaleY;
+
+    // Check if clicking on a lily pad
+    const targetPad = lilyPads.find(pad => {
+      if (pad.sinking) return false;
+      const distance = Math.sqrt((clickX - pad.x) ** 2 + (clickY - pad.y) ** 2);
+      return distance <= pad.size / 2;
+    });
+
+    if (targetPad) {
+      // Start jump to lily pad
+      setJumps(prev => prev + 1);
+      setFrog(prev => ({
+        ...prev,
+        targetX: targetPad.x,
+        targetY: targetPad.y,
+        isJumping: true,
+        jumpProgress: 0,
+        onPad: false,
+      }));
+
+      // Mark current pad as unoccupied
+      setLilyPads(prev => prev.map(pad => 
+        pad.x === frog.x && pad.y === frog.y 
+          ? { ...pad, occupied: false }
+          : pad
+      ));
+    }
+  }, [isPlaying, frog, gameOver, lilyPads]);
+
+  const updateFrog = useCallback(() => {
+    if (frog.isJumping) {
+      setFrog(prev => {
+        const newProgress = prev.jumpProgress + 0.08;
+        
+        if (newProgress >= 1) {
+          // Jump completed
+          const targetPad = lilyPads.find(pad => 
+            Math.abs(pad.x - prev.targetX) < 10 && Math.abs(pad.y - prev.targetY) < 10
+          );
+          
+          if (targetPad && !targetPad.sinking) {
+            // Landed on pad successfully
+            setLilyPads(prevPads => prevPads.map(pad => 
+              pad === targetPad 
+                ? { ...pad, occupied: true, sinking: true }
+                : pad.x === prev.x && pad.y === prev.y
+                ? { ...pad, occupied: false }
+                : pad
+            ));
+            
+            // Check for flies to catch
+            setFlies(prevFlies => prevFlies.map(fly => {
+              if (!fly.caught) {
+                const distance = Math.sqrt((fly.x - prev.targetX) ** 2 + (fly.y - prev.targetY) ** 2);
+                if (distance <= 40) {
+                  setFliesCaught(prev => prev + 1);
+                  setScore(prevScore => prevScore + fly.points);
+                  return { ...fly, caught: true };
+                }
+              }
+              return fly;
+            }));
+            
+            return {
+              ...prev,
+              x: prev.targetX,
+              y: prev.targetY,
+              isJumping: false,
+              jumpProgress: 0,
+              onPad: true,
+            };
+          } else {
+            // Missed lily pad - fall in water (game over)
+            setGameOver(true);
+            setTimeout(endGame, 1500);
+            
+            // Add splash ripple
+            setRipples(prevRipples => [...prevRipples, {
+              x: prev.targetX,
+              y: prev.targetY,
+              size: 0,
+              timestamp: Date.now(),
+            }]);
+            
+            return {
+              ...prev,
+              x: prev.targetX,
+              y: prev.targetY,
+              isJumping: false,
+              jumpProgress: 0,
+              onPad: false,
+            };
+          }
+        }
+        
+        // Interpolate position during jump with arc
+        const t = newProgress;
+        const jumpHeight = Math.sin(t * Math.PI) * 100;
+        
+        return {
+          ...prev,
+          x: prev.x + (prev.targetX - prev.x) * t,
+          y: prev.y + (prev.targetY - prev.y) * t - jumpHeight,
+          jumpProgress: newProgress,
+        };
+      });
+    }
+  }, [frog, lilyPads, endGame]);
+
+  const updateLilyPads = useCallback(() => {
+    setLilyPads(prev => prev.map(pad => {
+      if (pad.sinking && pad.occupied && !frog.isJumping) {
+        const newSinkProgress = pad.sinkProgress + 0.01;
+        
+        if (newSinkProgress >= 1) {
+          // Pad fully sunk - game over if frog is on it
+          if (pad.x === frog.x && pad.y === frog.y) {
+            setGameOver(true);
+            setTimeout(endGame, 1500);
+          }
+        }
+        
+        return { ...pad, sinkProgress: Math.min(newSinkProgress, 1) };
+      }
+      return pad;
+    }));
+  }, [frog, endGame]);
+
+  const updateRipples = useCallback(() => {
+    const currentTime = Date.now();
+    setRipples(prev => prev.map(ripple => ({
+      ...ripple,
+      size: ripple.size + 2,
+    })).filter(ripple => currentTime - ripple.timestamp < 2000));
+  }, []);
+
+  const draw = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Clear canvas with water background
+    const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+    gradient.addColorStop(0, '#87CEEB');
+    gradient.addColorStop(0.8, '#4682B4');
+    gradient.addColorStop(1, '#2F4F4F');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    // Draw water ripples
+    ripples.forEach(ripple => {
+      ctx.strokeStyle = `rgba(255, 255, 255, ${1 - ripple.size / 100})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(ripple.x, ripple.y, ripple.size, 0, Math.PI * 2);
+      ctx.stroke();
+    });
+
+    // Draw lily pads
+    lilyPads.forEach(pad => {
+      const sinkOffset = pad.sinkProgress * 20;
+      
+      // Lily pad shadow in water
+      if (pad.sinkProgress > 0) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+        ctx.beginPath();
+        ctx.arc(pad.x, pad.y + sinkOffset, pad.size / 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      
+      // Lily pad
+      ctx.fillStyle = pad.sinking ? `rgba(34, 139, 34, ${1 - pad.sinkProgress * 0.7})` : '#228B22';
+      ctx.beginPath();
+      ctx.arc(pad.x, pad.y + sinkOffset, pad.size / 2, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Lily pad details
+      if (pad.sinkProgress < 0.8) {
+        ctx.strokeStyle = '#006400';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // Notch in lily pad
+        ctx.strokeStyle = '#4682B4';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(pad.x, pad.y + sinkOffset - pad.size / 2);
+        ctx.lineTo(pad.x, pad.y + sinkOffset);
+        ctx.stroke();
+      }
+    });
+
+    // Draw flies
+    flies.forEach(fly => {
+      if (fly.caught) return;
+      
+      const time = Date.now() * 0.01;
+      const bobOffset = Math.sin(time + fly.x * 0.01) * 3;
+      
+      // Fly body
+      let flyColor = '#000000';
+      let flySize = 4;
+      
+      if (fly.type === 'golden') {
+        flyColor = '#FFD700';
+        flySize = 5;
+      } else if (fly.type === 'big') {
+        flyColor = '#4169E1';
+        flySize = 7;
+      }
+      
+      ctx.fillStyle = flyColor;
+      ctx.beginPath();
+      ctx.arc(fly.x, fly.y + bobOffset, flySize, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Fly wings
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.beginPath();
+      ctx.ellipse(fly.x - 3, fly.y + bobOffset - 2, 3, 1, Math.sin(time * 10) * 0.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(fly.x + 3, fly.y + bobOffset - 2, 3, 1, -Math.sin(time * 10) * 0.2, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Golden fly sparkle
+      if (fly.type === 'golden') {
+        ctx.fillStyle = '#FFFF00';
+        ctx.beginPath();
+        ctx.arc(fly.x + Math.sin(time * 5) * 8, fly.y + bobOffset + Math.cos(time * 5) * 8, 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
+
+    // Draw frog
+    ctx.save();
+    ctx.translate(frog.x, frog.y);
+    
+    // Frog body
+    ctx.fillStyle = gameOver ? '#8B0000' : '#228B22';
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 25, 20, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Frog spots
+    ctx.fillStyle = '#006400';
+    ctx.beginPath();
+    ctx.arc(-8, -5, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(8, -5, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(0, 8, 3, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Frog eyes
+    ctx.fillStyle = '#32CD32';
+    ctx.beginPath();
+    ctx.arc(-10, -15, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(10, -15, 6, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Eye pupils
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.arc(-10, -15, 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(10, -15, 3, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Frog legs (when jumping)
+    if (frog.isJumping) {
+      ctx.strokeStyle = '#228B22';
+      ctx.lineWidth = 8;
+      ctx.beginPath();
+      ctx.moveTo(-15, 10);
+      ctx.lineTo(-25, 25);
+      ctx.moveTo(15, 10);
+      ctx.lineTo(25, 25);
+      ctx.stroke();
+    }
+    
+    ctx.restore();
+
+    // Game over overlay
+    if (gameOver) {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      
+      ctx.fillStyle = '#FF0000';
+      ctx.font = 'bold 48px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('SPLASHED!', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
+      
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '24px Arial';
+      ctx.fillText('The frog fell in the water!', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 50);
+    }
+  }, [frog, lilyPads, flies, ripples, gameOver]);
+
+  const animate = useCallback(() => {
+    updateFrog();
+    updateLilyPads();
+    updateRipples();
+    draw();
+    animationRef.current = requestAnimationFrame(animate);
+  }, [updateFrog, updateLilyPads, updateRipples, draw]);
+
+  useEffect(() => {
+    if (gameStarted && !gameEnded) {
+      animate();
+    }
+    
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isPlaying, updateFrog]);
+  }, [gameStarted, gameEnded, animate]);
+
+  useEffect(() => {
+    return () => {
+      if (gameTimerRef.current) {
+        clearInterval(gameTimerRef.current);
+      }
+      if (flySpawnerRef.current) {
+        clearInterval(flySpawnerRef.current);
+      }
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, []);
+
+  const efficiency = jumps > 0 ? Math.round((fliesCaught / jumps) * 100) : 0;
+
+  if (!gameStarted) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[600px] space-y-6">
+        <Card className="w-full max-w-md text-center">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-center space-x-2">
+              <span className="text-4xl">🐸</span>
+              <span>Theresa's Frogz</span>
+            </CardTitle>
+            <CardDescription>
+              Hop across lily pads and catch flies for points!
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="text-sm text-muted-foreground space-y-2">
+              <p>• Click on lily pads to jump to them</p>
+              <p>• Catch flies by landing near them</p>
+              <p>• Lily pads sink after you land on them</p>
+              <p>• Don't fall in the water!</p>
+              <p>• Golden flies = 200 points, Big flies = 100 points</p>
+            </div>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="bg-muted p-3 rounded-lg">
+                <div className="text-gold font-semibold">2000+ Points</div>
+                <div className="text-xs">0.25 SC</div>
+              </div>
+              <div className="bg-muted p-3 rounded-lg">
+                <div className="text-yellow-400 font-semibold">1600+ Points</div>
+                <div className="text-xs">0.20 SC</div>
+              </div>
+            </div>
+            <Button 
+              onClick={startGame} 
+              className="w-full bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground"
+            >
+              <Play className="h-4 w-4 mr-2" />
+              Start Game
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <Card className="overflow-hidden">
-        <CardHeader className="text-center bg-gradient-to-r from-gold/20 to-sweep/20">
-          <div className="flex items-center justify-center mb-2">
-            <div className="w-12 h-12 bg-gradient-to-br from-gold to-yellow-400 rounded-full flex items-center justify-center mr-3">
-              🐸
-            </div>
-            <div>
-              <CardTitle className="text-2xl">Theresa's Frogz</CardTitle>
-              <CardDescription>Hop across lily pads and catch flies!</CardDescription>
-            </div>
-          </div>
+    <div className="space-y-6">
+      {/* Game Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-gold">{score}</div>
+            <div className="text-sm text-muted-foreground">Score</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-sweep">{fliesCaught}</div>
+            <div className="text-sm text-muted-foreground">Flies Caught</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-blue-400">{jumps}</div>
+            <div className="text-sm text-muted-foreground">Jumps</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-green-400">{efficiency}%</div>
+            <div className="text-sm text-muted-foreground">Efficiency</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-casino-red">{timeLeft}s</div>
+            <div className="text-sm text-muted-foreground">Time Left</div>
+          </CardContent>
+        </Card>
+      </div>
 
-          <div className="flex justify-center space-x-6 mt-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-casino-green">{score}</div>
-              <div className="text-sm text-muted-foreground">Score</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-sweep">{jumps}</div>
-              <div className="text-sm text-muted-foreground">Jumps</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gold">{fliesCaught}</div>
-              <div className="text-sm text-muted-foreground">Flies</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-400">{timeLeft}s</div>
-              <div className="text-sm text-muted-foreground">Time Left</div>
-            </div>
-          </div>
-
-          <div className="mt-4 space-y-2">
-            <Progress value={(timeLeft / GAME_DURATION) * 100} className="h-2" />
-            {isCharging && (
-              <div className="space-y-1">
-                <Progress value={jumpPower} className="h-3 bg-blue-900" />
-                <div className="text-xs text-muted-foreground">
-                  Power: {jumpPower}% • Direction: {jumpDirection}°
-                </div>
-              </div>
-            )}
-          </div>
-        </CardHeader>
-
-        <CardContent className="p-0">
-          <div
-            ref={gameAreaRef}
-            className="relative w-full h-96 bg-gradient-to-b from-sky-400 via-blue-500 to-blue-800 overflow-hidden"
-            style={{
-              backgroundImage: `
-                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 1px, transparent 1px)
-              `,
-              backgroundSize: "80px 80px",
-            }}
-          >
-            {/* Water */}
-            <div 
-              className="absolute w-full bg-blue-600 opacity-60"
-              style={{ 
-                top: WATER_LEVEL,
-                height: 50,
-              }}
+      {/* Game Canvas */}
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex flex-col items-center space-y-4">
+            <canvas
+              ref={canvasRef}
+              width={CANVAS_WIDTH}
+              height={CANVAS_HEIGHT}
+              className="border border-border rounded-lg cursor-pointer"
+              onClick={handleCanvasClick}
+              style={{ maxWidth: '100%', height: 'auto' }}
             />
-
-            {/* Lily Pads */}
-            {lilyPads.map(pad => (
-              <div
-                key={pad.id}
-                className={`absolute rounded-full border-2 ${
-                  pad.visited ? 'bg-green-400 border-green-600' : 'bg-green-500 border-green-700'
-                }`}
-                style={{
-                  left: pad.x,
-                  top: pad.y,
-                  width: pad.width,
-                  height: pad.height,
-                }}
-              >
-                <div className="w-full h-full flex items-center justify-center text-xs font-bold text-white">
-                  {pad.points > 0 && !pad.visited && `+${pad.points * 10}`}
-                </div>
-              </div>
-            ))}
-
-            {/* Flies */}
-            {flies.map(fly => !fly.caught && (
-              <div
-                key={fly.id}
-                className="absolute w-5 h-5 text-lg animate-bounce"
-                style={{
-                  left: fly.x,
-                  top: fly.y,
-                }}
-              >
-                🪰
-              </div>
-            ))}
-
-            {/* Frog */}
-            <div
-              className={`absolute transition-all duration-100 ${!frog.onLilyPad ? 'animate-pulse' : ''}`}
-              style={{
-                left: frog.x,
-                top: frog.y,
-                width: frog.width,
-                height: frog.height,
-                transform: `rotate(${jumpDirection}deg)`,
-              }}
-            >
-              <div className="w-full h-full flex items-center justify-center text-3xl">
-                🐸
-              </div>
-            </div>
-
-            {/* Jump Direction Indicator */}
-            {isCharging && frog.onLilyPad && (
-              <div
-                className="absolute pointer-events-none"
-                style={{
-                  left: frog.x + frog.width / 2,
-                  top: frog.y + frog.height / 2,
-                }}
-              >
-                <div
-                  className="w-16 h-1 bg-yellow-400 origin-left"
-                  style={{
-                    transform: `rotate(-${jumpDirection}deg) scaleX(${jumpPower / 100})`,
-                  }}
-                />
-              </div>
-            )}
-
-            {/* Game Instructions */}
-            {!gameStarted && (
-              <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
-                <div className="text-center text-white space-y-4 p-6 bg-black/50 rounded-lg">
-                  <h3 className="text-xl font-bold">Theresa's Frogz</h3>
-                  <div className="space-y-2 text-sm">
-                    <p>🐸 Hold SPACE/UP to charge jump power</p>
-                    <p>🏹 Use LEFT/RIGHT arrows to aim</p>
-                    <p>🪷 Land on lily pads to score points</p>
-                    <p>🪰 Catch flies for bonus points (+25)</p>
-                    <p>💧 Don't fall in the water (-10 points)</p>
-                    <p>⏱️ 60 seconds of froggy fun!</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Game Over Screen */}
-            {gameCompleted && (
-              <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
-                <div className="text-center text-white space-y-4 p-6 bg-black/70 rounded-lg">
-                  <Trophy className="w-16 h-16 mx-auto text-gold" />
-                  <h3 className="text-2xl font-bold">Hopping Complete!</h3>
-                  <div className="space-y-2">
-                    <p className="text-lg">
-                      Final Score: <span className="text-gold font-bold">{score}</span>
-                    </p>
-                    <p className="text-lg">
-                      Jumps: <span className="text-sweep font-bold">{jumps}</span>
-                    </p>
-                    <p className="text-lg">
-                      Flies Caught: <span className="text-casino-green font-bold">{fliesCaught}</span>
-                    </p>
-                    <p className="text-lg">
-                      SC Earned: <span className="text-casino-green font-bold">{Math.min(0.25, score * 0.01).toFixed(2)}</span>
-                    </p>
-                    <p className="text-sm text-muted-foreground mt-4">
-                      You will be credited after admin approval
-                    </p>
-                    <p className="text-sm text-gold">
-                      Come Back Tomorrow and do it again!
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* CoinKrazy Branding */}
-            <div className="absolute bottom-2 right-2 text-xs font-bold text-white opacity-70">
-              CoinKrazy.com
-            </div>
-          </div>
-
-          <div className="p-6 bg-card/50">
-            {!gameStarted ? (
-              <Button
-                onClick={startGame}
-                className="w-full bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground hover:from-yellow-400 hover:to-gold text-lg py-6"
-                size="lg"
-              >
-                <Play className="h-5 w-5 mr-2" />
-                Start Frog Hopping
-              </Button>
-            ) : gameCompleted ? (
-              <Button
-                onClick={resetGame}
-                variant="outline"
-                className="w-full border-gold text-gold hover:bg-gold/10 text-lg py-6"
-                size="lg"
-              >
-                <RotateCcw className="h-5 w-5 mr-2" />
-                Play Again Tomorrow
-              </Button>
-            ) : (
+            
+            {isPlaying && !gameOver && (
               <div className="text-center space-y-2">
-                <div className="flex justify-center space-x-2 mb-2">
-                  <Button
-                    onMouseDown={startCharging}
-                    onMouseUp={jump}
-                    onTouchStart={startCharging}
-                    onTouchEnd={jump}
-                    disabled={!frog.onLilyPad}
-                    className="bg-casino-green hover:bg-casino-green/80"
-                    size="sm"
-                  >
-                    <ArrowUp className="h-4 w-4 mr-2" />
-                    Jump
-                  </Button>
+                <div className="text-lg font-semibold">
+                  {frog.isJumping ? 'Jumping...' : 'Click on a lily pad to jump to it!'}
                 </div>
-                <p className="text-lg font-semibold">Hop across the pond!</p>
-                <p className="text-sm text-muted-foreground">
-                  Hold SPACE to charge, LEFT/RIGHT to aim, release to jump
-                </p>
+                <Progress value={(60 - timeLeft) / 60 * 100} className="w-64" />
+                <div className="flex space-x-4 text-sm">
+                  <Badge variant="outline" className="bg-green-500/20 text-green-400">Normal Fly: +50</Badge>
+                  <Badge variant="outline" className="bg-blue-500/20 text-blue-400">Big Fly: +100</Badge>
+                  <Badge variant="outline" className="bg-gold/20 text-gold">Golden Fly: +200</Badge>
+                </div>
+              </div>
+            )}
+
+            {gameEnded && (
+              <div className="text-center space-y-4 p-6 bg-card/50 rounded-lg">
+                <Trophy className="h-16 w-16 text-gold mx-auto" />
+                <h3 className="text-2xl font-bold">Game Complete!</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <div className="text-xl font-bold text-gold">{score}</div>
+                    <div className="text-muted-foreground">Final Score</div>
+                  </div>
+                  <div>
+                    <div className="text-xl font-bold text-sweep">{fliesCaught}</div>
+                    <div className="text-muted-foreground">Flies Caught</div>
+                  </div>
+                </div>
+                <div className="text-lg">
+                  You earned{" "}
+                  <span className="text-gold font-bold">
+                    {score >= 2000 ? "0.25" : score >= 1600 ? "0.20" : score >= 1200 ? "0.15" : score >= 800 ? "0.10" : score >= 400 ? "0.05" : "0.00"} SC
+                  </span>
+                </div>
               </div>
             )}
           </div>
