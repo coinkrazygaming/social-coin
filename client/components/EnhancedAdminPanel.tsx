@@ -106,6 +106,7 @@ import {
   Gift,
   Bug,
   Copy,
+  Lightbulb,
 } from "lucide-react";
 
 interface EnhancedAdminPanelProps {
