@@ -2288,7 +2288,10 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                 </div>
                 <div className="mt-6 text-center text-gray-400">
                   <p>Advanced user management features coming soon...</p>
-                  <p>Current user data is displayed in the dashboard and analytics sections.</p>
+                  <p>
+                    Current user data is displayed in the dashboard and
+                    analytics sections.
+                  </p>
                 </div>
               </CardContent>
             </Card>
