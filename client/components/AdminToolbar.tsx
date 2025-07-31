@@ -813,6 +813,248 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
         )}
       </AnimatePresence>
 
+      {/* AI Tools Panel */}
+      <AnimatePresence>
+        {activePanel === "aitools" && (
+          <motion.div
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -100, opacity: 0 }}
+            className="absolute top-12 left-4 w-96 bg-gray-900 border border-gray-700 rounded-lg shadow-xl z-50"
+          >
+            <Card className="bg-gray-900 border-gray-700">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Wand2 className="w-5 h-5 text-purple-400" />
+                  AI Content Generator
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <Tabs defaultValue="images" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="images">AI Images</TabsTrigger>
+                    <TabsTrigger value="videos">AI Videos</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="images" className="space-y-4">
+                    <div className="space-y-3">
+                      <Label className="text-white text-sm">Generate AI Image</Label>
+                      <Textarea
+                        value={aiImagePrompt}
+                        onChange={(e) => setAiImagePrompt(e.target.value)}
+                        placeholder="Describe the image you want to generate..."
+                        className="bg-gray-800 border-gray-600 text-white min-h-[80px]"
+                      />
+                      <Button
+                        onClick={handleGenerateAIImage}
+                        disabled={isGeneratingImage || !aiImagePrompt.trim()}
+                        className="w-full bg-blue-600 hover:bg-blue-700"
+                      >
+                        {isGeneratingImage ? (
+                          <>
+                            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <ImageIcon className="w-4 h-4 mr-2" />
+                            Generate Image
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="videos" className="space-y-4">
+                    <div className="space-y-3">
+                      <Label className="text-white text-sm">Generate AI Video</Label>
+                      <Textarea
+                        value={aiVideoPrompt}
+                        onChange={(e) => setAiVideoPrompt(e.target.value)}
+                        placeholder="Describe the video you want to generate..."
+                        className="bg-gray-800 border-gray-600 text-white min-h-[80px]"
+                      />
+                      <Button
+                        onClick={handleGenerateAIVideo}
+                        disabled={isGeneratingVideo || !aiVideoPrompt.trim()}
+                        className="w-full bg-purple-600 hover:bg-purple-700"
+                      >
+                        {isGeneratingVideo ? (
+                          <>
+                            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <Video className="w-4 h-4 mr-2" />
+                            Generate Video
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </TabsContent>
+                </Tabs>
+
+                {/* Generated Assets */}
+                {generatedAssets.length > 0 && (
+                  <div className="border-t border-gray-700 pt-4">
+                    <div className="text-white font-medium mb-3">Recent Generations</div>
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {generatedAssets.slice(0, 5).map((asset) => (
+                        <div key={asset.id} className="flex items-center gap-3 p-2 bg-gray-800 rounded">
+                          <div className="w-12 h-12 bg-gray-700 rounded flex items-center justify-center">
+                            {asset.type === 'image' ? (
+                              <ImageIcon className="w-6 h-6 text-gray-400" />
+                            ) : (
+                              <Video className="w-6 h-6 text-gray-400" />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-white text-sm truncate">{asset.prompt}</div>
+                            <div className="text-gray-400 text-xs">{asset.type}</div>
+                          </div>
+                          <Button size="sm" variant="outline">
+                            <Download className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Analytics Panel */}
+      <AnimatePresence>
+        {activePanel === "analytics" && (
+          <motion.div
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -100, opacity: 0 }}
+            className="absolute top-12 right-4 w-96 bg-gray-900 border border-gray-700 rounded-lg shadow-xl z-50"
+          >
+            <Card className="bg-gray-900 border-gray-700">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-white flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-green-400" />
+                  Analytics Dashboard
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-gray-800 p-3 rounded">
+                    <div className="text-gray-400 text-xs">Active Users</div>
+                    <div className="text-white text-xl font-bold">2,847</div>
+                    <div className="text-green-400 text-xs">+12%</div>
+                  </div>
+                  <div className="bg-gray-800 p-3 rounded">
+                    <div className="text-gray-400 text-xs">Total Revenue</div>
+                    <div className="text-white text-xl font-bold">$145K</div>
+                    <div className="text-green-400 text-xs">+8%</div>
+                  </div>
+                  <div className="bg-gray-800 p-3 rounded">
+                    <div className="text-gray-400 text-xs">Games Played</div>
+                    <div className="text-white text-xl font-bold">18,392</div>
+                    <div className="text-green-400 text-xs">+15%</div>
+                  </div>
+                  <div className="bg-gray-800 p-3 rounded">
+                    <div className="text-gray-400 text-xs">Conversion</div>
+                    <div className="text-white text-xl font-bold">96.8%</div>
+                    <div className="text-red-400 text-xs">-0.2%</div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
+                    <FileText className="w-4 h-4 mr-2" />
+                    Generate Report
+                  </Button>
+                  <Button size="sm" variant="outline" className="w-full">
+                    <Download className="w-4 h-4 mr-2" />
+                    Export Data
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* User Management Panel */}
+      <AnimatePresence>
+        {activePanel === "users" && (
+          <motion.div
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -100, opacity: 0 }}
+            className="absolute top-12 right-4 w-96 bg-gray-900 border border-gray-700 rounded-lg shadow-xl z-50"
+          >
+            <Card className="bg-gray-900 border-gray-700">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Users className="w-5 h-5 text-orange-400" />
+                    User Management
+                  </CardTitle>
+                  <div className="flex gap-1">
+                    <Button size="sm" variant="ghost" title="Search users">
+                      <Search className="w-4 h-4" />
+                    </Button>
+                    <Button size="sm" variant="ghost" title="Filter users">
+                      <Filter className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  <div className="bg-gray-800 p-2 rounded">
+                    <div className="text-white text-lg font-bold">15,473</div>
+                    <div className="text-gray-400 text-xs">Total Users</div>
+                  </div>
+                  <div className="bg-gray-800 p-2 rounded">
+                    <div className="text-white text-lg font-bold">2,847</div>
+                    <div className="text-gray-400 text-xs">Online</div>
+                  </div>
+                  <div className="bg-gray-800 p-2 rounded">
+                    <div className="text-white text-lg font-bold">156</div>
+                    <div className="text-gray-400 text-xs">Pending KYC</div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="text-sm text-gray-400">Quick Actions</div>
+                  <Button size="sm" className="w-full bg-green-600 hover:bg-green-700">
+                    <Shield className="w-4 h-4 mr-2" />
+                    Process KYC Queue
+                  </Button>
+                  <Button size="sm" variant="outline" className="w-full">
+                    <Bell className="w-4 h-4 mr-2" />
+                    Send Notifications
+                  </Button>
+                  <Button size="sm" variant="outline" className="w-full">
+                    <Database className="w-4 h-4 mr-2" />
+                    User Analytics
+                  </Button>
+                </div>
+
+                <div className="border-t border-gray-700 pt-3">
+                  <div className="text-sm text-gray-400 mb-2">Recent Activity</div>
+                  <div className="space-y-1 text-xs">
+                    <div className="text-gray-300">New user registration: player123</div>
+                    <div className="text-gray-300">KYC approved: highroller99</div>
+                    <div className="text-gray-300">Account suspended: spammer01</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Edit Mode Overlay */}
       {isEditMode && (
         <div className="fixed inset-0 bg-blue-600/10 pointer-events-none z-40">
