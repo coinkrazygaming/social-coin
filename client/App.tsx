@@ -34,10 +34,10 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <div className="min-h-screen">
+          <div className="min-h-screen flex flex-col">
             <Ticker />
             <Header />
-            <main>
+            <main className="flex-1">
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/mini-games" element={<MiniGames />} />
@@ -62,6 +62,7 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
+            <Footer />
           </div>
         </AuthProvider>
       </BrowserRouter>
