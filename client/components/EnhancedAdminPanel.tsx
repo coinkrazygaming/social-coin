@@ -1265,6 +1265,16 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
             </Card>
           </TabsContent>
 
+          {/* User Management Tab */}
+          <TabsContent value="users" className="space-y-6">
+            <UserManagement />
+          </TabsContent>
+
+          {/* AI Employees Tab */}
+          <TabsContent value="ai-employees" className="space-y-6">
+            <AIEmployeeDashboard />
+          </TabsContent>
+
           {/* AI Control Tab */}
           <TabsContent value="ai" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
