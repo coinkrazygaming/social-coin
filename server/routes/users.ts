@@ -29,6 +29,22 @@ const adminUser: User = {
   kycStatus: "approved",
 };
 
+// Additional admin accounts
+const additionalAdmins = [
+  {
+    id: "admin-002",
+    email: "admin@coinkrazy.com",
+    username: "MainAdmin",
+    goldCoins: 1000000,
+    sweepsCoins: 1000,
+    isVerified: true,
+    role: "admin",
+    createdAt: new Date(),
+    lastLogin: new Date(),
+    kycStatus: "approved",
+  }
+];
+
 users.set(adminUser.id, adminUser);
 balances.set(adminUser.id, {
   userId: adminUser.id,
