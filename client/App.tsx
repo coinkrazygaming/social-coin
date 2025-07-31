@@ -17,14 +17,11 @@ import { AccountSettings } from "./pages/AccountSettings";
 import { StaffPanel } from "./pages/StaffPanel";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
-import { Ticker } from "./components/Ticker";
 import { PlaceholderPage } from "./components/PlaceholderPage";
 import { AuthProvider } from "./components/AuthContext";
 import Sportsbook from "./pages/Sportsbook";
 import EnhancedTableGames from "./pages/EnhancedTableGames";
 import { EnhancedAdminPanel } from "./components/EnhancedAdminPanel";
-import { AdminToolbar } from "./components/AdminToolbar";
-import { Settings } from "lucide-react";
 
 const queryClient = new QueryClient();
 
