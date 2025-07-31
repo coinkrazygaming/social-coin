@@ -110,6 +110,9 @@ export function AuthModal({
         confirmPassword: "",
         agreeToTerms: false,
       });
+      if (onAuthSuccess) {
+        onAuthSuccess();
+      }
     } else {
       setError("Registration failed. Email may already be in use.");
     }
