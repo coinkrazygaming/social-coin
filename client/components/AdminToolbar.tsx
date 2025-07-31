@@ -82,14 +82,16 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = '' }) =>
     switch (activeTab) {
       case 'chat':
         return <AdminChatWindow onUnreadChange={setUnreadMessages} />;
-      case 'settings':
-        return <AdminSettings />;
-      case 'docs':
-        return <DocumentationViewer />;
+      case 'tasks':
+        return <AITaskAssignmentSystem />;
       case 'reports':
         return <BugReportSystem onPendingChange={setPendingReports} />;
+      case 'docs':
+        return <DocumentationViewer />;
       case 'share':
         return <SocialMediaShare />;
+      case 'settings':
+        return <AdminSettings />;
       default:
         return null;
     }
