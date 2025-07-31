@@ -684,6 +684,473 @@ The Coin Krazy staff panel provides essential tools for managing player accounts
         attachments: [],
         relatedSections: ['staff-002', 'admin-001']
       },
+      {
+        id: 'staff-002',
+        title: 'Sweepstakes Staff Policies & Procedures',
+        category: 'staff',
+        content: `# Sweepstakes Staff Policies & Procedures
+
+## Legal Compliance Requirements
+
+### Sweepstakes Laws
+All staff must understand and comply with sweepstakes regulations:
+- No purchase necessary requirements
+- Proper entry methods and verification
+- Prize fulfillment obligations
+- Age and geographic restrictions
+
+### Regulatory Compliance
+- Monitor player eligibility daily
+- Verify age and location requirements
+- Maintain accurate redemption records
+- Report suspicious activity immediately
+
+## Staff Responsibilities
+
+### Customer Support Staff
+1. **Account Verification**
+   - Verify player identity using government-issued ID
+   - Check address verification documents
+   - Confirm banking information for redemptions
+   - Document all verification steps
+
+2. **Redemption Processing**
+   - Review withdrawal requests within 24 hours
+   - Verify minimum balance requirements (50 SC)
+   - Process approved redemptions within 3-5 business days
+   - Handle redemption disputes professionally
+
+3. **Player Education**
+   - Explain sweepstakes rules clearly
+   - Assist with redemption process
+   - Provide guidance on responsible gaming
+   - Answer questions about virtual currencies
+
+### Security Team
+1. **Fraud Prevention**
+   - Monitor for multiple accounts
+   - Detect suspicious betting patterns
+   - Verify payment method ownership
+   - Report fraud attempts to management
+
+2. **Compliance Monitoring**
+   - Daily age verification audits
+   - Geographic restriction enforcement
+   - Anti-money laundering checks
+   - Responsible gaming limit monitoring
+
+## Daily Procedures
+
+### Morning Checklist
+- [ ] Review overnight alerts and reports
+- [ ] Check pending verification requests
+- [ ] Process approved redemption requests
+- [ ] Update staff on any policy changes
+
+### Verification Process
+1. **Identity Verification**
+   - Government-issued photo ID required
+   - Name must match account registration
+   - Address verification with utility bill
+   - Phone number verification via SMS
+
+2. **Banking Verification**
+   - Bank account ownership verification
+   - Routing and account number validation
+   - No third-party accounts allowed
+   - Document verification method used
+
+### Redemption Processing
+1. **Eligibility Check**
+   - Minimum 50 SC balance confirmed
+   - Account in good standing
+   - No pending disputes or violations
+   - Geographic eligibility verified
+
+2. **Processing Steps**
+   - Generate redemption request ID
+   - Deduct SC from player balance
+   - Submit to payment processor
+   - Send confirmation to player
+
+## Quality Standards
+
+### Response Times
+- Account verification: 24 hours
+- Redemption requests: 24 hours processing
+- Customer inquiries: 4 hours maximum
+- Dispute resolution: 48 hours
+
+### Accuracy Requirements
+- 99.5% verification accuracy
+- Zero payment processing errors
+- 100% compliance with regulations
+- Complete documentation required
+
+## Communication Guidelines
+
+### Player Interactions
+- Always professional and courteous
+- Clear explanation of processes
+- Empathetic to player concerns
+- Escalate complex issues promptly
+
+### Internal Communications
+- Document all significant interactions
+- Use appropriate escalation channels
+- Share relevant information with team
+- Maintain confidentiality always
+
+## Prohibited Activities
+
+### Absolutely Forbidden
+- Sharing player personal information
+- Processing requests without verification
+- Accepting bribes or gifts from players
+- Modifying redemption amounts without authorization
+
+### Disciplinary Actions
+- First violation: Written warning
+- Second violation: Suspension
+- Third violation: Termination
+- Criminal activity: Immediate termination + legal action
+
+## Training & Certification
+
+### Required Certifications
+- Sweepstakes law compliance (annual)
+- Customer service excellence (biannual)
+- Security protocols (quarterly)
+- Platform technical training (ongoing)
+
+### Ongoing Education
+- Monthly compliance updates
+- Quarterly skill assessments
+- Annual policy review
+- Special training for new features
+
+## AI Employee Coordination
+
+### Task Assignment Process
+1. **AI Assessment**: LuckyAI evaluates task complexity and urgency
+2. **Skill Matching**: Tasks assigned based on staff specialization
+3. **Priority Queuing**: Urgent tasks escalated immediately
+4. **Progress Tracking**: AI monitors completion and quality
+
+### Collaboration Guidelines
+- Respond to AI task assignments within 30 minutes
+- Update task status regularly throughout process
+- Escalate to AI if additional resources needed
+- Provide feedback on AI recommendations
+
+### Performance Integration
+- AI tracks completion times and accuracy
+- Provides real-time performance feedback
+- Identifies training opportunities
+- Assists with workload balancing
+
+## Emergency Procedures
+
+### Security Incidents
+1. Immediately notify SecuritySentinel AI
+2. Document all details thoroughly
+3. Preserve evidence and logs
+4. Follow incident response protocol
+
+### System Outages
+1. Switch to backup verification procedures
+2. Notify players of delays immediately
+3. Maintain manual processing logs
+4. Resume normal operations when restored
+
+### Compliance Violations
+1. Stop all related processing immediately
+2. Notify ComplianceOfficer AI and management
+3. Preserve all relevant documentation
+4. Await guidance before proceeding
+
+## Job Duties by Role
+
+### Customer Support Representative
+- Process account verifications (20-30 per day)
+- Handle player inquiries (50-75 per day)
+- Assist with redemption requests
+- Maintain 95%+ satisfaction rating
+
+### Payment Processor
+- Review and approve redemptions (15-25 per day)
+- Verify banking information
+- Process payment transfers
+- Handle payment disputes
+
+### Compliance Specialist
+- Conduct daily compliance audits
+- Monitor regulatory changes
+- Train staff on new requirements
+- Maintain compliance documentation
+
+### Team Leader
+- Supervise 5-8 staff members
+- Monitor team performance metrics
+- Handle escalated customer issues
+- Coordinate with AI employee system`,
+        subcategories: ['compliance', 'procedures', 'training', 'ai-coordination'],
+        tags: ['staff-only', 'sweepstakes', 'compliance', 'required'],
+        visibility: 'staff_only',
+        lastUpdated: new Date('2024-01-14'),
+        updatedBy: 'compliance-team',
+        version: '3.0',
+        attachments: [],
+        relatedSections: ['staff-001', 'staff-003']
+      },
+      {
+        id: 'staff-003',
+        title: 'AI Employee Coordination & Task Management',
+        category: 'staff',
+        content: `# AI Employee Coordination & Task Management
+
+## AI Employee System Overview
+
+The Coin Krazy platform utilizes six specialized AI employees to assist staff with daily operations and provide 24/7 support across all casino functions.
+
+## Meet Your AI Team
+
+### LuckyAI - Operations Manager
+- **Role**: Master coordinator and meeting host
+- **Responsibilities**: Overall operations management, task assignment, performance reporting
+- **When to Contact**: General questions, status updates, team coordination
+- **Response Time**: Immediate
+
+### SecuritySentinel - Security Manager
+- **Role**: Platform security and fraud detection specialist
+- **Responsibilities**: Fraud monitoring, security alerts, compliance checks
+- **When to Contact**: Security concerns, suspicious activity, fraud reports
+- **Response Time**: Immediate for critical issues
+
+### GameMaster - Game Operations Specialist
+- **Role**: Game mechanics and player experience expert
+- **Responsibilities**: Game performance monitoring, RTP analysis, player behavior analysis
+- **When to Contact**: Game issues, performance problems, player complaints about games
+- **Response Time**: 5 minutes for game-breaking issues
+
+### CustomerCare - Customer Support Lead
+- **Role**: Player support and satisfaction specialist
+- **Responsibilities**: Support ticket routing, satisfaction monitoring, escalation management
+- **When to Contact**: Complex player issues, satisfaction concerns, support process questions
+- **Response Time**: 2 minutes during business hours
+
+### DataAnalyst - Analytics Specialist
+- **Role**: Data analysis and business intelligence expert
+- **Responsibilities**: Performance metrics, trend analysis, predictive modeling
+- **When to Contact**: Reporting needs, data questions, trend analysis requests
+- **Response Time**: 10 minutes for standard requests
+
+### ComplianceOfficer - Compliance Manager
+- **Role**: Regulatory compliance and legal oversight specialist
+- **Responsibilities**: Regulatory monitoring, policy enforcement, audit preparation
+- **When to Contact**: Compliance questions, regulatory concerns, policy clarifications
+- **Response Time**: Immediate for compliance issues
+
+## Task Assignment System
+
+### Automatic Task Assignment
+The AI system automatically assigns tasks based on:
+- Staff specialization and expertise
+- Current workload and availability
+- Task priority and complexity
+- Geographic and time zone considerations
+
+### Manual Task Requests
+Staff can request specific tasks or assistance:
+1. Use the admin chat window
+2. Tag the appropriate AI employee
+3. Describe the task clearly
+4. Specify urgency level
+5. Provide relevant context
+
+### Task Priority Levels
+- **Urgent**: Immediate attention required (compliance, security, system outages)
+- **High**: Complete within 1 hour (player disputes, payment issues)
+- **Medium**: Complete within 4 hours (account verifications, general support)
+- **Low**: Complete within 24 hours (documentation, routine maintenance)
+
+## Daily Coordination Workflow
+
+### Morning Briefing (9:00 AM)
+- LuckyAI provides overnight summary
+- AI employees report status and alerts
+- Task assignments for the day
+- Priority items and deadlines
+
+### Midday Check-in (1:00 PM)
+- Progress updates on morning tasks
+- Afternoon task assignments
+- Resource reallocation if needed
+- Player volume and support needs
+
+### Evening Wrap-up (6:00 PM)
+- Daily completion summary
+- Handoff to night shift
+- Outstanding issues documentation
+- Next day preparation
+
+### Real-time Coordination
+- Continuous monitoring and support
+- Immediate escalation for urgent issues
+- Dynamic task reassignment
+- Performance feedback and coaching
+
+## Communication Protocols
+
+### Chat System Usage
+1. **@LuckyAI** for general coordination and status updates
+2. **@SecuritySentinel** for security concerns with HIGH priority
+3. **@GameMaster** for game-related issues
+4. **@CustomerCare** for player satisfaction concerns
+5. **@DataAnalyst** for data and reporting requests
+6. **@ComplianceOfficer** for regulatory questions
+
+### Response Expectations
+- Acknowledge AI task assignments within 5 minutes
+- Provide status updates every 30 minutes for urgent tasks
+- Complete tasks within assigned timeframes
+- Report any blockers immediately
+
+### Escalation Procedures
+1. Try AI assistance first for standard issues
+2. Escalate to human supervisor for complex decisions
+3. Contact management for policy questions
+4. Emergency escalation for critical issues
+
+## Performance Monitoring
+
+### AI-Tracked Metrics
+- Task completion times
+- Quality scores
+- Customer satisfaction ratings
+- Escalation rates
+- Training needs identified
+
+### Feedback Integration
+- Real-time performance coaching
+- Skill development recommendations
+- Workload optimization
+- Process improvement suggestions
+
+### Recognition System
+- AI identifies top performers
+- Automated recognition messages
+- Performance trends tracking
+- Team achievement celebrations
+
+## Staff Responsibilities
+
+### Task Management
+- Check AI task queue every 15 minutes
+- Update task status in real-time
+- Ask for help when needed
+- Complete documentation requirements
+
+### Quality Standards
+- Follow AI recommendations
+- Maintain accuracy standards
+- Meet response time requirements
+- Provide excellent customer service
+
+### Collaboration
+- Share relevant information with AI
+- Provide feedback on AI suggestions
+- Participate in team coordination
+- Support fellow staff members
+
+## AI Assistance Examples
+
+### Account Verification
+- AI pre-screens documents
+- Flags potential issues
+- Provides verification checklist
+- Tracks completion status
+
+### Payment Processing
+- AI verifies eligibility
+- Calculates processing fees
+- Generates confirmation codes
+- Monitors for fraud indicators
+
+### Customer Support
+- AI suggests response templates
+- Provides player history context
+- Recommends escalation when needed
+- Tracks satisfaction scores
+
+### Compliance Monitoring
+- AI flags regulatory concerns
+- Provides compliance checklists
+- Monitors deadline adherence
+- Generates audit reports
+
+## Training & Support
+
+### AI Training Modules
+- Individual AI employee specializations
+- Communication best practices
+- Task management efficiency
+- Quality improvement techniques
+
+### Ongoing Support
+- Daily coaching from AI employees
+- Weekly performance reviews
+- Monthly skill assessments
+- Quarterly training updates
+
+### Career Development
+- AI identifies promotion opportunities
+- Skill gap analysis and training plans
+- Cross-training recommendations
+- Leadership development paths
+
+## Troubleshooting
+
+### Common Issues
+- AI not responding: Check chat connection
+- Task not assigned: Contact LuckyAI
+- Unclear instructions: Ask for clarification
+- System errors: Report to technical support
+
+### Emergency Procedures
+- System failure: Revert to manual processes
+- AI unavailable: Contact human supervisor
+- Critical errors: Escalate immediately
+- Data concerns: Stop processing and report
+
+## Best Practices
+
+### Effective Communication
+- Be specific and clear in requests
+- Provide complete context
+- Ask follow-up questions
+- Confirm understanding
+
+### Efficiency Tips
+- Use AI suggestions and templates
+- Batch similar tasks together
+- Prioritize urgent items first
+- Document lessons learned
+
+### Professional Development
+- Learn from AI feedback
+- Practice new skills regularly
+- Seek additional training
+- Share knowledge with team`,
+        subcategories: ['ai-coordination', 'task-management', 'communication', 'training'],
+        tags: ['staff-only', 'ai-employees', 'coordination', 'required'],
+        visibility: 'staff_only',
+        lastUpdated: new Date('2024-01-15'),
+        updatedBy: 'ai-team',
+        version: '1.0',
+        attachments: [],
+        relatedSections: ['staff-001', 'staff-002', 'admin-001']
+      },
       // Admin Documentation
       {
         id: 'admin-001',
