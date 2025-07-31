@@ -261,6 +261,22 @@ export class DatabaseService {
 
   static async getUserWallet(userId: string): Promise<Wallet | null> {
     try {
+      if (!supabase) {
+        console.warn("Supabase client not available - returning mock wallet");
+        return {
+          id: `wallet_${userId}`,
+          user_id: userId,
+          gold_coins: 10000,
+          sweeps_coins: 10,
+          total_deposits: 0,
+          total_withdrawals: 0,
+          pending_withdrawals: 0,
+          last_transaction: new Date().toISOString(),
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+      }
+
       const { data, error } = await supabase
         .from("wallets")
         .select("*")
