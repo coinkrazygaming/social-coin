@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { MiniGameResult, MiniGameConfig, CooldownInfo } from "@shared/miniGameTypes";
+import { MiniGameResult, MiniGameConfig, CooldownInfo } from "../../shared/miniGameTypes";
 
 // In-memory storage for demo purposes
 // In production, this would be stored in a database
