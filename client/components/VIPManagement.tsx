@@ -1029,7 +1029,7 @@ export const VIPManagement: React.FC = () => {
             </div>
 
             <Button onClick={() => setShowVIPCalculator(true)} className="bg-blue-600 hover:bg-blue-700">
-              <Calculator className="h-4 w-4 mr-2" />
+              <Target className="h-4 w-4 mr-2" />
               Price Calculator
             </Button>
           </div>
