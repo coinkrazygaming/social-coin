@@ -93,6 +93,9 @@ export function Header() {
               {/* Notification Center */}
               <NotificationCenter />
 
+              {/* Admin Alerts - Only visible to admins */}
+              <AdminAlerts />
+
               {/* Buy Coins Button */}
               <Button
                 size="sm"
