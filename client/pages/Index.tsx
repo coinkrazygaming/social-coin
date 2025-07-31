@@ -131,6 +131,7 @@ export default function Index() {
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 size="lg"
+                onClick={() => setShowWelcomeBonus(true)}
                 className="bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground hover:from-yellow-400 hover:to-gold casino-glow text-lg px-8 py-4"
               >
                 <Gift className="h-5 w-5 mr-2" />
