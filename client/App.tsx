@@ -34,8 +34,9 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <div className="min-h-screen flex flex-col">
+            <SmartTickerSystem enableJoseyAI={true} />
             <Header />
-            <main className="flex-1">
+            <main className="flex-1 pt-16">
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/mini-games" element={<MiniGames />} />
