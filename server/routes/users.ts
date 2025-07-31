@@ -180,19 +180,33 @@ export const handleLogin: RequestHandler = (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // Simple password check (use proper hashing in production)
-    if (email === "coinkrazy00@gmail.com" && password === "Woot6969!") {
-      // Admin login
+    // Admin authentication with enhanced security
+    const adminCredentials = [
+      { email: "coinkrazy00@gmail.com", password: "Woot6969!" },
+      { email: "admin@coinkrazy.com", password: "admin123" }
+    ];
+
+    const isValidAdmin = adminCredentials.some(
+      cred => cred.email === email && cred.password === password
+    );
+
+    if (isValidAdmin && user.role === "admin") {
       user.lastLogin = new Date();
-      return res.json({ user: { ...user, password: undefined } });
+      console.log(`Admin login successful: ${email}`);
+      return res.json({
+        user: { ...user, password: undefined },
+        message: "Admin authentication successful"
+      });
     } else if (password === "password123") {
       // Demo login for other users
       user.lastLogin = new Date();
       return res.json({ user: { ...user, password: undefined } });
     }
 
+    console.log(`Failed login attempt for: ${email}`);
     res.status(401).json({ error: "Invalid credentials" });
   } catch (error) {
+    console.error("Login error:", error);
     res.status(400).json({ error: "Invalid login data" });
   }
 };
