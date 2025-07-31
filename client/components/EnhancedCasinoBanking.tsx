@@ -14,12 +14,7 @@ import {
   SelectValue,
 } from "./ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { useAuth } from "./AuthContext";
 import {
   DollarSign,
@@ -61,7 +56,15 @@ interface BankingTransaction {
   id: string;
   userId: string;
   username: string;
-  type: "deposit" | "withdrawal" | "bonus" | "refund" | "admin_credit" | "admin_debit" | "jackpot" | "promotion";
+  type:
+    | "deposit"
+    | "withdrawal"
+    | "bonus"
+    | "refund"
+    | "admin_credit"
+    | "admin_debit"
+    | "jackpot"
+    | "promotion";
   status: "pending" | "processing" | "completed" | "failed" | "cancelled";
   amount: number;
   currency: "USD" | "GC" | "SC";
@@ -168,7 +171,8 @@ export const EnhancedCasinoBanking: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [showEmployeeModal, setShowEmployeeModal] = useState(false);
-  const [selectedEmployee, setSelectedEmployee] = useState<EmployeeRecord | null>(null);
+  const [selectedEmployee, setSelectedEmployee] =
+    useState<EmployeeRecord | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [dateFilter, setDateFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -187,10 +191,10 @@ export const EnhancedCasinoBanking: React.FC = () => {
 
   const loadBankingData = async () => {
     setIsLoading(true);
-    
+
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     const mockTransactions: BankingTransaction[] = [
       {
         id: "txn_001",
@@ -218,7 +222,7 @@ export const EnhancedCasinoBanking: React.FC = () => {
         username: "LuckySpinner",
         type: "withdrawal",
         status: "pending",
-        amount: 125.50,
+        amount: 125.5,
         currency: "USD",
         method: "bank_transfer",
         reference: "WD-98765432109876543210",
@@ -278,7 +282,7 @@ export const EnhancedCasinoBanking: React.FC = () => {
         main: 156789.45,
         escrow: 23456.78,
         fees: 8901.23,
-        bonusPool: 45678.90,
+        bonusPool: 45678.9,
       },
       paymentMethods: {
         paypal: { enabled: true, transactions: 342, volume: 23456.78 },
@@ -341,7 +345,7 @@ export const EnhancedCasinoBanking: React.FC = () => {
           overtime: 4,
           bonus: 1000,
           deductions: 850,
-          netPay: 4785.50,
+          netPay: 4785.5,
           lastPayDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
           nextPayDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
         },
@@ -370,7 +374,7 @@ export const EnhancedCasinoBanking: React.FC = () => {
           overtime: 0,
           bonus: 500,
           deductions: 720,
-          netPay: 3895.20,
+          netPay: 3895.2,
           lastPayDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
           nextPayDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
         },
@@ -427,7 +431,11 @@ export const EnhancedCasinoBanking: React.FC = () => {
   };
 
   const handleBankTransfer = async () => {
-    if (!transferForm.fromAccount || !transferForm.toAccount || !transferForm.amount) {
+    if (
+      !transferForm.fromAccount ||
+      !transferForm.toAccount ||
+      !transferForm.amount
+    ) {
       alert("Please fill in all required fields");
       return;
     }
@@ -449,7 +457,7 @@ export const EnhancedCasinoBanking: React.FC = () => {
       },
     };
 
-    setBankTransfers(prev => [newTransfer, ...prev]);
+    setBankTransfers((prev) => [newTransfer, ...prev]);
     setShowTransferModal(false);
     setTransferForm({
       fromAccount: "",
@@ -460,22 +468,22 @@ export const EnhancedCasinoBanking: React.FC = () => {
 
     // Simulate processing
     setTimeout(() => {
-      setBankTransfers(prev => 
-        prev.map(transfer => 
-          transfer.id === newTransfer.id 
+      setBankTransfers((prev) =>
+        prev.map((transfer) =>
+          transfer.id === newTransfer.id
             ? { ...transfer, status: "processing" as const }
-            : transfer
-        )
+            : transfer,
+        ),
       );
     }, 2000);
 
     setTimeout(() => {
-      setBankTransfers(prev => 
-        prev.map(transfer => 
-          transfer.id === newTransfer.id 
+      setBankTransfers((prev) =>
+        prev.map((transfer) =>
+          transfer.id === newTransfer.id
             ? { ...transfer, status: "completed" as const }
-            : transfer
-        )
+            : transfer,
+        ),
       );
     }, 5000);
   };
@@ -483,38 +491,56 @@ export const EnhancedCasinoBanking: React.FC = () => {
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       pending: { color: "bg-yellow-500/20 text-yellow-400", label: "Pending" },
-      processing: { color: "bg-blue-500/20 text-blue-400", label: "Processing" },
-      completed: { color: "bg-green-500/20 text-green-400", label: "Completed" },
+      processing: {
+        color: "bg-blue-500/20 text-blue-400",
+        label: "Processing",
+      },
+      completed: {
+        color: "bg-green-500/20 text-green-400",
+        label: "Completed",
+      },
       failed: { color: "bg-red-500/20 text-red-400", label: "Failed" },
       cancelled: { color: "bg-gray-500/20 text-gray-400", label: "Cancelled" },
     };
 
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
+    const config =
+      statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
     return <Badge className={config.color}>{config.label}</Badge>;
   };
 
   const getMethodIcon = (method: string) => {
     switch (method) {
-      case "paypal": return <CreditCard className="w-4 h-4 text-blue-500" />;
-      case "stripe": return <CreditCard className="w-4 h-4 text-purple-500" />;
-      case "google_pay": return <Wallet className="w-4 h-4 text-green-500" />;
-      case "bank_transfer": return <Building className="w-4 h-4 text-gray-500" />;
-      case "admin_action": return <Shield className="w-4 h-4 text-red-500" />;
-      default: return <DollarSign className="w-4 h-4 text-gray-500" />;
+      case "paypal":
+        return <CreditCard className="w-4 h-4 text-blue-500" />;
+      case "stripe":
+        return <CreditCard className="w-4 h-4 text-purple-500" />;
+      case "google_pay":
+        return <Wallet className="w-4 h-4 text-green-500" />;
+      case "bank_transfer":
+        return <Building className="w-4 h-4 text-gray-500" />;
+      case "admin_action":
+        return <Shield className="w-4 h-4 text-red-500" />;
+      default:
+        return <DollarSign className="w-4 h-4 text-gray-500" />;
     }
   };
 
-  const filteredTransactions = transactions.filter(transaction => {
-    const matchesSearch = transaction.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         transaction.reference.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === "all" || transaction.status === statusFilter;
+  const filteredTransactions = transactions.filter((transaction) => {
+    const matchesSearch =
+      transaction.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      transaction.reference.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" || transaction.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
-  const filteredEmployees = employees.filter(employee => {
-    const matchesSearch = `${employee.firstName} ${employee.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         employee.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         employee.department.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredEmployees = employees.filter((employee) => {
+    const matchesSearch =
+      `${employee.firstName} ${employee.lastName}`
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      employee.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      employee.department.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesSearch;
   });
 
@@ -523,8 +549,12 @@ export const EnhancedCasinoBanking: React.FC = () => {
       <Card className="bg-red-500/10 border-red-500/20">
         <CardContent className="p-6 text-center">
           <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-red-400 mb-2">Access Denied</h3>
-          <p className="text-gray-400">Only administrators can access the Casino Banking panel.</p>
+          <h3 className="text-lg font-semibold text-red-400 mb-2">
+            Access Denied
+          </h3>
+          <p className="text-gray-400">
+            Only administrators can access the Casino Banking panel.
+          </p>
         </CardContent>
       </Card>
     );
@@ -535,10 +565,15 @@ export const EnhancedCasinoBanking: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-white">Casino Banking</h2>
-          <p className="text-gray-400">Comprehensive banking and financial management</p>
+          <p className="text-gray-400">
+            Comprehensive banking and financial management
+          </p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={() => setShowTransferModal(true)} className="bg-blue-600 hover:bg-blue-700">
+          <Button
+            onClick={() => setShowTransferModal(true)}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
             <Send className="w-4 h-4 mr-2" />
             Bank Transfer
           </Button>
@@ -565,41 +600,63 @@ export const EnhancedCasinoBanking: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <Card className="bg-gradient-to-br from-green-500/10 to-green-600/10 border-green-500/20">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-green-400">Main Account</CardTitle>
+                    <CardTitle className="text-sm font-medium text-green-400">
+                      Main Account
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-white">${stats.accountBalance.main.toLocaleString()}</div>
-                    <p className="text-xs text-green-400 mt-1">Operating funds</p>
+                    <div className="text-2xl font-bold text-white">
+                      ${stats.accountBalance.main.toLocaleString()}
+                    </div>
+                    <p className="text-xs text-green-400 mt-1">
+                      Operating funds
+                    </p>
                   </CardContent>
                 </Card>
 
                 <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-blue-500/20">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-blue-400">Escrow Account</CardTitle>
+                    <CardTitle className="text-sm font-medium text-blue-400">
+                      Escrow Account
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-white">${stats.accountBalance.escrow.toLocaleString()}</div>
+                    <div className="text-2xl font-bold text-white">
+                      ${stats.accountBalance.escrow.toLocaleString()}
+                    </div>
                     <p className="text-xs text-blue-400 mt-1">Player funds</p>
                   </CardContent>
                 </Card>
 
                 <Card className="bg-gradient-to-br from-purple-500/10 to-purple-600/10 border-purple-500/20">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-purple-400">Fees Collected</CardTitle>
+                    <CardTitle className="text-sm font-medium text-purple-400">
+                      Fees Collected
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-white">${stats.accountBalance.fees.toLocaleString()}</div>
-                    <p className="text-xs text-purple-400 mt-1">Processing fees</p>
+                    <div className="text-2xl font-bold text-white">
+                      ${stats.accountBalance.fees.toLocaleString()}
+                    </div>
+                    <p className="text-xs text-purple-400 mt-1">
+                      Processing fees
+                    </p>
                   </CardContent>
                 </Card>
 
                 <Card className="bg-gradient-to-br from-yellow-500/10 to-yellow-600/10 border-yellow-500/20">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-yellow-400">Bonus Pool</CardTitle>
+                    <CardTitle className="text-sm font-medium text-yellow-400">
+                      Bonus Pool
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-white">${stats.accountBalance.bonusPool.toLocaleString()}</div>
-                    <p className="text-xs text-yellow-400 mt-1">Promotional funds</p>
+                    <div className="text-2xl font-bold text-white">
+                      ${stats.accountBalance.bonusPool.toLocaleString()}
+                    </div>
+                    <p className="text-xs text-yellow-400 mt-1">
+                      Promotional funds
+                    </p>
                   </CardContent>
                 </Card>
               </div>
@@ -608,10 +665,14 @@ export const EnhancedCasinoBanking: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-gray-400">Total Volume</CardTitle>
+                    <CardTitle className="text-sm font-medium text-gray-400">
+                      Total Volume
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-white">${stats.totalVolume.toLocaleString()}</div>
+                    <div className="text-2xl font-bold text-white">
+                      ${stats.totalVolume.toLocaleString()}
+                    </div>
                     <p className="text-xs text-green-400 mt-1">
                       <TrendingUp className="w-4 h-4 inline mr-1" />
                       +12.5% from last month
@@ -621,10 +682,14 @@ export const EnhancedCasinoBanking: React.FC = () => {
 
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-gray-400">Success Rate</CardTitle>
+                    <CardTitle className="text-sm font-medium text-gray-400">
+                      Success Rate
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-white">{stats.successRate}%</div>
+                    <div className="text-2xl font-bold text-white">
+                      {stats.successRate}%
+                    </div>
                     <p className="text-xs text-green-400 mt-1">
                       <CheckCircle className="w-4 h-4 inline mr-1" />
                       Excellent performance
@@ -634,10 +699,14 @@ export const EnhancedCasinoBanking: React.FC = () => {
 
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-gray-400">Pending Transactions</CardTitle>
+                    <CardTitle className="text-sm font-medium text-gray-400">
+                      Pending Transactions
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-white">{stats.pendingTransactions}</div>
+                    <div className="text-2xl font-bold text-white">
+                      {stats.pendingTransactions}
+                    </div>
                     <p className="text-xs text-yellow-400 mt-1">
                       <Clock className="w-4 h-4 inline mr-1" />
                       Awaiting processing
@@ -649,52 +718,114 @@ export const EnhancedCasinoBanking: React.FC = () => {
               {/* Payment Methods Status */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-white">Payment Methods Status</CardTitle>
+                  <CardTitle className="text-white">
+                    Payment Methods Status
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="bg-gray-800/50 p-4 rounded-lg">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-300">PayPal</span>
-                        <Badge className={stats.paymentMethods.paypal.enabled ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}>
-                          {stats.paymentMethods.paypal.enabled ? "Active" : "Inactive"}
+                        <span className="text-sm font-medium text-gray-300">
+                          PayPal
+                        </span>
+                        <Badge
+                          className={
+                            stats.paymentMethods.paypal.enabled
+                              ? "bg-green-500/20 text-green-400"
+                              : "bg-red-500/20 text-red-400"
+                          }
+                        >
+                          {stats.paymentMethods.paypal.enabled
+                            ? "Active"
+                            : "Inactive"}
                         </Badge>
                       </div>
-                      <div className="text-lg font-bold text-white">${stats.paymentMethods.paypal.volume.toLocaleString()}</div>
-                      <div className="text-xs text-gray-400">{stats.paymentMethods.paypal.transactions} transactions</div>
+                      <div className="text-lg font-bold text-white">
+                        ${stats.paymentMethods.paypal.volume.toLocaleString()}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {stats.paymentMethods.paypal.transactions} transactions
+                      </div>
                     </div>
 
                     <div className="bg-gray-800/50 p-4 rounded-lg">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-300">Stripe</span>
-                        <Badge className={stats.paymentMethods.stripe.enabled ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}>
-                          {stats.paymentMethods.stripe.enabled ? "Active" : "Inactive"}
+                        <span className="text-sm font-medium text-gray-300">
+                          Stripe
+                        </span>
+                        <Badge
+                          className={
+                            stats.paymentMethods.stripe.enabled
+                              ? "bg-green-500/20 text-green-400"
+                              : "bg-red-500/20 text-red-400"
+                          }
+                        >
+                          {stats.paymentMethods.stripe.enabled
+                            ? "Active"
+                            : "Inactive"}
                         </Badge>
                       </div>
-                      <div className="text-lg font-bold text-white">${stats.paymentMethods.stripe.volume.toLocaleString()}</div>
-                      <div className="text-xs text-gray-400">{stats.paymentMethods.stripe.transactions} transactions</div>
+                      <div className="text-lg font-bold text-white">
+                        ${stats.paymentMethods.stripe.volume.toLocaleString()}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {stats.paymentMethods.stripe.transactions} transactions
+                      </div>
                     </div>
 
                     <div className="bg-gray-800/50 p-4 rounded-lg">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-300">Google Pay</span>
-                        <Badge className={stats.paymentMethods.googlePay.enabled ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}>
-                          {stats.paymentMethods.googlePay.enabled ? "Active" : "Inactive"}
+                        <span className="text-sm font-medium text-gray-300">
+                          Google Pay
+                        </span>
+                        <Badge
+                          className={
+                            stats.paymentMethods.googlePay.enabled
+                              ? "bg-green-500/20 text-green-400"
+                              : "bg-red-500/20 text-red-400"
+                          }
+                        >
+                          {stats.paymentMethods.googlePay.enabled
+                            ? "Active"
+                            : "Inactive"}
                         </Badge>
                       </div>
-                      <div className="text-lg font-bold text-white">${stats.paymentMethods.googlePay.volume.toLocaleString()}</div>
-                      <div className="text-xs text-gray-400">{stats.paymentMethods.googlePay.transactions} transactions</div>
+                      <div className="text-lg font-bold text-white">
+                        $
+                        {stats.paymentMethods.googlePay.volume.toLocaleString()}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {stats.paymentMethods.googlePay.transactions}{" "}
+                        transactions
+                      </div>
                     </div>
 
                     <div className="bg-gray-800/50 p-4 rounded-lg">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-300">Bank Transfer</span>
-                        <Badge className={stats.paymentMethods.bankTransfer.enabled ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}>
-                          {stats.paymentMethods.bankTransfer.enabled ? "Active" : "Inactive"}
+                        <span className="text-sm font-medium text-gray-300">
+                          Bank Transfer
+                        </span>
+                        <Badge
+                          className={
+                            stats.paymentMethods.bankTransfer.enabled
+                              ? "bg-green-500/20 text-green-400"
+                              : "bg-red-500/20 text-red-400"
+                          }
+                        >
+                          {stats.paymentMethods.bankTransfer.enabled
+                            ? "Active"
+                            : "Inactive"}
                         </Badge>
                       </div>
-                      <div className="text-lg font-bold text-white">${stats.paymentMethods.bankTransfer.volume.toLocaleString()}</div>
-                      <div className="text-xs text-gray-400">{stats.paymentMethods.bankTransfer.transactions} transactions</div>
+                      <div className="text-lg font-bold text-white">
+                        $
+                        {stats.paymentMethods.bankTransfer.volume.toLocaleString()}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {stats.paymentMethods.bankTransfer.transactions}{" "}
+                        transactions
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -766,22 +897,36 @@ export const EnhancedCasinoBanking: React.FC = () => {
             <CardContent>
               <div className="space-y-4">
                 {filteredTransactions.map((transaction) => (
-                  <div key={transaction.id} className="bg-gray-800/50 p-4 rounded-lg">
+                  <div
+                    key={transaction.id}
+                    className="bg-gray-800/50 p-4 rounded-lg"
+                  >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         {getMethodIcon(transaction.method)}
                         <div>
-                          <div className="font-medium text-white">{transaction.username}</div>
-                          <div className="text-sm text-gray-400">{transaction.description}</div>
-                          <div className="text-xs text-gray-500">{transaction.reference}</div>
+                          <div className="font-medium text-white">
+                            {transaction.username}
+                          </div>
+                          <div className="text-sm text-gray-400">
+                            {transaction.description}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {transaction.reference}
+                          </div>
                         </div>
                       </div>
                       <div className="text-right">
                         <div className="flex items-center gap-2">
-                          <span className={`font-bold ${
-                            transaction.type === "deposit" ? "text-green-400" : "text-red-400"
-                          }`}>
-                            {transaction.type === "deposit" ? "+" : "-"}${transaction.amount}
+                          <span
+                            className={`font-bold ${
+                              transaction.type === "deposit"
+                                ? "text-green-400"
+                                : "text-red-400"
+                            }`}
+                          >
+                            {transaction.type === "deposit" ? "+" : "-"}$
+                            {transaction.amount}
                           </span>
                           {getStatusBadge(transaction.status)}
                         </div>
@@ -811,19 +956,27 @@ export const EnhancedCasinoBanking: React.FC = () => {
             <CardContent>
               <div className="space-y-4">
                 {bankTransfers.map((transfer) => (
-                  <div key={transfer.id} className="bg-gray-800/50 p-4 rounded-lg">
+                  <div
+                    key={transfer.id}
+                    className="bg-gray-800/50 p-4 rounded-lg"
+                  >
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="font-medium text-white">
                           {transfer.fromAccount} → {transfer.toAccount}
                         </div>
-                        <div className="text-sm text-gray-400">{transfer.description}</div>
+                        <div className="text-sm text-gray-400">
+                          {transfer.description}
+                        </div>
                         <div className="text-xs text-gray-500">
-                          Initiated by {transfer.initiatedBy} • {transfer.timestamp.toLocaleString()}
+                          Initiated by {transfer.initiatedBy} •{" "}
+                          {transfer.timestamp.toLocaleString()}
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="font-bold text-white">${transfer.amount.toLocaleString()}</div>
+                        <div className="font-bold text-white">
+                          ${transfer.amount.toLocaleString()}
+                        </div>
                         {getStatusBadge(transfer.status)}
                         <div className="text-xs text-gray-500 mt-1">
                           {transfer.bankDetails.bankName}
@@ -840,37 +993,57 @@ export const EnhancedCasinoBanking: React.FC = () => {
         <TabsContent value="payments" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-white">Payment Gateway Settings</CardTitle>
+              <CardTitle className="text-white">
+                Payment Gateway Settings
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-gray-800/50 p-4 rounded-lg space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-medium text-white">PayPal Integration</h3>
+                    <h3 className="font-medium text-white">
+                      PayPal Integration
+                    </h3>
                     <Switch defaultChecked />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-gray-300">Client ID</Label>
-                    <Input placeholder="PayPal Client ID" className="bg-gray-700 border-gray-600 text-white" />
+                    <Input
+                      placeholder="PayPal Client ID"
+                      className="bg-gray-700 border-gray-600 text-white"
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-gray-300">Client Secret</Label>
-                    <Input type="password" placeholder="PayPal Client Secret" className="bg-gray-700 border-gray-600 text-white" />
+                    <Input
+                      type="password"
+                      placeholder="PayPal Client Secret"
+                      className="bg-gray-700 border-gray-600 text-white"
+                    />
                   </div>
                 </div>
 
                 <div className="bg-gray-800/50 p-4 rounded-lg space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-medium text-white">Stripe Integration</h3>
+                    <h3 className="font-medium text-white">
+                      Stripe Integration
+                    </h3>
                     <Switch defaultChecked />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-gray-300">Publishable Key</Label>
-                    <Input placeholder="Stripe Publishable Key" className="bg-gray-700 border-gray-600 text-white" />
+                    <Input
+                      placeholder="Stripe Publishable Key"
+                      className="bg-gray-700 border-gray-600 text-white"
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-gray-300">Secret Key</Label>
-                    <Input type="password" placeholder="Stripe Secret Key" className="bg-gray-700 border-gray-600 text-white" />
+                    <Input
+                      type="password"
+                      placeholder="Stripe Secret Key"
+                      className="bg-gray-700 border-gray-600 text-white"
+                    />
                   </div>
                 </div>
 
@@ -881,11 +1054,17 @@ export const EnhancedCasinoBanking: React.FC = () => {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-gray-300">Merchant ID</Label>
-                    <Input placeholder="Google Pay Merchant ID" className="bg-gray-700 border-gray-600 text-white" />
+                    <Input
+                      placeholder="Google Pay Merchant ID"
+                      className="bg-gray-700 border-gray-600 text-white"
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-gray-300">Gateway ID</Label>
-                    <Input placeholder="Google Pay Gateway ID" className="bg-gray-700 border-gray-600 text-white" />
+                    <Input
+                      placeholder="Google Pay Gateway ID"
+                      className="bg-gray-700 border-gray-600 text-white"
+                    />
                   </div>
                 </div>
 
@@ -896,11 +1075,17 @@ export const EnhancedCasinoBanking: React.FC = () => {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-gray-300">Routing Number</Label>
-                    <Input placeholder="Bank Routing Number" className="bg-gray-700 border-gray-600 text-white" />
+                    <Input
+                      placeholder="Bank Routing Number"
+                      className="bg-gray-700 border-gray-600 text-white"
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-gray-300">Account Number</Label>
-                    <Input placeholder="Bank Account Number" className="bg-gray-700 border-gray-600 text-white" />
+                    <Input
+                      placeholder="Bank Account Number"
+                      className="bg-gray-700 border-gray-600 text-white"
+                    />
                   </div>
                 </div>
               </div>
@@ -920,21 +1105,32 @@ export const EnhancedCasinoBanking: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-400">Total Employees</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-400">
+                  Total Employees
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-white">{employees.length}</div>
-                <p className="text-xs text-green-400 mt-1">Active staff members</p>
+                <div className="text-2xl font-bold text-white">
+                  {employees.length}
+                </div>
+                <p className="text-xs text-green-400 mt-1">
+                  Active staff members
+                </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-400">Monthly Payroll</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-400">
+                  Monthly Payroll
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-white">
-                  ${employees.reduce((sum, emp) => sum + emp.payrollInfo.netPay, 0).toLocaleString()}
+                  $
+                  {employees
+                    .reduce((sum, emp) => sum + emp.payrollInfo.netPay, 0)
+                    .toLocaleString()}
                 </div>
                 <p className="text-xs text-blue-400 mt-1">Bi-weekly period</p>
               </CardContent>
@@ -942,11 +1138,17 @@ export const EnhancedCasinoBanking: React.FC = () => {
 
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-400">Total Overtime</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-400">
+                  Total Overtime
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-white">
-                  {employees.reduce((sum, emp) => sum + emp.payrollInfo.overtime, 0)} hrs
+                  {employees.reduce(
+                    (sum, emp) => sum + emp.payrollInfo.overtime,
+                    0,
+                  )}{" "}
+                  hrs
                 </div>
                 <p className="text-xs text-yellow-400 mt-1">This period</p>
               </CardContent>
@@ -954,13 +1156,20 @@ export const EnhancedCasinoBanking: React.FC = () => {
 
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-400">Bonus Pool</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-400">
+                  Bonus Pool
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-white">
-                  ${employees.reduce((sum, emp) => sum + emp.payrollInfo.bonus, 0).toLocaleString()}
+                  $
+                  {employees
+                    .reduce((sum, emp) => sum + emp.payrollInfo.bonus, 0)
+                    .toLocaleString()}
                 </div>
-                <p className="text-xs text-purple-400 mt-1">Performance bonuses</p>
+                <p className="text-xs text-purple-400 mt-1">
+                  Performance bonuses
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -983,7 +1192,10 @@ export const EnhancedCasinoBanking: React.FC = () => {
                     />
                   </div>
                 </div>
-                <Button onClick={() => setShowEmployeeModal(true)} className="bg-green-600 hover:bg-green-700">
+                <Button
+                  onClick={() => setShowEmployeeModal(true)}
+                  className="bg-green-600 hover:bg-green-700"
+                >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Employee
                 </Button>
@@ -999,7 +1211,10 @@ export const EnhancedCasinoBanking: React.FC = () => {
             <CardContent>
               <div className="space-y-4">
                 {filteredEmployees.map((employee) => (
-                  <div key={employee.id} className="bg-gray-800/50 p-4 rounded-lg">
+                  <div
+                    key={employee.id}
+                    className="bg-gray-800/50 p-4 rounded-lg"
+                  >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
@@ -1013,15 +1228,21 @@ export const EnhancedCasinoBanking: React.FC = () => {
                             {employee.position} • {employee.department}
                           </div>
                           <div className="text-xs text-gray-500">
-                            ID: {employee.employeeId} • Hired: {employee.hireDate.toLocaleDateString()}
+                            ID: {employee.employeeId} • Hired:{" "}
+                            {employee.hireDate.toLocaleDateString()}
                           </div>
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="font-bold text-white">${employee.payrollInfo.netPay.toLocaleString()}</div>
-                        <div className="text-sm text-gray-400">Net Pay (Bi-weekly)</div>
+                        <div className="font-bold text-white">
+                          ${employee.payrollInfo.netPay.toLocaleString()}
+                        </div>
+                        <div className="text-sm text-gray-400">
+                          Net Pay (Bi-weekly)
+                        </div>
                         <div className="text-xs text-gray-500">
-                          {employee.payrollInfo.hoursWorked}h regular + {employee.payrollInfo.overtime}h OT
+                          {employee.payrollInfo.hoursWorked}h regular +{" "}
+                          {employee.payrollInfo.overtime}h OT
                         </div>
                         <div className="flex gap-2 mt-2">
                           <Button
@@ -1052,14 +1273,19 @@ export const EnhancedCasinoBanking: React.FC = () => {
       <Dialog open={showTransferModal} onOpenChange={setShowTransferModal}>
         <DialogContent className="bg-gray-900 border-gray-700">
           <DialogHeader>
-            <DialogTitle className="text-white">Initiate Bank Transfer</DialogTitle>
+            <DialogTitle className="text-white">
+              Initiate Bank Transfer
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
               <Label className="text-gray-300">From Account</Label>
-              <Select value={transferForm.fromAccount} onValueChange={(value) => 
-                setTransferForm(prev => ({ ...prev, fromAccount: value }))
-              }>
+              <Select
+                value={transferForm.fromAccount}
+                onValueChange={(value) =>
+                  setTransferForm((prev) => ({ ...prev, fromAccount: value }))
+                }
+              >
                 <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
                   <SelectValue placeholder="Select source account" />
                 </SelectTrigger>
@@ -1073,16 +1299,23 @@ export const EnhancedCasinoBanking: React.FC = () => {
 
             <div className="space-y-2">
               <Label className="text-gray-300">To Account</Label>
-              <Select value={transferForm.toAccount} onValueChange={(value) => 
-                setTransferForm(prev => ({ ...prev, toAccount: value }))
-              }>
+              <Select
+                value={transferForm.toAccount}
+                onValueChange={(value) =>
+                  setTransferForm((prev) => ({ ...prev, toAccount: value }))
+                }
+              >
                 <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
                   <SelectValue placeholder="Select destination account" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="payroll">Employee Payroll Account</SelectItem>
+                  <SelectItem value="payroll">
+                    Employee Payroll Account
+                  </SelectItem>
                   <SelectItem value="prizes">Prize Payout Account</SelectItem>
-                  <SelectItem value="vendors">Vendor Payment Account</SelectItem>
+                  <SelectItem value="vendors">
+                    Vendor Payment Account
+                  </SelectItem>
                   <SelectItem value="taxes">Tax Withholding Account</SelectItem>
                 </SelectContent>
               </Select>
@@ -1093,7 +1326,12 @@ export const EnhancedCasinoBanking: React.FC = () => {
               <Input
                 type="number"
                 value={transferForm.amount}
-                onChange={(e) => setTransferForm(prev => ({ ...prev, amount: e.target.value }))}
+                onChange={(e) =>
+                  setTransferForm((prev) => ({
+                    ...prev,
+                    amount: e.target.value,
+                  }))
+                }
                 placeholder="0.00"
                 className="bg-gray-800 border-gray-600 text-white"
               />
@@ -1103,17 +1341,28 @@ export const EnhancedCasinoBanking: React.FC = () => {
               <Label className="text-gray-300">Description</Label>
               <Textarea
                 value={transferForm.description}
-                onChange={(e) => setTransferForm(prev => ({ ...prev, description: e.target.value }))}
+                onChange={(e) =>
+                  setTransferForm((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
                 placeholder="Transfer description..."
                 className="bg-gray-800 border-gray-600 text-white"
               />
             </div>
 
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setShowTransferModal(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setShowTransferModal(false)}
+              >
                 Cancel
               </Button>
-              <Button onClick={handleBankTransfer} className="bg-blue-600 hover:bg-blue-700">
+              <Button
+                onClick={handleBankTransfer}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
                 <Send className="w-4 h-4 mr-2" />
                 Initiate Transfer
               </Button>
@@ -1166,7 +1415,9 @@ export const EnhancedCasinoBanking: React.FC = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Development">Development</SelectItem>
-                    <SelectItem value="Customer Support">Customer Support</SelectItem>
+                    <SelectItem value="Customer Support">
+                      Customer Support
+                    </SelectItem>
                     <SelectItem value="Marketing">Marketing</SelectItem>
                     <SelectItem value="Finance">Finance</SelectItem>
                     <SelectItem value="Operations">Operations</SelectItem>
@@ -1207,10 +1458,13 @@ export const EnhancedCasinoBanking: React.FC = () => {
             </div>
 
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => {
-                setShowEmployeeModal(false);
-                setSelectedEmployee(null);
-              }}>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowEmployeeModal(false);
+                  setSelectedEmployee(null);
+                }}
+              >
                 Cancel
               </Button>
               <Button className="bg-green-600 hover:bg-green-700">

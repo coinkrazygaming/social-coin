@@ -1,11 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { useAuth } from "./AuthContext";
@@ -33,7 +28,9 @@ export const WelcomeBonusModal: React.FC<WelcomeBonusModalProps> = ({
 }) => {
   const { user, updateBalance } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authModalTab, setAuthModalTab] = useState<"login" | "register">("register");
+  const [authModalTab, setAuthModalTab] = useState<"login" | "register">(
+    "register",
+  );
   const [bonusClaimed, setBonusClaimed] = useState(false);
   const [claimingBonus, setClaimingBonus] = useState(false);
 
@@ -68,7 +65,7 @@ export const WelcomeBonusModal: React.FC<WelcomeBonusModalProps> = ({
 
     try {
       // Simulate API call to claim bonus
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       // Update user balance
       await updateBalance({
@@ -83,7 +80,6 @@ export const WelcomeBonusModal: React.FC<WelcomeBonusModalProps> = ({
         onClose();
         setBonusClaimed(false);
       }, 3000);
-
     } catch (error) {
       console.error("Error claiming bonus:", error);
       alert("Failed to claim bonus. Please try again.");
@@ -148,7 +144,9 @@ export const WelcomeBonusModal: React.FC<WelcomeBonusModalProps> = ({
                         <div className="text-2xl font-bold text-purple-400">
                           {bonusPackage.sweepsCoins}
                         </div>
-                        <div className="text-sm text-gray-300">Sweeps Coins</div>
+                        <div className="text-sm text-gray-300">
+                          Sweeps Coins
+                        </div>
                       </div>
                       <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">
                         Win Real Prizes
@@ -156,7 +154,7 @@ export const WelcomeBonusModal: React.FC<WelcomeBonusModalProps> = ({
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Sparkle Effects */}
                 <Sparkles className="absolute -top-2 -left-2 w-6 h-6 text-gold animate-pulse" />
                 <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-yellow-400 animate-pulse" />
@@ -172,7 +170,10 @@ export const WelcomeBonusModal: React.FC<WelcomeBonusModalProps> = ({
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                   {bonusPackage.bonusFeatures.map((feature, index) => (
-                    <div key={index} className="flex items-center gap-2 text-gray-300">
+                    <div
+                      key={index}
+                      className="flex items-center gap-2 text-gray-300"
+                    >
                       <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0" />
                       <span>{feature}</span>
                     </div>
@@ -196,7 +197,8 @@ export const WelcomeBonusModal: React.FC<WelcomeBonusModalProps> = ({
                       Bonus Claimed Successfully!
                     </h3>
                     <p className="text-gray-300">
-                      Your bonus has been added to your account. Start playing now!
+                      Your bonus has been added to your account. Start playing
+                      now!
                     </p>
                   </div>
                 </motion.div>
@@ -272,7 +274,9 @@ export const WelcomeBonusModal: React.FC<WelcomeBonusModalProps> = ({
             {/* Terms */}
             <div className="text-xs text-gray-400 text-center space-y-1">
               <p>⚠️ Welcome bonus is only available to new users</p>
-              <p>Must be 18+ • Terms and conditions apply • Void where prohibited</p>
+              <p>
+                Must be 18+ • Terms and conditions apply • Void where prohibited
+              </p>
             </div>
           </div>
         </DialogContent>

@@ -99,7 +99,9 @@ export const SmartTickerSystem: React.FC<SmartTickerSystemProps> = ({
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
-  const [joseyAIStatus, setJoseyAIStatus] = useState<"idle" | "generating" | "posting">("idle");
+  const [joseyAIStatus, setJoseyAIStatus] = useState<
+    "idle" | "generating" | "posting"
+  >("idle");
 
   const tickerRef = useRef<HTMLDivElement>(null);
   const joseyAIInterval = useRef<NodeJS.Timeout | null>(null);
@@ -109,7 +111,7 @@ export const SmartTickerSystem: React.FC<SmartTickerSystemProps> = ({
     if (enableJoseyAI) {
       initializeJoseyAI();
     }
-    
+
     return () => {
       if (joseyAIInterval.current) {
         clearInterval(joseyAIInterval.current);
@@ -130,8 +132,10 @@ export const SmartTickerSystem: React.FC<SmartTickerSystemProps> = ({
   // Message rotation within category
   useEffect(() => {
     const currentCategory = categories[currentCategoryIndex];
-    const categoryMessages = messages.filter(msg => msg.type === currentCategory.type && msg.isActive);
-    
+    const categoryMessages = messages.filter(
+      (msg) => msg.type === currentCategory.type && msg.isActive,
+    );
+
     if (categoryMessages.length === 0 || isPaused) return;
 
     const interval = setInterval(() => {
@@ -148,7 +152,8 @@ export const SmartTickerSystem: React.FC<SmartTickerSystemProps> = ({
         id: "win_001",
         type: "winner",
         content: "Mega Win Alert!",
-        displayText: "🎉 MASSIVE WIN! SlotMaster97 just won 75,000 SC on Lightning Reels! Congratulations! 🎉",
+        displayText:
+          "🎉 MASSIVE WIN! SlotMaster97 just won 75,000 SC on Lightning Reels! Congratulations! 🎉",
         priority: "urgent",
         isActive: true,
         displayDuration: 12,
@@ -164,7 +169,8 @@ export const SmartTickerSystem: React.FC<SmartTickerSystemProps> = ({
         id: "win_002",
         type: "winner",
         content: "Jackpot Winner!",
-        displayText: "🏆 JACKPOT HIT! LuckyPlayer777 won the PROGRESSIVE JACKPOT of 200,000 SC on Diamond Dreams! 🏆",
+        displayText:
+          "🏆 JACKPOT HIT! LuckyPlayer777 won the PROGRESSIVE JACKPOT of 200,000 SC on Diamond Dreams! 🏆",
         priority: "urgent",
         isActive: true,
         displayDuration: 15,
@@ -180,7 +186,8 @@ export const SmartTickerSystem: React.FC<SmartTickerSystemProps> = ({
         id: "win_003",
         type: "winner",
         content: "Big Win!",
-        displayText: "⚡ BIG WIN! CasinoKing23 scored 45,000 SC on Royal Fortune! Amazing luck! ⚡",
+        displayText:
+          "⚡ BIG WIN! CasinoKing23 scored 45,000 SC on Royal Fortune! Amazing luck! ⚡",
         priority: "high",
         isActive: true,
         displayDuration: 10,
@@ -198,7 +205,8 @@ export const SmartTickerSystem: React.FC<SmartTickerSystemProps> = ({
         id: "promo_001",
         type: "promotion",
         content: "Weekend Mega Bonus!",
-        displayText: "🔥 WEEKEND MEGA BONUS: 200% Gold Coins + 100 FREE SC! Use code MEGA200 - Limited Time! 🔥",
+        displayText:
+          "🔥 WEEKEND MEGA BONUS: 200% Gold Coins + 100 FREE SC! Use code MEGA200 - Limited Time! 🔥",
         priority: "urgent",
         isActive: true,
         displayDuration: 15,
@@ -213,7 +221,8 @@ export const SmartTickerSystem: React.FC<SmartTickerSystemProps> = ({
         id: "promo_002",
         type: "promotion",
         content: "Flash Sale Alert!",
-        displayText: "⚡ FLASH SALE: 6 hours only! Triple Gold Coins on ALL packages! Don't miss out! ⚡",
+        displayText:
+          "⚡ FLASH SALE: 6 hours only! Triple Gold Coins on ALL packages! Don't miss out! ⚡",
         priority: "urgent",
         isActive: true,
         displayDuration: 12,
@@ -228,7 +237,8 @@ export const SmartTickerSystem: React.FC<SmartTickerSystemProps> = ({
         id: "promo_003",
         type: "promotion",
         content: "VIP Exclusive Offer!",
-        displayText: "👑 VIP EXCLUSIVE: Quadruple rewards on deposits + Personal account manager! VIP members only! 👑",
+        displayText:
+          "👑 VIP EXCLUSIVE: Quadruple rewards on deposits + Personal account manager! VIP members only! 👑",
         priority: "high",
         isActive: true,
         displayDuration: 12,
@@ -244,7 +254,8 @@ export const SmartTickerSystem: React.FC<SmartTickerSystemProps> = ({
         id: "news_001",
         type: "news",
         content: "New Games Added!",
-        displayText: "🎮 NEW GAMES ALERT: 15 brand new slot games just added! Experience the latest in casino gaming! 🎮",
+        displayText:
+          "🎮 NEW GAMES ALERT: 15 brand new slot games just added! Experience the latest in casino gaming! 🎮",
         priority: "high",
         isActive: true,
         displayDuration: 10,
@@ -256,7 +267,8 @@ export const SmartTickerSystem: React.FC<SmartTickerSystemProps> = ({
         id: "news_002",
         type: "news",
         content: "Daily Bonus Reminder",
-        displayText: "🎁 DAILY BONUS: Don't forget to claim your FREE daily coins! Login bonus resets in 2 hours! 🎁",
+        displayText:
+          "🎁 DAILY BONUS: Don't forget to claim your FREE daily coins! Login bonus resets in 2 hours! 🎁",
         priority: "medium",
         isActive: true,
         displayDuration: 10,
@@ -268,7 +280,8 @@ export const SmartTickerSystem: React.FC<SmartTickerSystemProps> = ({
         id: "news_003",
         type: "news",
         content: "Tournament Announcement",
-        displayText: "🏆 TOURNAMENT: Weekly Slots Championship starts tomorrow! $100,000 SC prize pool! Register now! 🏆",
+        displayText:
+          "🏆 TOURNAMENT: Weekly Slots Championship starts tomorrow! $100,000 SC prize pool! Register now! 🏆",
         priority: "high",
         isActive: true,
         displayDuration: 12,
@@ -282,7 +295,8 @@ export const SmartTickerSystem: React.FC<SmartTickerSystemProps> = ({
         id: "social_001",
         type: "social",
         content: "Follow for Bonuses!",
-        displayText: "📱 Follow @CoinKrazy on social media for EXCLUSIVE bonuses, giveaways, and insider tips! 📱",
+        displayText:
+          "📱 Follow @CoinKrazy on social media for EXCLUSIVE bonuses, giveaways, and insider tips! 📱",
         priority: "medium",
         isActive: true,
         displayDuration: 10,
@@ -296,7 +310,8 @@ export const SmartTickerSystem: React.FC<SmartTickerSystemProps> = ({
         id: "social_002",
         type: "social",
         content: "Community Milestone!",
-        displayText: "🎉 MILESTONE ACHIEVED: 250K players have joined CoinKrazy! Thank you for being part of our family! 🎉",
+        displayText:
+          "🎉 MILESTONE ACHIEVED: 250K players have joined CoinKrazy! Thank you for being part of our family! 🎉",
         priority: "high",
         isActive: true,
         displayDuration: 12,
@@ -308,7 +323,8 @@ export const SmartTickerSystem: React.FC<SmartTickerSystemProps> = ({
         id: "social_003",
         type: "social",
         content: "Community Challenge",
-        displayText: "🏅 COMMUNITY CHALLENGE: Help us reach 300K players this month! Every new member gets bonus rewards! 🏅",
+        displayText:
+          "🏅 COMMUNITY CHALLENGE: Help us reach 300K players this month! Every new member gets bonus rewards! 🏅",
         priority: "medium",
         isActive: true,
         displayDuration: 10,
@@ -323,71 +339,85 @@ export const SmartTickerSystem: React.FC<SmartTickerSystemProps> = ({
 
   const initializeJoseyAI = () => {
     // JoseyAI auto-generates new ticker messages every 30 minutes
-    joseyAIInterval.current = setInterval(() => {
-      generateJoseyAIMessage();
-    }, 30 * 60 * 1000); // 30 minutes
+    joseyAIInterval.current = setInterval(
+      () => {
+        generateJoseyAIMessage();
+      },
+      30 * 60 * 1000,
+    ); // 30 minutes
   };
 
   const generateJoseyAIMessage = async () => {
     setJoseyAIStatus("generating");
-    
+
     // Simulate JoseyAI thinking and generating content
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
     const messageTypes = ["promotion", "news", "social"] as const;
-    const randomType = messageTypes[Math.floor(Math.random() * messageTypes.length)];
-    
+    const randomType =
+      messageTypes[Math.floor(Math.random() * messageTypes.length)];
+
     const joseyAIMessages = {
       promotion: [
         {
           content: "AI Generated Bonus!",
-          displayText: "🤖 JOSEYAI SPECIAL: AI-powered bonus match! Get 150% Gold Coins + AI-selected free spins! Code: AI150 🤖",
+          displayText:
+            "🤖 JOSEYAI SPECIAL: AI-powered bonus match! Get 150% Gold Coins + AI-selected free spins! Code: AI150 🤖",
           promotionCode: "AI150",
         },
         {
           content: "Smart Bonus Alert!",
-          displayText: "🧠 SMART BONUS: JoseyAI analyzed your play style! Perfect bonus package waiting in your account! 🧠",
+          displayText:
+            "🧠 SMART BONUS: JoseyAI analyzed your play style! Perfect bonus package waiting in your account! 🧠",
           promotionCode: "SMART",
         },
         {
           content: "Personalized Offer!",
-          displayText: "✨ PERSONALIZED: JoseyAI created a custom bonus just for you! Check your messages for details! ✨",
+          displayText:
+            "✨ PERSONALIZED: JoseyAI created a custom bonus just for you! Check your messages for details! ✨",
           promotionCode: "CUSTOM",
         },
       ],
       news: [
         {
           content: "AI Game Recommendation!",
-          displayText: "🎯 AI RECOMMENDATION: Based on current trends, 'Mystic Fortune' has 23% higher win rates today! 🎯",
+          displayText:
+            "🎯 AI RECOMMENDATION: Based on current trends, 'Mystic Fortune' has 23% higher win rates today! 🎯",
         },
         {
           content: "Smart Gaming Update!",
-          displayText: "🔮 AI INSIGHT: JoseyAI detected optimal playing times! Peak winning periods: 6-8 PM EST! 🔮",
+          displayText:
+            "🔮 AI INSIGHT: JoseyAI detected optimal playing times! Peak winning periods: 6-8 PM EST! 🔮",
         },
         {
           content: "Intelligent Analysis!",
-          displayText: "📊 AI ANALYSIS: Today's hottest games identified! JoseyAI recommends trying 'Dragon's Treasure'! 📊",
+          displayText:
+            "📊 AI ANALYSIS: Today's hottest games identified! JoseyAI recommends trying 'Dragon's Treasure'! 📊",
         },
       ],
       social: [
         {
           content: "Community AI Update!",
-          displayText: "🤝 COMMUNITY: JoseyAI is learning from our amazing players! Help train AI by playing your favorites! 🤝",
+          displayText:
+            "🤝 COMMUNITY: JoseyAI is learning from our amazing players! Help train AI by playing your favorites! 🤝",
         },
         {
           content: "AI Social Challenge!",
-          displayText: "🎮 AI CHALLENGE: JoseyAI vs Players! Beat the AI's predicted scores this week for bonus rewards! 🎮",
+          displayText:
+            "🎮 AI CHALLENGE: JoseyAI vs Players! Beat the AI's predicted scores this week for bonus rewards! 🎮",
         },
         {
           content: "Smart Community!",
-          displayText: "💡 SMART COMMUNITY: JoseyAI helped 1,250 players optimize their gaming this week! Join the smart play! 💡",
+          displayText:
+            "💡 SMART COMMUNITY: JoseyAI helped 1,250 players optimize their gaming this week! Join the smart play! 💡",
         },
       ],
     };
 
     const templates = joseyAIMessages[randomType];
-    const selectedTemplate = templates[Math.floor(Math.random() * templates.length)];
-    
+    const selectedTemplate =
+      templates[Math.floor(Math.random() * templates.length)];
+
     const newMessage: TickerMessage = {
       id: `joseyai_${Date.now()}`,
       type: randomType,
@@ -405,15 +435,17 @@ export const SmartTickerSystem: React.FC<SmartTickerSystemProps> = ({
     };
 
     setJoseyAIStatus("posting");
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    setMessages(prev => [newMessage, ...prev.slice(0, 19)]); // Keep only latest 20 messages
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    setMessages((prev) => [newMessage, ...prev.slice(0, 19)]); // Keep only latest 20 messages
     setJoseyAIStatus("idle");
   };
 
   const getCurrentMessages = () => {
     const currentCategory = categories[currentCategoryIndex];
-    return messages.filter(msg => msg.type === currentCategory.type && msg.isActive);
+    return messages.filter(
+      (msg) => msg.type === currentCategory.type && msg.isActive,
+    );
   };
 
   const getCurrentMessage = () => {
@@ -444,7 +476,9 @@ export const SmartTickerSystem: React.FC<SmartTickerSystemProps> = ({
   return (
     <div className={`fixed top-0 left-0 right-0 z-50 ${className}`}>
       {/* Main Ticker Bar */}
-      <div className={`relative bg-gradient-to-r ${currentCategory.bgGradient} shadow-lg border-b border-black/20`}>
+      <div
+        className={`relative bg-gradient-to-r ${currentCategory.bgGradient} shadow-lg border-b border-black/20`}
+      >
         {/* Category Label */}
         <div className="absolute left-0 top-0 bottom-0 bg-black/40 px-4 flex items-center z-10 min-w-[120px]">
           <span className="text-white font-bold text-sm whitespace-nowrap">
@@ -453,7 +487,9 @@ export const SmartTickerSystem: React.FC<SmartTickerSystemProps> = ({
           {enableJoseyAI && joseyAIStatus !== "idle" && (
             <div className="ml-2 flex items-center">
               <Bot className="w-3 h-3 text-blue-300" />
-              {joseyAIStatus === "generating" && <RefreshCw className="w-3 h-3 text-blue-300 animate-spin ml-1" />}
+              {joseyAIStatus === "generating" && (
+                <RefreshCw className="w-3 h-3 text-blue-300 animate-spin ml-1" />
+              )}
             </div>
           )}
         </div>
@@ -474,7 +510,9 @@ export const SmartTickerSystem: React.FC<SmartTickerSystemProps> = ({
               className="absolute inset-y-0 flex items-center whitespace-nowrap"
             >
               <div className="flex items-center gap-3">
-                <currentCategory.icon className={`w-4 h-4 ${currentCategory.color}`} />
+                <currentCategory.icon
+                  className={`w-4 h-4 ${currentCategory.color}`}
+                />
                 <span className="font-medium text-white text-shadow-sm">
                   {currentMessage.displayText}
                 </span>
@@ -501,7 +539,11 @@ export const SmartTickerSystem: React.FC<SmartTickerSystemProps> = ({
             className="text-white/70 hover:text-white transition-colors p-1"
             title={isPaused ? "Resume ticker" : "Pause ticker"}
           >
-            {isPaused ? <Zap className="w-4 h-4" /> : <Target className="w-4 h-4" />}
+            {isPaused ? (
+              <Zap className="w-4 h-4" />
+            ) : (
+              <Target className="w-4 h-4" />
+            )}
           </button>
           {enableJoseyAI && (
             <button
@@ -510,7 +552,9 @@ export const SmartTickerSystem: React.FC<SmartTickerSystemProps> = ({
               className="text-white/70 hover:text-white transition-colors p-1 disabled:opacity-50"
               title="Generate JoseyAI message"
             >
-              <Bot className={`w-4 h-4 ${joseyAIStatus === "generating" ? "animate-pulse" : ""}`} />
+              <Bot
+                className={`w-4 h-4 ${joseyAIStatus === "generating" ? "animate-pulse" : ""}`}
+              />
             </button>
           )}
           <button
@@ -523,7 +567,8 @@ export const SmartTickerSystem: React.FC<SmartTickerSystemProps> = ({
         </div>
 
         {/* Priority Indicator */}
-        {(currentMessage.priority === "urgent" || currentMessage.priority === "high") && (
+        {(currentMessage.priority === "urgent" ||
+          currentMessage.priority === "high") && (
           <div className="absolute top-0 left-32 right-24 h-1 bg-gradient-to-r from-red-400 to-yellow-400 animate-pulse" />
         )}
 
