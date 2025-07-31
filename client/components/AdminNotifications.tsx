@@ -69,12 +69,24 @@ export const AdminNotifications: React.FC<AdminNotificationsProps> = ({ classNam
   useEffect(() => {
     loadNotifications();
     startRealTimeUpdates();
-    
+
     // Store window reference for flashing
     windowRef.current = window;
-    
+
+    // Add user interaction listener
+    const handleUserInteraction = () => {
+      setUserHasInteracted(true);
+      document.removeEventListener('click', handleUserInteraction);
+      document.removeEventListener('keydown', handleUserInteraction);
+    };
+
+    document.addEventListener('click', handleUserInteraction);
+    document.addEventListener('keydown', handleUserInteraction);
+
     return () => {
       stopAllSounds();
+      document.removeEventListener('click', handleUserInteraction);
+      document.removeEventListener('keydown', handleUserInteraction);
     };
   }, []);
 
