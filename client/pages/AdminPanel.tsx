@@ -1485,6 +1485,10 @@ export function AdminPanel() {
               </p>
             </div>
           </TabsContent>
+
+          <TabsContent value="ticker" className="space-y-6">
+            <TickerManagement />
+          </TabsContent>
         </Tabs>
 
         {/* New Package Form Modal */}
