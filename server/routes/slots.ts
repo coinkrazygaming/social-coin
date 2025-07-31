@@ -4,8 +4,8 @@ import {
   SlotSpin,
   SlotSession,
   SlotStats,
-} from "@shared/slotTypes";
-import { DEFAULT_COINKRAZY_SLOTS } from "@shared/defaultSlots";
+} from "../../shared/slotTypes";
+import { DEFAULT_COINKRAZY_SLOTS } from "../../shared/defaultSlots";
 
 // In-memory storage for demo purposes
 // In production, this would be stored in a database
