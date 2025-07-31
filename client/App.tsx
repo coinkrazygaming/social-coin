@@ -16,6 +16,7 @@ import { UserDashboard } from "./pages/UserDashboard";
 import { AccountSettings } from "./pages/AccountSettings";
 import { StaffPanel } from "./pages/StaffPanel";
 import { Header } from "./components/Header";
+import { Footer } from "./components/Footer";
 import { Ticker } from "./components/Ticker";
 import { PlaceholderPage } from "./components/PlaceholderPage";
 import { AuthProvider } from "./components/AuthContext";
