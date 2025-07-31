@@ -49,8 +49,8 @@ export function Ticker() {
       const response = await fetch("/api/ticker", {
         signal: controller.signal,
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
       });
 
@@ -61,13 +61,21 @@ export function Ticker() {
         if (contentType && contentType.includes("application/json")) {
           const data = await response.json();
           setTickerItems(Array.isArray(data) ? data : []);
-          console.log("Ticker items loaded successfully:", data.length, "items");
+          console.log(
+            "Ticker items loaded successfully:",
+            data.length,
+            "items",
+          );
         } else {
           console.warn("Ticker API returned non-JSON response, using fallback");
           setTickerItems(fallbackItems);
         }
       } else {
-        console.warn("Ticker API returned error status:", response.status, response.statusText);
+        console.warn(
+          "Ticker API returned error status:",
+          response.status,
+          response.statusText,
+        );
         setTickerItems(fallbackItems);
       }
     } catch (error) {
@@ -75,10 +83,12 @@ export function Ticker() {
 
       // Check if it's a network error or abort error
       if (error instanceof Error) {
-        if (error.name === 'AbortError') {
+        if (error.name === "AbortError") {
           console.warn("Ticker request timed out");
-        } else if (error.message.includes('Failed to fetch')) {
-          console.warn("Network error fetching ticker - server may be unavailable");
+        } else if (error.message.includes("Failed to fetch")) {
+          console.warn(
+            "Network error fetching ticker - server may be unavailable",
+          );
         }
       }
 
