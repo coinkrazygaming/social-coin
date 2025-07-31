@@ -102,7 +102,7 @@ import {
   handleGetUserCooldowns,
   handleGetSecurityEvents,
   handleUpdateSecurityEvent,
-  handleGetGameAnalytics,
+  handleGetGameAnalytics
 } from "./routes/miniGamesAPI";
 import {
   handleGetAIEmployees,
@@ -112,8 +112,16 @@ import {
   handleGetAIMessages,
   handleSendMessageToAI,
   handleLogSessionToAI,
-  handleAnalyzeSecurityEvents,
+  handleAnalyzeSecurityEvents
 } from "./routes/aiEmployees";
+import {
+  handleGetAdminAlerts,
+  handleMarkAlertAsRead,
+  handleAcknowledgeAlert,
+  handleResolveAlert,
+  handleCreateAlert,
+  handleGetAlertStats
+} from "./routes/adminAlerts";
 
 export function createServer() {
   const app = express();
@@ -163,10 +171,7 @@ export function createServer() {
   app.get("/api/mini-games/:userId/sessions", handleGetUserGameHistory);
   app.get("/api/mini-games/:userId/cooldowns", handleGetUserCooldowns);
   app.get("/api/mini-games/security/events", handleGetSecurityEvents);
-  app.put(
-    "/api/mini-games/security/events/:eventId",
-    handleUpdateSecurityEvent,
-  );
+  app.put("/api/mini-games/security/events/:eventId", handleUpdateSecurityEvent);
   app.get("/api/mini-games/analytics", handleGetGameAnalytics);
 
   // Payment routes
@@ -249,10 +254,7 @@ export function createServer() {
   app.get("/api/ai-employees/messages", handleGetAIMessages);
   app.post("/api/ai-employees/messages", handleSendMessageToAI);
   app.post("/api/ai-employees/mini-games/log-session", handleLogSessionToAI);
-  app.post(
-    "/api/ai-employees/security/analyze-events",
-    handleAnalyzeSecurityEvents,
-  );
+  app.post("/api/ai-employees/security/analyze-events", handleAnalyzeSecurityEvents);
 
   return app;
 }
