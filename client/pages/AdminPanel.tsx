@@ -33,6 +33,7 @@ import { AIEmployeeManagement } from "../components/AIEmployeeManagement";
 import { KYCOnboarding } from "../components/KYCOnboarding";
 import { BonusManagement } from "../components/BonusManagement";
 import { JackpotManagement } from "../components/JackpotManagement";
+import { VIPManagement } from "../components/VIPManagement";
 import {
   GoldCoinPackage,
   StoreSettings,
