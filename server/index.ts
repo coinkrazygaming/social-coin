@@ -88,6 +88,13 @@ import {
   handleGetSlotStats,
   handleGetAllSlotStats,
 } from "./routes/slots";
+import {
+  handleOAuthLogin,
+  handleOAuthCallback,
+  handleGetUserFromToken,
+  handleRefreshSession,
+  handleOAuthLogout,
+} from "./routes/oauth";
 
 export function createServer() {
   const app = express();
