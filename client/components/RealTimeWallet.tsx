@@ -552,10 +552,62 @@ export const useWalletUpdate = () => {
   }) => {
     // This would typically dispatch to a global state or call an API
     console.log('Wallet update:', gameData);
-    
+
     // Trigger custom event for wallet components to listen to
     window.dispatchEvent(new CustomEvent('walletUpdate', { detail: gameData }));
   }, []);
 
   return { updateBalance };
+};
+
+// WalletBalance component for displaying currency amounts
+interface WalletBalanceProps {
+  currency: 'GC' | 'SC' | 'USD';
+  amount: number;
+  size?: 'sm' | 'md' | 'lg';
+  showCurrency?: boolean;
+  className?: string;
+}
+
+export const WalletBalance: React.FC<WalletBalanceProps> = ({
+  currency,
+  amount,
+  size = 'md',
+  showCurrency = true,
+  className = ''
+}) => {
+  const formatAmount = (amount: number, currency: string) => {
+    if (currency === 'USD') {
+      return `$${amount.toFixed(2)}`;
+    }
+    return amount.toLocaleString();
+  };
+
+  const getCurrencyColor = (currency: string) => {
+    switch (currency) {
+      case 'GC': return 'text-gold';
+      case 'SC': return 'text-green-400';
+      case 'USD': return 'text-green-500';
+      default: return 'text-white';
+    }
+  };
+
+  const getSizeClass = (size: string) => {
+    switch (size) {
+      case 'sm': return 'text-sm';
+      case 'lg': return 'text-lg font-semibold';
+      default: return 'text-base';
+    }
+  };
+
+  return (
+    <span className={`${getCurrencyColor(currency)} ${getSizeClass(size)} ${className}`}>
+      {formatAmount(amount, currency)}
+      {showCurrency && (
+        <span className="ml-1 text-gray-400 text-xs">
+          {currency}
+        </span>
+      )}
+    </span>
+  );
 };
