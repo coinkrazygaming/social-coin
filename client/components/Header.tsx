@@ -6,6 +6,7 @@ import { useAuth } from "./AuthContext";
 import { AuthModal } from "./AuthModal";
 import { RealTimeWallet } from "./RealTimeWallet";
 import { NotificationCenter } from "./NotificationCenter";
+import { AdminAlerts } from "./AdminAlerts";
 import {
   Menu,
   X,
