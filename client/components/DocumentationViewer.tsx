@@ -1,24 +1,46 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Search, FileText, Users, Shield, AlertTriangle, Book, Settings, Gamepad2, CreditCard, Scale, Eye, EyeOff, Download, Edit } from 'lucide-react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Badge } from './ui/badge';
-import { ScrollArea } from './ui/scroll-area';
-import { Separator } from './ui/separator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { DocumentationSection } from '../../shared/adminToolbarTypes';
-import { useAuth } from './AuthContext';
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Search,
+  FileText,
+  Users,
+  Shield,
+  AlertTriangle,
+  Book,
+  Settings,
+  Gamepad2,
+  CreditCard,
+  Scale,
+  Eye,
+  EyeOff,
+  Download,
+  Edit,
+} from "lucide-react";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Badge } from "./ui/badge";
+import { ScrollArea } from "./ui/scroll-area";
+import { Separator } from "./ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { DocumentationSection } from "../../shared/adminToolbarTypes";
+import { useAuth } from "./AuthContext";
 
 interface DocumentationViewerProps {
   className?: string;
 }
 
-export const DocumentationViewer: React.FC<DocumentationViewerProps> = ({ className = '' }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedSection, setSelectedSection] = useState<DocumentationSection | null>(null);
-  const [activeTab, setActiveTab] = useState<'user' | 'staff' | 'admin'>('user');
-  const [documentSections, setDocumentSections] = useState<DocumentationSection[]>([]);
+export const DocumentationViewer: React.FC<DocumentationViewerProps> = ({
+  className = "",
+}) => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedSection, setSelectedSection] =
+    useState<DocumentationSection | null>(null);
+  const [activeTab, setActiveTab] = useState<"user" | "staff" | "admin">(
+    "user",
+  );
+  const [documentSections, setDocumentSections] = useState<
+    DocumentationSection[]
+  >([]);
   const { user, isAdmin, isStaff } = useAuth();
 
   useEffect(() => {
@@ -29,9 +51,9 @@ export const DocumentationViewer: React.FC<DocumentationViewerProps> = ({ classN
     const sections: DocumentationSection[] = [
       // User Documentation
       {
-        id: 'user-001',
-        title: 'Getting Started with Coin Krazy',
-        category: 'user',
+        id: "user-001",
+        title: "Getting Started with Coin Krazy",
+        category: "user",
         content: `# Welcome to Coin Krazy Social Casino!
 
 ## What is Coin Krazy?
@@ -137,19 +159,19 @@ We are committed to responsible gaming. Set your limits:
 - Regular audits by independent testing labs
 - Transparent Return to Player (RTP) rates
 - No skill-based manipulation possible`,
-        subcategories: ['account', 'games', 'currency', 'support'],
-        tags: ['beginner', 'overview', 'getting-started'],
-        visibility: 'public',
-        lastUpdated: new Date('2024-01-15'),
-        updatedBy: 'admin',
-        version: '2.1',
+        subcategories: ["account", "games", "currency", "support"],
+        tags: ["beginner", "overview", "getting-started"],
+        visibility: "public",
+        lastUpdated: new Date("2024-01-15"),
+        updatedBy: "admin",
+        version: "2.1",
         attachments: [],
-        relatedSections: ['user-002', 'user-003']
+        relatedSections: ["user-002", "user-003"],
       },
       {
-        id: 'user-002',
-        title: 'Sweepstakes Rules & Terms',
-        category: 'user',
+        id: "user-002",
+        title: "Sweepstakes Rules & Terms",
+        category: "user",
         content: `# Sweepstakes Rules & Terms of Service
 
 ## Important Legal Information
@@ -323,19 +345,19 @@ These terms effective as of January 1, 2024
 **Legal Questions**: legal@coinkrizy.com
 **Privacy Questions**: privacy@coinkrizy.com
 **General Support**: support@coinkrizy.com`,
-        subcategories: ['legal', 'sweepstakes', 'terms', 'privacy'],
-        tags: ['legal', 'required-reading', 'sweepstakes'],
-        visibility: 'public',
-        lastUpdated: new Date('2024-01-01'),
-        updatedBy: 'legal-team',
-        version: '3.2',
+        subcategories: ["legal", "sweepstakes", "terms", "privacy"],
+        tags: ["legal", "required-reading", "sweepstakes"],
+        visibility: "public",
+        lastUpdated: new Date("2024-01-01"),
+        updatedBy: "legal-team",
+        version: "3.2",
         attachments: [],
-        relatedSections: ['user-003', 'user-004']
+        relatedSections: ["user-003", "user-004"],
       },
       {
-        id: 'user-003',
-        title: 'Gaming Warnings & Safety',
-        category: 'user',
+        id: "user-003",
+        title: "Gaming Warnings & Safety",
+        category: "user",
         content: `# Gaming Warnings & Player Safety
 
 ## ⚠️ Important Safety Information
@@ -515,20 +537,20 @@ If you suspect account compromise:
 - Take breaks between sessions
 
 Remember: Gaming is entertainment, not an investment or income source.`,
-        subcategories: ['safety', 'responsible-gaming', 'warnings', 'health'],
-        tags: ['safety', 'warning', 'health', 'required'],
-        visibility: 'public',
-        lastUpdated: new Date('2024-01-10'),
-        updatedBy: 'safety-team',
-        version: '1.8',
+        subcategories: ["safety", "responsible-gaming", "warnings", "health"],
+        tags: ["safety", "warning", "health", "required"],
+        visibility: "public",
+        lastUpdated: new Date("2024-01-10"),
+        updatedBy: "safety-team",
+        version: "1.8",
         attachments: [],
-        relatedSections: ['user-002', 'user-004']
+        relatedSections: ["user-002", "user-004"],
       },
       // Staff Documentation
       {
-        id: 'staff-001',
-        title: 'Staff Panel Guide & Features',
-        category: 'staff',
+        id: "staff-001",
+        title: "Staff Panel Guide & Features",
+        category: "staff",
         content: `# Staff Panel Guide & Features
 
 ## Staff Panel Overview
@@ -675,19 +697,19 @@ The Coin Krazy staff panel provides essential tools for managing player accounts
 - No personal use during work hours
 - Report technical issues promptly
 - Follow security guidelines`,
-        subcategories: ['staff-tools', 'procedures', 'training', 'policies'],
-        tags: ['staff-only', 'procedures', 'training'],
-        visibility: 'staff_only',
-        lastUpdated: new Date('2024-01-12'),
-        updatedBy: 'hr-team',
-        version: '2.5',
+        subcategories: ["staff-tools", "procedures", "training", "policies"],
+        tags: ["staff-only", "procedures", "training"],
+        visibility: "staff_only",
+        lastUpdated: new Date("2024-01-12"),
+        updatedBy: "hr-team",
+        version: "2.5",
         attachments: [],
-        relatedSections: ['staff-002', 'admin-001']
+        relatedSections: ["staff-002", "admin-001"],
       },
       {
-        id: 'staff-002',
-        title: 'Sweepstakes Staff Policies & Procedures',
-        category: 'staff',
+        id: "staff-002",
+        title: "Sweepstakes Staff Policies & Procedures",
+        category: "staff",
         content: `# Sweepstakes Staff Policies & Procedures
 
 ## Legal Compliance Requirements
@@ -894,19 +916,24 @@ All staff must understand and comply with sweepstakes regulations:
 - Monitor team performance metrics
 - Handle escalated customer issues
 - Coordinate with AI employee system`,
-        subcategories: ['compliance', 'procedures', 'training', 'ai-coordination'],
-        tags: ['staff-only', 'sweepstakes', 'compliance', 'required'],
-        visibility: 'staff_only',
-        lastUpdated: new Date('2024-01-14'),
-        updatedBy: 'compliance-team',
-        version: '3.0',
+        subcategories: [
+          "compliance",
+          "procedures",
+          "training",
+          "ai-coordination",
+        ],
+        tags: ["staff-only", "sweepstakes", "compliance", "required"],
+        visibility: "staff_only",
+        lastUpdated: new Date("2024-01-14"),
+        updatedBy: "compliance-team",
+        version: "3.0",
         attachments: [],
-        relatedSections: ['staff-001', 'staff-003']
+        relatedSections: ["staff-001", "staff-003"],
       },
       {
-        id: 'staff-003',
-        title: 'AI Employee Coordination & Task Management',
-        category: 'staff',
+        id: "staff-003",
+        title: "AI Employee Coordination & Task Management",
+        category: "staff",
         content: `# AI Employee Coordination & Task Management
 
 ## AI Employee System Overview
@@ -1142,20 +1169,25 @@ Staff can request specific tasks or assistance:
 - Practice new skills regularly
 - Seek additional training
 - Share knowledge with team`,
-        subcategories: ['ai-coordination', 'task-management', 'communication', 'training'],
-        tags: ['staff-only', 'ai-employees', 'coordination', 'required'],
-        visibility: 'staff_only',
-        lastUpdated: new Date('2024-01-15'),
-        updatedBy: 'ai-team',
-        version: '1.0',
+        subcategories: [
+          "ai-coordination",
+          "task-management",
+          "communication",
+          "training",
+        ],
+        tags: ["staff-only", "ai-employees", "coordination", "required"],
+        visibility: "staff_only",
+        lastUpdated: new Date("2024-01-15"),
+        updatedBy: "ai-team",
+        version: "1.0",
         attachments: [],
-        relatedSections: ['staff-001', 'staff-002', 'admin-001']
+        relatedSections: ["staff-001", "staff-002", "admin-001"],
       },
       // Admin Documentation
       {
-        id: 'admin-001',
-        title: 'Admin Panel Complete Guide',
-        category: 'admin',
+        id: "admin-001",
+        title: "Admin Panel Complete Guide",
+        category: "admin",
         content: `# Admin Panel Complete Guide
 
 ## System Administration Overview
@@ -1301,33 +1333,36 @@ The Coin Krazy admin panel provides comprehensive control over all platform oper
 - Historical trends
 - Comparative analysis
 - Predictive insights`,
-        subcategories: ['system-admin', 'security', 'compliance', 'monitoring'],
-        tags: ['admin-only', 'system', 'security'],
-        visibility: 'admin_only',
-        lastUpdated: new Date('2024-01-14'),
-        updatedBy: 'admin',
-        version: '3.1',
+        subcategories: ["system-admin", "security", "compliance", "monitoring"],
+        tags: ["admin-only", "system", "security"],
+        visibility: "admin_only",
+        lastUpdated: new Date("2024-01-14"),
+        updatedBy: "admin",
+        version: "3.1",
         attachments: [],
-        relatedSections: ['admin-002', 'staff-001']
-      }
+        relatedSections: ["admin-002", "staff-001"],
+      },
     ];
 
     setDocumentSections(sections);
   };
 
-  const filteredSections = documentSections.filter(section => {
-    const matchesSearch = searchTerm === '' || 
+  const filteredSections = documentSections.filter((section) => {
+    const matchesSearch =
+      searchTerm === "" ||
       section.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       section.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      section.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+      section.tags.some((tag) =>
+        tag.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
 
     const matchesTab = section.category === activeTab;
 
     // Check visibility permissions
-    const hasPermission = 
-      section.visibility === 'public' ||
-      (section.visibility === 'staff_only' && (isStaff || isAdmin)) ||
-      (section.visibility === 'admin_only' && isAdmin);
+    const hasPermission =
+      section.visibility === "public" ||
+      (section.visibility === "staff_only" && (isStaff || isAdmin)) ||
+      (section.visibility === "admin_only" && isAdmin);
 
     return matchesSearch && matchesTab && hasPermission;
   });
@@ -1336,7 +1371,7 @@ The Coin Krazy admin panel provides comprehensive control over all platform oper
     const icons = {
       user: Users,
       staff: Settings,
-      admin: Shield
+      admin: Shield,
     };
     return icons[category as keyof typeof icons] || FileText;
   };
@@ -1345,7 +1380,7 @@ The Coin Krazy admin panel provides comprehensive control over all platform oper
     const icons = {
       public: Eye,
       staff_only: Users,
-      admin_only: Shield
+      admin_only: Shield,
     };
     return icons[visibility as keyof typeof icons] || Eye;
   };
@@ -1354,12 +1389,14 @@ The Coin Krazy admin panel provides comprehensive control over all platform oper
     const exportData = {
       ...section,
       exportedAt: new Date().toISOString(),
-      exportedBy: user?.username || 'admin'
+      exportedBy: user?.username || "admin",
     };
 
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+      type: "application/json",
+    });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `doc-${section.id}.json`;
     document.body.appendChild(a);
@@ -1399,23 +1436,29 @@ The Coin Krazy admin panel provides comprehensive control over all platform oper
               )}
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2 mb-2">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               {selectedSection.title}
             </h2>
-            <Badge className={`${
-              selectedSection.visibility === 'public' ? 'bg-green-100 text-green-800' :
-              selectedSection.visibility === 'staff_only' ? 'bg-blue-100 text-blue-800' :
-              'bg-red-100 text-red-800'
-            }`}>
-              {selectedSection.visibility.replace('_', ' ')}
+            <Badge
+              className={`${
+                selectedSection.visibility === "public"
+                  ? "bg-green-100 text-green-800"
+                  : selectedSection.visibility === "staff_only"
+                    ? "bg-blue-100 text-blue-800"
+                    : "bg-red-100 text-red-800"
+              }`}
+            >
+              {selectedSection.visibility.replace("_", " ")}
             </Badge>
           </div>
-          
+
           <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
             <span>Version {selectedSection.version}</span>
-            <span>Updated {selectedSection.lastUpdated.toLocaleDateString()}</span>
+            <span>
+              Updated {selectedSection.lastUpdated.toLocaleDateString()}
+            </span>
             <span>by {selectedSection.updatedBy}</span>
           </div>
         </div>
@@ -1434,8 +1477,10 @@ The Coin Krazy admin panel provides comprehensive control over all platform oper
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Documentation</h3>
-        
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          Documentation
+        </h3>
+
         <div className="relative mb-4">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
@@ -1446,17 +1491,28 @@ The Coin Krazy admin panel provides comprehensive control over all platform oper
           />
         </div>
 
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) => setActiveTab(value as any)}
+        >
           <TabsList className="grid grid-cols-3 w-full">
             <TabsTrigger value="user" className="flex items-center gap-1">
               <Users className="w-4 h-4" />
               Users
             </TabsTrigger>
-            <TabsTrigger value="staff" className="flex items-center gap-1" disabled={!isStaff && !isAdmin}>
+            <TabsTrigger
+              value="staff"
+              className="flex items-center gap-1"
+              disabled={!isStaff && !isAdmin}
+            >
               <Settings className="w-4 h-4" />
               Staff
             </TabsTrigger>
-            <TabsTrigger value="admin" className="flex items-center gap-1" disabled={!isAdmin}>
+            <TabsTrigger
+              value="admin"
+              className="flex items-center gap-1"
+              disabled={!isAdmin}
+            >
               <Shield className="w-4 h-4" />
               Admin
             </TabsTrigger>
@@ -1471,7 +1527,7 @@ The Coin Krazy admin panel provides comprehensive control over all platform oper
             {filteredSections.map((section) => {
               const CategoryIcon = getCategoryIcon(section.category);
               const VisibilityIcon = getVisibilityIcon(section.visibility);
-              
+
               return (
                 <motion.div
                   key={section.id}
@@ -1484,9 +1540,11 @@ The Coin Krazy admin panel provides comprehensive control over all platform oper
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <CategoryIcon className="w-5 h-5 text-gray-500" />
-                      <h4 className="font-medium text-gray-900 dark:text-white">{section.title}</h4>
+                      <h4 className="font-medium text-gray-900 dark:text-white">
+                        {section.title}
+                      </h4>
                     </div>
-                    
+
                     <div className="flex items-center gap-2">
                       <VisibilityIcon className="w-4 h-4 text-gray-400" />
                       <Badge variant="outline" className="text-xs">
@@ -1496,13 +1554,17 @@ The Coin Krazy admin panel provides comprehensive control over all platform oper
                   </div>
 
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
-                    {section.content.split('\n')[0].replace(/^#+ /, '')}
+                    {section.content.split("\n")[0].replace(/^#+ /, "")}
                   </p>
 
                   <div className="flex items-center justify-between">
                     <div className="flex flex-wrap gap-1">
                       {section.tags.slice(0, 3).map((tag) => (
-                        <Badge key={tag} variant="secondary" className="text-xs">
+                        <Badge
+                          key={tag}
+                          variant="secondary"
+                          className="text-xs"
+                        >
                           {tag}
                         </Badge>
                       ))}
@@ -1512,7 +1574,7 @@ The Coin Krazy admin panel provides comprehensive control over all platform oper
                         </Badge>
                       )}
                     </div>
-                    
+
                     <span className="text-xs text-gray-500 dark:text-gray-400">
                       {section.lastUpdated.toLocaleDateString()}
                     </span>
@@ -1527,7 +1589,9 @@ The Coin Krazy admin panel provides comprehensive control over all platform oper
               <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
               <p>No documentation found</p>
               {!isStaff && !isAdmin && (
-                <p className="text-sm mt-2">Some sections may require special permissions</p>
+                <p className="text-sm mt-2">
+                  Some sections may require special permissions
+                </p>
               )}
             </div>
           )}

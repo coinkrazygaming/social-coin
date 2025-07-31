@@ -1,5 +1,10 @@
 // Comprehensive Spin Logging System for Admin Panel Tracking
-import { SpinLog, AdminSpinLog, GameAnalytics, WalletTransaction } from './socialCasinoTypes';
+import {
+  SpinLog,
+  AdminSpinLog,
+  GameAnalytics,
+  WalletTransaction,
+} from "./socialCasinoTypes";
 
 export class SpinLoggerService {
   private static readonly MAX_CACHE_SIZE = 1000;
@@ -9,7 +14,7 @@ export class SpinLoggerService {
     maxWinsInRow: 10,
     maxWinMultiplier: 1000,
     unusualBettingPattern: 50,
-    rapidFireSpins: 30 // spins per minute
+    rapidFireSpins: 30, // spins per minute
   };
 
   // Log a single spin with comprehensive data
@@ -17,7 +22,7 @@ export class SpinLoggerService {
     userId: string;
     gameId: string;
     sessionId: string;
-    currency: 'GC' | 'SC';
+    currency: "GC" | "SC";
     betAmount: number;
     winAmount: number;
     balanceBefore: number;
@@ -28,7 +33,7 @@ export class SpinLoggerService {
     deviceType?: string;
   }): Promise<string> {
     const spinId = this.generateSpinId();
-    
+
     const spinLog: SpinLog = {
       id: spinId,
       user_id: spinData.userId,
@@ -46,26 +51,32 @@ export class SpinLoggerService {
       multiplier_applied: spinData.spinResult.multiplier || 1,
       created_at: new Date().toISOString(),
       ip_address: spinData.ipAddress,
-      user_agent: spinData.userAgent
+      user_agent: spinData.userAgent,
     };
 
     // Add to cache
     this.spinLogCache.push(spinLog);
-    
+
     // Manage cache size
     if (this.spinLogCache.length > this.MAX_CACHE_SIZE) {
-      const excess = this.spinLogCache.splice(0, this.spinLogCache.length - this.MAX_CACHE_SIZE);
+      const excess = this.spinLogCache.splice(
+        0,
+        this.spinLogCache.length - this.MAX_CACHE_SIZE,
+      );
       await this.batchSaveToDatabase(excess);
     }
 
     // Update real-time analytics
     await this.updateGameAnalytics(spinData.gameId, spinLog);
-    
+
     // Check for suspicious activity
     await this.checkSuspiciousActivity(spinData.userId, spinLog);
 
     // Save immediately for high-value wins
-    if (spinData.winAmount > 1000 || spinData.winAmount > spinData.betAmount * 100) {
+    if (
+      spinData.winAmount > 1000 ||
+      spinData.winAmount > spinData.betAmount * 100
+    ) {
       await this.saveSpinToDatabase(spinLog);
       await this.notifyAdminOfBigWin(spinLog);
     }
@@ -74,47 +85,49 @@ export class SpinLoggerService {
   }
 
   // Get admin-formatted spin logs with filtering
-  static async getAdminSpinLogs(filters: {
-    userId?: string;
-    gameId?: string;
-    currency?: 'GC' | 'SC';
-    minAmount?: number;
-    maxAmount?: number;
-    dateFrom?: string;
-    dateTo?: string;
-    suspicious?: boolean;
-    limit?: number;
-    offset?: number;
-  } = {}): Promise<AdminSpinLog[]> {
+  static async getAdminSpinLogs(
+    filters: {
+      userId?: string;
+      gameId?: string;
+      currency?: "GC" | "SC";
+      minAmount?: number;
+      maxAmount?: number;
+      dateFrom?: string;
+      dateTo?: string;
+      suspicious?: boolean;
+      limit?: number;
+      offset?: number;
+    } = {},
+  ): Promise<AdminSpinLog[]> {
     // Filter cache data
     let filtered = [...this.spinLogCache];
 
     if (filters.userId) {
-      filtered = filtered.filter(log => log.user_id === filters.userId);
+      filtered = filtered.filter((log) => log.user_id === filters.userId);
     }
-    
+
     if (filters.gameId) {
-      filtered = filtered.filter(log => log.game_id === filters.gameId);
+      filtered = filtered.filter((log) => log.game_id === filters.gameId);
     }
-    
+
     if (filters.currency) {
-      filtered = filtered.filter(log => log.currency === filters.currency);
+      filtered = filtered.filter((log) => log.currency === filters.currency);
     }
-    
+
     if (filters.minAmount) {
-      filtered = filtered.filter(log => log.win_amount >= filters.minAmount!);
+      filtered = filtered.filter((log) => log.win_amount >= filters.minAmount!);
     }
-    
+
     if (filters.maxAmount) {
-      filtered = filtered.filter(log => log.win_amount <= filters.maxAmount!);
+      filtered = filtered.filter((log) => log.win_amount <= filters.maxAmount!);
     }
 
     if (filters.dateFrom) {
-      filtered = filtered.filter(log => log.created_at >= filters.dateFrom!);
+      filtered = filtered.filter((log) => log.created_at >= filters.dateFrom!);
     }
-    
+
     if (filters.dateTo) {
-      filtered = filtered.filter(log => log.created_at <= filters.dateTo!);
+      filtered = filtered.filter((log) => log.created_at <= filters.dateTo!);
     }
 
     // Convert to admin format
@@ -123,7 +136,7 @@ export class SpinLoggerService {
         const playerName = await this.getPlayerName(log.user_id);
         const gameName = await this.getGameName(log.game_id);
         const suspicious = await this.isSuspiciousActivity(log);
-        
+
         return {
           id: log.id,
           player_name: playerName,
@@ -136,18 +149,23 @@ export class SpinLoggerService {
           ip_address: log.ip_address,
           device_type: this.detectDeviceType(log.user_agent),
           suspicious_activity: suspicious,
-          notes: suspicious ? await this.getSuspiciousActivityReason(log) : undefined
+          notes: suspicious
+            ? await this.getSuspiciousActivityReason(log)
+            : undefined,
         };
-      })
+      }),
     );
 
     // Apply pagination
     const offset = filters.offset || 0;
     const limit = filters.limit || 100;
-    
+
     return adminLogs
       .slice(offset, offset + limit)
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+      .sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+      );
   }
 
   // Get real-time game analytics
@@ -156,12 +174,14 @@ export class SpinLoggerService {
       const analytics = this.analyticsCache.get(gameId);
       return analytics ? [analytics] : [];
     }
-    
+
     return Array.from(this.analyticsCache.values());
   }
 
   // Get top performers for admin dashboard
-  static async getTopPerformers(timeframe: 'today' | 'week' | 'month' = 'today'): Promise<{
+  static async getTopPerformers(
+    timeframe: "today" | "week" | "month" = "today",
+  ): Promise<{
     topEarners: AdminSpinLog[];
     biggestWins: AdminSpinLog[];
     mostActive: AdminSpinLog[];
@@ -169,36 +189,39 @@ export class SpinLoggerService {
   }> {
     const now = new Date();
     let cutoffDate: Date;
-    
+
     switch (timeframe) {
-      case 'today':
+      case "today":
         cutoffDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         break;
-      case 'week':
+      case "week":
         cutoffDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         break;
-      case 'month':
+      case "month":
         cutoffDate = new Date(now.getFullYear(), now.getMonth(), 1);
         break;
     }
 
     const logs = await this.getAdminSpinLogs({
       dateFrom: cutoffDate.toISOString(),
-      limit: 1000
+      limit: 1000,
     });
 
     // Calculate top earners (by total winnings)
     const earningsMap = new Map<string, number>();
-    logs.forEach(log => {
+    logs.forEach((log) => {
       const current = earningsMap.get(log.player_name) || 0;
       earningsMap.set(log.player_name, current + log.win_amount);
     });
-    
+
     const topEarners = logs
-      .filter((log, index, arr) => arr.findIndex(l => l.player_name === log.player_name) === index)
-      .map(log => ({
+      .filter(
+        (log, index, arr) =>
+          arr.findIndex((l) => l.player_name === log.player_name) === index,
+      )
+      .map((log) => ({
         ...log,
-        win_amount: earningsMap.get(log.player_name) || 0
+        win_amount: earningsMap.get(log.player_name) || 0,
       }))
       .sort((a, b) => b.win_amount - a.win_amount)
       .slice(0, 10);
@@ -210,75 +233,95 @@ export class SpinLoggerService {
 
     // Most active players (by spin count)
     const activityMap = new Map<string, number>();
-    logs.forEach(log => {
+    logs.forEach((log) => {
       const current = activityMap.get(log.player_name) || 0;
       activityMap.set(log.player_name, current + 1);
     });
-    
+
     const mostActive = logs
-      .filter((log, index, arr) => arr.findIndex(l => l.player_name === log.player_name) === index)
-      .map(log => ({
+      .filter(
+        (log, index, arr) =>
+          arr.findIndex((l) => l.player_name === log.player_name) === index,
+      )
+      .map((log) => ({
         ...log,
-        win_amount: activityMap.get(log.player_name) || 0 // Reusing win_amount field for spin count
+        win_amount: activityMap.get(log.player_name) || 0, // Reusing win_amount field for spin count
       }))
       .sort((a, b) => b.win_amount - a.win_amount)
       .slice(0, 10);
 
     // Suspicious activity
     const suspiciousActivity = logs
-      .filter(log => log.suspicious_activity)
+      .filter((log) => log.suspicious_activity)
       .slice(0, 20);
 
     return {
       topEarners,
       biggestWins,
       mostActive,
-      suspiciousActivity
+      suspiciousActivity,
     };
   }
 
   // Export spin logs for compliance/audit
-  static async exportSpinLogs(filters: any = {}, format: 'json' | 'csv' = 'json'): Promise<string> {
+  static async exportSpinLogs(
+    filters: any = {},
+    format: "json" | "csv" = "json",
+  ): Promise<string> {
     const logs = await this.getAdminSpinLogs({ ...filters, limit: 10000 });
-    
-    if (format === 'csv') {
+
+    if (format === "csv") {
       const headers = [
-        'ID', 'Player', 'Game', 'Currency', 'Bet', 'Win', 'Net', 
-        'Timestamp', 'IP Address', 'Device', 'Suspicious', 'Notes'
+        "ID",
+        "Player",
+        "Game",
+        "Currency",
+        "Bet",
+        "Win",
+        "Net",
+        "Timestamp",
+        "IP Address",
+        "Device",
+        "Suspicious",
+        "Notes",
       ];
-      
+
       const csvData = [
-        headers.join(','),
-        ...logs.map(log => [
-          log.id,
-          log.player_name,
-          log.game_name,
-          log.currency,
-          log.bet_amount,
-          log.win_amount,
-          log.net_result,
-          log.timestamp,
-          log.ip_address,
-          log.device_type,
-          log.suspicious_activity,
-          log.notes || ''
-        ].join(','))
-      ].join('\n');
-      
+        headers.join(","),
+        ...logs.map((log) =>
+          [
+            log.id,
+            log.player_name,
+            log.game_name,
+            log.currency,
+            log.bet_amount,
+            log.win_amount,
+            log.net_result,
+            log.timestamp,
+            log.ip_address,
+            log.device_type,
+            log.suspicious_activity,
+            log.notes || "",
+          ].join(","),
+        ),
+      ].join("\n");
+
       return csvData;
     }
-    
+
     return JSON.stringify(logs, null, 2);
   }
 
   // Real-time spin feed for admin dashboard
-  static subscribeToLiveSpins(callback: (log: AdminSpinLog) => void): () => void {
+  static subscribeToLiveSpins(
+    callback: (log: AdminSpinLog) => void,
+  ): () => void {
     const interval = setInterval(async () => {
       const recentLogs = await this.getAdminSpinLogs({
         dateFrom: new Date(Date.now() - 60000).toISOString(), // Last minute
-        limit: 10
+        limit: 10,
       });
-      
+
       recentLogs.forEach(callback);
     }, 5000); // Update every 5 seconds
 
@@ -290,10 +333,13 @@ export class SpinLoggerService {
     return `spin_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  private static async updateGameAnalytics(gameId: string, spinLog: SpinLog): Promise<void> {
-    const today = new Date().toISOString().split('T')[0];
+  private static async updateGameAnalytics(
+    gameId: string,
+    spinLog: SpinLog,
+  ): Promise<void> {
+    const today = new Date().toISOString().split("T")[0];
     let analytics = this.analyticsCache.get(gameId);
-    
+
     if (!analytics) {
       analytics = {
         game_id: gameId,
@@ -309,40 +355,45 @@ export class SpinLoggerService {
         unique_players_today: 0,
         average_session_time: 0,
         bounce_rate: 0,
-        conversion_rate: 0
+        conversion_rate: 0,
       };
     }
 
     // Update analytics
     analytics.total_spins_today++;
-    
-    if (spinLog.currency === 'GC') {
+
+    if (spinLog.currency === "GC") {
       analytics.total_revenue_gc += spinLog.bet_amount;
       analytics.total_payouts_gc += spinLog.win_amount;
-      analytics.actual_rtp_gc = analytics.total_revenue_gc > 0 
-        ? (analytics.total_payouts_gc / analytics.total_revenue_gc) * 100 
-        : 0;
+      analytics.actual_rtp_gc =
+        analytics.total_revenue_gc > 0
+          ? (analytics.total_payouts_gc / analytics.total_revenue_gc) * 100
+          : 0;
     } else {
       analytics.total_revenue_sc += spinLog.bet_amount;
       analytics.total_payouts_sc += spinLog.win_amount;
-      analytics.actual_rtp_sc = analytics.total_revenue_sc > 0 
-        ? (analytics.total_payouts_sc / analytics.total_revenue_sc) * 100 
-        : 0;
+      analytics.actual_rtp_sc =
+        analytics.total_revenue_sc > 0
+          ? (analytics.total_payouts_sc / analytics.total_revenue_sc) * 100
+          : 0;
     }
 
     this.analyticsCache.set(gameId, analytics);
   }
 
-  private static async checkSuspiciousActivity(userId: string, spinLog: SpinLog): Promise<void> {
+  private static async checkSuspiciousActivity(
+    userId: string,
+    spinLog: SpinLog,
+  ): Promise<void> {
     const userSpins = this.spinLogCache
-      .filter(log => log.user_id === userId)
+      .filter((log) => log.user_id === userId)
       .slice(-50); // Last 50 spins
 
     const suspicious = {
       rapidFire: this.checkRapidFireSpins(userSpins),
       unusualWins: this.checkUnusualWinPattern(userSpins),
       bettingPattern: this.checkUnusualBettingPattern(userSpins),
-      winStreak: this.checkLongWinStreak(userSpins)
+      winStreak: this.checkLongWinStreak(userSpins),
     };
 
     if (Object.values(suspicious).some(Boolean)) {
@@ -352,35 +403,38 @@ export class SpinLoggerService {
 
   private static checkRapidFireSpins(spins: SpinLog[]): boolean {
     if (spins.length < 10) return false;
-    
+
     const recentSpins = spins.slice(-10);
-    const timeSpan = new Date(recentSpins[recentSpins.length - 1].created_at).getTime() 
-      - new Date(recentSpins[0].created_at).getTime();
-    
+    const timeSpan =
+      new Date(recentSpins[recentSpins.length - 1].created_at).getTime() -
+      new Date(recentSpins[0].created_at).getTime();
+
     return timeSpan < 60000; // 10 spins in less than 1 minute
   }
 
   private static checkUnusualWinPattern(spins: SpinLog[]): boolean {
-    const winRate = spins.filter(spin => spin.win_amount > spin.bet_amount).length / spins.length;
+    const winRate =
+      spins.filter((spin) => spin.win_amount > spin.bet_amount).length /
+      spins.length;
     return winRate > 0.7; // Winning more than 70% of spins
   }
 
   private static checkUnusualBettingPattern(spins: SpinLog[]): boolean {
     if (spins.length < 5) return false;
-    
-    const amounts = spins.map(spin => spin.bet_amount);
+
+    const amounts = spins.map((spin) => spin.bet_amount);
     const avgAmount = amounts.reduce((a, b) => a + b, 0) / amounts.length;
-    const hasErraticPattern = amounts.some(amount => 
-      Math.abs(amount - avgAmount) > avgAmount * 10
+    const hasErraticPattern = amounts.some(
+      (amount) => Math.abs(amount - avgAmount) > avgAmount * 10,
     );
-    
+
     return hasErraticPattern;
   }
 
   private static checkLongWinStreak(spins: SpinLog[]): boolean {
     let streak = 0;
     let maxStreak = 0;
-    
+
     for (const spin of spins.reverse()) {
       if (spin.win_amount > spin.bet_amount) {
         streak++;
@@ -389,17 +443,21 @@ export class SpinLoggerService {
         streak = 0;
       }
     }
-    
+
     return maxStreak > this.suspiciousActivityThreshold.maxWinsInRow;
   }
 
   private static async flagSuspiciousActivity(
-    userId: string, 
-    spinLog: SpinLog, 
-    reasons: any
+    userId: string,
+    spinLog: SpinLog,
+    reasons: any,
   ): Promise<void> {
     // TODO: Implement database flag and admin notification
-    console.log('Suspicious activity detected:', { userId, spinLog: spinLog.id, reasons });
+    console.log("Suspicious activity detected:", {
+      userId,
+      spinLog: spinLog.id,
+      reasons,
+    });
   }
 
   private static async getPlayerName(userId: string): Promise<string> {
@@ -413,9 +471,9 @@ export class SpinLoggerService {
   }
 
   private static detectDeviceType(userAgent: string): string {
-    if (/mobile/i.test(userAgent)) return 'mobile';
-    if (/tablet/i.test(userAgent)) return 'tablet';
-    return 'desktop';
+    if (/mobile/i.test(userAgent)) return "mobile";
+    if (/tablet/i.test(userAgent)) return "tablet";
+    return "desktop";
   }
 
   private static async isSuspiciousActivity(log: SpinLog): Promise<boolean> {
@@ -423,11 +481,13 @@ export class SpinLoggerService {
     return log.win_amount > log.bet_amount * 100;
   }
 
-  private static async getSuspiciousActivityReason(log: SpinLog): Promise<string> {
+  private static async getSuspiciousActivityReason(
+    log: SpinLog,
+  ): Promise<string> {
     if (log.win_amount > log.bet_amount * 100) {
-      return 'Extremely high win multiplier';
+      return "Extremely high win multiplier";
     }
-    return 'Unusual activity pattern detected';
+    return "Unusual activity pattern detected";
   }
 
   private static async batchSaveToDatabase(logs: SpinLog[]): Promise<void> {
@@ -437,16 +497,16 @@ export class SpinLoggerService {
 
   private static async saveSpinToDatabase(log: SpinLog): Promise<void> {
     // TODO: Implement individual database save
-    console.log('Saving high-value spin to database:', log.id);
+    console.log("Saving high-value spin to database:", log.id);
   }
 
   private static async notifyAdminOfBigWin(log: SpinLog): Promise<void> {
     // TODO: Implement admin notification system
-    console.log('Big win notification:', {
+    console.log("Big win notification:", {
       amount: log.win_amount,
       currency: log.currency,
       player: log.user_id,
-      game: log.game_id
+      game: log.game_id,
     });
   }
 }

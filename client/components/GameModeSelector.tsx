@@ -1,13 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Coins, DollarSign, Lock, AlertTriangle, Info, Zap } from 'lucide-react';
-import { useAuth } from './AuthContext';
-import { RealTimeWalletService } from '@shared/realTimeWallet';
-import { RealTimeWallet } from '@shared/socialCasinoTypes';
+import React, { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Coins,
+  DollarSign,
+  Lock,
+  AlertTriangle,
+  Info,
+  Zap,
+} from "lucide-react";
+import { useAuth } from "./AuthContext";
+import { RealTimeWalletService } from "@shared/realTimeWallet";
+import { RealTimeWallet } from "@shared/socialCasinoTypes";
 
 interface GameModeSelectorProps {
   gameId: string;
@@ -16,8 +30,8 @@ interface GameModeSelectorProps {
   maxBetGC: number;
   minBetSC: number;
   maxBetSC: number;
-  supportedModes: ('GC' | 'SC')[];
-  onModeSelect: (mode: 'GC' | 'SC', betAmount: number) => void;
+  supportedModes: ("GC" | "SC")[];
+  onModeSelect: (mode: "GC" | "SC", betAmount: number) => void;
   className?: string;
 }
 
@@ -30,11 +44,11 @@ export function GameModeSelector({
   maxBetSC,
   supportedModes,
   onModeSelect,
-  className = ''
+  className = "",
 }: GameModeSelectorProps) {
   const { user } = useAuth();
   const [wallet, setWallet] = useState<RealTimeWallet | null>(null);
-  const [selectedMode, setSelectedMode] = useState<'GC' | 'SC' | null>(null);
+  const [selectedMode, setSelectedMode] = useState<"GC" | "SC" | null>(null);
   const [betAmount, setBetAmount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
   const [canPlayGC, setCanPlayGC] = useState(false);
@@ -53,26 +67,29 @@ export function GameModeSelector({
 
   useEffect(() => {
     if (selectedMode) {
-      const minBet = selectedMode === 'GC' ? minBetGC : minBetSC;
+      const minBet = selectedMode === "GC" ? minBetGC : minBetSC;
       setBetAmount(minBet);
     }
   }, [selectedMode, minBetGC, minBetSC]);
 
   const loadWalletData = async () => {
     if (!user) return;
-    
+
     try {
       const walletData = await RealTimeWalletService.getWallet(user.id);
       setWallet(walletData);
-      
+
       // Subscribe to real-time wallet updates
-      const unsubscribe = RealTimeWalletService.subscribeToWallet(user.id, (updatedWallet) => {
-        setWallet(updatedWallet);
-      });
+      const unsubscribe = RealTimeWalletService.subscribeToWallet(
+        user.id,
+        (updatedWallet) => {
+          setWallet(updatedWallet);
+        },
+      );
 
       return unsubscribe;
     } catch (error) {
-      console.error('Error loading wallet:', error);
+      console.error("Error loading wallet:", error);
     }
   };
 
@@ -81,33 +98,41 @@ export function GameModeSelector({
 
     try {
       // Check GC restrictions
-      if (supportedModes.includes('GC')) {
-        const gcCheck = await RealTimeWalletService.canUserPlay(user.id, 'GC', minBetGC);
+      if (supportedModes.includes("GC")) {
+        const gcCheck = await RealTimeWalletService.canUserPlay(
+          user.id,
+          "GC",
+          minBetGC,
+        );
         setCanPlayGC(gcCheck.canPlay);
         if (!gcCheck.canPlay) {
-          setPlayRestrictions(prev => ({ ...prev, GC: gcCheck.reason }));
+          setPlayRestrictions((prev) => ({ ...prev, GC: gcCheck.reason }));
         }
       }
 
       // Check SC restrictions
-      if (supportedModes.includes('SC')) {
-        const scCheck = await RealTimeWalletService.canUserPlay(user.id, 'SC', minBetSC);
+      if (supportedModes.includes("SC")) {
+        const scCheck = await RealTimeWalletService.canUserPlay(
+          user.id,
+          "SC",
+          minBetSC,
+        );
         setCanPlaySC(scCheck.canPlay);
         if (!scCheck.canPlay) {
-          setPlayRestrictions(prev => ({ ...prev, SC: scCheck.reason }));
+          setPlayRestrictions((prev) => ({ ...prev, SC: scCheck.reason }));
         }
       }
     } catch (error) {
-      console.error('Error checking play restrictions:', error);
+      console.error("Error checking play restrictions:", error);
     }
   };
 
-  const handleModeSelect = (mode: 'GC' | 'SC') => {
+  const handleModeSelect = (mode: "GC" | "SC") => {
     if (!user) return;
-    
-    if (mode === 'GC' && !canPlayGC) return;
-    if (mode === 'SC' && !canPlaySC) return;
-    
+
+    if (mode === "GC" && !canPlayGC) return;
+    if (mode === "SC" && !canPlaySC) return;
+
     setSelectedMode(mode);
   };
 
@@ -117,8 +142,12 @@ export function GameModeSelector({
     setIsLoading(true);
     try {
       // Final balance check before playing
-      const finalCheck = await RealTimeWalletService.canUserPlay(user.id, selectedMode, betAmount);
-      
+      const finalCheck = await RealTimeWalletService.canUserPlay(
+        user.id,
+        selectedMode,
+        betAmount,
+      );
+
       if (!finalCheck.canPlay) {
         alert(finalCheck.reason);
         setIsLoading(false);
@@ -128,8 +157,8 @@ export function GameModeSelector({
       // Proceed with game
       onModeSelect(selectedMode, betAmount);
     } catch (error) {
-      console.error('Error starting game:', error);
-      alert('Error starting game. Please try again.');
+      console.error("Error starting game:", error);
+      alert("Error starting game. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -137,13 +166,19 @@ export function GameModeSelector({
 
   const adjustBetAmount = (change: number) => {
     if (!selectedMode) return;
-    
-    const minBet = selectedMode === 'GC' ? minBetGC : minBetSC;
-    const maxBet = selectedMode === 'GC' ? maxBetGC : maxBetSC;
-    const maxAllowed = wallet ? 
-      (selectedMode === 'GC' ? wallet.gold_coins : wallet.sweeps_coins) : 0;
-    
-    const newAmount = Math.max(minBet, Math.min(maxBet, Math.min(maxAllowed, betAmount + change)));
+
+    const minBet = selectedMode === "GC" ? minBetGC : minBetSC;
+    const maxBet = selectedMode === "GC" ? maxBetGC : maxBetSC;
+    const maxAllowed = wallet
+      ? selectedMode === "GC"
+        ? wallet.gold_coins
+        : wallet.sweeps_coins
+      : 0;
+
+    const newAmount = Math.max(
+      minBet,
+      Math.min(maxBet, Math.min(maxAllowed, betAmount + change)),
+    );
     setBetAmount(newAmount);
   };
 
@@ -182,12 +217,12 @@ export function GameModeSelector({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <Tabs value={selectedMode || 'none'} className="space-y-4">
+        <Tabs value={selectedMode || "none"} className="space-y-4">
           <TabsList className="grid w-full grid-cols-2">
-            {supportedModes.includes('GC') && (
-              <TabsTrigger 
-                value="GC" 
-                onClick={() => handleModeSelect('GC')}
+            {supportedModes.includes("GC") && (
+              <TabsTrigger
+                value="GC"
+                onClick={() => handleModeSelect("GC")}
                 disabled={!canPlayGC}
                 className="relative"
               >
@@ -196,10 +231,10 @@ export function GameModeSelector({
                 {!canPlayGC && <Lock className="h-3 w-3 ml-1" />}
               </TabsTrigger>
             )}
-            {supportedModes.includes('SC') && (
-              <TabsTrigger 
-                value="SC" 
-                onClick={() => handleModeSelect('SC')}
+            {supportedModes.includes("SC") && (
+              <TabsTrigger
+                value="SC"
+                onClick={() => handleModeSelect("SC")}
                 disabled={!canPlaySC}
                 className="relative"
               >
@@ -211,25 +246,28 @@ export function GameModeSelector({
           </TabsList>
 
           {/* Gold Coins Mode */}
-          {supportedModes.includes('GC') && (
+          {supportedModes.includes("GC") && (
             <TabsContent value="GC" className="space-y-4">
               {canPlayGC ? (
                 <div className="space-y-4">
                   <div className="bg-gold/10 border border-gold/30 rounded-lg p-4">
                     <div className="flex items-center mb-2">
                       <Coins className="h-5 w-5 text-gold mr-2" />
-                      <h4 className="font-semibold text-gold">Gold Coins Mode</h4>
+                      <h4 className="font-semibold text-gold">
+                        Gold Coins Mode
+                      </h4>
                     </div>
                     <p className="text-sm text-muted-foreground mb-3">
-                      Play for fun with Gold Coins. No cash value, pure entertainment!
+                      Play for fun with Gold Coins. No cash value, pure
+                      entertainment!
                     </p>
-                    
+
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium">Bet Amount:</span>
                         <div className="flex items-center gap-2">
-                          <Button 
-                            size="sm" 
+                          <Button
+                            size="sm"
                             variant="outline"
                             onClick={() => adjustBetAmount(-minBetGC)}
                             disabled={betAmount <= minBetGC}
@@ -239,20 +277,30 @@ export function GameModeSelector({
                           <span className="min-w-[80px] text-center font-mono">
                             {betAmount.toLocaleString()} GC
                           </span>
-                          <Button 
-                            size="sm" 
+                          <Button
+                            size="sm"
                             variant="outline"
                             onClick={() => adjustBetAmount(minBetGC)}
-                            disabled={betAmount >= Math.min(maxBetGC, wallet?.gold_coins || 0)}
+                            disabled={
+                              betAmount >=
+                              Math.min(maxBetGC, wallet?.gold_coins || 0)
+                            }
                           >
                             +
                           </Button>
                         </div>
                       </div>
-                      
+
                       <div className="flex justify-between text-xs text-muted-foreground">
                         <span>Min: {minBetGC.toLocaleString()} GC</span>
-                        <span>Max: {Math.min(maxBetGC, wallet?.gold_coins || 0).toLocaleString()} GC</span>
+                        <span>
+                          Max:{" "}
+                          {Math.min(
+                            maxBetGC,
+                            wallet?.gold_coins || 0,
+                          ).toLocaleString()}{" "}
+                          GC
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -261,10 +309,12 @@ export function GameModeSelector({
                 <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4">
                   <div className="flex items-center mb-2">
                     <AlertTriangle className="h-5 w-5 text-destructive mr-2" />
-                    <h4 className="font-semibold text-destructive">Cannot Play GC Mode</h4>
+                    <h4 className="font-semibold text-destructive">
+                      Cannot Play GC Mode
+                    </h4>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {playRestrictions.GC || 'Insufficient Gold Coins balance'}
+                    {playRestrictions.GC || "Insufficient Gold Coins balance"}
                   </p>
                 </div>
               )}
@@ -272,25 +322,28 @@ export function GameModeSelector({
           )}
 
           {/* Sweeps Coins Mode */}
-          {supportedModes.includes('SC') && (
+          {supportedModes.includes("SC") && (
             <TabsContent value="SC" className="space-y-4">
               {canPlaySC ? (
                 <div className="space-y-4">
                   <div className="bg-sweep/10 border border-sweep/30 rounded-lg p-4">
                     <div className="flex items-center mb-2">
                       <DollarSign className="h-5 w-5 text-sweep mr-2" />
-                      <h4 className="font-semibold text-sweep">Sweeps Coins Mode</h4>
+                      <h4 className="font-semibold text-sweep">
+                        Sweeps Coins Mode
+                      </h4>
                     </div>
                     <p className="text-sm text-muted-foreground mb-3">
-                      Play with Sweeps Coins for a chance to win redeemable prizes!
+                      Play with Sweeps Coins for a chance to win redeemable
+                      prizes!
                     </p>
-                    
+
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium">Bet Amount:</span>
                         <div className="flex items-center gap-2">
-                          <Button 
-                            size="sm" 
+                          <Button
+                            size="sm"
                             variant="outline"
                             onClick={() => adjustBetAmount(-minBetSC)}
                             disabled={betAmount <= minBetSC}
@@ -300,20 +353,30 @@ export function GameModeSelector({
                           <span className="min-w-[80px] text-center font-mono">
                             {betAmount.toFixed(2)} SC
                           </span>
-                          <Button 
-                            size="sm" 
+                          <Button
+                            size="sm"
                             variant="outline"
                             onClick={() => adjustBetAmount(minBetSC)}
-                            disabled={betAmount >= Math.min(maxBetSC, wallet?.sweeps_coins || 0)}
+                            disabled={
+                              betAmount >=
+                              Math.min(maxBetSC, wallet?.sweeps_coins || 0)
+                            }
                           >
                             +
                           </Button>
                         </div>
                       </div>
-                      
+
                       <div className="flex justify-between text-xs text-muted-foreground">
                         <span>Min: {minBetSC.toFixed(2)} SC</span>
-                        <span>Max: {Math.min(maxBetSC, wallet?.sweeps_coins || 0).toFixed(2)} SC</span>
+                        <span>
+                          Max:{" "}
+                          {Math.min(
+                            maxBetSC,
+                            wallet?.sweeps_coins || 0,
+                          ).toFixed(2)}{" "}
+                          SC
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -322,10 +385,12 @@ export function GameModeSelector({
                 <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4">
                   <div className="flex items-center mb-2">
                     <AlertTriangle className="h-5 w-5 text-destructive mr-2" />
-                    <h4 className="font-semibold text-destructive">Cannot Play SC Mode</h4>
+                    <h4 className="font-semibold text-destructive">
+                      Cannot Play SC Mode
+                    </h4>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {playRestrictions.SC || 'Insufficient Sweeps Coins balance'}
+                    {playRestrictions.SC || "Insufficient Sweeps Coins balance"}
                   </p>
                 </div>
               )}
@@ -333,9 +398,9 @@ export function GameModeSelector({
           )}
         </Tabs>
 
-        {selectedMode && (selectedMode === 'GC' ? canPlayGC : canPlaySC) && (
+        {selectedMode && (selectedMode === "GC" ? canPlayGC : canPlaySC) && (
           <div className="mt-6 space-y-4">
-            <Button 
+            <Button
               onClick={handlePlay}
               disabled={isLoading}
               className="w-full relative"
@@ -381,7 +446,7 @@ export function GameModeSelector({
                       <li>• Safe and legal in all jurisdictions</li>
                     </ul>
                   </div>
-                  
+
                   <div className="bg-sweep/10 border border-sweep/30 rounded-lg p-4">
                     <h4 className="font-semibold text-sweep mb-2 flex items-center">
                       <DollarSign className="h-4 w-4 mr-2" />

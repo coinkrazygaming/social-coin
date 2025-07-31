@@ -1,14 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Slider } from '@/components/ui/slider';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import {
   Palette,
   Settings,
@@ -30,10 +43,15 @@ import {
   RefreshCw,
   Play,
   Pause,
-  RotateCcw
-} from 'lucide-react';
-import { useAuth } from './AuthContext';
-import { SocialCasinoGame, VisualGameEditor, AIEditorAssistant, AIMessage } from '@shared/socialCasinoTypes';
+  RotateCcw,
+} from "lucide-react";
+import { useAuth } from "./AuthContext";
+import {
+  SocialCasinoGame,
+  VisualGameEditor,
+  AIEditorAssistant,
+  AIMessage,
+} from "@shared/socialCasinoTypes";
 
 interface AdminGameEditorProps {
   gameId?: string;
@@ -41,73 +59,125 @@ interface AdminGameEditorProps {
   className?: string;
 }
 
-export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEditorProps) {
+export function AdminGameEditor({
+  gameId,
+  onSave,
+  className = "",
+}: AdminGameEditorProps) {
   const { user } = useAuth();
   const [editorState, setEditorState] = useState<VisualGameEditor>({
     id: `editor_${Date.now()}`,
-    game_id: gameId || 'new_game',
+    game_id: gameId || "new_game",
     editor_data: {
       symbols: [],
       paylines: [],
       reels: [],
-      settings: {}
+      settings: {},
     },
     ai_suggestions: [],
     preview_mode: false,
     unsaved_changes: false,
-    last_saved: new Date().toISOString()
+    last_saved: new Date().toISOString(),
   });
 
   const [gameData, setGameData] = useState<Partial<SocialCasinoGame>>({
-    name: 'New Game',
-    description: 'A custom social casino game',
-    provider: 'CoinKrazy',
-    category: 'social_slots',
-    game_type: 'BOTH',
+    name: "New Game",
+    description: "A custom social casino game",
+    provider: "CoinKrazy",
+    category: "social_slots",
+    game_type: "BOTH",
     min_bet_gc: 1,
     max_bet_gc: 1000,
     min_bet_sc: 0.01,
     max_bet_sc: 10,
     rtp: 95.0,
-    volatility: 'medium',
+    volatility: "medium",
     max_win_gc: 100000,
     max_win_sc: 1000,
     paylines: 25,
     features: [],
     is_active: false,
-    is_featured: false
+    is_featured: false,
   });
 
   const [aiAssistant, setAiAssistant] = useState<AIEditorAssistant>({
     session_id: `ai_session_${Date.now()}`,
-    admin_user_id: user?.id || 'admin',
+    admin_user_id: user?.id || "admin",
     conversation_history: [],
     suggestions_given: 0,
     code_generated: false,
-    last_interaction: new Date().toISOString()
+    last_interaction: new Date().toISOString(),
   });
 
-  const [activeTab, setActiveTab] = useState('basic');
+  const [activeTab, setActiveTab] = useState("basic");
   const [showAiChat, setShowAiChat] = useState(false);
-  const [aiMessage, setAiMessage] = useState('');
+  const [aiMessage, setAiMessage] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
   // Symbol configuration
   const [symbols, setSymbols] = useState([
-    { id: 'wild', name: 'Wild', color: '#FFD700', value: 1000, rarity: 'legendary' },
-    { id: 'scatter', name: 'Scatter', color: '#FF6B6B', value: 500, rarity: 'epic' },
-    { id: 'high1', name: 'High Symbol 1', color: '#4ECDC4', value: 300, rarity: 'rare' },
-    { id: 'high2', name: 'High Symbol 2', color: '#45B7D1', value: 250, rarity: 'rare' },
-    { id: 'med1', name: 'Med Symbol 1', color: '#96CEB4', value: 150, rarity: 'uncommon' },
-    { id: 'med2', name: 'Med Symbol 2', color: '#FFEAA7', value: 100, rarity: 'uncommon' },
-    { id: 'low1', name: 'Low Symbol 1', color: '#DDA0DD', value: 75, rarity: 'common' },
-    { id: 'low2', name: 'Low Symbol 2', color: '#98D8C8', value: 50, rarity: 'common' }
+    {
+      id: "wild",
+      name: "Wild",
+      color: "#FFD700",
+      value: 1000,
+      rarity: "legendary",
+    },
+    {
+      id: "scatter",
+      name: "Scatter",
+      color: "#FF6B6B",
+      value: 500,
+      rarity: "epic",
+    },
+    {
+      id: "high1",
+      name: "High Symbol 1",
+      color: "#4ECDC4",
+      value: 300,
+      rarity: "rare",
+    },
+    {
+      id: "high2",
+      name: "High Symbol 2",
+      color: "#45B7D1",
+      value: 250,
+      rarity: "rare",
+    },
+    {
+      id: "med1",
+      name: "Med Symbol 1",
+      color: "#96CEB4",
+      value: 150,
+      rarity: "uncommon",
+    },
+    {
+      id: "med2",
+      name: "Med Symbol 2",
+      color: "#FFEAA7",
+      value: 100,
+      rarity: "uncommon",
+    },
+    {
+      id: "low1",
+      name: "Low Symbol 1",
+      color: "#DDA0DD",
+      value: 75,
+      rarity: "common",
+    },
+    {
+      id: "low2",
+      name: "Low Symbol 2",
+      color: "#98D8C8",
+      value: 50,
+      rarity: "common",
+    },
   ]);
 
   const [reelConfiguration, setReelConfiguration] = useState({
     reelCount: 5,
     rowCount: 3,
-    symbolWeights: {} as Record<string, Record<string, number>>
+    symbolWeights: {} as Record<string, Record<string, number>>,
   });
 
   useEffect(() => {
@@ -119,21 +189,27 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
 
   const loadGameData = async (id: string) => {
     // TODO: Load actual game data from database
-    console.log('Loading game data for:', id);
+    console.log("Loading game data for:", id);
   };
 
   const initializeSymbolWeights = () => {
     const weights: Record<string, Record<string, number>> = {};
     for (let i = 0; i < reelConfiguration.reelCount; i++) {
       weights[`reel_${i}`] = {};
-      symbols.forEach(symbol => {
-        weights[`reel_${i}`][symbol.id] = symbol.rarity === 'legendary' ? 1 :
-                                         symbol.rarity === 'epic' ? 2 :
-                                         symbol.rarity === 'rare' ? 5 :
-                                         symbol.rarity === 'uncommon' ? 10 : 20;
+      symbols.forEach((symbol) => {
+        weights[`reel_${i}`][symbol.id] =
+          symbol.rarity === "legendary"
+            ? 1
+            : symbol.rarity === "epic"
+              ? 2
+              : symbol.rarity === "rare"
+                ? 5
+                : symbol.rarity === "uncommon"
+                  ? 10
+                  : 20;
       });
     }
-    setReelConfiguration(prev => ({ ...prev, symbolWeights: weights }));
+    setReelConfiguration((prev) => ({ ...prev, symbolWeights: weights }));
   };
 
   const handleAiChat = async () => {
@@ -141,112 +217,122 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
 
     setIsGenerating(true);
     const userMessage: AIMessage = {
-      role: 'user',
+      role: "user",
       message: aiMessage,
       timestamp: new Date().toISOString(),
-      game_id: gameData.id
+      game_id: gameData.id,
     };
 
     // Add user message to conversation
-    setAiAssistant(prev => ({
+    setAiAssistant((prev) => ({
       ...prev,
-      conversation_history: [...prev.conversation_history, userMessage]
+      conversation_history: [...prev.conversation_history, userMessage],
     }));
 
     // Generate AI response
     const aiResponse = await generateAiResponse(aiMessage);
     const assistantMessage: AIMessage = {
-      role: 'assistant',
+      role: "assistant",
       message: aiResponse.message,
       timestamp: new Date().toISOString(),
       game_id: gameData.id,
-      code_suggestion: aiResponse.code
+      code_suggestion: aiResponse.code,
     };
 
-    setAiAssistant(prev => ({
+    setAiAssistant((prev) => ({
       ...prev,
       conversation_history: [...prev.conversation_history, assistantMessage],
       suggestions_given: prev.suggestions_given + 1,
       code_generated: prev.code_generated || !!aiResponse.code,
-      last_interaction: new Date().toISOString()
+      last_interaction: new Date().toISOString(),
     }));
 
-    setEditorState(prev => ({
+    setEditorState((prev) => ({
       ...prev,
-      ai_suggestions: [...prev.ai_suggestions, aiResponse.message]
+      ai_suggestions: [...prev.ai_suggestions, aiResponse.message],
     }));
 
-    setAiMessage('');
+    setAiMessage("");
     setIsGenerating(false);
   };
 
-  const generateAiResponse = async (prompt: string): Promise<{ message: string; code?: string }> => {
+  const generateAiResponse = async (
+    prompt: string,
+  ): Promise<{ message: string; code?: string }> => {
     // Simulate AI response based on prompt
-    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+    await new Promise((resolve) =>
+      setTimeout(resolve, 1000 + Math.random() * 2000),
+    );
 
     const lowerPrompt = prompt.toLowerCase();
 
-    if (lowerPrompt.includes('symbol') || lowerPrompt.includes('icon')) {
+    if (lowerPrompt.includes("symbol") || lowerPrompt.includes("icon")) {
       return {
-        message: "I recommend using high-contrast symbols with clear visual hierarchy. Consider using a golden wild symbol as your highest value, followed by themed symbols that match your game's aesthetic. Would you like me to suggest specific color schemes or generate symbol configurations?",
+        message:
+          "I recommend using high-contrast symbols with clear visual hierarchy. Consider using a golden wild symbol as your highest value, followed by themed symbols that match your game's aesthetic. Would you like me to suggest specific color schemes or generate symbol configurations?",
         code: `const suggestedSymbols = [
   { id: 'wild', name: 'Golden Wild', color: '#FFD700', value: 1000, rarity: 'legendary' },
   { id: 'bonus', name: 'Bonus Symbol', color: '#FF4500', value: 500, rarity: 'epic' },
   { id: 'premium', name: 'Premium Symbol', color: '#8A2BE2', value: 300, rarity: 'rare' }
-];`
+];`,
       };
     }
 
-    if (lowerPrompt.includes('rtp') || lowerPrompt.includes('payout')) {
+    if (lowerPrompt.includes("rtp") || lowerPrompt.includes("payout")) {
       return {
-        message: "For social casino games, I recommend an RTP between 94-96%. Lower RTP (94-95%) creates more revenue but ensure player engagement remains high. Higher RTP (95-96%) increases player satisfaction. Consider your target audience and business model."
+        message:
+          "For social casino games, I recommend an RTP between 94-96%. Lower RTP (94-95%) creates more revenue but ensure player engagement remains high. Higher RTP (95-96%) increases player satisfaction. Consider your target audience and business model.",
       };
     }
 
-    if (lowerPrompt.includes('payline') || lowerPrompt.includes('win')) {
+    if (lowerPrompt.includes("payline") || lowerPrompt.includes("win")) {
       return {
-        message: "Modern slots typically use 20-50 paylines for good balance. I suggest starting with 25 paylines - it's familiar to players and provides good win frequency. Would you like me to generate a balanced payline configuration?",
+        message:
+          "Modern slots typically use 20-50 paylines for good balance. I suggest starting with 25 paylines - it's familiar to players and provides good win frequency. Would you like me to generate a balanced payline configuration?",
         code: `const paylineConfig = {
   totalLines: 25,
   winPatterns: ['left-to-right', 'scatter-pays'],
   minSymbols: 3,
   maxSymbols: 5
-};`
+};`,
       };
     }
 
-    if (lowerPrompt.includes('theme') || lowerPrompt.includes('design')) {
+    if (lowerPrompt.includes("theme") || lowerPrompt.includes("design")) {
       return {
-        message: "Choose a theme that resonates with your target audience. Popular themes include: Ancient civilizations (Egyptian, Greek), Fantasy (dragons, magic), Adventure (pirates, exploration), and Classic (fruits, bars). The theme should be consistent across symbols, background, and sound effects."
+        message:
+          "Choose a theme that resonates with your target audience. Popular themes include: Ancient civilizations (Egyptian, Greek), Fantasy (dragons, magic), Adventure (pirates, exploration), and Classic (fruits, bars). The theme should be consistent across symbols, background, and sound effects.",
       };
     }
 
-    if (lowerPrompt.includes('bonus') || lowerPrompt.includes('feature')) {
+    if (lowerPrompt.includes("bonus") || lowerPrompt.includes("feature")) {
       return {
-        message: "Consider adding engaging bonus features like Free Spins (triggered by 3+ scatters), Wild multipliers (2x-5x), or Pick & Click bonus rounds. These increase player engagement and extend session time.",
+        message:
+          "Consider adding engaging bonus features like Free Spins (triggered by 3+ scatters), Wild multipliers (2x-5x), or Pick & Click bonus rounds. These increase player engagement and extend session time.",
         code: `const bonusFeatures = [
   { type: 'free_spins', trigger: 'scatter_3+', awards: '10-20 spins' },
   { type: 'wild_multiplier', multiplier: '2x-5x' },
   { type: 'pick_bonus', prizes: 'coin_wins_or_multipliers' }
-];`
+];`,
       };
     }
 
     // Default response
     return {
-      message: "I'm here to help you create an amazing social casino game! I can assist with symbol design, payline configuration, RTP optimization, bonus features, theme selection, and much more. What specific aspect would you like to work on?"
+      message:
+        "I'm here to help you create an amazing social casino game! I can assist with symbol design, payline configuration, RTP optimization, bonus features, theme selection, and much more. What specific aspect would you like to work on?",
     };
   };
 
   const applyAiSuggestion = (suggestion: string) => {
     // Parse and apply AI suggestions to the game configuration
-    setEditorState(prev => ({ ...prev, unsaved_changes: true }));
+    setEditorState((prev) => ({ ...prev, unsaved_changes: true }));
   };
 
   const generateThumbnail = () => {
-    const theme = gameData.name || 'Custom Game';
-    const colors = ['#FFD700', '#4ECDC4', '#FF6B6B'];
-    
+    const theme = gameData.name || "Custom Game";
+    const colors = ["#FFD700", "#4ECDC4", "#FF6B6B"];
+
     // Generate SVG thumbnail
     const svg = `
       <svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
@@ -266,24 +352,24 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
       </svg>
     `;
 
-    return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
+    return `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
   };
 
   const saveGame = () => {
     const completeGameData: SocialCasinoGame = {
       id: gameData.id || `custom_${Date.now()}`,
-      name: gameData.name || 'New Game',
-      provider: gameData.provider || 'CoinKrazy',
-      category: gameData.category || 'social_slots',
-      game_type: gameData.game_type || 'BOTH',
+      name: gameData.name || "New Game",
+      provider: gameData.provider || "CoinKrazy",
+      category: gameData.category || "social_slots",
+      game_type: gameData.game_type || "BOTH",
       thumbnail: generateThumbnail(),
-      description: gameData.description || 'A custom social casino game',
+      description: gameData.description || "A custom social casino game",
       min_bet_gc: gameData.min_bet_gc || 1,
       max_bet_gc: gameData.max_bet_gc || 1000,
       min_bet_sc: gameData.min_bet_sc || 0.01,
       max_bet_sc: gameData.max_bet_sc || 10,
       rtp: gameData.rtp || 95.0,
-      volatility: gameData.volatility || 'medium',
+      volatility: gameData.volatility || "medium",
       max_win_gc: gameData.max_win_gc || 100000,
       max_win_sc: gameData.max_win_sc || 1000,
       paylines: gameData.paylines || 25,
@@ -295,27 +381,27 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
       total_spins_today: 0,
       total_gc_earned_today: 0,
       total_sc_earned_today: 0,
-      biggest_win_today: 0
+      biggest_win_today: 0,
     };
 
-    setEditorState(prev => ({
+    setEditorState((prev) => ({
       ...prev,
       unsaved_changes: false,
-      last_saved: new Date().toISOString()
+      last_saved: new Date().toISOString(),
     }));
 
     if (onSave) {
       onSave(completeGameData);
     }
 
-    console.log('Saving game:', completeGameData);
+    console.log("Saving game:", completeGameData);
   };
 
   const previewGame = () => {
-    setEditorState(prev => ({ ...prev, preview_mode: !prev.preview_mode }));
+    setEditorState((prev) => ({ ...prev, preview_mode: !prev.preview_mode }));
   };
 
-  if (!user || user.role !== 'admin') {
+  if (!user || user.role !== "admin") {
     return (
       <Card className="max-w-md mx-auto mt-8">
         <CardContent className="p-6 text-center">
@@ -345,9 +431,12 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
         <div className="flex items-center space-x-2">
           <Button variant="outline" onClick={previewGame}>
             <Eye className="h-4 w-4 mr-2" />
-            {editorState.preview_mode ? 'Edit Mode' : 'Preview'}
+            {editorState.preview_mode ? "Edit Mode" : "Preview"}
           </Button>
-          <Button onClick={() => setShowAiChat(true)} className="bg-purple-600 hover:bg-purple-700">
+          <Button
+            onClick={() => setShowAiChat(true)}
+            className="bg-purple-600 hover:bg-purple-700"
+          >
             <Bot className="h-4 w-4 mr-2" />
             AI Assistant
           </Button>
@@ -386,7 +475,12 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
                       <Input
                         id="game-name"
                         value={gameData.name}
-                        onChange={(e) => setGameData(prev => ({ ...prev, name: e.target.value }))}
+                        onChange={(e) =>
+                          setGameData((prev) => ({
+                            ...prev,
+                            name: e.target.value,
+                          }))
+                        }
                         placeholder="Enter game name"
                       />
                     </div>
@@ -395,7 +489,12 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
                       <Input
                         id="provider"
                         value={gameData.provider}
-                        onChange={(e) => setGameData(prev => ({ ...prev, provider: e.target.value }))}
+                        onChange={(e) =>
+                          setGameData((prev) => ({
+                            ...prev,
+                            provider: e.target.value,
+                          }))
+                        }
                         placeholder="Game provider"
                       />
                     </div>
@@ -406,7 +505,12 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
                     <Textarea
                       id="description"
                       value={gameData.description}
-                      onChange={(e) => setGameData(prev => ({ ...prev, description: e.target.value }))}
+                      onChange={(e) =>
+                        setGameData((prev) => ({
+                          ...prev,
+                          description: e.target.value,
+                        }))
+                      }
                       placeholder="Game description"
                       rows={3}
                     />
@@ -418,7 +522,9 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
                       <div className="mt-2">
                         <Slider
                           value={[gameData.rtp || 95]}
-                          onValueChange={([value]) => setGameData(prev => ({ ...prev, rtp: value }))}
+                          onValueChange={([value]) =>
+                            setGameData((prev) => ({ ...prev, rtp: value }))
+                          }
                           min={85}
                           max={98}
                           step={0.1}
@@ -433,7 +539,12 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
                       <select
                         className="w-full mt-2 p-2 border rounded"
                         value={gameData.volatility}
-                        onChange={(e) => setGameData(prev => ({ ...prev, volatility: e.target.value as any }))}
+                        onChange={(e) =>
+                          setGameData((prev) => ({
+                            ...prev,
+                            volatility: e.target.value as any,
+                          }))
+                        }
                       >
                         <option value="low">Low</option>
                         <option value="medium">Medium</option>
@@ -446,7 +557,12 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
                         id="paylines"
                         type="number"
                         value={gameData.paylines}
-                        onChange={(e) => setGameData(prev => ({ ...prev, paylines: parseInt(e.target.value) }))}
+                        onChange={(e) =>
+                          setGameData((prev) => ({
+                            ...prev,
+                            paylines: parseInt(e.target.value),
+                          }))
+                        }
                         min={1}
                         max={100}
                       />
@@ -458,7 +574,12 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
                       <Switch
                         id="active"
                         checked={gameData.is_active}
-                        onCheckedChange={(checked) => setGameData(prev => ({ ...prev, is_active: checked }))}
+                        onCheckedChange={(checked) =>
+                          setGameData((prev) => ({
+                            ...prev,
+                            is_active: checked,
+                          }))
+                        }
                       />
                       <Label htmlFor="active">Active</Label>
                     </div>
@@ -466,7 +587,12 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
                       <Switch
                         id="featured"
                         checked={gameData.is_featured}
-                        onCheckedChange={(checked) => setGameData(prev => ({ ...prev, is_featured: checked }))}
+                        onCheckedChange={(checked) =>
+                          setGameData((prev) => ({
+                            ...prev,
+                            is_featured: checked,
+                          }))
+                        }
                       />
                       <Label htmlFor="featured">Featured</Label>
                     </div>
@@ -476,19 +602,21 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
                 {/* Symbol Configuration */}
                 <TabsContent value="symbols" className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold">Symbol Configuration</h3>
+                    <h3 className="text-lg font-semibold">
+                      Symbol Configuration
+                    </h3>
                     <Button size="sm">
                       <Zap className="h-4 w-4 mr-2" />
                       Add Symbol
                     </Button>
                   </div>
-                  
+
                   <div className="grid gap-4">
                     {symbols.map((symbol, index) => (
                       <Card key={symbol.id} className="p-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-3">
-                            <div 
+                            <div
                               className="w-8 h-8 rounded"
                               style={{ backgroundColor: symbol.color }}
                             />
@@ -523,16 +651,19 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
                 {/* Reel Configuration */}
                 <TabsContent value="reels" className="space-y-4">
                   <h3 className="text-lg font-semibold">Reel Configuration</h3>
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label>Reel Count</Label>
                       <Input
                         type="number"
                         value={reelConfiguration.reelCount}
-                        onChange={(e) => setReelConfiguration(prev => ({ 
-                          ...prev, reelCount: parseInt(e.target.value) 
-                        }))}
+                        onChange={(e) =>
+                          setReelConfiguration((prev) => ({
+                            ...prev,
+                            reelCount: parseInt(e.target.value),
+                          }))
+                        }
                         min={3}
                         max={7}
                       />
@@ -542,9 +673,12 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
                       <Input
                         type="number"
                         value={reelConfiguration.rowCount}
-                        onChange={(e) => setReelConfiguration(prev => ({ 
-                          ...prev, rowCount: parseInt(e.target.value) 
-                        }))}
+                        onChange={(e) =>
+                          setReelConfiguration((prev) => ({
+                            ...prev,
+                            rowCount: parseInt(e.target.value),
+                          }))
+                        }
                         min={1}
                         max={5}
                       />
@@ -552,35 +686,48 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
                   </div>
 
                   <div className="grid grid-cols-3 gap-2 mt-4">
-                    {Array.from({ length: reelConfiguration.reelCount }, (_, reelIndex) => (
-                      <Card key={reelIndex} className="p-3">
-                        <h4 className="font-medium mb-2">Reel {reelIndex + 1}</h4>
-                        <div className="space-y-1">
-                          {Array.from({ length: reelConfiguration.rowCount }, (_, rowIndex) => (
-                            <div 
-                              key={rowIndex}
-                              className="w-full h-8 bg-muted rounded flex items-center justify-center text-xs"
-                            >
-                              Pos {rowIndex + 1}
-                            </div>
-                          ))}
-                        </div>
-                      </Card>
-                    ))}
+                    {Array.from(
+                      { length: reelConfiguration.reelCount },
+                      (_, reelIndex) => (
+                        <Card key={reelIndex} className="p-3">
+                          <h4 className="font-medium mb-2">
+                            Reel {reelIndex + 1}
+                          </h4>
+                          <div className="space-y-1">
+                            {Array.from(
+                              { length: reelConfiguration.rowCount },
+                              (_, rowIndex) => (
+                                <div
+                                  key={rowIndex}
+                                  className="w-full h-8 bg-muted rounded flex items-center justify-center text-xs"
+                                >
+                                  Pos {rowIndex + 1}
+                                </div>
+                              ),
+                            )}
+                          </div>
+                        </Card>
+                      ),
+                    )}
                   </div>
                 </TabsContent>
 
                 {/* Advanced Settings */}
                 <TabsContent value="advanced" className="space-y-4">
                   <h3 className="text-lg font-semibold">Advanced Settings</h3>
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label>Min Bet (GC)</Label>
                       <Input
                         type="number"
                         value={gameData.min_bet_gc}
-                        onChange={(e) => setGameData(prev => ({ ...prev, min_bet_gc: parseInt(e.target.value) }))}
+                        onChange={(e) =>
+                          setGameData((prev) => ({
+                            ...prev,
+                            min_bet_gc: parseInt(e.target.value),
+                          }))
+                        }
                       />
                     </div>
                     <div>
@@ -588,7 +735,12 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
                       <Input
                         type="number"
                         value={gameData.max_bet_gc}
-                        onChange={(e) => setGameData(prev => ({ ...prev, max_bet_gc: parseInt(e.target.value) }))}
+                        onChange={(e) =>
+                          setGameData((prev) => ({
+                            ...prev,
+                            max_bet_gc: parseInt(e.target.value),
+                          }))
+                        }
                       />
                     </div>
                     <div>
@@ -597,7 +749,12 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
                         type="number"
                         step="0.01"
                         value={gameData.min_bet_sc}
-                        onChange={(e) => setGameData(prev => ({ ...prev, min_bet_sc: parseFloat(e.target.value) }))}
+                        onChange={(e) =>
+                          setGameData((prev) => ({
+                            ...prev,
+                            min_bet_sc: parseFloat(e.target.value),
+                          }))
+                        }
                       />
                     </div>
                     <div>
@@ -606,7 +763,12 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
                         type="number"
                         step="0.01"
                         value={gameData.max_bet_sc}
-                        onChange={(e) => setGameData(prev => ({ ...prev, max_bet_sc: parseFloat(e.target.value) }))}
+                        onChange={(e) =>
+                          setGameData((prev) => ({
+                            ...prev,
+                            max_bet_sc: parseFloat(e.target.value),
+                          }))
+                        }
                       />
                     </div>
                   </div>
@@ -630,10 +792,12 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
                 <div className="text-center">
                   <Gamepad2 className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
                   <p className="text-sm text-muted-foreground">Game Preview</p>
-                  <p className="text-xs text-muted-foreground">{gameData.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {gameData.name}
+                  </p>
                 </div>
               </div>
-              
+
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span>RTP:</span>
@@ -649,8 +813,8 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
                 </div>
                 <div className="flex justify-between">
                   <span>Status:</span>
-                  <Badge variant={gameData.is_active ? 'default' : 'secondary'}>
-                    {gameData.is_active ? 'Active' : 'Inactive'}
+                  <Badge variant={gameData.is_active ? "default" : "secondary"}>
+                    {gameData.is_active ? "Active" : "Inactive"}
                   </Badge>
                 </div>
               </div>
@@ -673,19 +837,24 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {editorState.ai_suggestions.slice(-3).map((suggestion, index) => (
-                    <div key={index} className="p-3 bg-purple-50 rounded border-l-4 border-purple-500">
-                      <p className="text-sm">{suggestion}</p>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        className="mt-2"
-                        onClick={() => applyAiSuggestion(suggestion)}
+                  {editorState.ai_suggestions
+                    .slice(-3)
+                    .map((suggestion, index) => (
+                      <div
+                        key={index}
+                        className="p-3 bg-purple-50 rounded border-l-4 border-purple-500"
                       >
-                        Apply
-                      </Button>
-                    </div>
-                  ))}
+                        <p className="text-sm">{suggestion}</p>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="mt-2"
+                          onClick={() => applyAiSuggestion(suggestion)}
+                        >
+                          Apply
+                        </Button>
+                      </div>
+                    ))}
                 </div>
               </CardContent>
             </Card>
@@ -705,19 +874,21 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
               Get expert advice on game design, mechanics, and optimization
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="flex flex-col h-96">
             <div className="flex-1 overflow-y-auto space-y-4 p-4 bg-muted/20 rounded">
               {aiAssistant.conversation_history.map((message, index) => (
                 <div
                   key={index}
-                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
                 >
-                  <div className={`max-w-[80%] p-3 rounded-lg ${
-                    message.role === 'user' 
-                      ? 'bg-blue-500 text-white' 
-                      : 'bg-purple-100 text-purple-900'
-                  }`}>
+                  <div
+                    className={`max-w-[80%] p-3 rounded-lg ${
+                      message.role === "user"
+                        ? "bg-blue-500 text-white"
+                        : "bg-purple-100 text-purple-900"
+                    }`}
+                  >
                     <p className="text-sm">{message.message}</p>
                     {message.code_suggestion && (
                       <pre className="mt-2 p-2 bg-black/10 rounded text-xs overflow-x-auto">
@@ -738,16 +909,19 @@ export function AdminGameEditor({ gameId, onSave, className = '' }: AdminGameEdi
                 </div>
               )}
             </div>
-            
+
             <div className="flex space-x-2 mt-4">
               <Input
                 value={aiMessage}
                 onChange={(e) => setAiMessage(e.target.value)}
                 placeholder="Ask about game design, symbols, RTP, features..."
-                onKeyPress={(e) => e.key === 'Enter' && handleAiChat()}
+                onKeyPress={(e) => e.key === "Enter" && handleAiChat()}
                 disabled={isGenerating}
               />
-              <Button onClick={handleAiChat} disabled={isGenerating || !aiMessage.trim()}>
+              <Button
+                onClick={handleAiChat}
+                disabled={isGenerating || !aiMessage.trim()}
+              >
                 <MessageSquare className="h-4 w-4" />
               </Button>
             </div>

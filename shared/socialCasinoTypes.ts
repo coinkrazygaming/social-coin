@@ -3,8 +3,8 @@ export interface SocialCasinoGame {
   id: string;
   name: string;
   provider: string;
-  category: 'social_slots' | 'table_games' | 'poker' | 'bingo' | 'specialty';
-  game_type: 'GC' | 'SC' | 'BOTH'; // Game currency restrictions
+  category: "social_slots" | "table_games" | "poker" | "bingo" | "specialty";
+  game_type: "GC" | "SC" | "BOTH"; // Game currency restrictions
   thumbnail: string;
   background_image?: string;
   description: string;
@@ -13,7 +13,7 @@ export interface SocialCasinoGame {
   min_bet_sc: number;
   max_bet_sc: number;
   rtp: number;
-  volatility: 'low' | 'medium' | 'high';
+  volatility: "low" | "medium" | "high";
   max_win_gc: number;
   max_win_sc: number;
   paylines?: number;
@@ -35,7 +35,7 @@ export interface SocialCasinoGame {
 export interface BigWin {
   player_name: string;
   amount: number;
-  currency: 'GC' | 'SC';
+  currency: "GC" | "SC";
   game_id: string;
   timestamp: string;
 }
@@ -45,7 +45,7 @@ export interface SpinLog {
   user_id: string;
   game_id: string;
   session_id: string;
-  currency: 'GC' | 'SC';
+  currency: "GC" | "SC";
   bet_amount: number;
   win_amount: number;
   balance_before: number;
@@ -64,7 +64,7 @@ export interface GameSession {
   id: string;
   user_id: string;
   game_id: string;
-  currency: 'GC' | 'SC';
+  currency: "GC" | "SC";
   start_time: string;
   end_time?: string;
   total_spins: number;
@@ -74,8 +74,8 @@ export interface GameSession {
   biggest_win: number;
   longest_streak: number;
   bonus_rounds_triggered: number;
-  status: 'active' | 'completed' | 'abandoned';
-  device_type: 'desktop' | 'mobile' | 'tablet';
+  status: "active" | "completed" | "abandoned";
+  device_type: "desktop" | "mobile" | "tablet";
   created_at: string;
   updated_at: string;
 }
@@ -84,14 +84,21 @@ export interface WalletTransaction {
   id: string;
   user_id: string;
   wallet_id: string;
-  type: 'spin_bet' | 'spin_win' | 'deposit' | 'withdrawal' | 'bonus' | 'refund' | 'admin_adjustment';
-  currency: 'GC' | 'SC';
+  type:
+    | "spin_bet"
+    | "spin_win"
+    | "deposit"
+    | "withdrawal"
+    | "bonus"
+    | "refund"
+    | "admin_adjustment";
+  currency: "GC" | "SC";
   amount: number;
   balance_before: number;
   balance_after: number;
   reference_id?: string; // spin_id, game_session_id, etc.
   description: string;
-  status: 'pending' | 'completed' | 'failed' | 'cancelled';
+  status: "pending" | "completed" | "failed" | "cancelled";
   admin_notes?: string;
   created_at: string;
   metadata?: {
@@ -109,7 +116,7 @@ export interface APIProvider {
   api_url: string;
   api_key_encrypted: string;
   is_active: boolean;
-  supported_currencies: ('GC' | 'SC')[];
+  supported_currencies: ("GC" | "SC")[];
   webhook_url?: string;
   rate_limit_per_minute: number;
   cost_per_request: number;
@@ -139,7 +146,7 @@ export interface GameSettings {
   game_id: string;
   setting_key: string;
   setting_value: string;
-  setting_type: 'string' | 'number' | 'boolean' | 'json';
+  setting_type: "string" | "number" | "boolean" | "json";
   is_admin_only: boolean;
   description?: string;
   created_at: string;
@@ -150,7 +157,7 @@ export interface AdminGameEditor {
   id: string;
   admin_user_id: string;
   game_id: string;
-  action: 'create' | 'update' | 'delete' | 'activate' | 'deactivate';
+  action: "create" | "update" | "delete" | "activate" | "deactivate";
   changes_made: any; // JSON object
   ai_assistance_used: boolean;
   ai_suggestions?: string[];
@@ -226,7 +233,7 @@ export interface AdminSpinLog {
   id: string;
   player_name: string;
   game_name: string;
-  currency: 'GC' | 'SC';
+  currency: "GC" | "SC";
   bet_amount: number;
   win_amount: number;
   net_result: number;
@@ -258,7 +265,7 @@ export interface GameAnalytics {
 export interface APIGameIntegration {
   provider_name: string;
   games_available: number;
-  integration_status: 'active' | 'inactive' | 'error';
+  integration_status: "active" | "inactive" | "error";
   last_sync: string;
   error_message?: string;
   cost_today: number;
@@ -293,7 +300,7 @@ export interface AIEditorAssistant {
 }
 
 export interface AIMessage {
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   message: string;
   timestamp: string;
   game_id?: string;

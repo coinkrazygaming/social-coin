@@ -1,12 +1,12 @@
-import { 
-  AIEmployee, 
-  AdminToolbarSettings, 
-  BugReport, 
-  DocumentationSection, 
-  AdminTask, 
+import {
+  AIEmployee,
+  AdminToolbarSettings,
+  BugReport,
+  DocumentationSection,
+  AdminTask,
   AdminChatMessage,
-  DEFAULT_AI_EMPLOYEES 
-} from './adminToolbarTypes';
+  DEFAULT_AI_EMPLOYEES,
+} from "./adminToolbarTypes";
 
 // Database Schema Definitions
 export interface DatabaseSchema {
@@ -16,9 +16,9 @@ export interface DatabaseSchema {
     username: string;
     email: string;
     password_hash: string;
-    role: 'user' | 'staff' | 'admin';
-    status: 'active' | 'suspended' | 'banned';
-    verification_status: 'pending' | 'verified' | 'rejected';
+    role: "user" | "staff" | "admin";
+    status: "active" | "suspended" | "banned";
+    verification_status: "pending" | "verified" | "rejected";
     age_verified: boolean;
     created_at: Date;
     updated_at: Date;
@@ -41,7 +41,7 @@ export interface DatabaseSchema {
       notifications: boolean;
       marketing_emails: boolean;
       sound_enabled: boolean;
-      theme: 'light' | 'dark' | 'auto';
+      theme: "light" | "dark" | "auto";
       language: string;
       timezone: string;
     };
@@ -74,14 +74,14 @@ export interface DatabaseSchema {
     id: string;
     user_id: string;
     wallet_id: string;
-    type: 'purchase' | 'win' | 'bet' | 'bonus' | 'redemption' | 'refund';
-    currency: 'GC' | 'SC';
+    type: "purchase" | "win" | "bet" | "bonus" | "redemption" | "refund";
+    currency: "GC" | "SC";
     amount: number;
     balance_before: number;
     balance_after: number;
     description: string;
     reference_id?: string; // Game session, purchase order, etc.
-    status: 'pending' | 'completed' | 'failed' | 'cancelled';
+    status: "pending" | "completed" | "failed" | "cancelled";
     metadata?: Record<string, any>;
     created_at: Date;
     processed_at?: Date;
@@ -92,7 +92,7 @@ export interface DatabaseSchema {
     id: string;
     user_id: string;
     game_id: string;
-    currency: 'GC' | 'SC';
+    currency: "GC" | "SC";
     start_time: Date;
     end_time?: Date;
     total_bet: number;
@@ -113,7 +113,7 @@ export interface DatabaseSchema {
     game_id: string;
     bet_amount: number;
     win_amount: number;
-    currency: 'GC' | 'SC';
+    currency: "GC" | "SC";
     spin_result: Record<string, any>; // Game-specific result data
     rtp_contribution: number;
     timestamp: Date;
@@ -130,10 +130,10 @@ export interface DatabaseSchema {
     name: string;
     slug: string;
     provider_id: string;
-    category: 'slots' | 'table' | 'card' | 'specialty';
+    category: "slots" | "table" | "card" | "specialty";
     theme: string;
     rtp: number; // Return to Player percentage
-    volatility: 'low' | 'medium' | 'high';
+    volatility: "low" | "medium" | "high";
     min_bet_gc: number;
     max_bet_gc: number;
     min_bet_sc: number;
@@ -143,7 +143,7 @@ export interface DatabaseSchema {
     background_url?: string;
     demo_available: boolean;
     mobile_optimized: boolean;
-    status: 'active' | 'maintenance' | 'disabled';
+    status: "active" | "maintenance" | "disabled";
     features: string[]; // free_spins, bonus_rounds, progressive, etc.
     paylines?: number;
     reels?: number;
@@ -157,10 +157,10 @@ export interface DatabaseSchema {
     id: string;
     name: string;
     api_endpoint: string;
-    auth_method: 'api_key' | 'oauth' | 'basic';
+    auth_method: "api_key" | "oauth" | "basic";
     credentials: Record<string, string>; // Encrypted
     rate_limit: number;
-    status: 'active' | 'inactive' | 'maintenance';
+    status: "active" | "inactive" | "maintenance";
     game_count: number;
     supported_currencies: string[];
     webhook_url?: string;
@@ -198,7 +198,7 @@ export interface DatabaseSchema {
     name: string;
     role: string;
     specialization: string;
-    status: 'online' | 'busy' | 'offline';
+    status: "online" | "busy" | "offline";
     avatar: string;
     description: string;
     capabilities: string[];
@@ -215,7 +215,7 @@ export interface DatabaseSchema {
     id: string;
     sender_id: string;
     sender_name: string;
-    sender_type: 'admin' | 'staff' | 'ai_employee';
+    sender_type: "admin" | "staff" | "ai_employee";
     message: string;
     timestamp: Date;
     attachments?: string[];
@@ -228,11 +228,17 @@ export interface DatabaseSchema {
     id: string;
     title: string;
     description: string;
-    priority: 'low' | 'medium' | 'high' | 'urgent';
-    status: 'pending' | 'assigned' | 'in_progress' | 'completed' | 'cancelled';
+    priority: "low" | "medium" | "high" | "urgent";
+    status: "pending" | "assigned" | "in_progress" | "completed" | "cancelled";
     assigned_to?: string;
     assigned_by: string;
-    category: 'bug_fix' | 'feature' | 'maintenance' | 'content' | 'security' | 'compliance';
+    category:
+      | "bug_fix"
+      | "feature"
+      | "maintenance"
+      | "content"
+      | "security"
+      | "compliance";
     due_date?: Date;
     completed_at?: Date;
     tags: string[];
@@ -257,11 +263,17 @@ export interface DatabaseSchema {
     id: string;
     title: string;
     description: string;
-    severity: 'low' | 'medium' | 'high' | 'critical';
-    status: 'open' | 'investigating' | 'in_progress' | 'resolved' | 'closed';
+    severity: "low" | "medium" | "high" | "critical";
+    status: "open" | "investigating" | "in_progress" | "resolved" | "closed";
     reported_by: string;
     assigned_to?: string;
-    category: 'frontend' | 'backend' | 'database' | 'security' | 'performance' | 'ui_ux';
+    category:
+      | "frontend"
+      | "backend"
+      | "database"
+      | "security"
+      | "performance"
+      | "ui_ux";
     reproduction_steps: string[];
     expected_behavior: string;
     actual_behavior: string;
@@ -284,11 +296,11 @@ export interface DatabaseSchema {
   documentation_sections: {
     id: string;
     title: string;
-    category: 'user' | 'staff' | 'admin';
+    category: "user" | "staff" | "admin";
     content: string; // Markdown content
     subcategories: string[];
     tags: string[];
-    visibility: 'public' | 'staff_only' | 'admin_only';
+    visibility: "public" | "staff_only" | "admin_only";
     version: string;
     author_id: string;
     last_updated_by: string;
@@ -304,9 +316,9 @@ export interface DatabaseSchema {
   admin_toolbar_settings: {
     id: string;
     user_id: string;
-    position: 'right' | 'left';
+    position: "right" | "left";
     minimized: boolean;
-    theme: 'light' | 'dark' | 'auto';
+    theme: "light" | "dark" | "auto";
     notifications: boolean;
     sound_enabled: boolean;
     auto_hide_inactive: boolean;
@@ -322,12 +334,12 @@ export interface DatabaseSchema {
   // Social Media & Marketing
   social_media_posts: {
     id: string;
-    platform: 'facebook' | 'twitter' | 'instagram' | 'linkedin';
+    platform: "facebook" | "twitter" | "instagram" | "linkedin";
     content: string;
     media_urls?: string[];
     scheduled_for?: Date;
     posted_at?: Date;
-    status: 'draft' | 'scheduled' | 'posted' | 'failed';
+    status: "draft" | "scheduled" | "posted" | "failed";
     engagement: {
       likes: number;
       shares: number;
@@ -343,11 +355,16 @@ export interface DatabaseSchema {
   // Compliance & Security
   compliance_logs: {
     id: string;
-    type: 'age_verification' | 'kyc' | 'anti_fraud' | 'responsible_gaming' | 'audit';
+    type:
+      | "age_verification"
+      | "kyc"
+      | "anti_fraud"
+      | "responsible_gaming"
+      | "audit";
     user_id?: string;
     action: string;
     details: Record<string, any>;
-    result: 'pass' | 'fail' | 'pending' | 'review_required';
+    result: "pass" | "fail" | "pending" | "review_required";
     performed_by: string;
     timestamp: Date;
     reference_id?: string;
@@ -355,12 +372,16 @@ export interface DatabaseSchema {
 
   security_alerts: {
     id: string;
-    type: 'suspicious_activity' | 'fraud_attempt' | 'system_breach' | 'policy_violation';
-    severity: 'low' | 'medium' | 'high' | 'critical';
+    type:
+      | "suspicious_activity"
+      | "fraud_attempt"
+      | "system_breach"
+      | "policy_violation";
+    severity: "low" | "medium" | "high" | "critical";
     user_id?: string;
     description: string;
     details: Record<string, any>;
-    status: 'open' | 'investigating' | 'resolved' | 'false_positive';
+    status: "open" | "investigating" | "resolved" | "false_positive";
     created_by: string; // System or user ID
     assigned_to?: string;
     resolved_at?: Date;
@@ -373,15 +394,20 @@ export interface DatabaseSchema {
     id: string;
     name: string;
     description: string;
-    type: 'welcome_bonus' | 'daily_bonus' | 'deposit_match' | 'free_coins' | 'loyalty_reward';
-    currency: 'GC' | 'SC' | 'both';
+    type:
+      | "welcome_bonus"
+      | "daily_bonus"
+      | "deposit_match"
+      | "free_coins"
+      | "loyalty_reward";
+    currency: "GC" | "SC" | "both";
     amount: number;
     percentage?: number; // For deposit match
     minimum_purchase?: number;
     maximum_bonus?: number;
     start_date: Date;
     end_date: Date;
-    status: 'active' | 'inactive' | 'expired';
+    status: "active" | "inactive" | "expired";
     usage_limit?: number;
     usage_count: number;
     terms_conditions: string;
@@ -396,8 +422,8 @@ export interface DatabaseSchema {
     promotion_id: string;
     claimed_at: Date;
     amount_awarded: number;
-    currency: 'GC' | 'SC';
-    status: 'claimed' | 'used' | 'expired';
+    currency: "GC" | "SC";
+    status: "claimed" | "used" | "expired";
     transaction_id?: string;
   };
 
@@ -407,9 +433,15 @@ export interface DatabaseSchema {
     user_id: string;
     subject: string;
     description: string;
-    category: 'account' | 'payment' | 'technical' | 'game' | 'bonus' | 'complaint';
-    priority: 'low' | 'medium' | 'high' | 'urgent';
-    status: 'open' | 'in_progress' | 'waiting_user' | 'resolved' | 'closed';
+    category:
+      | "account"
+      | "payment"
+      | "technical"
+      | "game"
+      | "bonus"
+      | "complaint";
+    priority: "low" | "medium" | "high" | "urgent";
+    status: "open" | "in_progress" | "waiting_user" | "resolved" | "closed";
     assigned_to?: string;
     created_at: Date;
     updated_at: Date;
@@ -422,7 +454,7 @@ export interface DatabaseSchema {
     id: string;
     ticket_id: string;
     sender_id: string;
-    sender_type: 'user' | 'staff' | 'system';
+    sender_type: "user" | "staff" | "system";
     message: string;
     attachments?: string[];
     timestamp: Date;
@@ -433,114 +465,116 @@ export interface DatabaseSchema {
 // Default Seed Data
 export const DEFAULT_SEED_DATA = {
   // AI Employees
-  ai_employees: DEFAULT_AI_EMPLOYEES.map((employee): DatabaseSchema['ai_employees'] => ({
-    id: employee.id,
-    name: employee.name,
-    role: employee.role,
-    specialization: employee.specialization,
-    status: employee.status,
-    avatar: employee.avatar,
-    description: employee.description,
-    capabilities: employee.capabilities,
-    performance_score: employee.performance,
-    tasks_completed: employee.tasksCompleted,
-    response_time_avg: 1.5, // seconds
-    last_active: employee.lastActive,
-    created_at: new Date(),
-    updated_at: new Date(),
-    configuration: {
-      auto_respond: true,
-      response_delay: 1000,
-      max_concurrent_chats: 10,
-      learning_enabled: true
-    }
-  })),
+  ai_employees: DEFAULT_AI_EMPLOYEES.map(
+    (employee): DatabaseSchema["ai_employees"] => ({
+      id: employee.id,
+      name: employee.name,
+      role: employee.role,
+      specialization: employee.specialization,
+      status: employee.status,
+      avatar: employee.avatar,
+      description: employee.description,
+      capabilities: employee.capabilities,
+      performance_score: employee.performance,
+      tasks_completed: employee.tasksCompleted,
+      response_time_avg: 1.5, // seconds
+      last_active: employee.lastActive,
+      created_at: new Date(),
+      updated_at: new Date(),
+      configuration: {
+        auto_respond: true,
+        response_delay: 1000,
+        max_concurrent_chats: 10,
+        learning_enabled: true,
+      },
+    }),
+  ),
 
   // Documentation Sections
   documentation_sections: [
     {
-      id: 'user-001',
-      title: 'Getting Started with Coin Krazy',
-      category: 'user' as const,
+      id: "user-001",
+      title: "Getting Started with Coin Krazy",
+      category: "user" as const,
       content: `# Welcome to Coin Krazy Social Casino!\n\n## What is Coin Krazy?\n\nCoin Krazy is a premier social casino platform...`,
-      subcategories: ['account', 'games', 'currency', 'support'],
-      tags: ['beginner', 'overview', 'getting-started'],
-      visibility: 'public' as const,
-      version: '2.1',
-      author_id: 'admin',
-      last_updated_by: 'admin',
+      subcategories: ["account", "games", "currency", "support"],
+      tags: ["beginner", "overview", "getting-started"],
+      visibility: "public" as const,
+      version: "2.1",
+      author_id: "admin",
+      last_updated_by: "admin",
       attachments: [],
-      related_sections: ['user-002', 'user-003'],
+      related_sections: ["user-002", "user-003"],
       view_count: 1247,
       rating_sum: 235,
       rating_count: 52,
-      created_at: new Date('2024-01-01'),
-      updated_at: new Date('2024-01-15')
+      created_at: new Date("2024-01-01"),
+      updated_at: new Date("2024-01-15"),
     },
     {
-      id: 'user-002',
-      title: 'Sweepstakes Rules & Terms',
-      category: 'user' as const,
+      id: "user-002",
+      title: "Sweepstakes Rules & Terms",
+      category: "user" as const,
       content: `# Sweepstakes Rules & Terms of Service\n\n## Important Legal Information...`,
-      subcategories: ['legal', 'sweepstakes', 'terms', 'privacy'],
-      tags: ['legal', 'required-reading', 'sweepstakes'],
-      visibility: 'public' as const,
-      version: '3.2',
-      author_id: 'legal-team',
-      last_updated_by: 'legal-team',
+      subcategories: ["legal", "sweepstakes", "terms", "privacy"],
+      tags: ["legal", "required-reading", "sweepstakes"],
+      visibility: "public" as const,
+      version: "3.2",
+      author_id: "legal-team",
+      last_updated_by: "legal-team",
       attachments: [],
-      related_sections: ['user-003', 'user-004'],
+      related_sections: ["user-003", "user-004"],
       view_count: 892,
       rating_sum: 178,
       rating_count: 41,
-      created_at: new Date('2024-01-01'),
-      updated_at: new Date('2024-01-01')
+      created_at: new Date("2024-01-01"),
+      updated_at: new Date("2024-01-01"),
     },
     {
-      id: 'staff-001',
-      title: 'Staff Panel Guide & Features',
-      category: 'staff' as const,
+      id: "staff-001",
+      title: "Staff Panel Guide & Features",
+      category: "staff" as const,
       content: `# Staff Panel Guide & Features\n\n## Staff Panel Overview...`,
-      subcategories: ['staff-tools', 'procedures', 'training', 'policies'],
-      tags: ['staff-only', 'procedures', 'training'],
-      visibility: 'staff_only' as const,
-      version: '2.5',
-      author_id: 'hr-team',
-      last_updated_by: 'hr-team',
+      subcategories: ["staff-tools", "procedures", "training", "policies"],
+      tags: ["staff-only", "procedures", "training"],
+      visibility: "staff_only" as const,
+      version: "2.5",
+      author_id: "hr-team",
+      last_updated_by: "hr-team",
       attachments: [],
-      related_sections: ['staff-002', 'admin-001'],
+      related_sections: ["staff-002", "admin-001"],
       view_count: 156,
       rating_sum: 38,
       rating_count: 8,
-      created_at: new Date('2024-01-12'),
-      updated_at: new Date('2024-01-12')
+      created_at: new Date("2024-01-12"),
+      updated_at: new Date("2024-01-12"),
     },
     {
-      id: 'admin-001',
-      title: 'Admin Panel Complete Guide',
-      category: 'admin' as const,
+      id: "admin-001",
+      title: "Admin Panel Complete Guide",
+      category: "admin" as const,
       content: `# Admin Panel Complete Guide\n\n## System Administration Overview...`,
-      subcategories: ['system-admin', 'security', 'compliance', 'monitoring'],
-      tags: ['admin-only', 'system', 'security'],
-      visibility: 'admin_only' as const,
-      version: '3.1',
-      author_id: 'admin',
-      last_updated_by: 'admin',
+      subcategories: ["system-admin", "security", "compliance", "monitoring"],
+      tags: ["admin-only", "system", "security"],
+      visibility: "admin_only" as const,
+      version: "3.1",
+      author_id: "admin",
+      last_updated_by: "admin",
       attachments: [],
-      related_sections: ['admin-002', 'staff-001'],
+      related_sections: ["admin-002", "staff-001"],
       view_count: 89,
       rating_sum: 22,
       rating_count: 5,
-      created_at: new Date('2024-01-14'),
-      updated_at: new Date('2024-01-14')
-    }
+      created_at: new Date("2024-01-14"),
+      updated_at: new Date("2024-01-14"),
+    },
   ],
 
   // Social Casino Daily Stats (last 30 days)
   social_casino_stats: Array.from({ length: 30 }, (_, i) => {
     const date = new Date();
     date.setDate(date.getDate() - (29 - i));
-    
+
     return {
       id: `stats_${date.getTime()}`,
       date,
@@ -554,124 +588,135 @@ export const DEFAULT_SEED_DATA = {
       total_sc_won: 2650 + Math.floor(Math.random() * 700),
       total_sc_redeemed: 1200 + Math.floor(Math.random() * 300),
       average_session_time: 1800 + Math.floor(Math.random() * 600), // seconds
-      top_game_id: 'lucky-sevens',
+      top_game_id: "lucky-sevens",
       peak_concurrent_users: 245 + Math.floor(Math.random() * 100),
       peak_time: new Date(date.getTime() + Math.random() * 24 * 60 * 60 * 1000),
       revenue_gc: 12400 + Math.floor(Math.random() * 5000),
       redemptions_processed: 25 + Math.floor(Math.random() * 15),
       new_game_launches: Math.floor(Math.random() * 3),
-      created_at: date
+      created_at: date,
     };
   }),
 
   // Sample API Providers
   api_providers: [
     {
-      id: 'provider_pragmatic',
-      name: 'Pragmatic Play',
-      api_endpoint: 'https://api.pragmaticplay.net/v1',
-      auth_method: 'api_key' as const,
-      credentials: { api_key: 'demo_key_encrypted' },
+      id: "provider_pragmatic",
+      name: "Pragmatic Play",
+      api_endpoint: "https://api.pragmaticplay.net/v1",
+      auth_method: "api_key" as const,
+      credentials: { api_key: "demo_key_encrypted" },
       rate_limit: 1000,
-      status: 'active' as const,
+      status: "active" as const,
       game_count: 250,
-      supported_currencies: ['GC', 'SC'],
-      webhook_url: 'https://coinkrizy.com/webhooks/pragmatic',
+      supported_currencies: ["GC", "SC"],
+      webhook_url: "https://coinkrizy.com/webhooks/pragmatic",
       last_sync: new Date(),
-      created_at: new Date('2024-01-01'),
-      updated_at: new Date()
+      created_at: new Date("2024-01-01"),
+      updated_at: new Date(),
     },
     {
-      id: 'provider_netent',
-      name: 'NetEnt',
-      api_endpoint: 'https://api.netent.com/v2',
-      auth_method: 'oauth' as const,
-      credentials: { client_id: 'demo_client', client_secret: 'demo_secret_encrypted' },
+      id: "provider_netent",
+      name: "NetEnt",
+      api_endpoint: "https://api.netent.com/v2",
+      auth_method: "oauth" as const,
+      credentials: {
+        client_id: "demo_client",
+        client_secret: "demo_secret_encrypted",
+      },
       rate_limit: 500,
-      status: 'active' as const,
+      status: "active" as const,
       game_count: 180,
-      supported_currencies: ['GC', 'SC'],
+      supported_currencies: ["GC", "SC"],
       last_sync: new Date(),
-      created_at: new Date('2024-01-01'),
-      updated_at: new Date()
+      created_at: new Date("2024-01-01"),
+      updated_at: new Date(),
     },
     {
-      id: 'provider_microgaming',
-      name: 'Microgaming',
-      api_endpoint: 'https://api.microgaming.com/v1',
-      auth_method: 'basic' as const,
-      credentials: { username: 'demo_user', password: 'demo_pass_encrypted' },
+      id: "provider_microgaming",
+      name: "Microgaming",
+      api_endpoint: "https://api.microgaming.com/v1",
+      auth_method: "basic" as const,
+      credentials: { username: "demo_user", password: "demo_pass_encrypted" },
       rate_limit: 750,
-      status: 'active' as const,
+      status: "active" as const,
       game_count: 320,
-      supported_currencies: ['GC', 'SC'],
+      supported_currencies: ["GC", "SC"],
       last_sync: new Date(),
-      created_at: new Date('2024-01-01'),
-      updated_at: new Date()
-    }
+      created_at: new Date("2024-01-01"),
+      updated_at: new Date(),
+    },
   ],
 
   // Sample Promotions
   promotions: [
     {
-      id: 'promo_welcome',
-      name: 'Welcome Bonus',
-      description: 'Get 100,000 free Gold Coins + 100 Sweeps Coins when you sign up!',
-      type: 'welcome_bonus' as const,
-      currency: 'both' as const,
+      id: "promo_welcome",
+      name: "Welcome Bonus",
+      description:
+        "Get 100,000 free Gold Coins + 100 Sweeps Coins when you sign up!",
+      type: "welcome_bonus" as const,
+      currency: "both" as const,
       amount: 100000, // GC amount
-      start_date: new Date('2024-01-01'),
-      end_date: new Date('2024-12-31'),
-      status: 'active' as const,
+      start_date: new Date("2024-01-01"),
+      end_date: new Date("2024-12-31"),
+      status: "active" as const,
       usage_limit: undefined, // Unlimited
       usage_count: 1247,
-      terms_conditions: 'New users only. Must verify account to claim.',
-      created_by: 'admin',
-      created_at: new Date('2024-01-01'),
-      updated_at: new Date('2024-01-01')
+      terms_conditions: "New users only. Must verify account to claim.",
+      created_by: "admin",
+      created_at: new Date("2024-01-01"),
+      updated_at: new Date("2024-01-01"),
     },
     {
-      id: 'promo_daily',
-      name: 'Daily Login Bonus',
-      description: 'Free coins every day just for logging in!',
-      type: 'daily_bonus' as const,
-      currency: 'GC' as const,
+      id: "promo_daily",
+      name: "Daily Login Bonus",
+      description: "Free coins every day just for logging in!",
+      type: "daily_bonus" as const,
+      currency: "GC" as const,
       amount: 5000,
-      start_date: new Date('2024-01-01'),
-      end_date: new Date('2024-12-31'),
-      status: 'active' as const,
+      start_date: new Date("2024-01-01"),
+      end_date: new Date("2024-12-31"),
+      status: "active" as const,
       usage_count: 15670,
-      terms_conditions: 'Available once per day per user.',
-      created_by: 'admin',
-      created_at: new Date('2024-01-01'),
-      updated_at: new Date('2024-01-01')
-    }
+      terms_conditions: "Available once per day per user.",
+      created_by: "admin",
+      created_at: new Date("2024-01-01"),
+      updated_at: new Date("2024-01-01"),
+    },
   ],
 
   // Sample Admin Settings
   admin_toolbar_settings: [
     {
-      id: 'settings_admin',
-      user_id: 'admin',
-      position: 'right' as const,
+      id: "settings_admin",
+      user_id: "admin",
+      position: "right" as const,
       minimized: false,
-      theme: 'auto' as const,
+      theme: "auto" as const,
       notifications: true,
       sound_enabled: true,
       auto_hide_inactive: false,
-      quick_actions: ['dashboard', 'user-management', 'game-editor', 'reports', 'security', 'settings'],
-      favorite_features: ['ai-chat', 'bug-reports', 'analytics'],
+      quick_actions: [
+        "dashboard",
+        "user-management",
+        "game-editor",
+        "reports",
+        "security",
+        "settings",
+      ],
+      favorite_features: ["ai-chat", "bug-reports", "analytics"],
       custom_shortcuts: {
-        'ctrl+shift+d': 'dashboard',
-        'ctrl+shift+u': 'users',
-        'ctrl+shift+g': 'games'
+        "ctrl+shift+d": "dashboard",
+        "ctrl+shift+u": "users",
+        "ctrl+shift+g": "games",
       },
       chat_notifications: true,
       reporting_enabled: true,
       created_at: new Date(),
-      updated_at: new Date()
-    }
-  ]
+      updated_at: new Date(),
+    },
+  ],
 };
 
 // SQL Schema Creation Commands
@@ -796,34 +841,53 @@ CREATE TABLE IF NOT EXISTS spin_logs (
 // TypeScript interface for database operations
 export interface DatabaseOperations {
   // User operations
-  createUser(userData: Partial<DatabaseSchema['users']>): Promise<string>;
-  getUserById(userId: string): Promise<DatabaseSchema['users'] | null>;
-  updateUser(userId: string, updates: Partial<DatabaseSchema['users']>): Promise<boolean>;
-  
+  createUser(userData: Partial<DatabaseSchema["users"]>): Promise<string>;
+  getUserById(userId: string): Promise<DatabaseSchema["users"] | null>;
+  updateUser(
+    userId: string,
+    updates: Partial<DatabaseSchema["users"]>,
+  ): Promise<boolean>;
+
   // Wallet operations
-  getWallet(userId: string): Promise<DatabaseSchema['wallets'] | null>;
-  updateBalance(userId: string, currency: 'GC' | 'SC', amount: number): Promise<boolean>;
-  
+  getWallet(userId: string): Promise<DatabaseSchema["wallets"] | null>;
+  updateBalance(
+    userId: string,
+    currency: "GC" | "SC",
+    amount: number,
+  ): Promise<boolean>;
+
   // Transaction operations
-  createTransaction(transaction: Partial<DatabaseSchema['transactions']>): Promise<string>;
-  getTransactionHistory(userId: string, limit?: number): Promise<DatabaseSchema['transactions'][]>;
-  
+  createTransaction(
+    transaction: Partial<DatabaseSchema["transactions"]>,
+  ): Promise<string>;
+  getTransactionHistory(
+    userId: string,
+    limit?: number,
+  ): Promise<DatabaseSchema["transactions"][]>;
+
   // Game operations
-  logSpin(spinData: Partial<DatabaseSchema['spin_logs']>): Promise<string>;
+  logSpin(spinData: Partial<DatabaseSchema["spin_logs"]>): Promise<string>;
   getGameStats(gameId: string, period?: string): Promise<any>;
-  
+
   // Admin operations
-  getAIEmployees(): Promise<DatabaseSchema['ai_employees'][]>;
-  createBugReport(report: Partial<DatabaseSchema['bug_reports']>): Promise<string>;
-  getDocumentation(category?: string, visibility?: string): Promise<DatabaseSchema['documentation_sections'][]>;
-  
+  getAIEmployees(): Promise<DatabaseSchema["ai_employees"][]>;
+  createBugReport(
+    report: Partial<DatabaseSchema["bug_reports"]>,
+  ): Promise<string>;
+  getDocumentation(
+    category?: string,
+    visibility?: string,
+  ): Promise<DatabaseSchema["documentation_sections"][]>;
+
   // Statistics
-  getDailyStats(date?: Date): Promise<DatabaseSchema['social_casino_stats'] | null>;
+  getDailyStats(
+    date?: Date,
+  ): Promise<DatabaseSchema["social_casino_stats"] | null>;
   generateReport(type: string, parameters: any): Promise<any>;
 }
 
 export default {
   schema: {} as DatabaseSchema,
   seedData: DEFAULT_SEED_DATA,
-  createTablesSQL: CREATE_TABLES_SQL
+  createTablesSQL: CREATE_TABLES_SQL,
 };

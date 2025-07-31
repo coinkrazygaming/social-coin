@@ -1,45 +1,73 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Search, Filter, Download, QrCode, AlertTriangle, CheckCircle, Clock, X, Camera, FileText, User, Calendar } from 'lucide-react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Textarea } from './ui/textarea';
-import { Badge } from './ui/badge';
-import { ScrollArea } from './ui/scroll-area';
-import { Separator } from './ui/separator';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import { BugReport } from '../../shared/adminToolbarTypes';
-import { useAuth } from './AuthContext';
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Plus,
+  Search,
+  Filter,
+  Download,
+  QrCode,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  X,
+  Camera,
+  FileText,
+  User,
+  Calendar,
+} from "lucide-react";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import { Badge } from "./ui/badge";
+import { ScrollArea } from "./ui/scroll-area";
+import { Separator } from "./ui/separator";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { BugReport } from "../../shared/adminToolbarTypes";
+import { useAuth } from "./AuthContext";
 
 interface BugReportSystemProps {
   onPendingChange?: (count: number) => void;
 }
 
-export const BugReportSystem: React.FC<BugReportSystemProps> = ({ onPendingChange }) => {
+export const BugReportSystem: React.FC<BugReportSystemProps> = ({
+  onPendingChange,
+}) => {
   const [reports, setReports] = useState<BugReport[]>([]);
   const [filteredReports, setFilteredReports] = useState<BugReport[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState<string>('all');
-  const [filterSeverity, setFilterSeverity] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [filterSeverity, setFilterSeverity] = useState<string>("all");
   const [showNewReportModal, setShowNewReportModal] = useState(false);
   const [selectedReport, setSelectedReport] = useState<BugReport | null>(null);
   const { user } = useAuth();
 
   const [newReport, setNewReport] = useState({
-    title: '',
-    description: '',
-    severity: 'medium' as BugReport['severity'],
-    category: 'frontend' as BugReport['category'],
-    reproductionSteps: [''],
-    expectedBehavior: '',
-    actualBehavior: '',
+    title: "",
+    description: "",
+    severity: "medium" as BugReport["severity"],
+    category: "frontend" as BugReport["category"],
+    reproductionSteps: [""],
+    expectedBehavior: "",
+    actualBehavior: "",
     environment: {
-      browser: '',
-      device: '',
-      os: '',
-      url: ''
-    }
+      browser: "",
+      device: "",
+      os: "",
+      url: "",
+    },
   });
 
   useEffect(() => {
@@ -52,24 +80,29 @@ export const BugReportSystem: React.FC<BugReportSystemProps> = ({ onPendingChang
     let filtered = reports;
 
     if (searchTerm) {
-      filtered = filtered.filter(report =>
-        report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        report.description.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (report) =>
+          report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          report.description.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
-    if (filterStatus !== 'all') {
-      filtered = filtered.filter(report => report.status === filterStatus);
+    if (filterStatus !== "all") {
+      filtered = filtered.filter((report) => report.status === filterStatus);
     }
 
-    if (filterSeverity !== 'all') {
-      filtered = filtered.filter(report => report.severity === filterSeverity);
+    if (filterSeverity !== "all") {
+      filtered = filtered.filter(
+        (report) => report.severity === filterSeverity,
+      );
     }
 
     setFilteredReports(filtered);
 
     // Update pending count
-    const pendingCount = reports.filter(r => r.status === 'open' || r.status === 'investigating').length;
+    const pendingCount = reports.filter(
+      (r) => r.status === "open" || r.status === "investigating",
+    ).length;
     if (onPendingChange) {
       onPendingChange(pendingCount);
     }
@@ -79,66 +112,68 @@ export const BugReportSystem: React.FC<BugReportSystemProps> = ({ onPendingChang
     // In a real implementation, this would fetch from the database
     const mockReports: BugReport[] = [
       {
-        id: 'bug_001',
-        title: 'Slot game freezes on spin',
-        description: 'The Lucky Sevens slot game freezes when spinning with maximum bet',
-        severity: 'high',
-        status: 'open',
-        reportedBy: 'user123',
-        category: 'frontend',
+        id: "bug_001",
+        title: "Slot game freezes on spin",
+        description:
+          "The Lucky Sevens slot game freezes when spinning with maximum bet",
+        severity: "high",
+        status: "open",
+        reportedBy: "user123",
+        category: "frontend",
         reproductionSteps: [
-          'Go to Lucky Sevens slot game',
-          'Set bet to maximum amount',
-          'Click spin button',
-          'Game freezes after 2-3 seconds'
+          "Go to Lucky Sevens slot game",
+          "Set bet to maximum amount",
+          "Click spin button",
+          "Game freezes after 2-3 seconds",
         ],
-        expectedBehavior: 'Game should complete spin and show results',
-        actualBehavior: 'Game freezes and becomes unresponsive',
+        expectedBehavior: "Game should complete spin and show results",
+        actualBehavior: "Game freezes and becomes unresponsive",
         environment: {
-          browser: 'Chrome 118',
-          device: 'Desktop',
-          os: 'Windows 11',
-          url: '/social-casino/lucky-sevens'
+          browser: "Chrome 118",
+          device: "Desktop",
+          os: "Windows 11",
+          url: "/social-casino/lucky-sevens",
         },
         screenshots: [],
         logs: [],
-        barcode: generateBarcode('bug_001'),
-        createdAt: new Date('2024-01-15T10:30:00'),
-        updatedAt: new Date('2024-01-15T14:20:00'),
-        tags: ['high-priority', 'game-breaking'],
-        relatedIssues: []
+        barcode: generateBarcode("bug_001"),
+        createdAt: new Date("2024-01-15T10:30:00"),
+        updatedAt: new Date("2024-01-15T14:20:00"),
+        tags: ["high-priority", "game-breaking"],
+        relatedIssues: [],
       },
       {
-        id: 'bug_002',
-        title: 'Balance not updating after wins',
-        description: 'Player balance does not update correctly after winning spins',
-        severity: 'critical',
-        status: 'investigating',
-        reportedBy: 'admin',
-        assignedTo: 'dev-team',
-        category: 'backend',
+        id: "bug_002",
+        title: "Balance not updating after wins",
+        description:
+          "Player balance does not update correctly after winning spins",
+        severity: "critical",
+        status: "investigating",
+        reportedBy: "admin",
+        assignedTo: "dev-team",
+        category: "backend",
         reproductionSteps: [
-          'Play any slot game',
-          'Win a spin',
-          'Check balance - it does not update',
-          'Refresh page - balance still incorrect'
+          "Play any slot game",
+          "Win a spin",
+          "Check balance - it does not update",
+          "Refresh page - balance still incorrect",
         ],
-        expectedBehavior: 'Balance should update immediately after win',
-        actualBehavior: 'Balance remains unchanged after wins',
+        expectedBehavior: "Balance should update immediately after win",
+        actualBehavior: "Balance remains unchanged after wins",
         environment: {
-          browser: 'Firefox 119',
-          device: 'Mobile',
-          os: 'iOS 17',
-          url: '/social-casino'
+          browser: "Firefox 119",
+          device: "Mobile",
+          os: "iOS 17",
+          url: "/social-casino",
         },
         screenshots: [],
-        logs: ['Error: Balance update failed', 'Transaction ID: tx_12345'],
-        barcode: generateBarcode('bug_002'),
-        createdAt: new Date('2024-01-14T09:15:00'),
-        updatedAt: new Date('2024-01-15T16:45:00'),
-        tags: ['critical', 'wallet', 'payment'],
-        relatedIssues: []
-      }
+        logs: ["Error: Balance update failed", "Transaction ID: tx_12345"],
+        barcode: generateBarcode("bug_002"),
+        createdAt: new Date("2024-01-14T09:15:00"),
+        updatedAt: new Date("2024-01-15T16:45:00"),
+        tags: ["critical", "wallet", "payment"],
+        relatedIssues: [],
+      },
     ];
 
     setReports(mockReports);
@@ -158,10 +193,12 @@ export const BugReportSystem: React.FC<BugReportSystemProps> = ({ onPendingChang
       title: newReport.title,
       description: newReport.description,
       severity: newReport.severity,
-      status: 'open',
-      reportedBy: user?.id || 'admin',
+      status: "open",
+      reportedBy: user?.id || "admin",
       category: newReport.category,
-      reproductionSteps: newReport.reproductionSteps.filter(step => step.trim()),
+      reproductionSteps: newReport.reproductionSteps.filter((step) =>
+        step.trim(),
+      ),
       expectedBehavior: newReport.expectedBehavior,
       actualBehavior: newReport.actualBehavior,
       environment: newReport.environment,
@@ -171,68 +208,78 @@ export const BugReportSystem: React.FC<BugReportSystemProps> = ({ onPendingChang
       createdAt: new Date(),
       updatedAt: new Date(),
       tags: [],
-      relatedIssues: []
+      relatedIssues: [],
     };
 
-    setReports(prev => [report, ...prev]);
+    setReports((prev) => [report, ...prev]);
     setShowNewReportModal(false);
     resetNewReport();
   };
 
   const resetNewReport = () => {
     setNewReport({
-      title: '',
-      description: '',
-      severity: 'medium',
-      category: 'frontend',
-      reproductionSteps: [''],
-      expectedBehavior: '',
-      actualBehavior: '',
+      title: "",
+      description: "",
+      severity: "medium",
+      category: "frontend",
+      reproductionSteps: [""],
+      expectedBehavior: "",
+      actualBehavior: "",
       environment: {
-        browser: '',
-        device: '',
-        os: '',
-        url: ''
-      }
+        browser: "",
+        device: "",
+        os: "",
+        url: "",
+      },
     });
   };
 
-  const updateReportStatus = (reportId: string, status: BugReport['status']) => {
-    setReports(prev => prev.map(report =>
-      report.id === reportId
-        ? { ...report, status, updatedAt: new Date() }
-        : report
-    ));
+  const updateReportStatus = (
+    reportId: string,
+    status: BugReport["status"],
+  ) => {
+    setReports((prev) =>
+      prev.map((report) =>
+        report.id === reportId
+          ? { ...report, status, updatedAt: new Date() }
+          : report,
+      ),
+    );
   };
 
-  const getSeverityColor = (severity: BugReport['severity']) => {
+  const getSeverityColor = (severity: BugReport["severity"]) => {
     const colors = {
-      low: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-      medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-      high: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
-      critical: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+      low: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+      medium:
+        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
+      high: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
+      critical: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
     };
     return colors[severity];
   };
 
-  const getStatusColor = (status: BugReport['status']) => {
+  const getStatusColor = (status: BugReport["status"]) => {
     const colors = {
-      open: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
-      investigating: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-      in_progress: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-      resolved: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-      closed: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300'
+      open: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
+      investigating:
+        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
+      in_progress:
+        "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+      resolved:
+        "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
+      closed:
+        "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300",
     };
     return colors[status];
   };
 
-  const getStatusIcon = (status: BugReport['status']) => {
+  const getStatusIcon = (status: BugReport["status"]) => {
     const icons = {
       open: AlertTriangle,
       investigating: Clock,
       in_progress: Clock,
       resolved: CheckCircle,
-      closed: CheckCircle
+      closed: CheckCircle,
     };
     const Icon = icons[status];
     return <Icon className="w-4 h-4" />;
@@ -242,12 +289,14 @@ export const BugReportSystem: React.FC<BugReportSystemProps> = ({ onPendingChang
     const reportData = {
       ...report,
       exportedAt: new Date().toISOString(),
-      exportedBy: user?.username || 'admin'
+      exportedBy: user?.username || "admin",
     };
 
-    const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(reportData, null, 2)], {
+      type: "application/json",
+    });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `bug-report-${report.id}.json`;
     document.body.appendChild(a);
@@ -261,10 +310,18 @@ export const BugReportSystem: React.FC<BugReportSystemProps> = ({ onPendingChang
       {/* Header */}
       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Bug Reports</h3>
-          <Dialog open={showNewReportModal} onOpenChange={setShowNewReportModal}>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Bug Reports
+          </h3>
+          <Dialog
+            open={showNewReportModal}
+            onOpenChange={setShowNewReportModal}
+          >
             <DialogTrigger asChild>
-              <Button size="sm" className="bg-gradient-to-r from-red-600 to-orange-600">
+              <Button
+                size="sm"
+                className="bg-gradient-to-r from-red-600 to-orange-600"
+              >
                 <Plus className="w-4 h-4 mr-1" />
                 New Report
               </Button>
@@ -341,12 +398,18 @@ export const BugReportSystem: React.FC<BugReportSystemProps> = ({ onPendingChang
               >
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1">
-                    <h4 className="font-medium text-gray-900 dark:text-white mb-1">{report.title}</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{report.description}</p>
+                    <h4 className="font-medium text-gray-900 dark:text-white mb-1">
+                      {report.title}
+                    </h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                      {report.description}
+                    </p>
                   </div>
-                  
+
                   <div className="flex items-center gap-2 ml-4">
-                    <Badge className={getSeverityColor(report.severity)}>{report.severity}</Badge>
+                    <Badge className={getSeverityColor(report.severity)}>
+                      {report.severity}
+                    </Badge>
                     <Badge className={getStatusColor(report.status)}>
                       {getStatusIcon(report.status)}
                       <span className="ml-1">{report.status}</span>
@@ -369,7 +432,7 @@ export const BugReportSystem: React.FC<BugReportSystemProps> = ({ onPendingChang
                       {report.id}
                     </span>
                   </div>
-                  
+
                   <div className="flex gap-1">
                     <Button
                       variant="ghost"
@@ -419,7 +482,7 @@ const NewReportForm: React.FC<{
   const addReproductionStep = () => {
     onChange({
       ...report,
-      reproductionSteps: [...report.reproductionSteps, '']
+      reproductionSteps: [...report.reproductionSteps, ""],
     });
   };
 
@@ -432,7 +495,9 @@ const NewReportForm: React.FC<{
   const removeReproductionStep = (index: number) => {
     onChange({
       ...report,
-      reproductionSteps: report.reproductionSteps.filter((_: any, i: number) => i !== index)
+      reproductionSteps: report.reproductionSteps.filter(
+        (_: any, i: number) => i !== index,
+      ),
     });
   };
 
@@ -450,7 +515,10 @@ const NewReportForm: React.FC<{
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium mb-2">Severity</label>
-          <Select value={report.severity} onValueChange={(value) => onChange({ ...report, severity: value })}>
+          <Select
+            value={report.severity}
+            onValueChange={(value) => onChange({ ...report, severity: value })}
+          >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -465,7 +533,10 @@ const NewReportForm: React.FC<{
 
         <div>
           <label className="block text-sm font-medium mb-2">Category</label>
-          <Select value={report.category} onValueChange={(value) => onChange({ ...report, category: value })}>
+          <Select
+            value={report.category}
+            onValueChange={(value) => onChange({ ...report, category: value })}
+          >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -492,7 +563,9 @@ const NewReportForm: React.FC<{
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2">Reproduction Steps</label>
+        <label className="block text-sm font-medium mb-2">
+          Reproduction Steps
+        </label>
         {report.reproductionSteps.map((step: string, index: number) => (
           <div key={index} className="flex gap-2 mb-2">
             <Input
@@ -518,20 +591,28 @@ const NewReportForm: React.FC<{
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium mb-2">Expected Behavior</label>
+          <label className="block text-sm font-medium mb-2">
+            Expected Behavior
+          </label>
           <Textarea
             value={report.expectedBehavior}
-            onChange={(e) => onChange({ ...report, expectedBehavior: e.target.value })}
+            onChange={(e) =>
+              onChange({ ...report, expectedBehavior: e.target.value })
+            }
             placeholder="What should happen"
             rows={2}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Actual Behavior</label>
+          <label className="block text-sm font-medium mb-2">
+            Actual Behavior
+          </label>
           <Textarea
             value={report.actualBehavior}
-            onChange={(e) => onChange({ ...report, actualBehavior: e.target.value })}
+            onChange={(e) =>
+              onChange({ ...report, actualBehavior: e.target.value })
+            }
             placeholder="What actually happens"
             rows={2}
           />
@@ -543,10 +624,12 @@ const NewReportForm: React.FC<{
           <label className="block text-sm font-medium mb-2">Browser</label>
           <Input
             value={report.environment.browser}
-            onChange={(e) => onChange({
-              ...report,
-              environment: { ...report.environment, browser: e.target.value }
-            })}
+            onChange={(e) =>
+              onChange({
+                ...report,
+                environment: { ...report.environment, browser: e.target.value },
+              })
+            }
             placeholder="e.g., Chrome 118"
           />
         </div>
@@ -555,18 +638,25 @@ const NewReportForm: React.FC<{
           <label className="block text-sm font-medium mb-2">Device</label>
           <Input
             value={report.environment.device}
-            onChange={(e) => onChange({
-              ...report,
-              environment: { ...report.environment, device: e.target.value }
-            })}
+            onChange={(e) =>
+              onChange({
+                ...report,
+                environment: { ...report.environment, device: e.target.value },
+              })
+            }
             placeholder="e.g., Desktop, iPhone 15"
           />
         </div>
       </div>
 
       <div className="flex gap-2 justify-end">
-        <Button variant="outline" onClick={onCancel}>Cancel</Button>
-        <Button onClick={onSubmit} disabled={!report.title || !report.description}>
+        <Button variant="outline" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button
+          onClick={onSubmit}
+          disabled={!report.title || !report.description}
+        >
           Create Report
         </Button>
       </div>
@@ -578,7 +668,7 @@ const NewReportForm: React.FC<{
 const ReportDetailModal: React.FC<{
   report: BugReport;
   onClose: () => void;
-  onStatusChange: (id: string, status: BugReport['status']) => void;
+  onStatusChange: (id: string, status: BugReport["status"]) => void;
 }> = ({ report, onClose, onStatusChange }) => {
   return (
     <Dialog open={true} onOpenChange={onClose}>
@@ -596,7 +686,12 @@ const ReportDetailModal: React.FC<{
           {/* Status Management */}
           <div className="flex items-center gap-4">
             <label className="font-medium">Status:</label>
-            <Select value={report.status} onValueChange={(value) => onStatusChange(report.id, value as BugReport['status'])}>
+            <Select
+              value={report.status}
+              onValueChange={(value) =>
+                onStatusChange(report.id, value as BugReport["status"])
+              }
+            >
               <SelectTrigger className="w-48">
                 <SelectValue />
               </SelectTrigger>
@@ -625,16 +720,30 @@ const ReportDetailModal: React.FC<{
           <div className="grid grid-cols-2 gap-6">
             <div>
               <h4 className="font-semibold mb-2">Description</h4>
-              <p className="text-gray-600 dark:text-gray-400">{report.description}</p>
+              <p className="text-gray-600 dark:text-gray-400">
+                {report.description}
+              </p>
             </div>
 
             <div>
               <h4 className="font-semibold mb-2">Environment</h4>
               <div className="space-y-1 text-sm">
-                <div><strong>Browser:</strong> {report.environment.browser || 'Not specified'}</div>
-                <div><strong>Device:</strong> {report.environment.device || 'Not specified'}</div>
-                <div><strong>OS:</strong> {report.environment.os || 'Not specified'}</div>
-                <div><strong>URL:</strong> {report.environment.url || 'Not specified'}</div>
+                <div>
+                  <strong>Browser:</strong>{" "}
+                  {report.environment.browser || "Not specified"}
+                </div>
+                <div>
+                  <strong>Device:</strong>{" "}
+                  {report.environment.device || "Not specified"}
+                </div>
+                <div>
+                  <strong>OS:</strong>{" "}
+                  {report.environment.os || "Not specified"}
+                </div>
+                <div>
+                  <strong>URL:</strong>{" "}
+                  {report.environment.url || "Not specified"}
+                </div>
               </div>
             </div>
           </div>
@@ -653,12 +762,16 @@ const ReportDetailModal: React.FC<{
           <div className="grid grid-cols-2 gap-6">
             <div>
               <h4 className="font-semibold mb-2">Expected Behavior</h4>
-              <p className="text-gray-600 dark:text-gray-400">{report.expectedBehavior}</p>
+              <p className="text-gray-600 dark:text-gray-400">
+                {report.expectedBehavior}
+              </p>
             </div>
 
             <div>
               <h4 className="font-semibold mb-2">Actual Behavior</h4>
-              <p className="text-gray-600 dark:text-gray-400">{report.actualBehavior}</p>
+              <p className="text-gray-600 dark:text-gray-400">
+                {report.actualBehavior}
+              </p>
             </div>
           </div>
 
@@ -677,12 +790,13 @@ const ReportDetailModal: React.FC<{
 };
 
 // Helper function to get severity colors (duplicated for modal)
-const getSeverityColor = (severity: BugReport['severity']) => {
+const getSeverityColor = (severity: BugReport["severity"]) => {
   const colors = {
-    low: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-    medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-    high: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
-    critical: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+    low: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+    medium:
+      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
+    high: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
+    critical: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
   };
   return colors[severity];
 };
@@ -690,12 +804,14 @@ const getSeverityColor = (severity: BugReport['severity']) => {
 const exportReport = (report: BugReport) => {
   const reportData = {
     ...report,
-    exportedAt: new Date().toISOString()
+    exportedAt: new Date().toISOString(),
   };
 
-  const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify(reportData, null, 2)], {
+    type: "application/json",
+  });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  const a = document.createElement("a");
   a.href = url;
   a.download = `bug-report-${report.id}.json`;
   document.body.appendChild(a);
