@@ -238,5 +238,15 @@ export function createServer() {
   app.get("/api/slots/:slotId/stats", handleGetSlotStats);
   app.get("/api/slots/stats", handleGetAllSlotStats);
 
+  // AI Employee routes
+  app.get("/api/ai-employees", handleGetAIEmployees);
+  app.get("/api/ai-employees/status", handleGetAIEmployeeStatus);
+  app.get("/api/ai-employees/alerts", handleGetAIAlerts);
+  app.post("/api/ai-employees/alerts/:alertId/action", handleAlertAction);
+  app.get("/api/ai-employees/messages", handleGetAIMessages);
+  app.post("/api/ai-employees/messages", handleSendMessageToAI);
+  app.post("/api/ai-employees/mini-games/log-session", handleLogSessionToAI);
+  app.post("/api/ai-employees/security/analyze-events", handleAnalyzeSecurityEvents);
+
   return app;
 }
