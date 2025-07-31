@@ -81,6 +81,7 @@ export const AdminAlerts: React.FC<AdminAlertsProps> = ({ className = '' }) => {
   const [filter, setFilter] = useState<string>('all');
   const [severityFilter, setSeverityFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [userHasInteracted, setUserHasInteracted] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const windowRef = useRef<Window | null>(null);
   const { user } = useAuth();
@@ -88,22 +89,34 @@ export const AdminAlerts: React.FC<AdminAlertsProps> = ({ className = '' }) => {
   useEffect(() => {
     loadSecurityAlerts();
     startRealTimeMonitoring();
-    
+
     windowRef.current = window;
-    
+
+    // Add user interaction listener
+    const handleUserInteraction = () => {
+      setUserHasInteracted(true);
+      document.removeEventListener('click', handleUserInteraction);
+      document.removeEventListener('keydown', handleUserInteraction);
+    };
+
+    document.addEventListener('click', handleUserInteraction);
+    document.addEventListener('keydown', handleUserInteraction);
+
     return () => {
       stopAllSounds();
+      document.removeEventListener('click', handleUserInteraction);
+      document.removeEventListener('keydown', handleUserInteraction);
     };
   }, []);
 
   useEffect(() => {
-    // Play alarm for new critical/high severity alerts
+    // Play alarm for new critical/high severity alerts only if user has interacted
     const newAlerts = alerts.filter(a => !a.acknowledged && (a.severity === 'critical' || a.severity === 'high') && a.soundEnabled);
-    if (newAlerts.length > 0 && soundEnabled) {
+    if (newAlerts.length > 0 && soundEnabled && userHasInteracted) {
       playAlarmSound();
       flashWindow();
     }
-  }, [alerts, soundEnabled]);
+  }, [alerts, soundEnabled, userHasInteracted]);
 
   const loadSecurityAlerts = () => {
     // Real security alerts based on actual system monitoring
@@ -366,7 +379,7 @@ export const AdminAlerts: React.FC<AdminAlertsProps> = ({ className = '' }) => {
   };
 
   const playAlarmSound = () => {
-    if (audioRef.current && soundEnabled) {
+    if (audioRef.current && soundEnabled && userHasInteracted) {
       audioRef.current.currentTime = 0;
       audioRef.current.play().catch(console.error);
     }
