@@ -641,14 +641,3 @@ function processSecurityAnalysis(task: AITask) {
     1500 + Math.random() * 2500,
   );
 }
-
-export {
-  handleGetAIEmployees,
-  handleGetAIEmployeeStatus,
-  handleGetAIAlerts,
-  handleAlertAction,
-  handleGetAIMessages,
-  handleSendMessageToAI,
-  handleLogSessionToAI,
-  handleAnalyzeSecurityEvents,
-};
