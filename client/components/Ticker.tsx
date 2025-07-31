@@ -139,8 +139,9 @@ export function Ticker() {
       }
 
       if (retryCount === 0) {
-        // Only set loading false on first attempt
+        // Only set loading false and reset fetching on first attempt
         setIsLoading(false);
+        setIsFetching(false);
       }
     }
   };
