@@ -95,6 +95,15 @@ import {
   handleRefreshSession,
   handleOAuthLogout,
 } from "./routes/oauth";
+import {
+  handleCheckGameCooldown,
+  handleSubmitGameSession,
+  handleGetUserGameHistory,
+  handleGetUserCooldowns,
+  handleGetSecurityEvents,
+  handleUpdateSecurityEvent,
+  handleGetGameAnalytics
+} from "./routes/miniGamesAPI";
 
 export function createServer() {
   const app = express();
