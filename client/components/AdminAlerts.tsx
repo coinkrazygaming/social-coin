@@ -163,15 +163,28 @@ export const AdminAlerts: React.FC<AdminAlertsProps> = ({ className = '' }) => {
   }, []);
 
   useEffect(() => {
-    // Play alarm for new critical/high severity alerts only if user has interacted
-    const newAlerts = alerts.filter(a => !a.acknowledged && (a.severity === 'critical' || a.severity === 'high') && a.soundEnabled);
+    // Play alarm only for truly new critical/high severity alerts that haven't played before
+    const newAlerts = alerts.filter(a =>
+      !a.acknowledged &&
+      (a.severity === 'critical' || a.severity === 'high') &&
+      a.soundEnabled &&
+      !playedSounds.has(a.id)
+    );
+
     if (newAlerts.length > 0 && soundEnabled && userHasInteracted) {
+      // Mark these alerts as having played sound
+      setPlayedSounds(prev => {
+        const newSet = new Set(prev);
+        newAlerts.forEach(alert => newSet.add(alert.id));
+        return newSet;
+      });
+
       playAlarmSound();
       flashWindow();
       setIsFlashing(true);
       setTimeout(() => setIsFlashing(false), 3000);
     }
-  }, [alerts, soundEnabled, userHasInteracted]);
+  }, [alerts, soundEnabled, userHasInteracted, playedSounds]);
 
   const loadSecurityAlerts = () => {
     // Real security alerts based on actual system monitoring
