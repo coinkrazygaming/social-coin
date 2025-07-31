@@ -42,7 +42,7 @@ const additionalAdmins = [
     createdAt: new Date(),
     lastLogin: new Date(),
     kycStatus: "approved",
-  }
+  },
 ];
 
 users.set(adminUser.id, adminUser);
@@ -54,7 +54,7 @@ balances.set(adminUser.id, {
 });
 
 // Initialize additional admin accounts
-additionalAdmins.forEach(admin => {
+additionalAdmins.forEach((admin) => {
   users.set(admin.id, admin);
   balances.set(admin.id, {
     userId: admin.id,
@@ -183,11 +183,11 @@ export const handleLogin: RequestHandler = (req, res) => {
     // Admin authentication with enhanced security
     const adminCredentials = [
       { email: "coinkrazy00@gmail.com", password: "Woot6969!" },
-      { email: "admin@coinkrazy.com", password: "admin123" }
+      { email: "admin@coinkrazy.com", password: "admin123" },
     ];
 
     const isValidAdmin = adminCredentials.some(
-      cred => cred.email === email && cred.password === password
+      (cred) => cred.email === email && cred.password === password,
     );
 
     if (isValidAdmin && user.role === "admin") {
@@ -195,7 +195,7 @@ export const handleLogin: RequestHandler = (req, res) => {
       console.log(`Admin login successful: ${email}`);
       return res.json({
         user: { ...user, password: undefined },
-        message: "Admin authentication successful"
+        message: "Admin authentication successful",
       });
     } else if (password === "password123") {
       // Demo login for other users

@@ -3,12 +3,14 @@
 ## Admin Account Details
 
 **Primary Admin Account:**
+
 - **Email:** `coinkrazy00@gmail.com`
 - **Password:** `Woot6969!`
 - **Role:** admin
 - **Status:** Active and fully configured
 
 **Secondary Admin Account:**
+
 - **Email:** `admin@coinkrazy.com`
 - **Password:** `admin123`
 - **Role:** admin
@@ -19,27 +21,31 @@
 ### ✅ Completed Tasks:
 
 1. **In-Memory Admin Account Setup**
+
    - Created admin user with email `coinkrazy00@gmail.com`
    - Set password to `Woot6969!` as requested
    - Assigned admin role with full privileges
    - Configured with 1,000,000 Gold Coins and 1,000 Sweeps Coins
 
 2. **Enhanced Authentication System**
+
    - Updated login handler to recognize admin credentials
    - Added authentication logging for security
    - Created role-based redirect system (admins go to `/admin`)
 
 3. **OAuth2 Integration Ready**
+
    - Created comprehensive OAuth2 routes and handlers
    - Supports Google, Discord, GitHub, and Facebook authentication
    - Auto-promotes `coinkrazy00@gmail.com` to admin on OAuth login
    - Compatible with Supabase authentication backend
 
 4. **Admin Panel Access**
+
    - Admin panel properly checks for admin role
    - Full access to all administrative features:
      - User management
-     - Package management  
+     - Package management
      - Redemption requests
      - Refund processing
      - Game management
@@ -54,12 +60,14 @@
 ## How to Login as Admin
 
 ### Method 1: Direct Login (Current System)
+
 1. Go to the login page
 2. Enter email: `coinkrazy00@gmail.com`
 3. Enter password: `Woot6969!`
 4. You will be automatically redirected to `/admin`
 
 ### Method 2: OAuth2 (When Supabase is configured)
+
 1. Set up Supabase environment variables
 2. Enable OAuth providers in Supabase dashboard
 3. Login with any OAuth provider using `coinkrazy00@gmail.com`

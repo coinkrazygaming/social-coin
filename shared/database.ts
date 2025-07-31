@@ -390,7 +390,9 @@ export class DatabaseService {
   ): Promise<Notification[]> {
     try {
       if (!supabase) {
-        console.warn("Supabase client not available - returning mock notifications");
+        console.warn(
+          "Supabase client not available - returning mock notifications",
+        );
         return [
           {
             id: "mock_notification_1",
@@ -402,7 +404,7 @@ export class DatabaseService {
             priority: "medium",
             read: false,
             created_at: new Date().toISOString(),
-          }
+          },
         ];
       }
 
@@ -446,7 +448,9 @@ export class DatabaseService {
   static async getAdminAlerts(): Promise<AdminAlert[]> {
     try {
       if (!supabase) {
-        console.warn("Supabase client not available - returning mock admin alerts");
+        console.warn(
+          "Supabase client not available - returning mock admin alerts",
+        );
         return [
           {
             id: "mock_alert_1",
@@ -456,7 +460,7 @@ export class DatabaseService {
             priority: "medium",
             status: "pending",
             created_at: new Date().toISOString(),
-          }
+          },
         ];
       }
 
@@ -478,7 +482,9 @@ export class DatabaseService {
   static async initializeDefaultAdmin(): Promise<void> {
     try {
       if (!supabase) {
-        console.warn("Supabase client not available - skipping admin initialization");
+        console.warn(
+          "Supabase client not available - skipping admin initialization",
+        );
         return;
       }
 
@@ -538,7 +544,9 @@ export const subscribeToWalletUpdates = (
   callback: (wallet: Wallet) => void,
 ) => {
   if (!supabase) {
-    console.warn("Supabase client not available - wallet subscriptions disabled");
+    console.warn(
+      "Supabase client not available - wallet subscriptions disabled",
+    );
     return { unsubscribe: () => {} };
   }
 
@@ -562,7 +570,9 @@ export const subscribeToNotifications = (
   callback: (notification: Notification) => void,
 ) => {
   if (!supabase) {
-    console.warn("Supabase client not available - notification subscriptions disabled");
+    console.warn(
+      "Supabase client not available - notification subscriptions disabled",
+    );
     return { unsubscribe: () => {} };
   }
 
@@ -585,7 +595,9 @@ export const subscribeToGlobalNotifications = (
   callback: (notification: Notification) => void,
 ) => {
   if (!supabase) {
-    console.warn("Supabase client not available - global notification subscriptions disabled");
+    console.warn(
+      "Supabase client not available - global notification subscriptions disabled",
+    );
     return { unsubscribe: () => {} };
   }
 
@@ -608,7 +620,9 @@ export const subscribeToAdminAlerts = (
   callback: (alert: AdminAlert) => void,
 ) => {
   if (!supabase) {
-    console.warn("Supabase client not available - admin alert subscriptions disabled");
+    console.warn(
+      "Supabase client not available - admin alert subscriptions disabled",
+    );
     return { unsubscribe: () => {} };
   }
 

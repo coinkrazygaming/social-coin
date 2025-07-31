@@ -1,7 +1,11 @@
 #!/usr/bin/env ts-node
 
 import "dotenv/config";
-import { createAdminAccount, setupOAuth2Environment, verifyDatabaseConnection } from "../utils/adminSetup";
+import {
+  createAdminAccount,
+  setupOAuth2Environment,
+  verifyDatabaseConnection,
+} from "../utils/adminSetup";
 
 async function main() {
   console.log("🔧 CoinKrazy Admin Setup Tool");
@@ -24,10 +28,10 @@ async function main() {
   // Create admin account
   const adminEmail = "coinkrazy00@gmail.com";
   const adminPassword = "Woot6969!";
-  
+
   console.log(`\nCreating admin account: ${adminEmail}`);
   const adminCreated = await createAdminAccount(adminEmail, adminPassword);
-  
+
   if (adminCreated) {
     console.log("\n✅ Admin setup completed successfully!");
     console.log("\nAdmin Account Details:");

@@ -18,18 +18,20 @@ const oauthLoginSchema = z.object({
 export const handleOAuthLogin: RequestHandler = async (req, res) => {
   try {
     const { provider, redirectUrl } = oauthLoginSchema.parse(req.body);
-    
+
     if (!supabase) {
-      return res.status(503).json({ 
+      return res.status(503).json({
         error: "OAuth2 service unavailable",
-        message: "Database connection not configured"
+        message: "Database connection not configured",
       });
     }
 
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: provider,
       options: {
-        redirectTo: redirectUrl || `${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/callback`,
+        redirectTo:
+          redirectUrl ||
+          `${process.env.FRONTEND_URL || "http://localhost:5173"}/auth/callback`,
       },
     });
 
@@ -38,10 +40,10 @@ export const handleOAuthLogin: RequestHandler = async (req, res) => {
       return res.status(400).json({ error: error.message });
     }
 
-    res.json({ 
+    res.json({
       success: true,
       authUrl: data.url,
-      provider 
+      provider,
     });
   } catch (error) {
     console.error("OAuth login error:", error);
@@ -53,38 +55,40 @@ export const handleOAuthLogin: RequestHandler = async (req, res) => {
 export const handleOAuthCallback: RequestHandler = async (req, res) => {
   try {
     const { code, state, provider } = oauthCallbackSchema.parse(req.query);
-    
+
     if (!supabase) {
-      return res.status(503).json({ 
+      return res.status(503).json({
         error: "OAuth2 service unavailable",
-        message: "Database connection not configured"
+        message: "Database connection not configured",
       });
     }
 
     // Exchange code for session
-    const { data: authData, error: authError } = await supabase.auth.exchangeCodeForSession(code);
-    
+    const { data: authData, error: authError } =
+      await supabase.auth.exchangeCodeForSession(code);
+
     if (authError) {
       console.error("OAuth callback error:", authError);
       return res.status(400).json({ error: authError.message });
     }
 
     const { user: supabaseUser, session } = authData;
-    
+
     if (!supabaseUser || !session) {
       return res.status(400).json({ error: "Failed to authenticate user" });
     }
 
     // Check if user exists in our system
     let user = await DatabaseService.getUserByEmail(supabaseUser.email!);
-    
+
     if (!user) {
       // Create new user from OAuth data
       const userData = {
         email: supabaseUser.email!,
-        username: supabaseUser.user_metadata?.full_name || 
-                 supabaseUser.user_metadata?.name || 
-                 supabaseUser.email!.split('@')[0],
+        username:
+          supabaseUser.user_metadata?.full_name ||
+          supabaseUser.user_metadata?.name ||
+          supabaseUser.email!.split("@")[0],
         first_name: supabaseUser.user_metadata?.first_name || "",
         last_name: supabaseUser.user_metadata?.last_name || "",
         avatar_url: supabaseUser.user_metadata?.avatar_url,
@@ -104,7 +108,7 @@ export const handleOAuthCallback: RequestHandler = async (req, res) => {
       };
 
       user = await DatabaseService.createUser(userData);
-      
+
       if (!user) {
         return res.status(500).json({ error: "Failed to create user account" });
       }
@@ -116,7 +120,7 @@ export const handleOAuthCallback: RequestHandler = async (req, res) => {
         user.oauth_providers.push(provider);
         // Note: In a real implementation, you'd update this in the database
       }
-      
+
       console.log(`Existing user logged in: ${user.email} via ${provider}`);
     }
 
@@ -151,27 +155,27 @@ export const handleOAuthCallback: RequestHandler = async (req, res) => {
 export const handleGetUserFromToken: RequestHandler = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({ error: "No authorization token provided" });
     }
 
     const token = authHeader.substring(7);
-    
+
     if (!supabase) {
-      return res.status(503).json({ 
-        error: "Authentication service unavailable" 
+      return res.status(503).json({
+        error: "Authentication service unavailable",
       });
     }
 
     const { data: authData, error } = await supabase.auth.getUser(token);
-    
+
     if (error || !authData.user) {
       return res.status(401).json({ error: "Invalid or expired token" });
     }
 
     const user = await DatabaseService.getUserByEmail(authData.user.email!);
-    
+
     if (!user) {
       return res.status(404).json({ error: "User not found in system" });
     }
@@ -192,14 +196,14 @@ export const handleGetUserFromToken: RequestHandler = async (req, res) => {
 export const handleRefreshSession: RequestHandler = async (req, res) => {
   try {
     const { refresh_token } = req.body;
-    
+
     if (!refresh_token) {
       return res.status(400).json({ error: "Refresh token required" });
     }
 
     if (!supabase) {
-      return res.status(503).json({ 
-        error: "Authentication service unavailable" 
+      return res.status(503).json({
+        error: "Authentication service unavailable",
       });
     }
 
@@ -229,8 +233,8 @@ export const handleRefreshSession: RequestHandler = async (req, res) => {
 export const handleOAuthLogout: RequestHandler = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
-    
-    if (authHeader && authHeader.startsWith('Bearer ') && supabase) {
+
+    if (authHeader && authHeader.startsWith("Bearer ") && supabase) {
       const token = authHeader.substring(7);
       await supabase.auth.getUser(token).then(({ data }) => {
         if (data.user) {

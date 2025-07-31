@@ -1,19 +1,43 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 import { Badge } from "./ui/badge";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
-import { AlertTriangle, Info, Shield, Scale, Users, Clock, Coins } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import {
+  AlertTriangle,
+  Info,
+  Shield,
+  Scale,
+  Users,
+  Clock,
+  Coins,
+} from "lucide-react";
 
 interface SweepstakesDisclaimerProps {
-  variant?: 'full' | 'compact' | 'modal';
+  variant?: "full" | "compact" | "modal";
   className?: string;
 }
 
-export function SweepstakesDisclaimer({ variant = 'compact', className = '' }: SweepstakesDisclaimerProps) {
+export function SweepstakesDisclaimer({
+  variant = "compact",
+  className = "",
+}: SweepstakesDisclaimerProps) {
   const [showFullDisclaimer, setShowFullDisclaimer] = useState(false);
 
-  if (variant === 'modal') {
+  if (variant === "modal") {
     return (
       <Dialog open={showFullDisclaimer} onOpenChange={setShowFullDisclaimer}>
         <DialogTrigger asChild>
@@ -29,7 +53,8 @@ export function SweepstakesDisclaimer({ variant = 'compact', className = '' }: S
               <span>Sweepstakes Gaming Platform - Legal Compliance</span>
             </DialogTitle>
             <DialogDescription>
-              Important legal information regarding sweepstakes gaming participation
+              Important legal information regarding sweepstakes gaming
+              participation
             </DialogDescription>
           </DialogHeader>
           <FullDisclaimerContent />
@@ -38,20 +63,23 @@ export function SweepstakesDisclaimer({ variant = 'compact', className = '' }: S
     );
   }
 
-  if (variant === 'compact') {
+  if (variant === "compact") {
     return (
       <Card className={`border-gold/20 bg-gold/5 ${className}`}>
         <CardContent className="p-4">
           <div className="flex items-start space-x-3">
             <AlertTriangle className="h-5 w-5 text-gold mt-0.5 flex-shrink-0" />
             <div className="space-y-2 text-sm">
-              <p className="font-semibold text-gold">Sweepstakes Gaming Platform</p>
-              <p className="text-muted-foreground">
-                This platform operates as a sweepstakes gaming site. No purchase necessary. 
-                Virtual currency cannot be redeemed for cash. Must be 18+ and located in eligible states.
+              <p className="font-semibold text-gold">
+                Sweepstakes Gaming Platform
               </p>
-              <Button 
-                variant="link" 
+              <p className="text-muted-foreground">
+                This platform operates as a sweepstakes gaming site. No purchase
+                necessary. Virtual currency cannot be redeemed for cash. Must be
+                18+ and located in eligible states.
+              </p>
+              <Button
+                variant="link"
                 className="p-0 h-auto text-gold text-xs"
                 onClick={() => setShowFullDisclaimer(true)}
               >
@@ -60,7 +88,7 @@ export function SweepstakesDisclaimer({ variant = 'compact', className = '' }: S
             </div>
           </div>
         </CardContent>
-        
+
         <Dialog open={showFullDisclaimer} onOpenChange={setShowFullDisclaimer}>
           <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
@@ -96,10 +124,14 @@ function FullDisclaimerContent() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="bg-muted/50 p-4 rounded-lg border-l-4 border-gold">
-            <p className="font-semibold mb-2">THIS IS A SWEEPSTAKES GAMING PLATFORM</p>
+            <p className="font-semibold mb-2">
+              THIS IS A SWEEPSTAKES GAMING PLATFORM
+            </p>
             <p className="text-sm text-muted-foreground">
-              CoinKrazy operates as a promotional sweepstakes platform where virtual currency is used for entertainment 
-              purposes only. This platform complies with applicable sweepstakes and promotional gaming laws.
+              CoinKrazy operates as a promotional sweepstakes platform where
+              virtual currency is used for entertainment purposes only. This
+              platform complies with applicable sweepstakes and promotional
+              gaming laws.
             </p>
           </div>
         </CardContent>
@@ -184,32 +216,37 @@ function FullDisclaimerContent() {
           <div>
             <h4 className="font-semibold mb-2">State Restrictions</h4>
             <p className="text-muted-foreground">
-              This platform is not available in Washington, Idaho, Michigan, Nevada, or any other jurisdiction 
-              where promotional sweepstakes are prohibited by law. Geographic restrictions are enforced.
+              This platform is not available in Washington, Idaho, Michigan,
+              Nevada, or any other jurisdiction where promotional sweepstakes
+              are prohibited by law. Geographic restrictions are enforced.
             </p>
           </div>
-          
+
           <div>
             <h4 className="font-semibold mb-2">Age Verification</h4>
             <p className="text-muted-foreground">
-              All users must be 18+ years of age. Age verification may be required at any time. 
-              Accounts found to be under 18 will be immediately suspended.
+              All users must be 18+ years of age. Age verification may be
+              required at any time. Accounts found to be under 18 will be
+              immediately suspended.
             </p>
           </div>
-          
+
           <div>
             <h4 className="font-semibold mb-2">Responsible Gaming</h4>
             <p className="text-muted-foreground">
-              We promote responsible gaming practices. Users can set daily, weekly, and monthly spending limits. 
-              Self-exclusion options are available. If you feel you have a gambling problem, please seek help.
+              We promote responsible gaming practices. Users can set daily,
+              weekly, and monthly spending limits. Self-exclusion options are
+              available. If you feel you have a gambling problem, please seek
+              help.
             </p>
           </div>
-          
+
           <div>
             <h4 className="font-semibold mb-2">Anti-Money Laundering</h4>
             <p className="text-muted-foreground">
-              CoinKrazy complies with all applicable AML/KYC regulations. Suspicious activity will be reported 
-              to relevant authorities. Large redemptions may require additional verification.
+              CoinKrazy complies with all applicable AML/KYC regulations.
+              Suspicious activity will be reported to relevant authorities.
+              Large redemptions may require additional verification.
             </p>
           </div>
         </CardContent>
@@ -227,28 +264,39 @@ function FullDisclaimerContent() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h5 className="font-semibold">Daily Bonuses</h5>
-              <p className="text-muted-foreground">Log in daily to receive free Sweeps Coins</p>
+              <p className="text-muted-foreground">
+                Log in daily to receive free Sweeps Coins
+              </p>
             </div>
             <div>
               <h5 className="font-semibold">Social Media</h5>
-              <p className="text-muted-foreground">Follow our social accounts for promotional SC</p>
+              <p className="text-muted-foreground">
+                Follow our social accounts for promotional SC
+              </p>
             </div>
             <div>
               <h5 className="font-semibold">Mail-In Request</h5>
-              <p className="text-muted-foreground">Send written request to our mailing address</p>
+              <p className="text-muted-foreground">
+                Send written request to our mailing address
+              </p>
             </div>
             <div>
               <h5 className="font-semibold">Contests & Promotions</h5>
-              <p className="text-muted-foreground">Participate in special events for free SC</p>
+              <p className="text-muted-foreground">
+                Participate in special events for free SC
+              </p>
             </div>
           </div>
-          
+
           <div className="mt-4 p-3 bg-muted/50 rounded-lg">
             <h5 className="font-semibold mb-2">Mail-In Address:</h5>
             <p className="text-muted-foreground">
-              CoinKrazy Free Sweeps Coins Request<br />
-              P.O. Box 12345<br />
-              Las Vegas, NV 89123<br />
+              CoinKrazy Free Sweeps Coins Request
+              <br />
+              P.O. Box 12345
+              <br />
+              Las Vegas, NV 89123
+              <br />
               <br />
               Include: Full name, mailing address, email, and phone number
             </p>
@@ -259,14 +307,17 @@ function FullDisclaimerContent() {
       {/* Footer Notice */}
       <div className="text-xs text-muted-foreground space-y-2 border-t pt-4">
         <p>
-          <strong>Void where prohibited.</strong> This promotion is subject to all applicable federal, state, and local laws.
+          <strong>Void where prohibited.</strong> This promotion is subject to
+          all applicable federal, state, and local laws.
         </p>
         <p>
-          By using this platform, you acknowledge that you have read, understood, and agree to be bound by these terms 
-          and all applicable laws and regulations.
+          By using this platform, you acknowledge that you have read,
+          understood, and agree to be bound by these terms and all applicable
+          laws and regulations.
         </p>
         <p>
-          For questions regarding sweepstakes rules or compliance, contact: legal@coinkrazy.com
+          For questions regarding sweepstakes rules or compliance, contact:
+          legal@coinkrazy.com
         </p>
         <p className="text-center font-semibold">
           Remember: Play Responsibly. Must be 18+. No Purchase Necessary.

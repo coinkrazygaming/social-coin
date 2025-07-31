@@ -1189,44 +1189,46 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {sortedAnalytics.slice(0, 10).map((analytics, index) => (
-                            <TableRow key={`${analytics.slotId}-${index}`}>
-                              <TableCell className="text-white font-medium">
-                                {analytics.name}
-                              </TableCell>
-                              <TableCell className="text-blue-400">
-                                {analytics.plays.toLocaleString()}
-                              </TableCell>
-                              <TableCell className="text-green-400">
-                                ${analytics.revenue.toLocaleString()}
-                              </TableCell>
-                              <TableCell className="text-yellow-400">
-                                {analytics.rtp}%
-                              </TableCell>
-                              <TableCell>
-                                <Badge
-                                  variant={
-                                    analytics.performance === "excellent"
-                                      ? "default"
-                                      : analytics.performance === "good"
-                                        ? "secondary"
-                                        : "outline"
-                                  }
-                                  className={
-                                    analytics.performance === "excellent"
-                                      ? "bg-green-600"
-                                      : analytics.performance === "good"
-                                        ? "bg-blue-600"
-                                        : analytics.performance === "average"
-                                          ? "bg-yellow-600"
-                                          : "bg-red-600"
-                                  }
-                                >
-                                  {analytics.performance}
-                                </Badge>
-                              </TableCell>
-                            </TableRow>
-                          ))}
+                          {sortedAnalytics
+                            .slice(0, 10)
+                            .map((analytics, index) => (
+                              <TableRow key={`${analytics.slotId}-${index}`}>
+                                <TableCell className="text-white font-medium">
+                                  {analytics.name}
+                                </TableCell>
+                                <TableCell className="text-blue-400">
+                                  {analytics.plays.toLocaleString()}
+                                </TableCell>
+                                <TableCell className="text-green-400">
+                                  ${analytics.revenue.toLocaleString()}
+                                </TableCell>
+                                <TableCell className="text-yellow-400">
+                                  {analytics.rtp}%
+                                </TableCell>
+                                <TableCell>
+                                  <Badge
+                                    variant={
+                                      analytics.performance === "excellent"
+                                        ? "default"
+                                        : analytics.performance === "good"
+                                          ? "secondary"
+                                          : "outline"
+                                    }
+                                    className={
+                                      analytics.performance === "excellent"
+                                        ? "bg-green-600"
+                                        : analytics.performance === "good"
+                                          ? "bg-blue-600"
+                                          : analytics.performance === "average"
+                                            ? "bg-yellow-600"
+                                            : "bg-red-600"
+                                    }
+                                  >
+                                    {analytics.performance}
+                                  </Badge>
+                                </TableCell>
+                              </TableRow>
+                            ))}
                         </TableBody>
                       </Table>
                     </div>

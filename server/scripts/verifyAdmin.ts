@@ -8,19 +8,19 @@ async function verifyAdminAccount() {
 
   const adminCredentials = [
     { email: "coinkrazy00@gmail.com", password: "Woot6969!" },
-    { email: "admin@coinkrazy.com", password: "admin123" }
+    { email: "admin@coinkrazy.com", password: "admin123" },
   ];
 
   for (const cred of adminCredentials) {
     try {
       console.log(`Testing admin login: ${cred.email}`);
-      
+
       const response = await fetch("http://localhost:8080/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: cred.email,
-          password: cred.password
+          password: cred.password,
         }),
       });
 
@@ -35,7 +35,7 @@ async function verifyAdminAccount() {
         console.log(`   Sweeps Coins: ${result.user.sweepsCoins}`);
       } else {
         console.log(`❌ Admin login failed for ${cred.email}`);
-        console.log(`   Error: ${result.error || 'Unknown error'}`);
+        console.log(`   Error: ${result.error || "Unknown error"}`);
       }
       console.log("");
     } catch (error) {
@@ -45,16 +45,20 @@ async function verifyAdminAccount() {
 
   console.log("📋 OAuth2 Setup Status");
   console.log("======================");
-  
+
   const oauthEnvVars = [
     "NEXT_PUBLIC_SUPABASE_URL",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY", 
-    "SUPABASE_SERVICE_ROLE_KEY"
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
   ];
 
-  oauthEnvVars.forEach(varName => {
+  oauthEnvVars.forEach((varName) => {
     const value = process.env[varName];
-    if (value && value !== "https://placeholder.supabase.co" && value !== "placeholder_anon_key_12345") {
+    if (
+      value &&
+      value !== "https://placeholder.supabase.co" &&
+      value !== "placeholder_anon_key_12345"
+    ) {
       console.log(`✅ ${varName}: Configured`);
     } else {
       console.log(`❌ ${varName}: Not configured (using placeholder)`);
@@ -65,8 +69,10 @@ async function verifyAdminAccount() {
   console.log("===================================");
   console.log("✅ Email/Password Login (In-memory)");
   console.log("✅ Admin Account Access");
-  
-  if (process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co") {
+
+  if (
+    process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co"
+  ) {
     console.log("✅ OAuth2 Ready (Supabase configured)");
     console.log("   - Google OAuth");
     console.log("   - Discord OAuth");

@@ -18,7 +18,8 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gold">CoinKrazy</h3>
             <p className="text-sm text-muted-foreground">
-              The premier sweepstakes gaming platform. Play responsibly, win real prizes.
+              The premier sweepstakes gaming platform. Play responsibly, win
+              real prizes.
             </p>
             <div className="flex space-x-2">
               <SweepstakesDisclaimer variant="modal" />
@@ -30,27 +31,42 @@ export function Footer() {
             <h4 className="font-semibold">Legal & Support</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Button variant="link" className="p-0 h-auto text-muted-foreground hover:text-foreground">
+                <Button
+                  variant="link"
+                  className="p-0 h-auto text-muted-foreground hover:text-foreground"
+                >
                   Terms & Conditions
                 </Button>
               </li>
               <li>
-                <Button variant="link" className="p-0 h-auto text-muted-foreground hover:text-foreground">
+                <Button
+                  variant="link"
+                  className="p-0 h-auto text-muted-foreground hover:text-foreground"
+                >
                   Privacy Policy
                 </Button>
               </li>
               <li>
-                <Button variant="link" className="p-0 h-auto text-muted-foreground hover:text-foreground">
+                <Button
+                  variant="link"
+                  className="p-0 h-auto text-muted-foreground hover:text-foreground"
+                >
                   Responsible Gaming
                 </Button>
               </li>
               <li>
-                <Button variant="link" className="p-0 h-auto text-muted-foreground hover:text-foreground">
+                <Button
+                  variant="link"
+                  className="p-0 h-auto text-muted-foreground hover:text-foreground"
+                >
                   Contact Support
                 </Button>
               </li>
               <li>
-                <Button variant="link" className="p-0 h-auto text-muted-foreground hover:text-foreground">
+                <Button
+                  variant="link"
+                  className="p-0 h-auto text-muted-foreground hover:text-foreground"
+                >
                   Age Verification
                 </Button>
               </li>
@@ -62,27 +78,42 @@ export function Footer() {
             <h4 className="font-semibold">Quick Links</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link to="/slots" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  to="/slots"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Slot Games
                 </Link>
               </li>
               <li>
-                <Link to="/table-games" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  to="/table-games"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Table Games
                 </Link>
               </li>
               <li>
-                <Link to="/mini-games" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  to="/mini-games"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Mini Games
                 </Link>
               </li>
               <li>
-                <Link to="/sportsbook" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  to="/sportsbook"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Sportsbook
                 </Link>
               </li>
               <li>
-                <Link to="/bingo" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  to="/bingo"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Bingo Hall
                 </Link>
               </li>
@@ -95,7 +126,9 @@ export function Footer() {
             <div className="space-y-3 text-sm">
               <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                <span className="text-muted-foreground">support@coinkrazy.com</span>
+                <span className="text-muted-foreground">
+                  support@coinkrazy.com
+                </span>
               </div>
               <div className="flex items-center space-x-2">
                 <Phone className="h-4 w-4 text-muted-foreground" />
@@ -119,43 +152,62 @@ export function Footer() {
             <div className="bg-muted/20 p-3 rounded-lg">
               <div className="flex items-center space-x-2 mb-2">
                 <Shield className="h-4 w-4 text-gold" />
-                <span className="font-semibold text-gold">Age Verification</span>
+                <span className="font-semibold text-gold">
+                  Age Verification
+                </span>
               </div>
-              <p>Must be 18+ to participate. Valid ID required for redemptions.</p>
+              <p>
+                Must be 18+ to participate. Valid ID required for redemptions.
+              </p>
             </div>
             <div className="bg-muted/20 p-3 rounded-lg">
               <div className="flex items-center space-x-2 mb-2">
                 <ExternalLink className="h-4 w-4 text-sweep" />
-                <span className="font-semibold text-sweep">Geographic Restrictions</span>
+                <span className="font-semibold text-sweep">
+                  Geographic Restrictions
+                </span>
               </div>
-              <p>Service not available in WA, ID, MI, NV and other restricted jurisdictions.</p>
+              <p>
+                Service not available in WA, ID, MI, NV and other restricted
+                jurisdictions.
+              </p>
             </div>
             <div className="bg-muted/20 p-3 rounded-lg">
               <div className="flex items-center space-x-2 mb-2">
                 <Mail className="h-4 w-4 text-blue-400" />
                 <span className="font-semibold text-blue-400">Free Entry</span>
               </div>
-              <p>No purchase necessary. Mail requests accepted for free Sweeps Coins.</p>
+              <p>
+                No purchase necessary. Mail requests accepted for free Sweeps
+                Coins.
+              </p>
             </div>
           </div>
 
           {/* Bottom Notice */}
           <div className="text-center space-y-2">
             <div className="text-xs text-muted-foreground">
-              <strong className="text-gold">IMPORTANT:</strong> This platform operates as a promotional sweepstakes where virtual currency is used for entertainment. 
-              Sweeps Coins can be redeemed for prizes. Virtual currency has no cash value and cannot be transferred between users.
+              <strong className="text-gold">IMPORTANT:</strong> This platform
+              operates as a promotional sweepstakes where virtual currency is
+              used for entertainment. Sweeps Coins can be redeemed for prizes.
+              Virtual currency has no cash value and cannot be transferred
+              between users.
             </div>
             <div className="text-xs text-muted-foreground">
-              By using this site, you certify that you are 18+ years old and legally eligible to participate in promotional sweepstakes in your jurisdiction.
+              By using this site, you certify that you are 18+ years old and
+              legally eligible to participate in promotional sweepstakes in your
+              jurisdiction.
             </div>
             <div className="text-xs font-semibold text-gold">
-              Remember: Play Responsibly • Must be 18+ • No Purchase Necessary • Void where prohibited
+              Remember: Play Responsibly • Must be 18+ • No Purchase Necessary •
+              Void where prohibited
             </div>
           </div>
 
           {/* Copyright */}
           <div className="text-center text-xs text-muted-foreground border-t border-border/20 pt-4">
-            © 2024 CoinKrazy LLC. All rights reserved. Licensed sweepstakes operator.
+            © 2024 CoinKrazy LLC. All rights reserved. Licensed sweepstakes
+            operator.
           </div>
         </div>
       </div>
