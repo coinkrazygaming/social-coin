@@ -10,7 +10,7 @@ import { Separator } from './ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { AdminTask, AIEmployee, DEFAULT_AI_EMPLOYEES } from '../shared/adminToolbarTypes';
+import { AdminTask, AIEmployee, DEFAULT_AI_EMPLOYEES } from '../../shared/adminToolbarTypes';
 import { useAuth } from './AuthContext';
 
 interface AITaskAssignmentSystemProps {
