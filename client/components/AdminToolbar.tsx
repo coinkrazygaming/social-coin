@@ -630,7 +630,7 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
                         <span className="text-xs">Text</span>
                       </Button>
                       <Button size="sm" variant="outline" className="flex flex-col gap-1 h-auto py-2">
-                        <Image className="w-4 h-4" />
+                        <ImageIcon className="w-4 h-4" />
                         <span className="text-xs">Image</span>
                       </Button>
                       <Button size="sm" variant="outline" className="flex flex-col gap-1 h-auto py-2">
