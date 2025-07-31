@@ -187,62 +187,14 @@ export function createServer() {
   app.post("/api/store/refund-requests/:refundId/process", handleProcessRefund);
   app.get("/api/store/payment-stats", handleGetPaymentStats);
 
-  // In-house slots routes - lazy loaded
-  app.get("/api/slots/in-house", async (req, res) => {
-    if (!slotsHandlers) {
-      const slotsModule = await import("./routes/slots");
-      slotsHandlers = slotsModule;
-    }
-    return slotsHandlers.handleGetInHouseSlots(req, res);
-  });
-
-  app.post("/api/slots/in-house", async (req, res) => {
-    if (!slotsHandlers) {
-      const slotsModule = await import("./routes/slots");
-      slotsHandlers = slotsModule;
-    }
-    return slotsHandlers.handleCreateSlot(req, res);
-  });
-
-  app.put("/api/slots/in-house/:slotId", async (req, res) => {
-    if (!slotsHandlers) {
-      const slotsModule = await import("./routes/slots");
-      slotsHandlers = slotsModule;
-    }
-    return slotsHandlers.handleUpdateSlot(req, res);
-  });
-
-  app.delete("/api/slots/in-house/:slotId", async (req, res) => {
-    if (!slotsHandlers) {
-      const slotsModule = await import("./routes/slots");
-      slotsHandlers = slotsModule;
-    }
-    return slotsHandlers.handleDeleteSlot(req, res);
-  });
-
-  app.post("/api/slots/:slotId/spin", async (req, res) => {
-    if (!slotsHandlers) {
-      const slotsModule = await import("./routes/slots");
-      slotsHandlers = slotsModule;
-    }
-    return slotsHandlers.handleSpinSlot(req, res);
-  });
-
-  app.get("/api/slots/:slotId/stats", async (req, res) => {
-    if (!slotsHandlers) {
-      const slotsModule = await import("./routes/slots");
-      slotsHandlers = slotsModule;
-    }
-    return slotsHandlers.handleGetSlotStats(req, res);
-  });
-
-  app.get("/api/slots/stats", async (req, res) => {
-    if (!slotsHandlers) {
-      const slotsModule = await import("./routes/slots");
-      slotsHandlers = slotsModule;
-    }
-    return slotsHandlers.handleGetAllSlotStats(req, res);
-  });
+  // In-house slots routes
+  app.get("/api/slots/in-house", handleGetInHouseSlots);
+  app.post("/api/slots/in-house", handleCreateSlot);
+  app.put("/api/slots/in-house/:slotId", handleUpdateSlot);
+  app.delete("/api/slots/in-house/:slotId", handleDeleteSlot);
+  app.post("/api/slots/:slotId/spin", handleSpinSlot);
+  app.get("/api/slots/:slotId/stats", handleGetSlotStats);
+  app.get("/api/slots/stats", handleGetAllSlotStats);
 
   return app;
 }
