@@ -52,7 +52,7 @@ import {
   StoreSettings,
   PaymentProvider,
   RefundRequest,
-  AdminLog
+  AdminLog,
 } from "@shared/storeTypes";
 import {
   Settings,
@@ -131,7 +131,7 @@ import {
   CreditCard as CreditCardIcon,
   Percent,
   Tag,
-  Layers
+  Layers,
 } from "lucide-react";
 
 interface EnhancedAdminPanelProps {
@@ -224,19 +224,29 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
 
   // State management
   const [allSlots, setAllSlots] = useState<SlotMachineType[]>([]);
-  const [selectedSlot, setSelectedSlot] = useState<SlotMachineType | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<SlotMachineType | null>(
+    null,
+  );
   const [editingSlot, setEditingSlot] = useState<SlotMachineType | null>(null);
   const [showSlotEditor, setShowSlotEditor] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
   // Store and Payment States
-  const [goldCoinPackages, setGoldCoinPackages] = useState<GoldCoinPackage[]>([]);
-  const [storeSettings, setStoreSettings] = useState<StoreSettings | null>(null);
-  const [paymentProviders, setPaymentProviders] = useState<PaymentProvider[]>([]);
+  const [goldCoinPackages, setGoldCoinPackages] = useState<GoldCoinPackage[]>(
+    [],
+  );
+  const [storeSettings, setStoreSettings] = useState<StoreSettings | null>(
+    null,
+  );
+  const [paymentProviders, setPaymentProviders] = useState<PaymentProvider[]>(
+    [],
+  );
   const [transactions, setTransactions] = useState<PurchaseTransaction[]>([]);
   const [refundRequests, setRefundRequests] = useState<RefundRequest[]>([]);
   const [adminLogs, setAdminLogs] = useState<AdminLog[]>([]);
-  const [editingPackage, setEditingPackage] = useState<GoldCoinPackage | null>(null);
+  const [editingPackage, setEditingPackage] = useState<GoldCoinPackage | null>(
+    null,
+  );
   const [showPackageEditor, setShowPackageEditor] = useState(false);
 
   // Analytics and metrics
@@ -345,13 +355,17 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
         image: "/store/starter-pack.png",
         popular: false,
         bestValue: false,
-        features: ["10,000 Gold Coins", "5 Bonus Sweeps Coins", "Welcome Bonus"],
+        features: [
+          "10,000 Gold Coins",
+          "5 Bonus Sweeps Coins",
+          "Welcome Bonus",
+        ],
         isActive: true,
         createdAt: new Date("2024-01-01"),
-        updatedAt: new Date("2024-01-15")
+        updatedAt: new Date("2024-01-15"),
       },
       {
-        id: "pkg_002", 
+        id: "pkg_002",
         name: "Popular Pack",
         description: "Most popular choice among players",
         goldCoins: 50000,
@@ -361,10 +375,15 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
         image: "/store/popular-pack.png",
         popular: true,
         bestValue: false,
-        features: ["50,000 Gold Coins", "25 Bonus Sweeps Coins", "Extra Daily Bonus", "VIP Support"],
+        features: [
+          "50,000 Gold Coins",
+          "25 Bonus Sweeps Coins",
+          "Extra Daily Bonus",
+          "VIP Support",
+        ],
         isActive: true,
         createdAt: new Date("2024-01-01"),
-        updatedAt: new Date("2024-01-15")
+        updatedAt: new Date("2024-01-15"),
       },
       {
         id: "pkg_003",
@@ -377,10 +396,16 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
         image: "/store/best-value-pack.png",
         popular: false,
         bestValue: true,
-        features: ["150,000 Gold Coins", "100 Bonus Sweeps Coins", "VIP Status Upgrade", "Exclusive Games Access", "Priority Support"],
+        features: [
+          "150,000 Gold Coins",
+          "100 Bonus Sweeps Coins",
+          "VIP Status Upgrade",
+          "Exclusive Games Access",
+          "Priority Support",
+        ],
         isActive: true,
         createdAt: new Date("2024-01-01"),
-        updatedAt: new Date("2024-01-15")
+        updatedAt: new Date("2024-01-15"),
       },
       {
         id: "pkg_004",
@@ -393,11 +418,17 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
         image: "/store/premium-pack.png",
         popular: false,
         bestValue: false,
-        features: ["300,000 Gold Coins", "250 Bonus Sweeps Coins", "Platinum VIP Status", "Exclusive Premium Games", "Personal Account Manager"],
+        features: [
+          "300,000 Gold Coins",
+          "250 Bonus Sweeps Coins",
+          "Platinum VIP Status",
+          "Exclusive Premium Games",
+          "Personal Account Manager",
+        ],
         isActive: true,
         createdAt: new Date("2024-01-01"),
-        updatedAt: new Date("2024-01-15")
-      }
+        updatedAt: new Date("2024-01-15"),
+      },
     ];
 
     const mockStoreSettings: StoreSettings = {
@@ -414,17 +445,17 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
       purchaseLimits: {
         daily: 500,
         weekly: 2000,
-        monthly: 5000
+        monthly: 5000,
       },
       taxSettings: {
         enabled: true,
         rate: 8.25,
-        includedInPrice: false
+        includedInPrice: false,
       },
       bonusMultiplier: 1.0,
       promotions: [],
       updatedAt: new Date(),
-      updatedBy: "admin"
+      updatedBy: "admin",
     };
 
     const mockPaymentProviders: PaymentProvider[] = [
@@ -436,11 +467,11 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
         config: {
           clientId: "paypal_client_production_id",
           clientSecret: "paypal_client_secret",
-          sandbox: false
+          sandbox: false,
         },
         processingFee: 2.9,
-        minAmount: 1.00,
-        maxAmount: 10000.00
+        minAmount: 1.0,
+        maxAmount: 10000.0,
       },
       {
         id: "provider_stripe",
@@ -449,11 +480,11 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
         enabled: true,
         config: {
           publishableKey: "pk_live_stripe_key",
-          secretKey: "sk_live_stripe_key"
+          secretKey: "sk_live_stripe_key",
         },
         processingFee: 2.9,
-        minAmount: 0.50,
-        maxAmount: 999999.99
+        minAmount: 0.5,
+        maxAmount: 999999.99,
       },
       {
         id: "provider_crypto",
@@ -463,12 +494,12 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
         config: {
           btcAddress: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
           ethAddress: "0x742d35Cc6665C6532353d25BC9e5E5ff",
-          ltcAddress: "LTC7kQhh3z9hLwKQ8yTh8B9pQJd4rKtFp8"
+          ltcAddress: "LTC7kQhh3z9hLwKQ8yTh8B9pQJd4rKtFp8",
         },
         processingFee: 1.0,
-        minAmount: 10.00,
-        maxAmount: 50000.00
-      }
+        minAmount: 10.0,
+        maxAmount: 50000.0,
+      },
     ];
 
     const mockTransactions: PurchaseTransaction[] = [
@@ -485,12 +516,12 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
         paymentReference: "pi_1234567890",
         status: "completed",
         createdAt: new Date("2024-01-15T10:30:00"),
-        completedAt: new Date("2024-01-15T10:31:15")
+        completedAt: new Date("2024-01-15T10:31:15"),
       },
       {
         id: "txn_002",
         userId: "user_456",
-        username: "gamer456", 
+        username: "gamer456",
         packageId: "pkg_003",
         packageName: "Best Value Pack",
         goldCoinsAwarded: 150000,
@@ -500,13 +531,13 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
         paymentReference: "PAY-1234567890",
         status: "completed",
         createdAt: new Date("2024-01-15T14:22:00"),
-        completedAt: new Date("2024-01-15T14:23:42")
+        completedAt: new Date("2024-01-15T14:23:42"),
       },
       {
         id: "txn_003",
         userId: "user_789",
         username: "highroller789",
-        packageId: "pkg_004", 
+        packageId: "pkg_004",
         packageName: "Premium Pack",
         goldCoinsAwarded: 300000,
         sweepsCoinsBonus: 250,
@@ -514,8 +545,8 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
         paymentMethod: "crypto",
         paymentReference: "BTC_0x123abc456def",
         status: "processing",
-        createdAt: new Date("2024-01-15T16:45:00")
-      }
+        createdAt: new Date("2024-01-15T16:45:00"),
+      },
     ];
 
     setGoldCoinPackages(mockPackages);
@@ -687,7 +718,7 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
       features: ["Gold Coins", "Bonus Sweeps Coins"],
       isActive: true,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     setEditingPackage(newPackage);
@@ -859,12 +890,23 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                   </p>
                   <div className="flex items-center">
                     <p className="text-2xl font-bold text-purple-400">
-                      ${transactions.reduce((sum, t) => sum + (t.status === 'completed' ? t.amountPaid : 0), 0).toFixed(2)}
+                      $
+                      {transactions
+                        .reduce(
+                          (sum, t) =>
+                            sum + (t.status === "completed" ? t.amountPaid : 0),
+                          0,
+                        )
+                        .toFixed(2)}
                     </p>
                     <Store className="h-4 w-4 text-purple-400 ml-2" />
                   </div>
                   <p className="text-xs text-gray-500">
-                    {transactions.filter(t => t.status === 'completed').length} purchases
+                    {
+                      transactions.filter((t) => t.status === "completed")
+                        .length
+                    }{" "}
+                    purchases
                   </p>
                 </div>
                 <ShoppingCart className="h-8 w-8 text-purple-400" />
@@ -1121,7 +1163,8 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                           </Badge>
                         </CardTitle>
                         <p className="text-gray-400 mt-1">
-                          Visual point-and-click package editor with real-time updates
+                          Visual point-and-click package editor with real-time
+                          updates
                         </p>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -1161,14 +1204,15 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                                 alt={pkg.name}
                                 className="w-full h-32 object-cover rounded-lg bg-gradient-to-br from-gold/20 to-purple-600/20 flex items-center justify-center"
                                 onError={(e) => {
-                                  e.currentTarget.style.display = 'none';
-                                  e.currentTarget.nextElementSibling.style.display = 'flex';
+                                  e.currentTarget.style.display = "none";
+                                  e.currentTarget.nextElementSibling.style.display =
+                                    "flex";
                                 }}
                               />
                               <div className="w-full h-32 bg-gradient-to-br from-gold/20 to-purple-600/20 rounded-lg hidden items-center justify-center">
                                 <Package className="h-12 w-12 text-gold" />
                               </div>
-                              
+
                               <div className="absolute top-2 left-2 flex gap-1">
                                 {pkg.popular && (
                                   <Badge className="bg-purple-600 text-white text-xs">
@@ -1181,23 +1225,31 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                                   </Badge>
                                 )}
                               </div>
-                              
+
                               <div className="absolute top-2 right-2">
                                 <Badge
-                                  variant={pkg.isActive ? "default" : "secondary"}
+                                  variant={
+                                    pkg.isActive ? "default" : "secondary"
+                                  }
                                   className={pkg.isActive ? "bg-green-600" : ""}
                                 >
                                   {pkg.isActive ? "Active" : "Inactive"}
                                 </Badge>
                               </div>
-                              
-                              {pkg.originalPrice && pkg.originalPrice > pkg.price && (
-                                <div className="absolute bottom-2 right-2">
-                                  <Badge className="bg-red-600 text-white">
-                                    {Math.round(((pkg.originalPrice - pkg.price) / pkg.originalPrice) * 100)}% OFF
-                                  </Badge>
-                                </div>
-                              )}
+
+                              {pkg.originalPrice &&
+                                pkg.originalPrice > pkg.price && (
+                                  <div className="absolute bottom-2 right-2">
+                                    <Badge className="bg-red-600 text-white">
+                                      {Math.round(
+                                        ((pkg.originalPrice - pkg.price) /
+                                          pkg.originalPrice) *
+                                          100,
+                                      )}
+                                      % OFF
+                                    </Badge>
+                                  </div>
+                                )}
                             </div>
 
                             <div className="space-y-3">
@@ -1215,23 +1267,28 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                                   <p className="text-gold font-bold text-lg">
                                     {pkg.goldCoins.toLocaleString()}
                                   </p>
-                                  <p className="text-gold text-xs">Gold Coins</p>
+                                  <p className="text-gold text-xs">
+                                    Gold Coins
+                                  </p>
                                 </div>
                                 <div className="text-center p-2 bg-purple-600/10 rounded border border-purple-600/20">
                                   <p className="text-purple-400 font-bold text-lg">
                                     {pkg.bonusSweepsCoins}
                                   </p>
-                                  <p className="text-purple-400 text-xs">Bonus SC</p>
+                                  <p className="text-purple-400 text-xs">
+                                    Bonus SC
+                                  </p>
                                 </div>
                               </div>
 
                               <div className="text-center py-2">
                                 <div className="flex items-center justify-center gap-2">
-                                  {pkg.originalPrice && pkg.originalPrice > pkg.price && (
-                                    <span className="text-sm text-gray-400 line-through">
-                                      ${pkg.originalPrice.toFixed(2)}
-                                    </span>
-                                  )}
+                                  {pkg.originalPrice &&
+                                    pkg.originalPrice > pkg.price && (
+                                      <span className="text-sm text-gray-400 line-through">
+                                        ${pkg.originalPrice.toFixed(2)}
+                                      </span>
+                                    )}
                                   <span className="text-2xl font-bold text-green-400">
                                     ${pkg.price.toFixed(2)}
                                   </span>
@@ -1239,12 +1296,17 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                               </div>
 
                               <div className="space-y-1">
-                                {pkg.features.slice(0, 2).map((feature, index) => (
-                                  <div key={index} className="flex items-center text-xs text-gray-300">
-                                    <CheckCircle className="h-3 w-3 text-green-400 mr-1" />
-                                    {feature}
-                                  </div>
-                                ))}
+                                {pkg.features
+                                  .slice(0, 2)
+                                  .map((feature, index) => (
+                                    <div
+                                      key={index}
+                                      className="flex items-center text-xs text-gray-300"
+                                    >
+                                      <CheckCircle className="h-3 w-3 text-green-400 mr-1" />
+                                      {feature}
+                                    </div>
+                                  ))}
                                 {pkg.features.length > 2 && (
                                   <div className="text-xs text-gray-400">
                                     +{pkg.features.length - 2} more features
@@ -1273,13 +1335,25 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   // Toggle active status
-                                  const updated = { ...pkg, isActive: !pkg.isActive, updatedAt: new Date() };
-                                  setGoldCoinPackages(prev => prev.map(p => p.id === pkg.id ? updated : p));
+                                  const updated = {
+                                    ...pkg,
+                                    isActive: !pkg.isActive,
+                                    updatedAt: new Date(),
+                                  };
+                                  setGoldCoinPackages((prev) =>
+                                    prev.map((p) =>
+                                      p.id === pkg.id ? updated : p,
+                                    ),
+                                  );
                                 }}
                                 className="flex-1"
                               >
-                                {pkg.isActive ? <Pause className="h-3 w-3 mr-1" /> : <Play className="h-3 w-3 mr-1" />}
-                                {pkg.isActive ? 'Disable' : 'Enable'}
+                                {pkg.isActive ? (
+                                  <Pause className="h-3 w-3 mr-1" />
+                                ) : (
+                                  <Play className="h-3 w-3 mr-1" />
+                                )}
+                                {pkg.isActive ? "Disable" : "Enable"}
                               </Button>
                               <Button
                                 size="sm"
@@ -1294,7 +1368,10 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                                     createdAt: new Date(),
                                     updatedAt: new Date(),
                                   };
-                                  setGoldCoinPackages(prev => [...prev, cloned]);
+                                  setGoldCoinPackages((prev) => [
+                                    ...prev,
+                                    cloned,
+                                  ]);
                                 }}
                               >
                                 <Copy className="h-3 w-3" />
@@ -1320,30 +1397,38 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                   <CardContent className="space-y-4">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Total Packages</span>
-                      <Badge className="bg-blue-600">{goldCoinPackages.length}</Badge>
+                      <Badge className="bg-blue-600">
+                        {goldCoinPackages.length}
+                      </Badge>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Active Packages</span>
                       <Badge className="bg-green-600">
-                        {goldCoinPackages.filter(p => p.isActive).length}
+                        {goldCoinPackages.filter((p) => p.isActive).length}
                       </Badge>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Popular Packages</span>
                       <Badge className="bg-purple-600">
-                        {goldCoinPackages.filter(p => p.popular).length}
+                        {goldCoinPackages.filter((p) => p.popular).length}
                       </Badge>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Best Value</span>
                       <Badge className="bg-gold text-black">
-                        {goldCoinPackages.filter(p => p.bestValue).length}
+                        {goldCoinPackages.filter((p) => p.bestValue).length}
                       </Badge>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Avg Price</span>
                       <Badge variant="outline">
-                        ${(goldCoinPackages.reduce((sum, p) => sum + p.price, 0) / goldCoinPackages.length).toFixed(2)}
+                        $
+                        {(
+                          goldCoinPackages.reduce(
+                            (sum, p) => sum + p.price,
+                            0,
+                          ) / goldCoinPackages.length
+                        ).toFixed(2)}
                       </Badge>
                     </div>
                   </CardContent>
@@ -1359,19 +1444,29 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                   <CardContent className="space-y-4">
                     <div className="text-center">
                       <p className="text-2xl font-bold text-green-400">
-                        ${transactions.filter(t => t.status === 'completed').reduce((sum, t) => sum + t.amountPaid, 0).toFixed(2)}
+                        $
+                        {transactions
+                          .filter((t) => t.status === "completed")
+                          .reduce((sum, t) => sum + t.amountPaid, 0)
+                          .toFixed(2)}
                       </p>
                       <p className="text-sm text-gray-400">Total Sales</p>
                     </div>
                     <div className="text-center">
                       <p className="text-2xl font-bold text-blue-400">
-                        {transactions.filter(t => t.status === 'completed').length}
+                        {
+                          transactions.filter((t) => t.status === "completed")
+                            .length
+                        }
                       </p>
                       <p className="text-sm text-gray-400">Completed Orders</p>
                     </div>
                     <div className="text-center">
                       <p className="text-2xl font-bold text-yellow-400">
-                        {transactions.filter(t => t.status === 'processing').length}
+                        {
+                          transactions.filter((t) => t.status === "processing")
+                            .length
+                        }
                       </p>
                       <p className="text-sm text-gray-400">Processing</p>
                     </div>
@@ -1389,7 +1484,9 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                     <div className="p-3 bg-green-900/30 border border-green-500/30 rounded-lg">
                       <div className="flex items-center">
                         <CheckCircle className="h-4 w-4 text-green-400 mr-2" />
-                        <span className="text-sm text-green-300">Store Active</span>
+                        <span className="text-sm text-green-300">
+                          Store Active
+                        </span>
                       </div>
                       <p className="text-xs text-green-200 mt-1">
                         All payment methods operational
@@ -1427,10 +1524,14 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
               <CardContent>
                 <Tabs defaultValue="providers" className="w-full">
                   <TabsList className="grid w-full grid-cols-5">
-                    <TabsTrigger value="providers">Payment Providers</TabsTrigger>
+                    <TabsTrigger value="providers">
+                      Payment Providers
+                    </TabsTrigger>
                     <TabsTrigger value="transactions">Transactions</TabsTrigger>
                     <TabsTrigger value="banking">Banking Details</TabsTrigger>
-                    <TabsTrigger value="analytics">Payment Analytics</TabsTrigger>
+                    <TabsTrigger value="analytics">
+                      Payment Analytics
+                    </TabsTrigger>
                     <TabsTrigger value="settings">Payment Settings</TabsTrigger>
                   </TabsList>
 
@@ -1445,14 +1546,28 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                           <CardHeader>
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
-                                {provider.type === 'paypal' && <span className="text-2xl">💳</span>}
-                                {provider.type === 'stripe' && <span className="text-2xl">💎</span>}
-                                {provider.type === 'crypto' && <span className="text-2xl">₿</span>}
-                                <CardTitle className="text-white">{provider.name}</CardTitle>
+                                {provider.type === "paypal" && (
+                                  <span className="text-2xl">💳</span>
+                                )}
+                                {provider.type === "stripe" && (
+                                  <span className="text-2xl">💎</span>
+                                )}
+                                {provider.type === "crypto" && (
+                                  <span className="text-2xl">₿</span>
+                                )}
+                                <CardTitle className="text-white">
+                                  {provider.name}
+                                </CardTitle>
                               </div>
                               <Badge
-                                variant={provider.enabled ? "default" : "secondary"}
-                                className={provider.enabled ? "bg-green-600" : "bg-gray-600"}
+                                variant={
+                                  provider.enabled ? "default" : "secondary"
+                                }
+                                className={
+                                  provider.enabled
+                                    ? "bg-green-600"
+                                    : "bg-gray-600"
+                                }
                               >
                                 {provider.enabled ? "Active" : "Disabled"}
                               </Badge>
@@ -1462,19 +1577,27 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                             <div className="grid grid-cols-2 gap-4 text-sm">
                               <div>
                                 <p className="text-gray-400">Processing Fee</p>
-                                <p className="text-white font-bold">{provider.processingFee}%</p>
+                                <p className="text-white font-bold">
+                                  {provider.processingFee}%
+                                </p>
                               </div>
                               <div>
                                 <p className="text-gray-400">Min Amount</p>
-                                <p className="text-white font-bold">${provider.minAmount}</p>
+                                <p className="text-white font-bold">
+                                  ${provider.minAmount}
+                                </p>
                               </div>
                               <div>
                                 <p className="text-gray-400">Max Amount</p>
-                                <p className="text-white font-bold">${provider.maxAmount.toLocaleString()}</p>
+                                <p className="text-white font-bold">
+                                  ${provider.maxAmount.toLocaleString()}
+                                </p>
                               </div>
                               <div>
                                 <p className="text-gray-400">Type</p>
-                                <p className="text-white font-bold capitalize">{provider.type}</p>
+                                <p className="text-white font-bold capitalize">
+                                  {provider.type}
+                                </p>
                               </div>
                             </div>
 
@@ -1483,14 +1606,25 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                               <div className="grid grid-cols-2 gap-2 text-xs">
                                 <div className="text-center p-2 bg-green-900/30 rounded">
                                   <p className="text-green-400 font-bold">
-                                    {transactions.filter(t => t.paymentMethod === provider.type && t.status === 'completed').length}
+                                    {
+                                      transactions.filter(
+                                        (t) =>
+                                          t.paymentMethod === provider.type &&
+                                          t.status === "completed",
+                                      ).length
+                                    }
                                   </p>
                                   <p className="text-green-300">Completed</p>
                                 </div>
                                 <div className="text-center p-2 bg-blue-900/30 rounded">
                                   <p className="text-blue-400 font-bold">
-                                    ${transactions
-                                      .filter(t => t.paymentMethod === provider.type && t.status === 'completed')
+                                    $
+                                    {transactions
+                                      .filter(
+                                        (t) =>
+                                          t.paymentMethod === provider.type &&
+                                          t.status === "completed",
+                                      )
                                       .reduce((sum, t) => sum + t.amountPaid, 0)
                                       .toFixed(2)}
                                   </p>
@@ -1500,7 +1634,11 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                             </div>
 
                             <div className="flex gap-2">
-                              <Button size="sm" variant="outline" className="flex-1">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="flex-1"
+                              >
                                 <Edit className="h-3 w-3 mr-1" />
                                 Configure
                               </Button>
@@ -1509,15 +1647,21 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                                 variant="outline"
                                 className="flex-1"
                                 onClick={() => {
-                                  setPaymentProviders(prev => prev.map(p => 
-                                    p.id === provider.id 
-                                      ? { ...p, enabled: !p.enabled }
-                                      : p
-                                  ));
+                                  setPaymentProviders((prev) =>
+                                    prev.map((p) =>
+                                      p.id === provider.id
+                                        ? { ...p, enabled: !p.enabled }
+                                        : p,
+                                    ),
+                                  );
                                 }}
                               >
-                                {provider.enabled ? <Pause className="h-3 w-3 mr-1" /> : <Play className="h-3 w-3 mr-1" />}
-                                {provider.enabled ? 'Disable' : 'Enable'}
+                                {provider.enabled ? (
+                                  <Pause className="h-3 w-3 mr-1" />
+                                ) : (
+                                  <Play className="h-3 w-3 mr-1" />
+                                )}
+                                {provider.enabled ? "Disable" : "Enable"}
                               </Button>
                             </div>
                           </CardContent>
@@ -1529,7 +1673,9 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                   {/* Transactions */}
                   <TabsContent value="transactions" className="space-y-6">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold text-white">Transaction History</h3>
+                      <h3 className="text-lg font-semibold text-white">
+                        Transaction History
+                      </h3>
                       <div className="flex items-center gap-2">
                         <Button variant="outline" size="sm">
                           <Download className="h-4 w-4 mr-1" />
@@ -1546,14 +1692,30 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead className="text-gray-400">Transaction ID</TableHead>
-                            <TableHead className="text-gray-400">User</TableHead>
-                            <TableHead className="text-gray-400">Package</TableHead>
-                            <TableHead className="text-gray-400">Amount</TableHead>
-                            <TableHead className="text-gray-400">Method</TableHead>
-                            <TableHead className="text-gray-400">Status</TableHead>
-                            <TableHead className="text-gray-400">Date</TableHead>
-                            <TableHead className="text-gray-400">Actions</TableHead>
+                            <TableHead className="text-gray-400">
+                              Transaction ID
+                            </TableHead>
+                            <TableHead className="text-gray-400">
+                              User
+                            </TableHead>
+                            <TableHead className="text-gray-400">
+                              Package
+                            </TableHead>
+                            <TableHead className="text-gray-400">
+                              Amount
+                            </TableHead>
+                            <TableHead className="text-gray-400">
+                              Method
+                            </TableHead>
+                            <TableHead className="text-gray-400">
+                              Status
+                            </TableHead>
+                            <TableHead className="text-gray-400">
+                              Date
+                            </TableHead>
+                            <TableHead className="text-gray-400">
+                              Actions
+                            </TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -1582,19 +1744,19 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                                     transaction.status === "completed"
                                       ? "default"
                                       : transaction.status === "processing"
-                                      ? "secondary"
-                                      : transaction.status === "failed"
-                                      ? "destructive"
-                                      : "outline"
+                                        ? "secondary"
+                                        : transaction.status === "failed"
+                                          ? "destructive"
+                                          : "outline"
                                   }
                                   className={
                                     transaction.status === "completed"
                                       ? "bg-green-600"
                                       : transaction.status === "processing"
-                                      ? "bg-yellow-600"
-                                      : transaction.status === "failed"
-                                      ? "bg-red-600"
-                                      : ""
+                                        ? "bg-yellow-600"
+                                        : transaction.status === "failed"
+                                          ? "bg-red-600"
+                                          : ""
                                   }
                                 >
                                   {transaction.status}
@@ -1635,7 +1797,9 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                             />
                           </div>
                           <div>
-                            <Label className="text-gray-400">Account Number</Label>
+                            <Label className="text-gray-400">
+                              Account Number
+                            </Label>
                             <Input
                               value="****-****-****-1234"
                               className="mt-1 bg-gray-800/50"
@@ -1643,7 +1807,9 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                             />
                           </div>
                           <div>
-                            <Label className="text-gray-400">Routing Number</Label>
+                            <Label className="text-gray-400">
+                              Routing Number
+                            </Label>
                             <Input
                               value="021000021"
                               className="mt-1 bg-gray-800/50"
@@ -1674,23 +1840,33 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                         </CardHeader>
                         <CardContent className="space-y-4">
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-400">PCI DSS Compliance</span>
+                            <span className="text-gray-400">
+                              PCI DSS Compliance
+                            </span>
                             <Badge className="bg-green-600">Active</Badge>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-400">SSL Certificate</span>
+                            <span className="text-gray-400">
+                              SSL Certificate
+                            </span>
                             <Badge className="bg-green-600">Valid</Badge>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-400">Fraud Detection</span>
+                            <span className="text-gray-400">
+                              Fraud Detection
+                            </span>
                             <Badge className="bg-green-600">Enabled</Badge>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-400">AML Monitoring</span>
+                            <span className="text-gray-400">
+                              AML Monitoring
+                            </span>
                             <Badge className="bg-green-600">Active</Badge>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-400">Data Encryption</span>
+                            <span className="text-gray-400">
+                              Data Encryption
+                            </span>
                             <Badge className="bg-green-600">AES-256</Badge>
                           </div>
                           <div className="pt-3 border-t border-gray-600">
@@ -1713,9 +1889,15 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                         <CardContent className="p-4">
                           <div className="text-center">
                             <p className="text-2xl font-bold text-green-400">
-                              ${transactions.filter(t => t.status === 'completed').reduce((sum, t) => sum + t.amountPaid, 0).toFixed(2)}
+                              $
+                              {transactions
+                                .filter((t) => t.status === "completed")
+                                .reduce((sum, t) => sum + t.amountPaid, 0)
+                                .toFixed(2)}
                             </p>
-                            <p className="text-sm text-gray-400">Total Revenue</p>
+                            <p className="text-sm text-gray-400">
+                              Total Revenue
+                            </p>
                           </div>
                         </CardContent>
                       </Card>
@@ -1723,9 +1905,15 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                         <CardContent className="p-4">
                           <div className="text-center">
                             <p className="text-2xl font-bold text-blue-400">
-                              {transactions.filter(t => t.status === 'completed').length}
+                              {
+                                transactions.filter(
+                                  (t) => t.status === "completed",
+                                ).length
+                              }
                             </p>
-                            <p className="text-sm text-gray-400">Successful Transactions</p>
+                            <p className="text-sm text-gray-400">
+                              Successful Transactions
+                            </p>
                           </div>
                         </CardContent>
                       </Card>
@@ -1733,7 +1921,11 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                         <CardContent className="p-4">
                           <div className="text-center">
                             <p className="text-2xl font-bold text-yellow-400">
-                              {transactions.filter(t => t.status === 'processing').length}
+                              {
+                                transactions.filter(
+                                  (t) => t.status === "processing",
+                                ).length
+                              }
                             </p>
                             <p className="text-sm text-gray-400">Processing</p>
                           </div>
@@ -1743,7 +1935,11 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                         <CardContent className="p-4">
                           <div className="text-center">
                             <p className="text-2xl font-bold text-red-400">
-                              {transactions.filter(t => t.status === 'failed').length}
+                              {
+                                transactions.filter(
+                                  (t) => t.status === "failed",
+                                ).length
+                              }
                             </p>
                             <p className="text-sm text-gray-400">Failed</p>
                           </div>
@@ -1753,30 +1949,49 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
 
                     <Card className="bg-gray-700/50 border-gray-600">
                       <CardHeader>
-                        <CardTitle className="text-white">Payment Method Performance</CardTitle>
+                        <CardTitle className="text-white">
+                          Payment Method Performance
+                        </CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-4">
                           {paymentProviders.map((provider) => {
-                            const providerTransactions = transactions.filter(t => t.paymentMethod === provider.type);
-                            const completedTransactions = providerTransactions.filter(t => t.status === 'completed');
-                            const successRate = providerTransactions.length > 0 
-                              ? (completedTransactions.length / providerTransactions.length) * 100 
-                              : 0;
-                            const totalVolume = completedTransactions.reduce((sum, t) => sum + t.amountPaid, 0);
+                            const providerTransactions = transactions.filter(
+                              (t) => t.paymentMethod === provider.type,
+                            );
+                            const completedTransactions =
+                              providerTransactions.filter(
+                                (t) => t.status === "completed",
+                              );
+                            const successRate =
+                              providerTransactions.length > 0
+                                ? (completedTransactions.length /
+                                    providerTransactions.length) *
+                                  100
+                                : 0;
+                            const totalVolume = completedTransactions.reduce(
+                              (sum, t) => sum + t.amountPaid,
+                              0,
+                            );
 
                             return (
-                              <div key={provider.id} className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+                              <div
+                                key={provider.id}
+                                className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg"
+                              >
                                 <div className="flex items-center gap-3">
                                   <div className="text-2xl">
-                                    {provider.type === 'paypal' && '💳'}
-                                    {provider.type === 'stripe' && '💎'}
-                                    {provider.type === 'crypto' && '₿'}
+                                    {provider.type === "paypal" && "💳"}
+                                    {provider.type === "stripe" && "💎"}
+                                    {provider.type === "crypto" && "₿"}
                                   </div>
                                   <div>
-                                    <p className="text-white font-medium">{provider.name}</p>
+                                    <p className="text-white font-medium">
+                                      {provider.name}
+                                    </p>
                                     <p className="text-sm text-gray-400">
-                                      {completedTransactions.length} transactions
+                                      {completedTransactions.length}{" "}
+                                      transactions
                                     </p>
                                   </div>
                                 </div>
@@ -1802,56 +2017,100 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <Card className="bg-gray-700/50 border-gray-600">
                           <CardHeader>
-                            <CardTitle className="text-white">General Payment Settings</CardTitle>
+                            <CardTitle className="text-white">
+                              General Payment Settings
+                            </CardTitle>
                           </CardHeader>
                           <CardContent className="space-y-4">
                             <div>
-                              <Label className="text-gray-400">Minimum Purchase Amount</Label>
+                              <Label className="text-gray-400">
+                                Minimum Purchase Amount
+                              </Label>
                               <Input
                                 type="number"
                                 step="0.01"
                                 value={storeSettings.minPurchaseAmount}
-                                onChange={(e) => setStoreSettings(prev => prev ? {
-                                  ...prev,
-                                  minPurchaseAmount: parseFloat(e.target.value)
-                                } : null)}
+                                onChange={(e) =>
+                                  setStoreSettings((prev) =>
+                                    prev
+                                      ? {
+                                          ...prev,
+                                          minPurchaseAmount: parseFloat(
+                                            e.target.value,
+                                          ),
+                                        }
+                                      : null,
+                                  )
+                                }
                                 className="mt-1"
                               />
                             </div>
                             <div>
-                              <Label className="text-gray-400">Maximum Purchase Amount</Label>
+                              <Label className="text-gray-400">
+                                Maximum Purchase Amount
+                              </Label>
                               <Input
                                 type="number"
                                 step="0.01"
                                 value={storeSettings.maxPurchaseAmount}
-                                onChange={(e) => setStoreSettings(prev => prev ? {
-                                  ...prev,
-                                  maxPurchaseAmount: parseFloat(e.target.value)
-                                } : null)}
+                                onChange={(e) =>
+                                  setStoreSettings((prev) =>
+                                    prev
+                                      ? {
+                                          ...prev,
+                                          maxPurchaseAmount: parseFloat(
+                                            e.target.value,
+                                          ),
+                                        }
+                                      : null,
+                                  )
+                                }
                                 className="mt-1"
                               />
                             </div>
                             <div className="flex items-center justify-between">
-                              <Label className="text-gray-400">Enable Tax</Label>
+                              <Label className="text-gray-400">
+                                Enable Tax
+                              </Label>
                               <Switch
                                 checked={storeSettings.taxSettings.enabled}
-                                onCheckedChange={(checked) => setStoreSettings(prev => prev ? {
-                                  ...prev,
-                                  taxSettings: { ...prev.taxSettings, enabled: checked }
-                                } : null)}
+                                onCheckedChange={(checked) =>
+                                  setStoreSettings((prev) =>
+                                    prev
+                                      ? {
+                                          ...prev,
+                                          taxSettings: {
+                                            ...prev.taxSettings,
+                                            enabled: checked,
+                                          },
+                                        }
+                                      : null,
+                                  )
+                                }
                               />
                             </div>
                             {storeSettings.taxSettings.enabled && (
                               <div>
-                                <Label className="text-gray-400">Tax Rate (%)</Label>
+                                <Label className="text-gray-400">
+                                  Tax Rate (%)
+                                </Label>
                                 <Input
                                   type="number"
                                   step="0.01"
                                   value={storeSettings.taxSettings.rate}
-                                  onChange={(e) => setStoreSettings(prev => prev ? {
-                                    ...prev,
-                                    taxSettings: { ...prev.taxSettings, rate: parseFloat(e.target.value) }
-                                  } : null)}
+                                  onChange={(e) =>
+                                    setStoreSettings((prev) =>
+                                      prev
+                                        ? {
+                                            ...prev,
+                                            taxSettings: {
+                                              ...prev.taxSettings,
+                                              rate: parseFloat(e.target.value),
+                                            },
+                                          }
+                                        : null,
+                                    )
+                                  }
                                   className="mt-1"
                                 />
                               </div>
@@ -1861,55 +2120,100 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
 
                         <Card className="bg-gray-700/50 border-gray-600">
                           <CardHeader>
-                            <CardTitle className="text-white">Purchase Limits</CardTitle>
+                            <CardTitle className="text-white">
+                              Purchase Limits
+                            </CardTitle>
                           </CardHeader>
                           <CardContent className="space-y-4">
                             <div>
-                              <Label className="text-gray-400">Daily Limit ($)</Label>
+                              <Label className="text-gray-400">
+                                Daily Limit ($)
+                              </Label>
                               <Input
                                 type="number"
                                 value={storeSettings.purchaseLimits.daily}
-                                onChange={(e) => setStoreSettings(prev => prev ? {
-                                  ...prev,
-                                  purchaseLimits: { ...prev.purchaseLimits, daily: parseInt(e.target.value) }
-                                } : null)}
+                                onChange={(e) =>
+                                  setStoreSettings((prev) =>
+                                    prev
+                                      ? {
+                                          ...prev,
+                                          purchaseLimits: {
+                                            ...prev.purchaseLimits,
+                                            daily: parseInt(e.target.value),
+                                          },
+                                        }
+                                      : null,
+                                  )
+                                }
                                 className="mt-1"
                               />
                             </div>
                             <div>
-                              <Label className="text-gray-400">Weekly Limit ($)</Label>
+                              <Label className="text-gray-400">
+                                Weekly Limit ($)
+                              </Label>
                               <Input
                                 type="number"
                                 value={storeSettings.purchaseLimits.weekly}
-                                onChange={(e) => setStoreSettings(prev => prev ? {
-                                  ...prev,
-                                  purchaseLimits: { ...prev.purchaseLimits, weekly: parseInt(e.target.value) }
-                                } : null)}
+                                onChange={(e) =>
+                                  setStoreSettings((prev) =>
+                                    prev
+                                      ? {
+                                          ...prev,
+                                          purchaseLimits: {
+                                            ...prev.purchaseLimits,
+                                            weekly: parseInt(e.target.value),
+                                          },
+                                        }
+                                      : null,
+                                  )
+                                }
                                 className="mt-1"
                               />
                             </div>
                             <div>
-                              <Label className="text-gray-400">Monthly Limit ($)</Label>
+                              <Label className="text-gray-400">
+                                Monthly Limit ($)
+                              </Label>
                               <Input
                                 type="number"
                                 value={storeSettings.purchaseLimits.monthly}
-                                onChange={(e) => setStoreSettings(prev => prev ? {
-                                  ...prev,
-                                  purchaseLimits: { ...prev.purchaseLimits, monthly: parseInt(e.target.value) }
-                                } : null)}
+                                onChange={(e) =>
+                                  setStoreSettings((prev) =>
+                                    prev
+                                      ? {
+                                          ...prev,
+                                          purchaseLimits: {
+                                            ...prev.purchaseLimits,
+                                            monthly: parseInt(e.target.value),
+                                          },
+                                        }
+                                      : null,
+                                  )
+                                }
                                 className="mt-1"
                               />
                             </div>
                             <div>
-                              <Label className="text-gray-400">Global Bonus Multiplier</Label>
+                              <Label className="text-gray-400">
+                                Global Bonus Multiplier
+                              </Label>
                               <Input
                                 type="number"
                                 step="0.1"
                                 value={storeSettings.bonusMultiplier}
-                                onChange={(e) => setStoreSettings(prev => prev ? {
-                                  ...prev,
-                                  bonusMultiplier: parseFloat(e.target.value)
-                                } : null)}
+                                onChange={(e) =>
+                                  setStoreSettings((prev) =>
+                                    prev
+                                      ? {
+                                          ...prev,
+                                          bonusMultiplier: parseFloat(
+                                            e.target.value,
+                                          ),
+                                        }
+                                      : null,
+                                  )
+                                }
                                 className="mt-1"
                               />
                             </div>
@@ -1989,7 +2293,9 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
           <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-gold">
-                {editingPackage ? `Edit ${editingPackage.name}` : "Create New Package"}
+                {editingPackage
+                  ? `Edit ${editingPackage.name}`
+                  : "Create New Package"}
               </DialogTitle>
               <DialogDescription>
                 Create and customize Gold Coin packages with visual editor
@@ -2047,18 +2353,18 @@ function GoldCoinPackageEditor({
 
   const addFeature = () => {
     if (newFeature.trim()) {
-      setPkg(prev => ({
+      setPkg((prev) => ({
         ...prev,
-        features: [...prev.features, newFeature.trim()]
+        features: [...prev.features, newFeature.trim()],
       }));
       setNewFeature("");
     }
   };
 
   const removeFeature = (index: number) => {
-    setPkg(prev => ({
+    setPkg((prev) => ({
       ...prev,
-      features: prev.features.filter((_, i) => i !== index)
+      features: prev.features.filter((_, i) => i !== index),
     }));
   };
 
@@ -2100,7 +2406,7 @@ function GoldCoinPackageEditor({
               <div className="w-full h-32 bg-gradient-to-br from-gold/20 to-purple-600/20 rounded-lg flex items-center justify-center">
                 <Package className="h-12 w-12 text-gold" />
               </div>
-              
+
               <div className="absolute top-2 left-2 flex gap-1">
                 {pkg.popular && (
                   <Badge className="bg-purple-600 text-white text-xs">
@@ -2113,11 +2419,15 @@ function GoldCoinPackageEditor({
                   </Badge>
                 )}
               </div>
-              
+
               {pkg.originalPrice && pkg.originalPrice > pkg.price && (
                 <div className="absolute bottom-2 right-2">
                   <Badge className="bg-red-600 text-white text-xs">
-                    {Math.round(((pkg.originalPrice - pkg.price) / pkg.originalPrice) * 100)}% OFF
+                    {Math.round(
+                      ((pkg.originalPrice - pkg.price) / pkg.originalPrice) *
+                        100,
+                    )}
+                    % OFF
                   </Badge>
                 </div>
               )}
@@ -2128,11 +2438,15 @@ function GoldCoinPackageEditor({
 
             <div className="grid grid-cols-2 gap-2 mb-3">
               <div className="text-center p-2 bg-gold/10 rounded border border-gold/20">
-                <p className="text-gold font-bold">{pkg.goldCoins.toLocaleString()}</p>
+                <p className="text-gold font-bold">
+                  {pkg.goldCoins.toLocaleString()}
+                </p>
                 <p className="text-gold text-xs">Gold Coins</p>
               </div>
               <div className="text-center p-2 bg-purple-600/10 rounded border border-purple-600/20">
-                <p className="text-purple-400 font-bold">{pkg.bonusSweepsCoins}</p>
+                <p className="text-purple-400 font-bold">
+                  {pkg.bonusSweepsCoins}
+                </p>
                 <p className="text-purple-400 text-xs">Bonus SC</p>
               </div>
             </div>
@@ -2178,7 +2492,9 @@ function GoldCoinPackageEditor({
                 <Input
                   type="number"
                   value={pkg.goldCoins}
-                  onChange={(e) => updatePackage({ goldCoins: parseInt(e.target.value) })}
+                  onChange={(e) =>
+                    updatePackage({ goldCoins: parseInt(e.target.value) })
+                  }
                 />
               </div>
               <div>
@@ -2186,7 +2502,11 @@ function GoldCoinPackageEditor({
                 <Input
                   type="number"
                   value={pkg.bonusSweepsCoins}
-                  onChange={(e) => updatePackage({ bonusSweepsCoins: parseInt(e.target.value) })}
+                  onChange={(e) =>
+                    updatePackage({
+                      bonusSweepsCoins: parseInt(e.target.value),
+                    })
+                  }
                 />
               </div>
             </div>
@@ -2198,7 +2518,9 @@ function GoldCoinPackageEditor({
                   type="number"
                   step="0.01"
                   value={pkg.price}
-                  onChange={(e) => updatePackage({ price: parseFloat(e.target.value) })}
+                  onChange={(e) =>
+                    updatePackage({ price: parseFloat(e.target.value) })
+                  }
                 />
               </div>
               <div>
@@ -2207,9 +2529,13 @@ function GoldCoinPackageEditor({
                   type="number"
                   step="0.01"
                   value={pkg.originalPrice || ""}
-                  onChange={(e) => updatePackage({ 
-                    originalPrice: e.target.value ? parseFloat(e.target.value) : undefined 
-                  })}
+                  onChange={(e) =>
+                    updatePackage({
+                      originalPrice: e.target.value
+                        ? parseFloat(e.target.value)
+                        : undefined,
+                    })
+                  }
                   placeholder="For discounts"
                 />
               </div>
@@ -2263,13 +2589,13 @@ function GoldCoinPackageEditor({
                   </div>
                 ))}
               </div>
-              
+
               <div className="flex gap-2 mt-3">
                 <Input
                   value={newFeature}
                   onChange={(e) => setNewFeature(e.target.value)}
                   placeholder="Add new feature"
-                  onKeyPress={(e) => e.key === 'Enter' && addFeature()}
+                  onKeyPress={(e) => e.key === "Enter" && addFeature()}
                 />
                 <Button onClick={addFeature} size="sm">
                   <Plus className="h-4 w-4" />
@@ -2287,23 +2613,41 @@ function GoldCoinPackageEditor({
             </div>
 
             <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-              <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Package Statistics</h4>
+              <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                Package Statistics
+              </h4>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-blue-700 dark:text-blue-300">Created:</span>
-                  <div className="font-mono text-xs">{pkg.createdAt.toLocaleDateString()}</div>
+                  <span className="text-blue-700 dark:text-blue-300">
+                    Created:
+                  </span>
+                  <div className="font-mono text-xs">
+                    {pkg.createdAt.toLocaleDateString()}
+                  </div>
                 </div>
                 <div>
-                  <span className="text-blue-700 dark:text-blue-300">Updated:</span>
-                  <div className="font-mono text-xs">{pkg.updatedAt.toLocaleDateString()}</div>
+                  <span className="text-blue-700 dark:text-blue-300">
+                    Updated:
+                  </span>
+                  <div className="font-mono text-xs">
+                    {pkg.updatedAt.toLocaleDateString()}
+                  </div>
                 </div>
                 <div>
-                  <span className="text-blue-700 dark:text-blue-300">Value Ratio:</span>
-                  <div className="font-bold">{(pkg.goldCoins / pkg.price).toFixed(0)} GC/$</div>
+                  <span className="text-blue-700 dark:text-blue-300">
+                    Value Ratio:
+                  </span>
+                  <div className="font-bold">
+                    {(pkg.goldCoins / pkg.price).toFixed(0)} GC/$
+                  </div>
                 </div>
                 <div>
-                  <span className="text-blue-700 dark:text-blue-300">Bonus Ratio:</span>
-                  <div className="font-bold">{((pkg.bonusSweepsCoins / pkg.goldCoins) * 100).toFixed(2)}%</div>
+                  <span className="text-blue-700 dark:text-blue-300">
+                    Bonus Ratio:
+                  </span>
+                  <div className="font-bold">
+                    {((pkg.bonusSweepsCoins / pkg.goldCoins) * 100).toFixed(2)}%
+                  </div>
                 </div>
               </div>
             </div>
