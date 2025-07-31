@@ -40,6 +40,7 @@ import { AchievementBadgeSystem } from "../components/AchievementBadgeSystem";
 import { EnhancedCasinoBanking } from "../components/EnhancedCasinoBanking";
 import { TickerManagement } from "../components/TickerManagement";
 import { UserManagementSystem } from "../components/UserManagementSystem";
+import { AIGameDeveloper } from "../components/AIGameDeveloper";
 import {
   GoldCoinPackage,
   StoreSettings,
