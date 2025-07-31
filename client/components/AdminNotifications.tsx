@@ -76,6 +76,7 @@ export const AdminNotifications: React.FC<AdminNotificationsProps> = ({
   const [filter, setFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("timestamp");
   const [userHasInteracted, setUserHasInteracted] = useState(false);
+  const [playedSounds, setPlayedSounds] = useState<Set<string>>(new Set());
   const audioRef = useRef<HTMLAudioElement>(null);
   const windowRef = useRef<Window | null>(null);
   const { user } = useAuth();
