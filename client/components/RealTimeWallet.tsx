@@ -26,7 +26,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { useAuth } from './AuthContext';
 
-interface WalletBalance {
+export interface WalletBalance {
   goldCoins: number;
   sweepCoins: number;
   lastUpdated: Date;
