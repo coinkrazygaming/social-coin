@@ -83,7 +83,8 @@ export const AdminChatWindow: React.FC<AdminChatWindowProps> = ({
   const playNotificationSound = () => {
     try {
       // Create a single long beep notification sound using Web Audio API
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const audioContext = new (window.AudioContext ||
+        (window as any).webkitAudioContext)();
 
       // Create a single long beep (800Hz for 1.5 seconds)
       const oscillator = audioContext.createOscillator();
@@ -97,13 +98,18 @@ export const AdminChatWindow: React.FC<AdminChatWindowProps> = ({
 
       // Set volume - start at 0.4, sustain, then fade out in last 200ms
       gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(0.4, audioContext.currentTime + 0.05); // Quick fade in
+      gainNode.gain.linearRampToValueAtTime(
+        0.4,
+        audioContext.currentTime + 0.05,
+      ); // Quick fade in
       gainNode.gain.setValueAtTime(0.4, audioContext.currentTime + 1.3); // Sustain for most of the duration
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.5); // Fade out
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.01,
+        audioContext.currentTime + 1.5,
+      ); // Fade out
 
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 1.5);
-
     } catch (error) {
       console.error("Error playing notification sound:", error);
     }

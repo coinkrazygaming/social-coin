@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Upload,
   Camera,
@@ -42,30 +42,42 @@ import {
   AlertCircle,
   Info,
   ArrowRight,
-  ArrowLeft
-} from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Textarea } from './ui/textarea';
-import { ScrollArea } from './ui/scroll-area';
-import { Switch } from './ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
-import { Progress } from './ui/progress';
-import { Alert, AlertDescription } from './ui/alert';
-import { useAuth } from './AuthContext';
+  ArrowLeft,
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { Textarea } from "./ui/textarea";
+import { ScrollArea } from "./ui/scroll-area";
+import { Switch } from "./ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Progress } from "./ui/progress";
+import { Alert, AlertDescription } from "./ui/alert";
+import { useAuth } from "./AuthContext";
 
 interface KYCDocument {
   id: string;
-  type: 'photo_id' | 'drivers_license' | 'passport' | 'utility_bill' | 'bank_statement' | 'address_proof';
+  type:
+    | "photo_id"
+    | "drivers_license"
+    | "passport"
+    | "utility_bill"
+    | "bank_statement"
+    | "address_proof";
   fileName: string;
   fileSize: number;
   uploadedAt: Date;
-  status: 'pending' | 'verified' | 'rejected' | 'requires_review';
+  status: "pending" | "verified" | "rejected" | "requires_review";
   front?: string; // base64 or URL
   back?: string; // base64 or URL for two-sided documents
   extractedData?: {
@@ -87,7 +99,12 @@ interface KYCDocument {
 interface KYCProfile {
   id: string;
   userId: string;
-  status: 'not_started' | 'in_progress' | 'pending_review' | 'verified' | 'rejected';
+  status:
+    | "not_started"
+    | "in_progress"
+    | "pending_review"
+    | "verified"
+    | "rejected";
   personalInfo: {
     firstName: string;
     lastName: string;
@@ -126,7 +143,7 @@ interface KYCProfile {
 interface AIInteraction {
   id: string;
   timestamp: Date;
-  type: 'guidance' | 'verification' | 'assistance' | 'approval' | 'rejection';
+  type: "guidance" | "verification" | "assistance" | "approval" | "rejection";
   message: string;
   response?: string;
   helpful: boolean | null;
@@ -145,10 +162,12 @@ export const KYCOnboarding: React.FC = () => {
   const [kycProfile, setKycProfile] = useState<KYCProfile | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
-  const [previewDocument, setPreviewDocument] = useState<KYCDocument | null>(null);
+  const [previewDocument, setPreviewDocument] = useState<KYCDocument | null>(
+    null,
+  );
   const [luckyAIVisible, setLuckyAIVisible] = useState(true);
-  const [currentAIMessage, setCurrentAIMessage] = useState('');
-  const [userMessage, setUserMessage] = useState('');
+  const [currentAIMessage, setCurrentAIMessage] = useState("");
+  const [userMessage, setUserMessage] = useState("");
   const [aiInteractions, setAIInteractions] = useState<AIInteraction[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -156,61 +175,61 @@ export const KYCOnboarding: React.FC = () => {
 
   const onboardingSteps: OnboardingStep[] = [
     {
-      id: 'welcome',
-      title: 'Welcome to KYC Verification',
-      description: 'Let\'s verify your identity to ensure platform security',
+      id: "welcome",
+      title: "Welcome to KYC Verification",
+      description: "Let's verify your identity to ensure platform security",
       required: true,
       completed: false,
-      component: 'Welcome'
+      component: "Welcome",
     },
     {
-      id: 'personal_info',
-      title: 'Personal Information',
-      description: 'Provide your basic personal details',
+      id: "personal_info",
+      title: "Personal Information",
+      description: "Provide your basic personal details",
       required: true,
       completed: false,
-      component: 'PersonalInfo'
+      component: "PersonalInfo",
     },
     {
-      id: 'address',
-      title: 'Address Information',
-      description: 'Enter your current address details',
+      id: "address",
+      title: "Address Information",
+      description: "Enter your current address details",
       required: true,
       completed: false,
-      component: 'Address'
+      component: "Address",
     },
     {
-      id: 'photo_id',
-      title: 'Photo ID Upload',
-      description: 'Upload a government-issued photo ID (both sides)',
+      id: "photo_id",
+      title: "Photo ID Upload",
+      description: "Upload a government-issued photo ID (both sides)",
       required: true,
       completed: false,
-      component: 'PhotoID'
+      component: "PhotoID",
     },
     {
-      id: 'address_proof',
-      title: 'Address Verification',
-      description: 'Upload a recent utility bill or bank statement',
+      id: "address_proof",
+      title: "Address Verification",
+      description: "Upload a recent utility bill or bank statement",
       required: true,
       completed: false,
-      component: 'AddressProof'
+      component: "AddressProof",
     },
     {
-      id: 'liveness',
-      title: 'Liveness Verification',
-      description: 'Take a selfie to verify you\'re a real person',
+      id: "liveness",
+      title: "Liveness Verification",
+      description: "Take a selfie to verify you're a real person",
       required: true,
       completed: false,
-      component: 'LivenessCheck'
+      component: "LivenessCheck",
     },
     {
-      id: 'review',
-      title: 'Review & Submit',
-      description: 'Review your information and submit for approval',
+      id: "review",
+      title: "Review & Submit",
+      description: "Review your information and submit for approval",
       required: true,
       completed: false,
-      component: 'Review'
-    }
+      component: "Review",
+    },
   ];
 
   useEffect(() => {
@@ -221,23 +240,23 @@ export const KYCOnboarding: React.FC = () => {
   const initializeKYC = () => {
     // Initialize or load existing KYC profile
     const profile: KYCProfile = {
-      id: `kyc_${user?.id || 'demo'}`,
-      userId: user?.id || 'demo',
-      status: 'not_started',
+      id: `kyc_${user?.id || "demo"}`,
+      userId: user?.id || "demo",
+      status: "not_started",
       personalInfo: {
-        firstName: '',
-        lastName: '',
-        dateOfBirth: '',
-        phoneNumber: '',
-        email: user?.email || '',
-        ssn: ''
+        firstName: "",
+        lastName: "",
+        dateOfBirth: "",
+        phoneNumber: "",
+        email: user?.email || "",
+        ssn: "",
       },
       address: {
-        street: '',
-        city: '',
-        state: '',
-        zipCode: '',
-        country: 'United States'
+        street: "",
+        city: "",
+        state: "",
+        zipCode: "",
+        country: "United States",
       },
       documents: [],
       verification: {
@@ -245,14 +264,14 @@ export const KYCOnboarding: React.FC = () => {
         addressVerified: false,
         phoneVerified: false,
         emailVerified: false,
-        livenessCheck: false
+        livenessCheck: false,
       },
       riskAssessment: {
         overallScore: 0,
         factors: [],
-        recommendations: []
+        recommendations: [],
       },
-      luckyAIInteractions: []
+      luckyAIInteractions: [],
     };
 
     setKycProfile(profile);
@@ -262,18 +281,21 @@ export const KYCOnboarding: React.FC = () => {
     const welcomeMessage: AIInteraction = {
       id: `ai_${Date.now()}`,
       timestamp: new Date(),
-      type: 'guidance',
+      type: "guidance",
       message: `Hi there! 🍀 I'm LuckyAI, your personal KYC assistant. I'm here to guide you through the identity verification process step by step. This helps keep CoinKrazy secure for everyone! 
 
 Don't worry - I'll make this as smooth as possible. Ready to get started?`,
-      helpful: null
+      helpful: null,
     };
 
     setAIInteractions([welcomeMessage]);
     setCurrentAIMessage(welcomeMessage.message);
   };
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, documentType: KYCDocument['type']) => {
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    documentType: KYCDocument["type"],
+  ) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
@@ -282,14 +304,15 @@ Don't worry - I'll make this as smooth as possible. Ready to get started?`,
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        
+
         // Validate file
-        if (file.size > 10 * 1024 * 1024) { // 10MB limit
-          throw new Error('File size must be less than 10MB');
+        if (file.size > 10 * 1024 * 1024) {
+          // 10MB limit
+          throw new Error("File size must be less than 10MB");
         }
 
-        if (!file.type.startsWith('image/')) {
-          throw new Error('Only image files are allowed');
+        if (!file.type.startsWith("image/")) {
+          throw new Error("Only image files are allowed");
         }
 
         // Convert to base64
@@ -306,13 +329,13 @@ Don't worry - I'll make this as smooth as possible. Ready to get started?`,
           fileName: file.name,
           fileSize: file.size,
           uploadedAt: new Date(),
-          status: 'pending',
+          status: "pending",
           front: base64,
           aiAnalysis: {
             confidence: Math.random() * 20 + 80, // Simulate 80-100% confidence
             issues: [],
-            riskScore: Math.random() * 20 + 10 // Simulate 10-30 risk score
-          }
+            riskScore: Math.random() * 20 + 10, // Simulate 10-30 risk score
+          },
         };
 
         // Simulate AI document analysis
@@ -320,26 +343,37 @@ Don't worry - I'll make this as smooth as possible. Ready to get started?`,
           const analysisResults = simulateDocumentAnalysis(document);
           document.extractedData = analysisResults.extractedData;
           document.aiAnalysis = analysisResults.aiAnalysis;
-          document.status = analysisResults.aiAnalysis.riskScore < 50 ? 'verified' : 'requires_review';
+          document.status =
+            analysisResults.aiAnalysis.riskScore < 50
+              ? "verified"
+              : "requires_review";
 
-          setKycProfile(prev => prev ? {
-            ...prev,
-            documents: [...prev.documents, document]
-          } : null);
+          setKycProfile((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  documents: [...prev.documents, document],
+                }
+              : null,
+          );
 
           // LuckyAI response
-          addAIInteraction('verification', 
-            `Great! I've analyzed your ${documentType.replace('_', ' ')}. ${
-              document.status === 'verified' 
-                ? '✅ Everything looks good! The document passed all security checks.'
-                : '⚠️ The document needs manual review. Our team will check it within 24 hours.'
-            }`
+          addAIInteraction(
+            "verification",
+            `Great! I've analyzed your ${documentType.replace("_", " ")}. ${
+              document.status === "verified"
+                ? "✅ Everything looks good! The document passed all security checks."
+                : "⚠️ The document needs manual review. Our team will check it within 24 hours."
+            }`,
           );
         }, 2000);
       }
     } catch (error) {
-      console.error('Upload error:', error);
-      addAIInteraction('assistance', `❌ Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again or contact support.`);
+      console.error("Upload error:", error);
+      addAIInteraction(
+        "assistance",
+        `❌ Upload failed: ${error instanceof Error ? error.message : "Unknown error"}. Please try again or contact support.`,
+      );
     } finally {
       setIsUploading(false);
     }
@@ -350,30 +384,30 @@ Don't worry - I'll make this as smooth as possible. Ready to get started?`,
     const confidence = Math.random() * 15 + 85; // 85-100%
     const riskScore = Math.random() * 30 + 10; // 10-40
 
-    const extractedData: KYCDocument['extractedData'] = {};
+    const extractedData: KYCDocument["extractedData"] = {};
     const issues: string[] = [];
 
-    if (document.type === 'photo_id' || document.type === 'drivers_license') {
-      extractedData.name = 'John Doe'; // Would be extracted via OCR
-      extractedData.dateOfBirth = '1990-01-01';
-      extractedData.documentNumber = 'D123456789';
-      extractedData.expiryDate = '2028-01-01';
+    if (document.type === "photo_id" || document.type === "drivers_license") {
+      extractedData.name = "John Doe"; // Would be extracted via OCR
+      extractedData.dateOfBirth = "1990-01-01";
+      extractedData.documentNumber = "D123456789";
+      extractedData.expiryDate = "2028-01-01";
 
       if (confidence < 90) {
-        issues.push('Image quality could be better');
+        issues.push("Image quality could be better");
       }
       if (riskScore > 25) {
-        issues.push('Document appears to have minor wear');
+        issues.push("Document appears to have minor wear");
       }
     }
 
-    if (document.type === 'utility_bill') {
-      extractedData.name = 'John Doe';
-      extractedData.address = '123 Main St, Anytown, ST 12345';
-      extractedData.issueDate = '2024-01-01';
+    if (document.type === "utility_bill") {
+      extractedData.name = "John Doe";
+      extractedData.address = "123 Main St, Anytown, ST 12345";
+      extractedData.issueDate = "2024-01-01";
 
       if (confidence < 85) {
-        issues.push('Address extraction confidence could be higher');
+        issues.push("Address extraction confidence could be higher");
       }
     }
 
@@ -382,21 +416,21 @@ Don't worry - I'll make this as smooth as possible. Ready to get started?`,
       aiAnalysis: {
         confidence,
         issues,
-        riskScore
-      }
+        riskScore,
+      },
     };
   };
 
-  const addAIInteraction = (type: AIInteraction['type'], message: string) => {
+  const addAIInteraction = (type: AIInteraction["type"], message: string) => {
     const interaction: AIInteraction = {
       id: `ai_${Date.now()}`,
       timestamp: new Date(),
       type,
       message,
-      helpful: null
+      helpful: null,
     };
 
-    setAIInteractions(prev => [...prev, interaction]);
+    setAIInteractions((prev) => [...prev, interaction]);
     setCurrentAIMessage(message);
   };
 
@@ -407,38 +441,47 @@ Don't worry - I'll make this as smooth as possible. Ready to get started?`,
     const userInteraction: AIInteraction = {
       id: `user_${Date.now()}`,
       timestamp: new Date(),
-      type: 'assistance',
+      type: "assistance",
       message: userMessage,
-      helpful: null
+      helpful: null,
     };
 
-    setAIInteractions(prev => [...prev, userInteraction]);
+    setAIInteractions((prev) => [...prev, userInteraction]);
 
     // Simulate AI response based on user message
     setTimeout(() => {
-      let aiResponse = '';
+      let aiResponse = "";
       const lowerMessage = userMessage.toLowerCase();
 
-      if (lowerMessage.includes('help') || lowerMessage.includes('stuck')) {
+      if (lowerMessage.includes("help") || lowerMessage.includes("stuck")) {
         aiResponse = `I'm here to help! 🍀 Which step are you having trouble with? I can guide you through document uploads, explain requirements, or answer any questions about the verification process.`;
-      } else if (lowerMessage.includes('document') || lowerMessage.includes('upload')) {
+      } else if (
+        lowerMessage.includes("document") ||
+        lowerMessage.includes("upload")
+      ) {
         aiResponse = `For document uploads, make sure your images are clear, well-lit, and show all corners of the document. I accept JPG, PNG, and PDF files up to 10MB. Need help with a specific document type?`;
-      } else if (lowerMessage.includes('how long') || lowerMessage.includes('time')) {
+      } else if (
+        lowerMessage.includes("how long") ||
+        lowerMessage.includes("time")
+      ) {
         aiResponse = `The verification process typically takes 1-3 business days once you submit all required documents. I'll analyze most documents instantly, but some may need human review for extra security.`;
-      } else if (lowerMessage.includes('secure') || lowerMessage.includes('safe')) {
+      } else if (
+        lowerMessage.includes("secure") ||
+        lowerMessage.includes("safe")
+      ) {
         aiResponse = `Your documents are completely secure! 🔒 We use bank-level encryption and only store documents for compliance purposes. Your privacy and security are our top priorities.`;
       } else {
         aiResponse = `Thanks for your message! If you need specific help with the KYC process, feel free to ask about document requirements, upload issues, or verification timelines. I'm here to make this as smooth as possible! 🍀`;
       }
 
-      addAIInteraction('assistance', aiResponse);
+      addAIInteraction("assistance", aiResponse);
     }, 1000);
 
-    setUserMessage('');
+    setUserMessage("");
   };
 
   const completeStep = (stepId: string) => {
-    const stepIndex = onboardingSteps.findIndex(step => step.id === stepId);
+    const stepIndex = onboardingSteps.findIndex((step) => step.id === stepId);
     if (stepIndex !== -1) {
       onboardingSteps[stepIndex].completed = true;
       if (stepIndex === currentStep && stepIndex < onboardingSteps.length - 1) {
@@ -454,38 +497,50 @@ Don't worry - I'll make this as smooth as possible. Ready to get started?`,
 
     try {
       // Simulate submission process
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       const updatedProfile: KYCProfile = {
         ...kycProfile,
-        status: 'pending_review',
+        status: "pending_review",
         submittedAt: new Date(),
         riskAssessment: {
           overallScore: Math.random() * 30 + 70, // 70-100
-          factors: ['Document quality', 'Address match', 'Identity verification'],
-          recommendations: ['Approve for standard limits', 'Monitor initial activity']
-        }
+          factors: [
+            "Document quality",
+            "Address match",
+            "Identity verification",
+          ],
+          recommendations: [
+            "Approve for standard limits",
+            "Monitor initial activity",
+          ],
+        },
       };
 
       setKycProfile(updatedProfile);
 
-      addAIInteraction('approval', 
+      addAIInteraction(
+        "approval",
         `🎉 Excellent! Your KYC verification has been submitted successfully. Our team will review your documents within 24-48 hours. You'll receive an email notification once approved. 
 
-In the meantime, you can start exploring CoinKrazy with limited features. Welcome to the family! 🍀`
+In the meantime, you can start exploring CoinKrazy with limited features. Welcome to the family! 🍀`,
       );
 
-      completeStep('review');
-
+      completeStep("review");
     } catch (error) {
-      addAIInteraction('assistance', '❌ Submission failed. Please try again or contact support.');
+      addAIInteraction(
+        "assistance",
+        "❌ Submission failed. Please try again or contact support.",
+      );
     } finally {
       setIsProcessing(false);
     }
   };
 
   const getStepProgress = () => {
-    const completedSteps = onboardingSteps.filter(step => step.completed).length;
+    const completedSteps = onboardingSteps.filter(
+      (step) => step.completed,
+    ).length;
     return (completedSteps / onboardingSteps.length) * 100;
   };
 
@@ -494,39 +549,48 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
     if (!step || !kycProfile) return null;
 
     switch (step.component) {
-      case 'Welcome':
+      case "Welcome":
         return (
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader className="text-center">
               <div className="text-6xl mb-4">🍀</div>
-              <CardTitle className="text-white text-2xl">Welcome to CoinKrazy KYC</CardTitle>
+              <CardTitle className="text-white text-2xl">
+                Welcome to CoinKrazy KYC
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-gray-300 text-center">
-                To ensure platform security and comply with regulations, we need to verify your identity. 
-                This process is quick, secure, and only takes a few minutes.
+                To ensure platform security and comply with regulations, we need
+                to verify your identity. This process is quick, secure, and only
+                takes a few minutes.
               </p>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center p-4 bg-gray-700 rounded">
                   <Shield className="h-8 w-8 text-blue-500 mx-auto mb-2" />
                   <h4 className="text-white font-semibold">Secure</h4>
-                  <p className="text-sm text-gray-400">Bank-level encryption protects your data</p>
+                  <p className="text-sm text-gray-400">
+                    Bank-level encryption protects your data
+                  </p>
                 </div>
                 <div className="text-center p-4 bg-gray-700 rounded">
                   <Zap className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
                   <h4 className="text-white font-semibold">Fast</h4>
-                  <p className="text-sm text-gray-400">Most verifications complete in minutes</p>
+                  <p className="text-sm text-gray-400">
+                    Most verifications complete in minutes
+                  </p>
                 </div>
                 <div className="text-center p-4 bg-gray-700 rounded">
                   <Bot className="h-8 w-8 text-green-500 mx-auto mb-2" />
                   <h4 className="text-white font-semibold">AI Assisted</h4>
-                  <p className="text-sm text-gray-400">LuckyAI guides you through each step</p>
+                  <p className="text-sm text-gray-400">
+                    LuckyAI guides you through each step
+                  </p>
                 </div>
               </div>
 
-              <Button 
-                onClick={() => completeStep('welcome')} 
+              <Button
+                onClick={() => completeStep("welcome")}
                 className="w-full bg-green-600 hover:bg-green-700"
               >
                 Start Verification Process
@@ -535,7 +599,7 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
           </Card>
         );
 
-      case 'PersonalInfo':
+      case "PersonalInfo":
         return (
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
@@ -550,10 +614,19 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
                   <Label className="text-white">First Name</Label>
                   <Input
                     value={kycProfile.personalInfo.firstName}
-                    onChange={(e) => setKycProfile(prev => prev ? {
-                      ...prev,
-                      personalInfo: { ...prev.personalInfo, firstName: e.target.value }
-                    } : null)}
+                    onChange={(e) =>
+                      setKycProfile((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              personalInfo: {
+                                ...prev.personalInfo,
+                                firstName: e.target.value,
+                              },
+                            }
+                          : null,
+                      )
+                    }
                     placeholder="Enter your first name"
                   />
                 </div>
@@ -561,10 +634,19 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
                   <Label className="text-white">Last Name</Label>
                   <Input
                     value={kycProfile.personalInfo.lastName}
-                    onChange={(e) => setKycProfile(prev => prev ? {
-                      ...prev,
-                      personalInfo: { ...prev.personalInfo, lastName: e.target.value }
-                    } : null)}
+                    onChange={(e) =>
+                      setKycProfile((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              personalInfo: {
+                                ...prev.personalInfo,
+                                lastName: e.target.value,
+                              },
+                            }
+                          : null,
+                      )
+                    }
                     placeholder="Enter your last name"
                   />
                 </div>
@@ -575,10 +657,19 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
                 <Input
                   type="date"
                   value={kycProfile.personalInfo.dateOfBirth}
-                  onChange={(e) => setKycProfile(prev => prev ? {
-                    ...prev,
-                    personalInfo: { ...prev.personalInfo, dateOfBirth: e.target.value }
-                  } : null)}
+                  onChange={(e) =>
+                    setKycProfile((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+                            personalInfo: {
+                              ...prev.personalInfo,
+                              dateOfBirth: e.target.value,
+                            },
+                          }
+                        : null,
+                    )
+                  }
                 />
               </div>
 
@@ -587,10 +678,19 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
                 <Input
                   type="tel"
                   value={kycProfile.personalInfo.phoneNumber}
-                  onChange={(e) => setKycProfile(prev => prev ? {
-                    ...prev,
-                    personalInfo: { ...prev.personalInfo, phoneNumber: e.target.value }
-                  } : null)}
+                  onChange={(e) =>
+                    setKycProfile((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+                            personalInfo: {
+                              ...prev.personalInfo,
+                              phoneNumber: e.target.value,
+                            },
+                          }
+                        : null,
+                    )
+                  }
                   placeholder="+1 (555) 123-4567"
                 />
               </div>
@@ -603,16 +703,25 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
                   disabled
                   className="bg-gray-600"
                 />
-                <p className="text-xs text-gray-400 mt-1">Using your account email</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Using your account email
+                </p>
               </div>
 
-              <Button 
+              <Button
                 onClick={() => {
-                  completeStep('personal_info');
-                  addAIInteraction('guidance', 'Perfect! Personal information saved. Now let\'s get your address details. 📍');
+                  completeStep("personal_info");
+                  addAIInteraction(
+                    "guidance",
+                    "Perfect! Personal information saved. Now let's get your address details. 📍",
+                  );
                 }}
                 className="w-full bg-blue-600 hover:bg-blue-700"
-                disabled={!kycProfile.personalInfo.firstName || !kycProfile.personalInfo.lastName || !kycProfile.personalInfo.dateOfBirth}
+                disabled={
+                  !kycProfile.personalInfo.firstName ||
+                  !kycProfile.personalInfo.lastName ||
+                  !kycProfile.personalInfo.dateOfBirth
+                }
               >
                 Continue to Address
               </Button>
@@ -620,7 +729,7 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
           </Card>
         );
 
-      case 'Address':
+      case "Address":
         return (
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
@@ -634,10 +743,19 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
                 <Label className="text-white">Street Address</Label>
                 <Input
                   value={kycProfile.address.street}
-                  onChange={(e) => setKycProfile(prev => prev ? {
-                    ...prev,
-                    address: { ...prev.address, street: e.target.value }
-                  } : null)}
+                  onChange={(e) =>
+                    setKycProfile((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+                            address: {
+                              ...prev.address,
+                              street: e.target.value,
+                            },
+                          }
+                        : null,
+                    )
+                  }
                   placeholder="123 Main Street"
                 />
               </div>
@@ -647,10 +765,19 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
                   <Label className="text-white">City</Label>
                   <Input
                     value={kycProfile.address.city}
-                    onChange={(e) => setKycProfile(prev => prev ? {
-                      ...prev,
-                      address: { ...prev.address, city: e.target.value }
-                    } : null)}
+                    onChange={(e) =>
+                      setKycProfile((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              address: {
+                                ...prev.address,
+                                city: e.target.value,
+                              },
+                            }
+                          : null,
+                      )
+                    }
                     placeholder="City"
                   />
                 </div>
@@ -658,10 +785,16 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
                   <Label className="text-white">State</Label>
                   <Select
                     value={kycProfile.address.state}
-                    onValueChange={(value) => setKycProfile(prev => prev ? {
-                      ...prev,
-                      address: { ...prev.address, state: value }
-                    } : null)}
+                    onValueChange={(value) =>
+                      setKycProfile((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              address: { ...prev.address, state: value },
+                            }
+                          : null,
+                      )
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="State" />
@@ -680,22 +813,39 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
                   <Label className="text-white">ZIP Code</Label>
                   <Input
                     value={kycProfile.address.zipCode}
-                    onChange={(e) => setKycProfile(prev => prev ? {
-                      ...prev,
-                      address: { ...prev.address, zipCode: e.target.value }
-                    } : null)}
+                    onChange={(e) =>
+                      setKycProfile((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              address: {
+                                ...prev.address,
+                                zipCode: e.target.value,
+                              },
+                            }
+                          : null,
+                      )
+                    }
                     placeholder="12345"
                   />
                 </div>
               </div>
 
-              <Button 
+              <Button
                 onClick={() => {
-                  completeStep('address');
-                  addAIInteraction('guidance', 'Great! Address saved. Next, we need to verify your identity with a photo ID. 📄');
+                  completeStep("address");
+                  addAIInteraction(
+                    "guidance",
+                    "Great! Address saved. Next, we need to verify your identity with a photo ID. 📄",
+                  );
                 }}
                 className="w-full bg-blue-600 hover:bg-blue-700"
-                disabled={!kycProfile.address.street || !kycProfile.address.city || !kycProfile.address.state || !kycProfile.address.zipCode}
+                disabled={
+                  !kycProfile.address.street ||
+                  !kycProfile.address.city ||
+                  !kycProfile.address.state ||
+                  !kycProfile.address.zipCode
+                }
               >
                 Continue to Document Upload
               </Button>
@@ -703,7 +853,7 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
           </Card>
         );
 
-      case 'PhotoID':
+      case "PhotoID":
         return (
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
@@ -716,8 +866,9 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
               <Alert>
                 <Info className="h-4 w-4" />
                 <AlertDescription>
-                  Upload both sides of your government-issued photo ID (driver's license, passport, or state ID). 
-                  Ensure the image is clear and all text is readable.
+                  Upload both sides of your government-issued photo ID (driver's
+                  license, passport, or state ID). Ensure the image is clear and
+                  all text is readable.
                 </AlertDescription>
               </Alert>
 
@@ -736,9 +887,13 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
                         <Upload className="h-8 w-8 mx-auto mb-2" />
                       )}
                       <p className="text-white">
-                        {isUploading ? 'Uploading...' : 'Click to upload photo ID'}
+                        {isUploading
+                          ? "Uploading..."
+                          : "Click to upload photo ID"}
                       </p>
-                      <p className="text-xs text-gray-400">JPG, PNG up to 10MB</p>
+                      <p className="text-xs text-gray-400">
+                        JPG, PNG up to 10MB
+                      </p>
                     </div>
                   </Button>
                   <input
@@ -746,46 +901,70 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
                     type="file"
                     accept="image/*"
                     multiple
-                    onChange={(e) => handleFileUpload(e, 'photo_id')}
+                    onChange={(e) => handleFileUpload(e, "photo_id")}
                     className="hidden"
                   />
                 </div>
 
                 {/* Display uploaded documents */}
-                {kycProfile.documents.filter(doc => doc.type === 'photo_id').map((doc) => (
-                  <div key={doc.id} className="p-3 bg-gray-700 rounded border">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-white font-medium">{doc.fileName}</span>
-                      <Badge className={
-                        doc.status === 'verified' ? 'bg-green-600' :
-                        doc.status === 'pending' ? 'bg-yellow-600' :
-                        doc.status === 'requires_review' ? 'bg-orange-600' : 'bg-red-600'
-                      }>
-                        {doc.status}
-                      </Badge>
-                    </div>
-                    
-                    {doc.aiAnalysis && (
-                      <div className="text-sm">
-                        <p className="text-gray-300">
-                          Confidence: <span className="text-white">{doc.aiAnalysis.confidence.toFixed(1)}%</span>
-                        </p>
-                        {doc.aiAnalysis.issues.length > 0 && (
-                          <p className="text-yellow-400">Issues: {doc.aiAnalysis.issues.join(', ')}</p>
-                        )}
+                {kycProfile.documents
+                  .filter((doc) => doc.type === "photo_id")
+                  .map((doc) => (
+                    <div
+                      key={doc.id}
+                      className="p-3 bg-gray-700 rounded border"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-white font-medium">
+                          {doc.fileName}
+                        </span>
+                        <Badge
+                          className={
+                            doc.status === "verified"
+                              ? "bg-green-600"
+                              : doc.status === "pending"
+                                ? "bg-yellow-600"
+                                : doc.status === "requires_review"
+                                  ? "bg-orange-600"
+                                  : "bg-red-600"
+                          }
+                        >
+                          {doc.status}
+                        </Badge>
                       </div>
-                    )}
-                  </div>
-                ))}
+
+                      {doc.aiAnalysis && (
+                        <div className="text-sm">
+                          <p className="text-gray-300">
+                            Confidence:{" "}
+                            <span className="text-white">
+                              {doc.aiAnalysis.confidence.toFixed(1)}%
+                            </span>
+                          </p>
+                          {doc.aiAnalysis.issues.length > 0 && (
+                            <p className="text-yellow-400">
+                              Issues: {doc.aiAnalysis.issues.join(", ")}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
               </div>
 
-              <Button 
+              <Button
                 onClick={() => {
-                  completeStep('photo_id');
-                  addAIInteraction('guidance', 'ID uploaded successfully! Now we need proof of address. 🏠');
+                  completeStep("photo_id");
+                  addAIInteraction(
+                    "guidance",
+                    "ID uploaded successfully! Now we need proof of address. 🏠",
+                  );
                 }}
                 className="w-full bg-blue-600 hover:bg-blue-700"
-                disabled={kycProfile.documents.filter(doc => doc.type === 'photo_id').length === 0}
+                disabled={
+                  kycProfile.documents.filter((doc) => doc.type === "photo_id")
+                    .length === 0
+                }
               >
                 Continue to Address Proof
               </Button>
@@ -793,7 +972,7 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
           </Card>
         );
 
-      case 'AddressProof':
+      case "AddressProof":
         return (
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
@@ -806,8 +985,9 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
               <Alert>
                 <Info className="h-4 w-4" />
                 <AlertDescription>
-                  Upload a recent utility bill, bank statement, or other official document showing your name and address. 
-                  The document must be dated within the last 90 days.
+                  Upload a recent utility bill, bank statement, or other
+                  official document showing your name and address. The document
+                  must be dated within the last 90 days.
                 </AlertDescription>
               </Alert>
 
@@ -817,7 +997,8 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
                     variant="outline"
                     onClick={() => {
                       if (fileInputRef.current) {
-                        fileInputRef.current.onchange = (e) => handleFileUpload(e as any, 'utility_bill');
+                        fileInputRef.current.onchange = (e) =>
+                          handleFileUpload(e as any, "utility_bill");
                         fileInputRef.current.click();
                       }
                     }}
@@ -831,45 +1012,72 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
                         <Upload className="h-8 w-8 mx-auto mb-2" />
                       )}
                       <p className="text-white">
-                        {isUploading ? 'Uploading...' : 'Click to upload address proof'}
+                        {isUploading
+                          ? "Uploading..."
+                          : "Click to upload address proof"}
                       </p>
-                      <p className="text-xs text-gray-400">Utility bill, bank statement, etc.</p>
+                      <p className="text-xs text-gray-400">
+                        Utility bill, bank statement, etc.
+                      </p>
                     </div>
                   </Button>
                 </div>
 
                 {/* Display uploaded documents */}
-                {kycProfile.documents.filter(doc => doc.type === 'utility_bill').map((doc) => (
-                  <div key={doc.id} className="p-3 bg-gray-700 rounded border">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-white font-medium">{doc.fileName}</span>
-                      <Badge className={
-                        doc.status === 'verified' ? 'bg-green-600' :
-                        doc.status === 'pending' ? 'bg-yellow-600' :
-                        doc.status === 'requires_review' ? 'bg-orange-600' : 'bg-red-600'
-                      }>
-                        {doc.status}
-                      </Badge>
-                    </div>
-                    
-                    {doc.extractedData && (
-                      <div className="text-sm">
-                        <p className="text-gray-300">
-                          Extracted Address: <span className="text-white">{doc.extractedData.address}</span>
-                        </p>
+                {kycProfile.documents
+                  .filter((doc) => doc.type === "utility_bill")
+                  .map((doc) => (
+                    <div
+                      key={doc.id}
+                      className="p-3 bg-gray-700 rounded border"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-white font-medium">
+                          {doc.fileName}
+                        </span>
+                        <Badge
+                          className={
+                            doc.status === "verified"
+                              ? "bg-green-600"
+                              : doc.status === "pending"
+                                ? "bg-yellow-600"
+                                : doc.status === "requires_review"
+                                  ? "bg-orange-600"
+                                  : "bg-red-600"
+                          }
+                        >
+                          {doc.status}
+                        </Badge>
                       </div>
-                    )}
-                  </div>
-                ))}
+
+                      {doc.extractedData && (
+                        <div className="text-sm">
+                          <p className="text-gray-300">
+                            Extracted Address:{" "}
+                            <span className="text-white">
+                              {doc.extractedData.address}
+                            </span>
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
               </div>
 
-              <Button 
+              <Button
                 onClick={() => {
-                  completeStep('address_proof');
-                  addAIInteraction('guidance', 'Address verification complete! One more step - liveness verification. 📸');
+                  completeStep("address_proof");
+                  addAIInteraction(
+                    "guidance",
+                    "Address verification complete! One more step - liveness verification. 📸",
+                  );
                 }}
                 className="w-full bg-blue-600 hover:bg-blue-700"
-                disabled={kycProfile.documents.filter(doc => doc.type === 'utility_bill').length === 0}
+                disabled={
+                  kycProfile.documents.filter(
+                    (doc) => doc.type === "utility_bill",
+                  ).length === 0
+                }
               >
                 Continue to Liveness Check
               </Button>
@@ -877,7 +1085,7 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
           </Card>
         );
 
-      case 'LivenessCheck':
+      case "LivenessCheck":
         return (
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
@@ -890,7 +1098,8 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
               <Alert>
                 <Info className="h-4 w-4" />
                 <AlertDescription>
-                  Take a selfie to verify you're a real person. Look directly at the camera and ensure good lighting.
+                  Take a selfie to verify you're a real person. Look directly at
+                  the camera and ensure good lighting.
                 </AlertDescription>
               </Alert>
 
@@ -898,26 +1107,37 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
                 <div className="w-64 h-64 mx-auto mb-4 bg-gray-700 rounded-full flex items-center justify-center">
                   <Camera className="h-16 w-16 text-gray-500" />
                 </div>
-                
+
                 <Button className="bg-green-600 hover:bg-green-700 mb-2">
                   <Camera className="h-4 w-4 mr-2" />
                   Take Selfie
                 </Button>
-                
+
                 <p className="text-sm text-gray-400">
-                  This helps us verify that you're the same person as in your photo ID
+                  This helps us verify that you're the same person as in your
+                  photo ID
                 </p>
               </div>
 
-              <Button 
+              <Button
                 onClick={() => {
                   // Simulate liveness check completion
-                  setKycProfile(prev => prev ? {
-                    ...prev,
-                    verification: { ...prev.verification, livenessCheck: true }
-                  } : null);
-                  completeStep('liveness');
-                  addAIInteraction('guidance', 'Perfect! Liveness check passed. Ready to review and submit? 🎉');
+                  setKycProfile((prev) =>
+                    prev
+                      ? {
+                          ...prev,
+                          verification: {
+                            ...prev.verification,
+                            livenessCheck: true,
+                          },
+                        }
+                      : null,
+                  );
+                  completeStep("liveness");
+                  addAIInteraction(
+                    "guidance",
+                    "Perfect! Liveness check passed. Ready to review and submit? 🎉",
+                  );
                 }}
                 className="w-full bg-blue-600 hover:bg-blue-700"
               >
@@ -927,7 +1147,7 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
           </Card>
         );
 
-      case 'Review':
+      case "Review":
         return (
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
@@ -939,12 +1159,35 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="text-white font-semibold mb-3">Personal Information</h4>
+                  <h4 className="text-white font-semibold mb-3">
+                    Personal Information
+                  </h4>
                   <div className="space-y-2 text-sm">
-                    <p><span className="text-gray-400">Name:</span> <span className="text-white">{kycProfile.personalInfo.firstName} {kycProfile.personalInfo.lastName}</span></p>
-                    <p><span className="text-gray-400">Date of Birth:</span> <span className="text-white">{kycProfile.personalInfo.dateOfBirth}</span></p>
-                    <p><span className="text-gray-400">Phone:</span> <span className="text-white">{kycProfile.personalInfo.phoneNumber}</span></p>
-                    <p><span className="text-gray-400">Email:</span> <span className="text-white">{kycProfile.personalInfo.email}</span></p>
+                    <p>
+                      <span className="text-gray-400">Name:</span>{" "}
+                      <span className="text-white">
+                        {kycProfile.personalInfo.firstName}{" "}
+                        {kycProfile.personalInfo.lastName}
+                      </span>
+                    </p>
+                    <p>
+                      <span className="text-gray-400">Date of Birth:</span>{" "}
+                      <span className="text-white">
+                        {kycProfile.personalInfo.dateOfBirth}
+                      </span>
+                    </p>
+                    <p>
+                      <span className="text-gray-400">Phone:</span>{" "}
+                      <span className="text-white">
+                        {kycProfile.personalInfo.phoneNumber}
+                      </span>
+                    </p>
+                    <p>
+                      <span className="text-gray-400">Email:</span>{" "}
+                      <span className="text-white">
+                        {kycProfile.personalInfo.email}
+                      </span>
+                    </p>
                   </div>
                 </div>
 
@@ -952,8 +1195,11 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
                   <h4 className="text-white font-semibold mb-3">Address</h4>
                   <div className="space-y-2 text-sm">
                     <p className="text-white">
-                      {kycProfile.address.street}<br />
-                      {kycProfile.address.city}, {kycProfile.address.state} {kycProfile.address.zipCode}<br />
+                      {kycProfile.address.street}
+                      <br />
+                      {kycProfile.address.city}, {kycProfile.address.state}{" "}
+                      {kycProfile.address.zipCode}
+                      <br />
                       {kycProfile.address.country}
                     </p>
                   </div>
@@ -961,16 +1207,27 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
               </div>
 
               <div>
-                <h4 className="text-white font-semibold mb-3">Uploaded Documents</h4>
+                <h4 className="text-white font-semibold mb-3">
+                  Uploaded Documents
+                </h4>
                 <div className="space-y-2">
                   {kycProfile.documents.map((doc) => (
-                    <div key={doc.id} className="flex items-center justify-between p-2 bg-gray-700 rounded">
+                    <div
+                      key={doc.id}
+                      className="flex items-center justify-between p-2 bg-gray-700 rounded"
+                    >
                       <span className="text-white text-sm">{doc.fileName}</span>
-                      <Badge className={
-                        doc.status === 'verified' ? 'bg-green-600' :
-                        doc.status === 'pending' ? 'bg-yellow-600' :
-                        doc.status === 'requires_review' ? 'bg-orange-600' : 'bg-red-600'
-                      }>
+                      <Badge
+                        className={
+                          doc.status === "verified"
+                            ? "bg-green-600"
+                            : doc.status === "pending"
+                              ? "bg-yellow-600"
+                              : doc.status === "requires_review"
+                                ? "bg-orange-600"
+                                : "bg-red-600"
+                        }
+                      >
                         {doc.status}
                       </Badge>
                     </div>
@@ -981,12 +1238,13 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
               <Alert>
                 <CheckCircle className="h-4 w-4" />
                 <AlertDescription>
-                  By submitting this verification, you confirm that all information provided is accurate and complete. 
-                  Our team will review your submission within 24-48 hours.
+                  By submitting this verification, you confirm that all
+                  information provided is accurate and complete. Our team will
+                  review your submission within 24-48 hours.
                 </AlertDescription>
               </Alert>
 
-              <Button 
+              <Button
                 onClick={submitKYCForReview}
                 disabled={isProcessing}
                 className="w-full bg-green-600 hover:bg-green-700"
@@ -1026,21 +1284,24 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
       <Card className="bg-gray-800 border-gray-700">
         <CardContent className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-white font-semibold">KYC Verification Progress</h3>
-            <span className="text-gray-400 text-sm">{Math.round(getStepProgress())}% Complete</span>
+            <h3 className="text-white font-semibold">
+              KYC Verification Progress
+            </h3>
+            <span className="text-gray-400 text-sm">
+              {Math.round(getStepProgress())}% Complete
+            </span>
           </div>
           <Progress value={getStepProgress()} className="mb-2" />
           <p className="text-gray-400 text-sm">
-            Step {currentStep + 1} of {onboardingSteps.length}: {onboardingSteps[currentStep]?.title}
+            Step {currentStep + 1} of {onboardingSteps.length}:{" "}
+            {onboardingSteps[currentStep]?.title}
           </p>
         </CardContent>
       </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content */}
-        <div className="lg:col-span-2">
-          {renderStepContent()}
-        </div>
+        <div className="lg:col-span-2">{renderStepContent()}</div>
 
         {/* LuckyAI Assistant */}
         <div className="space-y-4">
@@ -1056,11 +1317,15 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
                   size="sm"
                   onClick={() => setLuckyAIVisible(!luckyAIVisible)}
                 >
-                  {luckyAIVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {luckyAIVisible ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
                 </Button>
               </div>
             </CardHeader>
-            
+
             {luckyAIVisible && (
               <CardContent className="space-y-4">
                 <ScrollArea className="h-64">
@@ -1069,14 +1334,16 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
                       <div
                         key={interaction.id}
                         className={`p-3 rounded-lg ${
-                          interaction.message === currentAIMessage 
-                            ? 'bg-green-500/20 border border-green-500/30' 
-                            : 'bg-gray-700/50'
+                          interaction.message === currentAIMessage
+                            ? "bg-green-500/20 border border-green-500/30"
+                            : "bg-gray-700/50"
                         }`}
                       >
                         <div className="flex items-center gap-2 mb-1">
                           <Bot className="h-4 w-4 text-green-400" />
-                          <span className="text-green-400 text-sm font-medium">LuckyAI</span>
+                          <span className="text-green-400 text-sm font-medium">
+                            LuckyAI
+                          </span>
                           <span className="text-gray-400 text-xs">
                             {interaction.timestamp.toLocaleTimeString()}
                           </span>
@@ -1095,15 +1362,16 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
                       placeholder="Ask LuckyAI for help..."
                       value={userMessage}
                       onChange={(e) => setUserMessage(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && sendMessageToAI()}
+                      onKeyPress={(e) => e.key === "Enter" && sendMessageToAI()}
                     />
                     <Button onClick={sendMessageToAI} size="sm">
                       <ArrowRight className="h-4 w-4" />
                     </Button>
                   </div>
-                  
+
                   <div className="text-xs text-gray-400">
-                    LuckyAI is here to help with any questions about the verification process.
+                    LuckyAI is here to help with any questions about the
+                    verification process.
                   </div>
                 </div>
               </CardContent>
@@ -1125,8 +1393,15 @@ In the meantime, you can start exploring CoinKrazy with limited features. Welcom
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => setCurrentStep(Math.min(onboardingSteps.length - 1, currentStep + 1))}
-                  disabled={currentStep === onboardingSteps.length - 1 || !onboardingSteps[currentStep].completed}
+                  onClick={() =>
+                    setCurrentStep(
+                      Math.min(onboardingSteps.length - 1, currentStep + 1),
+                    )
+                  }
+                  disabled={
+                    currentStep === onboardingSteps.length - 1 ||
+                    !onboardingSteps[currentStep].completed
+                  }
                   className="flex-1"
                 >
                   Next
