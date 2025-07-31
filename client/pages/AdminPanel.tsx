@@ -38,6 +38,7 @@ import { PaymentSettings } from "../components/PaymentSettings";
 import { LeaderboardManagement } from "../components/LeaderboardManagement";
 import { AchievementBadgeSystem } from "../components/AchievementBadgeSystem";
 import { CasinoBanking } from "../components/CasinoBanking";
+import { TickerManagement } from "../components/TickerManagement";
 import {
   GoldCoinPackage,
   StoreSettings,
