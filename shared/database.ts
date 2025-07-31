@@ -534,22 +534,27 @@ export class DatabaseService {
   }
 
   private loadMockData() {
-    // Load from localStorage or initialize with defaults
-    const savedData = localStorage.getItem('casino_database');
-    if (savedData) {
-      try {
-        this.data = JSON.parse(savedData);
-      } catch (error) {
-        console.warn('Failed to load saved data, using defaults');
+    // Load from localStorage or initialize with defaults (client-side only)
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const savedData = localStorage.getItem('casino_database');
+      if (savedData) {
+        try {
+          this.data = JSON.parse(savedData);
+        } catch (error) {
+          console.warn('Failed to load saved data, using defaults');
+        }
       }
     }
   }
 
   private saveData() {
-    try {
-      localStorage.setItem('casino_database', JSON.stringify(this.data));
-    } catch (error) {
-      console.warn('Failed to save data to localStorage');
+    // Save to localStorage (client-side only)
+    if (typeof window !== 'undefined' && window.localStorage) {
+      try {
+        localStorage.setItem('casino_database', JSON.stringify(this.data));
+      } catch (error) {
+        console.warn('Failed to save data to localStorage');
+      }
     }
   }
 
