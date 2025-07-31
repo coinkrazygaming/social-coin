@@ -121,6 +121,10 @@ export default function Index() {
               win real Sweeps Coins!
             </p>
 
+            <div className="mt-4 text-xs text-gold/80 font-medium">
+              ⚠️ Must be 18+ • No Purchase Necessary • Void where prohibited
+            </div>
+
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 size="lg"
