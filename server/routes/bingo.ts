@@ -6,7 +6,7 @@ import {
   BingoPattern,
   BingoRoom,
   BingoWinner,
-} from "@shared/bingoTypes";
+} from "../../shared/bingoTypes";
 
 // In-memory storage (replace with real database)
 const bingoGames: Map<string, BingoGame> = new Map();
