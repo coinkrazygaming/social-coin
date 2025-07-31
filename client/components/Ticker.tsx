@@ -42,6 +42,13 @@ export function Ticker() {
   }, []);
 
   const fetchTickerItems = async (retryCount = 0) => {
+    // Prevent concurrent requests
+    if (isFetching && retryCount === 0) {
+      console.log("Ticker fetch already in progress, skipping...");
+      return;
+    }
+
+    setIsFetching(true);
     let timeoutId: NodeJS.Timeout | null = null;
     let controller: AbortController | null = null;
 
