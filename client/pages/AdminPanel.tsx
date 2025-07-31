@@ -28,6 +28,7 @@ import { useAuth } from "../components/AuthContext";
 import { AccessDeniedModal } from "../components/AccessDeniedModal";
 import { VisualSlotEditor } from "../components/VisualSlotEditor";
 import { JoseyAI } from "../components/JoseyAI";
+import { SecurityTab } from "../components/SecurityTab";
 import {
   GoldCoinPackage,
   StoreSettings,
