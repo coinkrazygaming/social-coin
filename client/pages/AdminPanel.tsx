@@ -1475,7 +1475,7 @@ export function AdminPanel() {
           </TabsContent>
 
           <TabsContent value="banking" className="space-y-6">
-            <CasinoBanking />
+            <EnhancedCasinoBanking />
           </TabsContent>
 
           <TabsContent value="usermanagement" className="space-y-6">
