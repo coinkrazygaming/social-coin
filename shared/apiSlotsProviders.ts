@@ -320,7 +320,12 @@ export class APISlotProvidersService {
       </svg>
     `;
 
-    return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
+    // Browser-compatible base64 encoding
+    const base64Svg = typeof Buffer !== 'undefined'
+      ? Buffer.from(svg).toString('base64')  // Node.js environment
+      : btoa(unescape(encodeURIComponent(svg)));  // Browser environment
+
+    return `data:image/svg+xml;base64,${base64Svg}`;
   }
 
   private static generateRandomFeatures(): string[] {
