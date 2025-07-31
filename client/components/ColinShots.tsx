@@ -29,54 +29,65 @@ interface ShotAttempt {
   id: number;
   x: number;
   y: number;
-  success: boolean;
+  made: boolean;
   timestamp: number;
 }
 
-export function ColinShots({
-  userId,
-  username,
-  onGameComplete,
-}: ColinShotsProps) {
+interface Ball {
+  id: number;
+  x: number;
+  y: number;
+  velocityX: number;
+  velocityY: number;
+  active: boolean;
+  trail: { x: number; y: number }[];
+}
+
+export function ColinShots({ userId, username, onGameComplete }: ColinShotsProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
   const [score, setScore] = useState(0);
-  const [attempts, setAttempts] = useState(0);
-  const [shots, setShots] = useState<ShotAttempt[]>([]);
+  const [shots, setShots] = useState(0);
+  const [shotAttempts, setShotAttempts] = useState<ShotAttempt[]>([]);
+  const [currentBall, setCurrentBall] = useState<Ball | null>(null);
   const [gameStarted, setGameStarted] = useState(false);
-  const [gameCompleted, setGameCompleted] = useState(false);
-  const [ballPosition, setBallPosition] = useState({ x: 400, y: 500 });
-  const [isShootingAnimation, setIsShootingAnimation] = useState(false);
-  const [power, setPower] = useState(0);
-  const [isPowerBuilding, setIsPowerBuilding] = useState(false);
+  const [gameEnded, setGameEnded] = useState(false);
+  const [powerLevel, setPowerLevel] = useState(0);
+  const [isCharging, setIsCharging] = useState(false);
+  const [showingShotResult, setShowingShotResult] = useState(false);
+  const [lastShotMade, setLastShotMade] = useState(false);
 
-  const gameAreaRef = useRef<HTMLDivElement>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const powerTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationRef = useRef<number>();
+  const gameTimerRef = useRef<NodeJS.Timeout>();
+  const powerChargeRef = useRef<NodeJS.Timeout>();
 
-  const GAME_DURATION = 60; // seconds
-  const MAX_ATTEMPTS = 25;
-  const HOOP_POSITION = { x: 400, y: 120 };
-  const HOOP_RADIUS = 40;
+  // Game dimensions
+  const CANVAS_WIDTH = 800;
+  const CANVAS_HEIGHT = 600;
+  const HOOP_X = CANVAS_WIDTH * 0.75;
+  const HOOP_Y = CANVAS_HEIGHT * 0.3;
+  const HOOP_WIDTH = 80;
+  const HOOP_HEIGHT = 15;
+  const BALL_RADIUS = 12;
+  const GRAVITY = 0.4;
+  const SHOT_START_X = CANVAS_WIDTH * 0.2;
+  const SHOT_START_Y = CANVAS_HEIGHT * 0.8;
 
-  // Initialize ball position
-  useEffect(() => {
-    if (gameAreaRef.current) {
-      const rect = gameAreaRef.current.getBoundingClientRect();
-      setBallPosition({ x: rect.width / 2, y: rect.height - 80 });
-    }
-  }, []);
-
-  const startGame = () => {
-    setGameStarted(true);
+  const startGame = useCallback(() => {
     setIsPlaying(true);
-    setTimeLeft(GAME_DURATION);
+    setGameStarted(true);
+    setGameEnded(false);
+    setTimeLeft(60);
     setScore(0);
-    setAttempts(0);
-    setShots([]);
-    setGameCompleted(false);
+    setShots(0);
+    setShotAttempts([]);
+    setCurrentBall(null);
+    setPowerLevel(0);
+    setIsCharging(false);
+    setShowingShotResult(false);
 
-    timerRef.current = setInterval(() => {
+    gameTimerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           endGame();
@@ -85,368 +96,459 @@ export function ColinShots({
         return prev - 1;
       });
     }, 1000);
-  };
+  }, []);
 
   const endGame = useCallback(() => {
     setIsPlaying(false);
-    setGameCompleted(true);
-    setIsPowerBuilding(false);
-    setPower(0);
-
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
+    setGameEnded(true);
+    setIsCharging(false);
+    
+    if (gameTimerRef.current) {
+      clearInterval(gameTimerRef.current);
     }
-    if (powerTimerRef.current) {
-      clearInterval(powerTimerRef.current);
+    if (powerChargeRef.current) {
+      clearTimeout(powerChargeRef.current);
+    }
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
     }
 
-    // Calculate SC earned (max 0.25 SC)
-    const scorePercentage = score / MAX_ATTEMPTS;
-    const scEarned = Math.min(
-      0.25,
-      Math.round(scorePercentage * 0.25 * 100) / 100,
-    );
+    // Calculate SC earned based on score
+    const percentage = shots > 0 ? (score / shots) * 100 : 0;
+    let scEarned = 0;
+    
+    if (percentage >= 80) scEarned = 0.25;
+    else if (percentage >= 60) scEarned = 0.20;
+    else if (percentage >= 40) scEarned = 0.15;
+    else if (percentage >= 20) scEarned = 0.10;
+    else if (score > 0) scEarned = 0.05;
 
-    onGameComplete(score, scEarned);
-  }, [score, onGameComplete]);
+    setTimeout(() => {
+      onGameComplete(score, scEarned);
+    }, 2000);
+  }, [score, shots, onGameComplete]);
 
-  // Handle game completion when max attempts reached
-  useEffect(() => {
-    if (attempts >= MAX_ATTEMPTS && isPlaying) {
-      endGame();
-    }
-  }, [attempts, isPlaying, endGame]);
-
-  const startPowerBuilding = () => {
-    if (!isPlaying || isPowerBuilding || attempts >= MAX_ATTEMPTS) return;
-
-    setIsPowerBuilding(true);
-    setPower(0);
-
-    powerTimerRef.current = setInterval(() => {
-      setPower((prev) => {
+  const handleMouseDown = useCallback(() => {
+    if (!isPlaying || currentBall || isCharging) return;
+    
+    setIsCharging(true);
+    setPowerLevel(0);
+    
+    const chargePower = () => {
+      setPowerLevel((prev) => {
         const newPower = prev + 2;
         if (newPower >= 100) {
+          // Auto-shoot at max power
+          shootBall(100);
           return 100;
         }
+        powerChargeRef.current = setTimeout(chargePower, 50);
         return newPower;
       });
-    }, 20);
-  };
+    };
+    
+    chargePower();
+  }, [isPlaying, currentBall, isCharging]);
 
-  const shootBall = () => {
-    if (!isPowerBuilding || !isPlaying) return;
-
-    setIsPowerBuilding(false);
-    if (powerTimerRef.current) {
-      clearInterval(powerTimerRef.current);
+  const handleMouseUp = useCallback(() => {
+    if (!isCharging) return;
+    
+    setIsCharging(false);
+    if (powerChargeRef.current) {
+      clearTimeout(powerChargeRef.current);
     }
+    
+    shootBall(powerLevel);
+  }, [isCharging, powerLevel]);
 
-    setIsShootingAnimation(true);
-    setAttempts((prev) => prev + 1);
+  const shootBall = useCallback((power: number) => {
+    if (!isPlaying || currentBall) return;
 
-    // Calculate shot success based on power (sweet spot around 70-85)
-    const accuracy = power >= 65 && power <= 90 ? 0.8 : 0.3;
-    const randomFactor = Math.random();
-    const isSuccess = randomFactor < accuracy;
+    setShots(prev => prev + 1);
+    setIsCharging(false);
+    setPowerLevel(0);
 
-    if (isSuccess) {
-      setScore((prev) => prev + 1);
-    }
+    // Calculate velocity based on power and angle
+    const angle = -45 * (Math.PI / 180); // 45 degrees upward
+    const maxVelocity = 15;
+    const velocity = (power / 100) * maxVelocity;
+    
+    const velocityX = Math.cos(angle) * velocity;
+    const velocityY = Math.sin(angle) * velocity;
 
-    const newShot: ShotAttempt = {
+    const newBall: Ball = {
       id: Date.now(),
-      x: ballPosition.x,
-      y: ballPosition.y,
-      success: isSuccess,
-      timestamp: Date.now(),
+      x: SHOT_START_X,
+      y: SHOT_START_Y,
+      velocityX,
+      velocityY,
+      active: true,
+      trail: [],
     };
 
-    setShots((prev) => [...prev, newShot]);
+    setCurrentBall(newBall);
+  }, [isPlaying, currentBall]);
 
-    // Reset for next shot
-    setTimeout(() => {
-      setIsShootingAnimation(false);
-      setPower(0);
-      // Reset ball position
-      if (gameAreaRef.current) {
-        const rect = gameAreaRef.current.getBoundingClientRect();
-        setBallPosition({ x: rect.width / 2, y: rect.height - 80 });
+  const checkHoopCollision = useCallback((ball: Ball): boolean => {
+    const ballCenterX = ball.x;
+    const ballCenterY = ball.y;
+    
+    // Check if ball is going through the hoop
+    if (
+      ballCenterX >= HOOP_X - HOOP_WIDTH / 2 &&
+      ballCenterX <= HOOP_X + HOOP_WIDTH / 2 &&
+      ballCenterY >= HOOP_Y - 10 &&
+      ballCenterY <= HOOP_Y + 10 &&
+      ball.velocityY > 0 // Ball must be falling down
+    ) {
+      return true;
+    }
+    
+    return false;
+  }, []);
+
+  const updateBall = useCallback(() => {
+    setCurrentBall((prevBall) => {
+      if (!prevBall || !prevBall.active) return null;
+
+      const newBall = { ...prevBall };
+      
+      // Update position
+      newBall.x += newBall.velocityX;
+      newBall.y += newBall.velocityY;
+      
+      // Apply gravity
+      newBall.velocityY += GRAVITY;
+      
+      // Update trail
+      newBall.trail.push({ x: newBall.x, y: newBall.y });
+      if (newBall.trail.length > 10) {
+        newBall.trail.shift();
       }
-    }, 1000);
-  };
 
-  const resetGame = () => {
-    setGameStarted(false);
-    setIsPlaying(false);
-    setGameCompleted(false);
-    setTimeLeft(GAME_DURATION);
-    setScore(0);
-    setAttempts(0);
-    setShots([]);
-    setPower(0);
-    setIsPowerBuilding(false);
+      // Check hoop collision
+      if (checkHoopCollision(newBall)) {
+        setScore(prev => prev + 1);
+        setLastShotMade(true);
+        setShowingShotResult(true);
+        newBall.active = false;
+        
+        setTimeout(() => {
+          setShowingShotResult(false);
+          setCurrentBall(null);
+        }, 1000);
+        
+        return newBall;
+      }
 
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
+      // Check bounds
+      if (
+        newBall.x < -BALL_RADIUS ||
+        newBall.x > CANVAS_WIDTH + BALL_RADIUS ||
+        newBall.y > CANVAS_HEIGHT + BALL_RADIUS
+      ) {
+        setLastShotMade(false);
+        setShowingShotResult(true);
+        newBall.active = false;
+        
+        setTimeout(() => {
+          setShowingShotResult(false);
+          setCurrentBall(null);
+        }, 1000);
+      }
+
+      return newBall;
+    });
+  }, [checkHoopCollision]);
+
+  const draw = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Clear canvas
+    ctx.fillStyle = '#1a1a2e';
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    // Draw court
+    ctx.fillStyle = '#8B4513';
+    ctx.fillRect(0, CANVAS_HEIGHT - 100, CANVAS_WIDTH, 100);
+    
+    // Draw court lines
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(SHOT_START_X, CANVAS_HEIGHT - 50, 60, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Draw backboard
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(HOOP_X + HOOP_WIDTH / 2, HOOP_Y - 40, 10, 60);
+
+    // Draw hoop
+    ctx.strokeStyle = '#FF6600';
+    ctx.lineWidth = 8;
+    ctx.beginPath();
+    ctx.arc(HOOP_X, HOOP_Y, HOOP_WIDTH / 2, 0, Math.PI);
+    ctx.stroke();
+
+    // Draw net
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 8; i++) {
+      const angle = i * (Math.PI / 7);
+      const startX = HOOP_X - HOOP_WIDTH / 2 + i * (HOOP_WIDTH / 7);
+      const startY = HOOP_Y;
+      const endX = startX + Math.sin(angle) * 20;
+      const endY = startY + 30;
+      
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(endX, endY);
+      ctx.stroke();
     }
-    if (powerTimerRef.current) {
-      clearInterval(powerTimerRef.current);
-    }
-  };
 
-  const getScoreColor = () => {
-    const percentage = score / MAX_ATTEMPTS;
-    if (percentage >= 0.8) return "text-casino-green";
-    if (percentage >= 0.6) return "text-gold";
-    if (percentage >= 0.4) return "text-yellow-400";
-    return "text-muted-foreground";
-  };
+    // Draw ball trail
+    if (currentBall && currentBall.trail.length > 1) {
+      ctx.strokeStyle = '#FF6600';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(currentBall.trail[0].x, currentBall.trail[0].y);
+      
+      for (let i = 1; i < currentBall.trail.length; i++) {
+        ctx.lineTo(currentBall.trail[i].x, currentBall.trail[i].y);
+      }
+      ctx.stroke();
+    }
+
+    // Draw ball
+    if (currentBall && currentBall.active) {
+      ctx.fillStyle = '#FF6600';
+      ctx.beginPath();
+      ctx.arc(currentBall.x, currentBall.y, BALL_RADIUS, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Ball lines
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(currentBall.x, currentBall.y, BALL_RADIUS, 0, Math.PI * 2);
+      ctx.stroke();
+      
+      // Ball curves
+      ctx.beginPath();
+      ctx.moveTo(currentBall.x - BALL_RADIUS, currentBall.y);
+      ctx.lineTo(currentBall.x + BALL_RADIUS, currentBall.y);
+      ctx.moveTo(currentBall.x, currentBall.y - BALL_RADIUS);
+      ctx.lineTo(currentBall.x, currentBall.y + BALL_RADIUS);
+      ctx.stroke();
+    }
+
+    // Draw shooting position indicator
+    if (isPlaying && !currentBall) {
+      ctx.fillStyle = isCharging ? '#FF6600' : '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(SHOT_START_X, SHOT_START_Y, 15, 0, Math.PI * 2);
+      ctx.fill();
+      
+      if (isCharging) {
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(SHOT_START_X, SHOT_START_Y, 20 + (powerLevel / 5), 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
+
+    // Draw power meter
+    if (isCharging) {
+      const meterWidth = 200;
+      const meterHeight = 20;
+      const meterX = CANVAS_WIDTH / 2 - meterWidth / 2;
+      const meterY = CANVAS_HEIGHT - 150;
+      
+      ctx.fillStyle = '#333333';
+      ctx.fillRect(meterX, meterY, meterWidth, meterHeight);
+      
+      ctx.fillStyle = powerLevel > 80 ? '#FF0000' : powerLevel > 50 ? '#FFD700' : '#00FF00';
+      ctx.fillRect(meterX, meterY, (meterWidth * powerLevel) / 100, meterHeight);
+      
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(meterX, meterY, meterWidth, meterHeight);
+    }
+
+    // Draw shot result
+    if (showingShotResult) {
+      ctx.fillStyle = lastShotMade ? '#00FF00' : '#FF0000';
+      ctx.font = 'bold 48px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(
+        lastShotMade ? 'SWISH!' : 'MISS!',
+        CANVAS_WIDTH / 2,
+        CANVAS_HEIGHT / 2
+      );
+    }
+  }, [currentBall, isPlaying, isCharging, powerLevel, showingShotResult, lastShotMade]);
+
+  const animate = useCallback(() => {
+    updateBall();
+    draw();
+    animationRef.current = requestAnimationFrame(animate);
+  }, [updateBall, draw]);
+
+  useEffect(() => {
+    if (gameStarted && !gameEnded) {
+      animate();
+    }
+    
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [gameStarted, gameEnded, animate]);
+
+  useEffect(() => {
+    return () => {
+      if (gameTimerRef.current) {
+        clearInterval(gameTimerRef.current);
+      }
+      if (powerChargeRef.current) {
+        clearTimeout(powerChargeRef.current);
+      }
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, []);
+
+  const accuracy = shots > 0 ? Math.round((score / shots) * 100) : 0;
+
+  if (!gameStarted) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[600px] space-y-6">
+        <Card className="w-full max-w-md text-center">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-center space-x-2">
+              <span className="text-4xl">🏀</span>
+              <span>Colin Shots</span>
+            </CardTitle>
+            <CardDescription>
+              Basketball free throw challenge - score as many shots as possible in 60 seconds!
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="text-sm text-muted-foreground space-y-2">
+              <p>• Hold mouse button to charge your shot power</p>
+              <p>• Release to shoot the basketball</p>
+              <p>• Score through the hoop to earn points</p>
+              <p>• Higher accuracy = more Sweeps Coins!</p>
+            </div>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="bg-muted p-3 rounded-lg">
+                <div className="text-gold font-semibold">80%+ Accuracy</div>
+                <div className="text-xs">0.25 SC</div>
+              </div>
+              <div className="bg-muted p-3 rounded-lg">
+                <div className="text-yellow-400 font-semibold">60%+ Accuracy</div>
+                <div className="text-xs">0.20 SC</div>
+              </div>
+            </div>
+            <Button 
+              onClick={startGame} 
+              className="w-full bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground"
+            >
+              <Play className="h-4 w-4 mr-2" />
+              Start Game
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <Card className="overflow-hidden">
-        <CardHeader className="text-center bg-gradient-to-r from-gold/20 to-sweep/20">
-          <div className="flex items-center justify-center mb-2">
-            <div className="w-12 h-12 bg-gradient-to-br from-gold to-yellow-400 rounded-full flex items-center justify-center mr-3">
-              🏀
-            </div>
-            <div>
-              <CardTitle className="text-2xl">Colin Shots</CardTitle>
-              <CardDescription>
-                Make free throws to earn Sweeps Coins!
-              </CardDescription>
-            </div>
-          </div>
+    <div className="space-y-6">
+      {/* Game Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-gold">{score}</div>
+            <div className="text-sm text-muted-foreground">Shots Made</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-blue-400">{shots}</div>
+            <div className="text-sm text-muted-foreground">Total Shots</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-sweep">{accuracy}%</div>
+            <div className="text-sm text-muted-foreground">Accuracy</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-casino-red">{timeLeft}s</div>
+            <div className="text-sm text-muted-foreground">Time Left</div>
+          </CardContent>
+        </Card>
+      </div>
 
-          {/* Game Stats */}
-          <div className="flex justify-center space-x-6 mt-4">
-            <div className="text-center">
-              <div className={`text-2xl font-bold ${getScoreColor()}`}>
-                {score}
-              </div>
-              <div className="text-sm text-muted-foreground">Score</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-sweep">{attempts}</div>
-              <div className="text-sm text-muted-foreground">Attempts</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-400">
-                {timeLeft}s
-              </div>
-              <div className="text-sm text-muted-foreground">Time Left</div>
-            </div>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="mt-4 space-y-2">
-            <Progress value={(attempts / MAX_ATTEMPTS) * 100} className="h-2" />
-            <div className="text-xs text-muted-foreground">
-              Attempts: {attempts}/{MAX_ATTEMPTS}
-            </div>
-          </div>
-        </CardHeader>
-
-        <CardContent className="p-0">
-          {/* Game Area */}
-          <div
-            ref={gameAreaRef}
-            className="relative w-full h-96 bg-gradient-to-b from-blue-900 via-blue-800 to-green-800 overflow-hidden"
-            style={{
-              backgroundImage: `
-                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-                radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.1) 1px, transparent 1px)
-              `,
-              backgroundSize: "100px 100px",
-            }}
-          >
-            {/* Basketball Hoop */}
-            <div
-              className="absolute"
-              style={{
-                left: HOOP_POSITION.x - HOOP_RADIUS,
-                top: HOOP_POSITION.y - 10,
-                width: HOOP_RADIUS * 2,
-                height: 20,
-              }}
-            >
-              <div className="w-full h-full bg-orange-500 rounded-full border-4 border-orange-600 relative">
-                <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 w-1 h-6 bg-orange-600"></div>
-                <div className="absolute -bottom-6 left-1/4 w-1 h-6 bg-orange-600"></div>
-                <div className="absolute -bottom-6 right-1/4 w-1 h-6 bg-orange-600"></div>
-              </div>
-            </div>
-
-            {/* Basketball */}
-            <div
-              className={`absolute transition-all duration-1000 ${isShootingAnimation ? "animate-bounce" : ""}`}
-              style={{
-                left: ballPosition.x - 15,
-                top: isShootingAnimation
-                  ? HOOP_POSITION.y + 10
-                  : ballPosition.y - 15,
-                transition: isShootingAnimation
-                  ? "all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)"
-                  : "none",
-              }}
-            >
-              <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-700 rounded-full relative border-2 border-orange-800">
-                <div className="absolute inset-0 rounded-full">
-                  <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-black transform -translate-y-0.5"></div>
-                  <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-black transform -translate-x-0.5"></div>
+      {/* Game Canvas */}
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex flex-col items-center space-y-4">
+            <canvas
+              ref={canvasRef}
+              width={CANVAS_WIDTH}
+              height={CANVAS_HEIGHT}
+              className="border border-border rounded-lg cursor-pointer"
+              onMouseDown={handleMouseDown}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+              style={{ maxWidth: '100%', height: 'auto' }}
+            />
+            
+            {isPlaying && !currentBall && (
+              <div className="text-center space-y-2">
+                <div className="text-lg font-semibold">
+                  {isCharging ? 'Release to Shoot!' : 'Hold Mouse Button to Charge Shot'}
                 </div>
-              </div>
-            </div>
-
-            {/* Shot Trail Effects */}
-            {shots.slice(-5).map((shot, index) => (
-              <div
-                key={shot.id}
-                className={`absolute w-2 h-2 rounded-full ${shot.success ? "bg-casino-green" : "bg-casino-red"} opacity-50`}
-                style={{
-                  left: shot.x,
-                  top: shot.y + index * 10,
-                  animation: "fadeOut 2s ease-out forwards",
-                }}
-              />
-            ))}
-
-            {/* Power Meter */}
-            {isPowerBuilding && (
-              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-48 bg-black/50 rounded-lg p-3">
-                <div className="text-white text-sm mb-2 text-center">
-                  Power: {power}%
-                </div>
-                <div className="w-full bg-gray-700 rounded-full h-4">
-                  <div
-                    className={`h-4 rounded-full transition-all duration-75 ${
-                      power >= 65 && power <= 90
-                        ? "bg-casino-green"
-                        : "bg-casino-red"
-                    }`}
-                    style={{ width: `${power}%` }}
-                  ></div>
-                </div>
-                <div className="text-xs text-white mt-1 text-center">
-                  {power >= 65 && power <= 90
-                    ? "Perfect Zone!"
-                    : "Adjust Power"}
-                </div>
+                <Progress value={powerLevel} className="w-64" />
               </div>
             )}
 
-            {/* Game Instructions */}
-            {!gameStarted && (
-              <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
-                <div className="text-center text-white space-y-4 p-6 bg-black/50 rounded-lg">
-                  <h3 className="text-xl font-bold">How to Play Colin Shots</h3>
-                  <div className="space-y-2 text-sm">
-                    <p>🏀 Click and hold to build power</p>
-                    <p>🎯 Release when in the green zone for best accuracy</p>
-                    <p>⏱️ You have 60 seconds to score as many as possible</p>
-                    <p>🪙 Earn up to 0.25 SC based on your performance</p>
-                    <p>🔄 Play once every 24 hours</p>
+            {gameEnded && (
+              <div className="text-center space-y-4 p-6 bg-card/50 rounded-lg">
+                <Trophy className="h-16 w-16 text-gold mx-auto" />
+                <h3 className="text-2xl font-bold">Game Complete!</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <div className="text-xl font-bold text-gold">{score}</div>
+                    <div className="text-muted-foreground">Shots Made</div>
+                  </div>
+                  <div>
+                    <div className="text-xl font-bold text-sweep">{accuracy}%</div>
+                    <div className="text-muted-foreground">Accuracy</div>
                   </div>
                 </div>
-              </div>
-            )}
-
-            {/* Game Over Screen */}
-            {gameCompleted && (
-              <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
-                <div className="text-center text-white space-y-4 p-6 bg-black/70 rounded-lg">
-                  <Trophy className="w-16 h-16 mx-auto text-gold" />
-                  <h3 className="text-2xl font-bold">Game Complete!</h3>
-                  <div className="space-y-2">
-                    <p className="text-lg">
-                      Final Score:{" "}
-                      <span className="text-gold font-bold">
-                        {score}/{MAX_ATTEMPTS}
-                      </span>
-                    </p>
-                    <p className="text-lg">
-                      Accuracy:{" "}
-                      <span className="text-sweep font-bold">
-                        {Math.round((score / attempts) * 100) || 0}%
-                      </span>
-                    </p>
-                    <p className="text-lg">
-                      SC Earned:{" "}
-                      <span className="text-casino-green font-bold">
-                        {Math.min(
-                          0.25,
-                          Math.round((score / MAX_ATTEMPTS) * 0.25 * 100) / 100,
-                        )}
-                      </span>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Game Controls */}
-          <div className="p-6 bg-card/50">
-            {!gameStarted ? (
-              <Button
-                onClick={startGame}
-                className="w-full bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground hover:from-yellow-400 hover:to-gold text-lg py-6"
-                size="lg"
-              >
-                <Play className="h-5 w-5 mr-2" />
-                Start Colin Shots
-              </Button>
-            ) : gameCompleted ? (
-              <Button
-                onClick={resetGame}
-                variant="outline"
-                className="w-full border-gold text-gold hover:bg-gold/10 text-lg py-6"
-                size="lg"
-              >
-                <RotateCcw className="h-5 w-5 mr-2" />
-                Play Again Tomorrow
-              </Button>
-            ) : (
-              <div className="space-y-4">
-                <Button
-                  onMouseDown={startPowerBuilding}
-                  onMouseUp={shootBall}
-                  onTouchStart={startPowerBuilding}
-                  onTouchEnd={shootBall}
-                  disabled={attempts >= MAX_ATTEMPTS || isShootingAnimation}
-                  className="w-full bg-gradient-to-r from-casino-green to-green-600 text-white hover:from-green-600 hover:to-casino-green text-lg py-6"
-                  size="lg"
-                >
-                  {isPowerBuilding ? (
-                    <>
-                      <Pause className="h-5 w-5 mr-2" />
-                      Release to Shoot!
-                    </>
-                  ) : (
-                    <>
-                      <Target className="h-5 w-5 mr-2" />
-                      Hold to Build Power
-                    </>
-                  )}
-                </Button>
-
-                <div className="text-center text-sm text-muted-foreground">
-                  Shots Remaining: {MAX_ATTEMPTS - attempts}
+                <div className="text-lg">
+                  You earned{" "}
+                  <span className="text-gold font-bold">
+                    {accuracy >= 80 ? "0.25" : accuracy >= 60 ? "0.20" : accuracy >= 40 ? "0.15" : accuracy >= 20 ? "0.10" : score > 0 ? "0.05" : "0.00"} SC
+                  </span>
                 </div>
               </div>
             )}
           </div>
         </CardContent>
       </Card>
-
-      <style>{`
-        @keyframes fadeOut {
-          from { opacity: 0.5; }
-          to { opacity: 0; }
-        }
-      `}</style>
     </div>
   );
 }
