@@ -294,9 +294,8 @@ export const AdminNotifications: React.FC<AdminNotificationsProps> = ({ classNam
   };
 
   const playNotificationSound = () => {
-    if (audioRef.current && soundEnabled) {
+    if (audioRef.current && soundEnabled && userHasInteracted) {
       audioRef.current.currentTime = 0;
-      // Only play if user has interacted with the document
       audioRef.current.play().catch((error) => {
         // Silently handle the autoplay restriction
         console.log('Audio autoplay prevented by browser policy');
