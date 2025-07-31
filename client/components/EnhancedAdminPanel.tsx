@@ -38,7 +38,9 @@ import { AccessDeniedModal } from "./AccessDeniedModal";
 import { EnhancedJoseyAI } from "./EnhancedJoseyAI";
 import { SystemTester } from "./SystemTester";
 import { AIEmployeeDashboard } from "./AIEmployeeDashboard";
-import { UserManagement } from "./UserManagement";
+import { AdminNotifications } from "./AdminNotifications";
+import { AdminAlerts } from "./AdminAlerts";
+import { TickerManagement } from "./TickerManagement";
 import {
   SlotMachine as SlotMachineType,
   SlotSymbol,
