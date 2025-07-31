@@ -689,6 +689,10 @@ export function AdminPanel() {
             <JackpotManagement />
           </TabsContent>
 
+          <TabsContent value="vip" className="space-y-6">
+            <VIPManagement />
+          </TabsContent>
+
           <TabsContent value="games" className="space-y-6">
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
               {/* Main Content Area */}
@@ -1455,7 +1459,7 @@ export function AdminPanel() {
                     size="sm"
                     onClick={() => setShowNewPackageForm(false)}
                   >
-                    ✕
+                    ��
                   </Button>
                 </CardTitle>
               </CardHeader>
