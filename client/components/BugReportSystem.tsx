@@ -9,7 +9,7 @@ import { ScrollArea } from './ui/scroll-area';
 import { Separator } from './ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import { BugReport } from '../shared/adminToolbarTypes';
+import { BugReport } from '../../shared/adminToolbarTypes';
 import { useAuth } from './AuthContext';
 
 interface BugReportSystemProps {
