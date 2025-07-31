@@ -72,6 +72,24 @@ import {
   Heading1,
   Heading2,
   Heading3,
+  ImageIcon,
+  Video,
+  Upload,
+  Github,
+  Wand2,
+  Sparkles,
+  Database,
+  Users,
+  BarChart3,
+  FileText,
+  Globe,
+  Shield,
+  Bell,
+  Search,
+  Filter,
+  Download,
+  RefreshCw,
+  ChevronDown,
 } from "lucide-react";
 
 interface AdminToolbarProps {
@@ -108,7 +126,7 @@ interface SitePage {
 export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) => {
   const { user } = useAuth();
   const [isVisible, setIsVisible] = useState(true);
-  const [activePanel, setActivePanel] = useState<"chat" | "editor" | "cms" | null>(null);
+  const [activePanel, setActivePanel] = useState<"chat" | "editor" | "cms" | "aitools" | "analytics" | "users" | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   
@@ -159,6 +177,13 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
   const [currentPage, setCurrentPage] = useState<SitePage | null>(null);
   const [showNewPageModal, setShowNewPageModal] = useState(false);
   const [deviceView, setDeviceView] = useState<"desktop" | "tablet" | "mobile">("desktop");
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [publishStatus, setPublishStatus] = useState<"idle" | "publishing" | "success" | "error">("idle");
+  const [aiImagePrompt, setAiImagePrompt] = useState("");
+  const [aiVideoPrompt, setAiVideoPrompt] = useState("");
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
+  const [generatedAssets, setGeneratedAssets] = useState<Array<{id: string, type: 'image' | 'video', url: string, prompt: string}>>([]);
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -246,6 +271,91 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
     setShowNewPageModal(false);
   };
 
+  const handlePublishToGitHub = async () => {
+    setIsPublishing(true);
+    setPublishStatus("publishing");
+
+    try {
+      // Simulate GitHub publish API call
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      setPublishStatus("success");
+
+      // Reset status after 3 seconds
+      setTimeout(() => {
+        setPublishStatus("idle");
+        setIsPublishing(false);
+      }, 3000);
+    } catch (error) {
+      setPublishStatus("error");
+      setTimeout(() => {
+        setPublishStatus("idle");
+        setIsPublishing(false);
+      }, 3000);
+    }
+  };
+
+  const handleGenerateAIImage = async () => {
+    if (!aiImagePrompt.trim()) return;
+
+    setIsGeneratingImage(true);
+    try {
+      // Simulate AI image generation
+      await new Promise(resolve => setTimeout(resolve, 5000));
+
+      const newImage = {
+        id: `img_${Date.now()}`,
+        type: 'image' as const,
+        url: `https://picsum.photos/800/600?random=${Date.now()}`,
+        prompt: aiImagePrompt
+      };
+
+      setGeneratedAssets(prev => [newImage, ...prev]);
+      setAiImagePrompt("");
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+
+  const handleGenerateAIVideo = async () => {
+    if (!aiVideoPrompt.trim()) return;
+
+    setIsGeneratingVideo(true);
+    try {
+      // Simulate AI video generation
+      await new Promise(resolve => setTimeout(resolve, 8000));
+
+      const newVideo = {
+        id: `vid_${Date.now()}`,
+        type: 'video' as const,
+        url: `https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4`,
+        prompt: aiVideoPrompt
+      };
+
+      setGeneratedAssets(prev => [newVideo, ...prev]);
+      setAiVideoPrompt("");
+    } finally {
+      setIsGeneratingVideo(false);
+    }
+  };
+
+  const getPublishButtonText = () => {
+    switch (publishStatus) {
+      case "publishing": return "Publishing...";
+      case "success": return "Published!";
+      case "error": return "Error";
+      default: return "Publish to GitHub";
+    }
+  };
+
+  const getPublishButtonClass = () => {
+    switch (publishStatus) {
+      case "publishing": return "bg-blue-600 hover:bg-blue-700";
+      case "success": return "bg-green-600 hover:bg-green-700";
+      case "error": return "bg-red-600 hover:bg-red-700";
+      default: return "bg-purple-600 hover:bg-purple-700";
+    }
+  };
+
   return (
     <div className={`fixed top-0 left-0 right-0 z-[100] ${className}`}>
       {/* Admin Toolbar */}
@@ -259,17 +369,17 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
                 <Badge className="bg-yellow-600 text-black">LIVE</Badge>
               </div>
               
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <Button
                   size="sm"
                   variant={activePanel === "chat" ? "secondary" : "ghost"}
                   onClick={() => setActivePanel(activePanel === "chat" ? null : "chat")}
                   className="text-white hover:bg-red-700"
+                  title="AI Assistant Chat"
                 >
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  AI Assistant
+                  <MessageSquare className="w-4 h-4" />
                   {unreadCount > 0 && (
-                    <Badge className="ml-2 bg-blue-600 text-white">{unreadCount}</Badge>
+                    <Badge className="ml-1 bg-blue-600 text-white text-xs">{unreadCount}</Badge>
                   )}
                 </Button>
 
@@ -281,9 +391,9 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
                     setActivePanel(isEditMode ? null : "editor");
                   }}
                   className="text-white hover:bg-red-700"
+                  title="Visual Page Editor"
                 >
-                  <Edit className="w-4 h-4 mr-2" />
-                  Visual Editor
+                  <Edit className="w-4 h-4" />
                 </Button>
 
                 <Button
@@ -291,9 +401,66 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
                   variant={activePanel === "cms" ? "secondary" : "ghost"}
                   onClick={() => setActivePanel(activePanel === "cms" ? null : "cms")}
                   className="text-white hover:bg-red-700"
+                  title="CMS Pages Manager"
                 >
-                  <Layout className="w-4 h-4 mr-2" />
-                  CMS Pages
+                  <Layout className="w-4 h-4" />
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant={activePanel === "aitools" ? "secondary" : "ghost"}
+                  onClick={() => setActivePanel(activePanel === "aitools" ? null : "aitools")}
+                  className="text-white hover:bg-red-700"
+                  title="AI Content Generator"
+                >
+                  <Wand2 className="w-4 h-4" />
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant={activePanel === "analytics" ? "secondary" : "ghost"}
+                  onClick={() => setActivePanel(activePanel === "analytics" ? null : "analytics")}
+                  className="text-white hover:bg-red-700"
+                  title="Analytics Dashboard"
+                >
+                  <BarChart3 className="w-4 h-4" />
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant={activePanel === "users" ? "secondary" : "ghost"}
+                  onClick={() => setActivePanel(activePanel === "users" ? null : "users")}
+                  className="text-white hover:bg-red-700"
+                  title="User Management"
+                >
+                  <Users className="w-4 h-4" />
+                </Button>
+
+                <Button
+                  size="sm"
+                  onClick={handlePublishToGitHub}
+                  disabled={isPublishing}
+                  className={`text-white ${getPublishButtonClass()}`}
+                  title="Publish Changes to GitHub Repository"
+                >
+                  {isPublishing ? (
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                  ) : publishStatus === "success" ? (
+                    <Github className="w-4 h-4" />
+                  ) : publishStatus === "error" ? (
+                    <X className="w-4 h-4" />
+                  ) : (
+                    <Github className="w-4 h-4" />
+                  )}
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="text-white hover:bg-red-700"
+                  title="System Settings"
+                >
+                  <Settings className="w-4 h-4" />
                 </Button>
               </div>
             </div>
