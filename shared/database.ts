@@ -477,6 +477,11 @@ export class DatabaseService {
 
   static async initializeDefaultAdmin(): Promise<void> {
     try {
+      if (!supabase) {
+        console.warn("Supabase client not available - skipping admin initialization");
+        return;
+      }
+
       // Check if admin already exists
       const existingAdmin = await this.getUserByEmail("admin@coinkrazy.com");
 
