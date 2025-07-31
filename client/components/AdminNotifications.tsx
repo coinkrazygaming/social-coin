@@ -91,13 +91,13 @@ export const AdminNotifications: React.FC<AdminNotificationsProps> = ({ classNam
   }, []);
 
   useEffect(() => {
-    // Play sound for new unacknowledged notifications
+    // Play sound for new unacknowledged notifications only if user has interacted
     const unacknowledged = notifications.filter(n => !n.acknowledged && n.soundEnabled);
-    if (unacknowledged.length > 0 && soundEnabled) {
+    if (unacknowledged.length > 0 && soundEnabled && userHasInteracted) {
       playNotificationSound();
       flashWindow();
     }
-  }, [notifications, soundEnabled]);
+  }, [notifications, soundEnabled, userHasInteracted]);
 
   const loadNotifications = () => {
     // Real notifications based on actual system events
