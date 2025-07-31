@@ -530,10 +530,10 @@ export const AdminNotifications: React.FC<AdminNotificationsProps> = ({
 
   return (
     <>
-      {/* Notification Sound - Hidden audio element for manual trigger */}
+      {/* Notification Sound - Pleasant ding and bubble pop */}
       <audio ref={audioRef} preload="auto" muted={!soundEnabled}>
         <source
-          src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmgdCEMKX7TSfj1BfDI+xr/RHLjLfkQnxeW4ILa9eU8+Afjgmrm+bj1/aTPk9NKfnTAGGoDNq2EfYTAKlNPu54o+"
+          src="data:audio/wav;base64,UklGRjIAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQ4AAAC7u7u7u7u7u7u7u7u7u7u7"
           type="audio/wav"
         />
       </audio>
