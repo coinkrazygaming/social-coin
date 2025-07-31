@@ -603,10 +603,16 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
           >
             <Card className="bg-gray-900 border-gray-700">
               <CardHeader className="pb-2">
-                <CardTitle className="text-white flex items-center gap-2">
-                  <Edit className="w-5 h-5 text-green-400" />
-                  Visual Editor
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Edit className="w-5 h-5 text-green-400" />
+                    Page Editor
+                  </CardTitle>
+                  <Badge className="bg-green-600 text-white text-xs">LIVE EDIT</Badge>
+                </div>
+                <div className="text-xs text-gray-400">
+                  Click any element on the page to edit instantly
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <Tabs defaultValue="elements" className="w-full">
