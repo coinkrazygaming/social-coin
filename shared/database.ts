@@ -389,6 +389,23 @@ export class DatabaseService {
     limit: number = 50,
   ): Promise<Notification[]> {
     try {
+      if (!supabase) {
+        console.warn("Supabase client not available - returning mock notifications");
+        return [
+          {
+            id: "mock_notification_1",
+            user_id: userId,
+            sender_type: "system",
+            title: "Welcome to CoinKrazy!",
+            message: "Your account has been set up successfully.",
+            type: "info",
+            priority: "medium",
+            read: false,
+            created_at: new Date().toISOString(),
+          }
+        ];
+      }
+
       const { data, error } = await supabase
         .from("notifications")
         .select("*")
