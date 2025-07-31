@@ -64,6 +64,7 @@ const App = () => (
               </Routes>
             </main>
             <Footer />
+            <AdminToolbar />
           </div>
         </AuthProvider>
       </BrowserRouter>
