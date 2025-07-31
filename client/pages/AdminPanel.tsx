@@ -34,6 +34,10 @@ import { KYCOnboarding } from "../components/KYCOnboarding";
 import { BonusManagement } from "../components/BonusManagement";
 import { JackpotManagement } from "../components/JackpotManagement";
 import { VIPManagement } from "../components/VIPManagement";
+import { PaymentSettings } from "../components/PaymentSettings";
+import { LeaderboardManagement } from "../components/LeaderboardManagement";
+import { AchievementBadgeSystem } from "../components/AchievementBadgeSystem";
+import { CasinoBanking } from "../components/CasinoBanking";
 import {
   GoldCoinPackage,
   StoreSettings,
@@ -69,6 +73,7 @@ import {
   Zap,
   MessageSquare,
   Bot,
+  Gift,
 } from "lucide-react";
 
 export function AdminPanel() {
@@ -527,7 +532,7 @@ export function AdminPanel() {
         )}
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-13" style={{ gridTemplateColumns: 'repeat(13, 1fr)' }}>
+          <TabsList className="grid w-full grid-cols-18" style={{ gridTemplateColumns: 'repeat(18, 1fr)' }}>
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="security">Security</TabsTrigger>
             <TabsTrigger value="ai-employees">AI Employees</TabsTrigger>
@@ -541,6 +546,11 @@ export function AdminPanel() {
             <TabsTrigger value="refunds">Refunds</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
             <TabsTrigger value="logs">Logs</TabsTrigger>
+            <TabsTrigger value="payments">Payments</TabsTrigger>
+            <TabsTrigger value="leaderboards">Leaderboards</TabsTrigger>
+            <TabsTrigger value="achievements">Achievements</TabsTrigger>
+            <TabsTrigger value="banking">Banking</TabsTrigger>
+            <TabsTrigger value="usermanagement">Users</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -1444,6 +1454,34 @@ export function AdminPanel() {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="payments" className="space-y-6">
+            <PaymentSettings />
+          </TabsContent>
+
+          <TabsContent value="leaderboards" className="space-y-6">
+            <LeaderboardManagement />
+          </TabsContent>
+
+          <TabsContent value="achievements" className="space-y-6">
+            <AchievementBadgeSystem />
+          </TabsContent>
+
+          <TabsContent value="banking" className="space-y-6">
+            <CasinoBanking />
+          </TabsContent>
+
+          <TabsContent value="usermanagement" className="space-y-6">
+            <div className="text-center py-8">
+              <Users className="w-12 h-12 text-blue-500 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-white mb-2">
+                User Management System
+              </h3>
+              <p className="text-gray-400 mb-6">
+                Comprehensive user management with real-time data and controls coming soon.
+              </p>
+            </div>
           </TabsContent>
         </Tabs>
 
