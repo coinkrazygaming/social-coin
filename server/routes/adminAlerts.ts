@@ -231,12 +231,3 @@ export const handleGetAlertStats: RequestHandler = (req, res) => {
     res.status(500).json({ error: 'Failed to get alert stats' });
   }
 };
-
-export {
-  handleGetAdminAlerts,
-  handleMarkAlertAsRead,
-  handleAcknowledgeAlert,
-  handleResolveAlert,
-  handleCreateAlert,
-  handleGetAlertStats
-};
