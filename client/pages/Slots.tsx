@@ -100,9 +100,9 @@ export default function Slots() {
                 <Gamepad2 className="h-8 w-8 text-white" />
               </div>
               <div>
-                <h1 className="text-4xl font-bold">Slot Games</h1>
+                <h1 className="text-4xl font-bold">Social Casino</h1>
                 <p className="text-muted-foreground text-lg">
-                  500+ Premium slots with real-time jackpots and massive wins!
+                  500+ Premium social casino games with real-time jackpots and massive wins!
                 </p>
               </div>
             </div>
@@ -225,7 +225,7 @@ export default function Slots() {
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold flex items-center">
                   <Sparkles className="h-6 w-6 mr-3 text-gold animate-pulse" />
-                  CoinKrazy In-House Slots
+                  CoinKrazy In-House Social Casino Games
                 </h2>
                 <Badge className="bg-gold text-black font-bold">
                   <Crown className="h-3 w-3 mr-1" />
@@ -234,7 +234,7 @@ export default function Slots() {
               </div>
 
               <p className="text-muted-foreground">
-                Our exclusive collection of handcrafted slot games, designed and
+                Our exclusive collection of handcrafted social casino games, designed and
                 developed by CoinKrazy. Each game features unique themes,
                 balanced gameplay, and exciting bonus features!
               </p>
@@ -351,7 +351,7 @@ export default function Slots() {
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold">
                   {selectedCategory === "all"
-                    ? "All Slot Games"
+                    ? "All Social Casino Games"
                     : categories.find((c) => c.id === selectedCategory)?.name}
                   {searchTerm && ` matching "${searchTerm}"`}
                 </h2>
@@ -468,9 +468,9 @@ export default function Slots() {
       <section className="py-16 bg-card/30">
         <div className="container px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold">Live Casino Stats</h2>
+            <h2 className="text-3xl font-bold">Live Social Casino Stats</h2>
             <p className="text-muted-foreground mt-2">
-              Real-time performance across all slot games
+              Real-time performance across all social casino games
             </p>
           </div>
 
