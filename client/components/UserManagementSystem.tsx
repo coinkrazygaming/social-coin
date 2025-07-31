@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Switch } from "./ui/switch";
@@ -18,12 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "./ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { useAuth } from "./AuthContext";
 import {
   Users,
@@ -174,15 +164,19 @@ export function UserManagementSystem() {
   const [sortBy, setSortBy] = useState("lastActivity");
   const [isLoading, setIsLoading] = useState(false);
 
-  const [balanceAction, setBalanceAction] = useState<"credit" | "debit">("credit");
+  const [balanceAction, setBalanceAction] = useState<"credit" | "debit">(
+    "credit",
+  );
   const [balanceAmount, setBalanceAmount] = useState("");
-  const [balanceCurrency, setBalanceCurrency] = useState<"goldCoins" | "sweepsCoins" | "vipPoints">("goldCoins");
+  const [balanceCurrency, setBalanceCurrency] = useState<
+    "goldCoins" | "sweepsCoins" | "vipPoints"
+  >("goldCoins");
   const [balanceReason, setBalanceReason] = useState("");
 
   useEffect(() => {
     loadUsers();
     loadStats();
-    
+
     // Set up real-time updates
     const interval = setInterval(() => {
       updateRealTimeData();
@@ -233,7 +227,7 @@ export function UserManagementSystem() {
           favoriteGame: "Royal Fortune",
           winRate: 71.8,
           currentStreak: 5,
-          biggestWin: 8945.60,
+          biggestWin: 8945.6,
           averageBet: 9.99,
         },
         preferences: {
@@ -348,7 +342,7 @@ export function UserManagementSystem() {
           vipPoints: 1234,
         },
         statistics: {
-          totalDeposited: 15678.90,
+          totalDeposited: 15678.9,
           totalWithdrawn: 8934.56,
           totalWagered: 78945.67,
           totalWon: 56789.12,
@@ -356,7 +350,7 @@ export function UserManagementSystem() {
           favoriteGame: "Diamond Dreams",
           winRate: 71.9,
           currentStreak: 0,
-          biggestWin: 25000.00,
+          biggestWin: 25000.0,
           averageBet: 22.84,
         },
         preferences: {
@@ -379,14 +373,16 @@ export function UserManagementSystem() {
         notes: [
           {
             id: "note_004",
-            content: "Temporarily suspended due to excessive play time. Cooling off period applied.",
+            content:
+              "Temporarily suspended due to excessive play time. Cooling off period applied.",
             author: "AdminUser",
             timestamp: new Date(Date.now() - 86400000),
             type: "warning",
           },
           {
             id: "note_005",
-            content: "Player contacted support requesting help with gambling habits.",
+            content:
+              "Player contacted support requesting help with gambling habits.",
             author: "SupportTeam",
             timestamp: new Date(Date.now() - 172800000),
             type: "escalation",
@@ -405,51 +401,54 @@ export function UserManagementSystem() {
 
   const updateRealTimeData = () => {
     // Simulate real-time updates
-    setStats(prev => ({
+    setStats((prev) => ({
       ...prev,
       onlineUsers: Math.floor(Math.random() * 500) + 2000,
       newUsersToday: prev.newUsersToday + Math.floor(Math.random() * 5),
     }));
 
     // Update last activity for some users
-    setUsers(prev => prev.map(user => {
-      if (Math.random() < 0.1) { // 10% chance of activity update
-        return {
-          ...user,
-          lastActivityAt: new Date(),
-        };
-      }
-      return user;
-    }));
+    setUsers((prev) =>
+      prev.map((user) => {
+        if (Math.random() < 0.1) {
+          // 10% chance of activity update
+          return {
+            ...user,
+            lastActivityAt: new Date(),
+          };
+        }
+        return user;
+      }),
+    );
   };
 
   const handleBalanceUpdate = async () => {
     if (!selectedUser || !balanceAmount || !balanceReason) return;
 
     setIsLoading(true);
-    
+
     const amount = parseFloat(balanceAmount);
     const isCredit = balanceAction === "credit";
-    
+
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     // Update user balance
-    setUsers(prev => 
-      prev.map(u => 
+    setUsers((prev) =>
+      prev.map((u) =>
         u.id === selectedUser.id
           ? {
               ...u,
               balances: {
                 ...u.balances,
-                [balanceCurrency]: isCredit 
+                [balanceCurrency]: isCredit
                   ? u.balances[balanceCurrency] + amount
                   : u.balances[balanceCurrency] - amount,
               },
               notes: [
                 {
                   id: `note_${Date.now()}`,
-                  content: `${isCredit ? 'Credited' : 'Debited'} ${amount} ${balanceCurrency} - ${balanceReason}`,
+                  content: `${isCredit ? "Credited" : "Debited"} ${amount} ${balanceCurrency} - ${balanceReason}`,
                   author: user?.username || "AdminUser",
                   timestamp: new Date(),
                   type: "general",
@@ -457,8 +456,8 @@ export function UserManagementSystem() {
                 ...u.notes,
               ],
             }
-          : u
-      )
+          : u,
+      ),
     );
 
     setIsLoading(false);
@@ -468,52 +467,71 @@ export function UserManagementSystem() {
   };
 
   const handleUserStatusChange = async (userId: string, newStatus: string) => {
-    setUsers(prev => 
-      prev.map(u => 
-        u.id === userId ? { ...u, status: newStatus as any } : u
-      )
+    setUsers((prev) =>
+      prev.map((u) =>
+        u.id === userId ? { ...u, status: newStatus as any } : u,
+      ),
     );
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "active": return "bg-green-600";
-      case "suspended": return "bg-yellow-600";
-      case "banned": return "bg-red-600";
-      case "pending_verification": return "bg-blue-600";
-      default: return "bg-gray-600";
+      case "active":
+        return "bg-green-600";
+      case "suspended":
+        return "bg-yellow-600";
+      case "banned":
+        return "bg-red-600";
+      case "pending_verification":
+        return "bg-blue-600";
+      default:
+        return "bg-gray-600";
     }
   };
 
   const getVIPLevelColor = (level: string) => {
     switch (level) {
-      case "diamond": return "bg-blue-600";
-      case "platinum": return "bg-purple-600";
-      case "gold": return "bg-yellow-600";
-      case "silver": return "bg-gray-600";
-      case "bronze": return "bg-orange-600";
-      default: return "bg-gray-500";
+      case "diamond":
+        return "bg-blue-600";
+      case "platinum":
+        return "bg-purple-600";
+      case "gold":
+        return "bg-yellow-600";
+      case "silver":
+        return "bg-gray-600";
+      case "bronze":
+        return "bg-orange-600";
+      default:
+        return "bg-gray-500";
     }
   };
 
   const getKYCStatusIcon = (status: string) => {
     switch (status) {
-      case "approved": return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case "pending": return <Clock className="w-4 h-4 text-yellow-500" />;
-      case "rejected": return <XCircle className="w-4 h-4 text-red-500" />;
-      default: return <AlertTriangle className="w-4 h-4 text-gray-500" />;
+      case "approved":
+        return <CheckCircle className="w-4 h-4 text-green-500" />;
+      case "pending":
+        return <Clock className="w-4 h-4 text-yellow-500" />;
+      case "rejected":
+        return <XCircle className="w-4 h-4 text-red-500" />;
+      default:
+        return <AlertTriangle className="w-4 h-4 text-gray-500" />;
     }
   };
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         (user.firstName && user.firstName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                         (user.lastName && user.lastName.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    const matchesStatus = filterStatus === "all" || user.status === filterStatus;
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
+      user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (user.firstName &&
+        user.firstName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (user.lastName &&
+        user.lastName.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    const matchesStatus =
+      filterStatus === "all" || user.status === filterStatus;
     const matchesRole = filterRole === "all" || user.role === filterRole;
-    
+
     return matchesSearch && matchesStatus && matchesRole;
   });
 
@@ -528,7 +546,10 @@ export function UserManagementSystem() {
         const bActivity = b.lastActivityAt || new Date(0);
         return bActivity.getTime() - aActivity.getTime();
       case "totalDeposited":
-        return (b.statistics?.totalDeposited || 0) - (a.statistics?.totalDeposited || 0);
+        return (
+          (b.statistics?.totalDeposited || 0) -
+          (a.statistics?.totalDeposited || 0)
+        );
       default:
         return 0;
     }
@@ -614,7 +635,9 @@ export function UserManagementSystem() {
                       <SelectItem value="active">Active</SelectItem>
                       <SelectItem value="suspended">Suspended</SelectItem>
                       <SelectItem value="banned">Banned</SelectItem>
-                      <SelectItem value="pending_verification">Pending</SelectItem>
+                      <SelectItem value="pending_verification">
+                        Pending
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -640,10 +663,14 @@ export function UserManagementSystem() {
                       <SelectValue placeholder="Sort by" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="lastActivity">Last Activity</SelectItem>
+                      <SelectItem value="lastActivity">
+                        Last Activity
+                      </SelectItem>
                       <SelectItem value="username">Username</SelectItem>
                       <SelectItem value="createdAt">Join Date</SelectItem>
-                      <SelectItem value="totalDeposited">Total Deposited</SelectItem>
+                      <SelectItem value="totalDeposited">
+                        Total Deposited
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -679,11 +706,19 @@ export function UserManagementSystem() {
                         <div>
                           <div className="text-white font-medium flex items-center gap-2">
                             {user.username}
-                            {user.emailVerified && <CheckCircle className="w-4 h-4 text-green-500" />}
-                            {user.role === "admin" && <Crown className="w-4 h-4 text-yellow-500" />}
-                            {user.role === "staff" && <Shield className="w-4 h-4 text-blue-500" />}
+                            {user.emailVerified && (
+                              <CheckCircle className="w-4 h-4 text-green-500" />
+                            )}
+                            {user.role === "admin" && (
+                              <Crown className="w-4 h-4 text-yellow-500" />
+                            )}
+                            {user.role === "staff" && (
+                              <Shield className="w-4 h-4 text-blue-500" />
+                            )}
                           </div>
-                          <div className="text-gray-400 text-sm">{user.email}</div>
+                          <div className="text-gray-400 text-sm">
+                            {user.email}
+                          </div>
                           <div className="flex items-center gap-2 mt-1">
                             <Badge className={getStatusColor(user.status)}>
                               {user.status.replace("_", " ")}
@@ -715,13 +750,16 @@ export function UserManagementSystem() {
                       <div>
                         <div className="text-gray-400">Total Deposited</div>
                         <div className="text-white font-medium">
-                          ${user.statistics?.totalDeposited?.toLocaleString() || "0"}
+                          $
+                          {user.statistics?.totalDeposited?.toLocaleString() ||
+                            "0"}
                         </div>
                       </div>
                       <div>
                         <div className="text-gray-400">Games Played</div>
                         <div className="text-white font-medium">
-                          {user.statistics?.gamesPlayed?.toLocaleString() || "0"}
+                          {user.statistics?.gamesPlayed?.toLocaleString() ||
+                            "0"}
                         </div>
                       </div>
                       <div>
@@ -733,10 +771,9 @@ export function UserManagementSystem() {
                       <div>
                         <div className="text-gray-400">Last Activity</div>
                         <div className="text-white font-medium">
-                          {user.lastActivityAt 
+                          {user.lastActivityAt
                             ? new Date(user.lastActivityAt).toLocaleDateString()
-                            : "Never"
-                          }
+                            : "Never"}
                         </div>
                       </div>
                     </div>
@@ -769,7 +806,9 @@ export function UserManagementSystem() {
                           size="sm"
                           variant="outline"
                           className="border-yellow-600 text-yellow-400 hover:bg-yellow-600 hover:text-white"
-                          onClick={() => handleUserStatusChange(user.id, "suspended")}
+                          onClick={() =>
+                            handleUserStatusChange(user.id, "suspended")
+                          }
                         >
                           <Lock className="w-4 h-4 mr-2" />
                           Suspend
@@ -779,7 +818,9 @@ export function UserManagementSystem() {
                           size="sm"
                           variant="outline"
                           className="border-green-600 text-green-400 hover:bg-green-600 hover:text-white"
-                          onClick={() => handleUserStatusChange(user.id, "active")}
+                          onClick={() =>
+                            handleUserStatusChange(user.id, "active")
+                          }
                         >
                           <Unlock className="w-4 h-4 mr-2" />
                           Activate
@@ -803,19 +844,27 @@ export function UserManagementSystem() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-gray-400">This Week</span>
-                    <span className="text-white font-bold">+{stats.newUsersThisWeek}</span>
+                    <span className="text-white font-bold">
+                      +{stats.newUsersThisWeek}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-400">Average Session</span>
-                    <span className="text-white font-bold">{stats.averageSessionTime} min</span>
+                    <span className="text-white font-bold">
+                      {stats.averageSessionTime} min
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-400">Total Deposits</span>
-                    <span className="text-white font-bold">${stats.totalDeposits.toLocaleString()}</span>
+                    <span className="text-white font-bold">
+                      ${stats.totalDeposits.toLocaleString()}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-400">Pending KYC</span>
-                    <span className="text-white font-bold">{stats.pendingKYC}</span>
+                    <span className="text-white font-bold">
+                      {stats.pendingKYC}
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -823,7 +872,9 @@ export function UserManagementSystem() {
 
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-white">Account Status Distribution</CardTitle>
+                <CardTitle className="text-white">
+                  Account Status Distribution
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -832,28 +883,36 @@ export function UserManagementSystem() {
                       <div className="w-3 h-3 bg-green-600 rounded"></div>
                       <span className="text-gray-400">Active</span>
                     </div>
-                    <span className="text-white font-bold">{stats.activeUsers.toLocaleString()}</span>
+                    <span className="text-white font-bold">
+                      {stats.activeUsers.toLocaleString()}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 bg-yellow-600 rounded"></div>
                       <span className="text-gray-400">Suspended</span>
                     </div>
-                    <span className="text-white font-bold">{stats.suspendedUsers}</span>
+                    <span className="text-white font-bold">
+                      {stats.suspendedUsers}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 bg-purple-600 rounded"></div>
                       <span className="text-gray-400">VIP</span>
                     </div>
-                    <span className="text-white font-bold">{stats.vipUsers.toLocaleString()}</span>
+                    <span className="text-white font-bold">
+                      {stats.vipUsers.toLocaleString()}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 bg-red-600 rounded"></div>
                       <span className="text-gray-400">Flagged</span>
                     </div>
-                    <span className="text-white font-bold">{stats.flaggedAccounts}</span>
+                    <span className="text-white font-bold">
+                      {stats.flaggedAccounts}
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -873,19 +932,24 @@ export function UserManagementSystem() {
                   KYC Verification System
                 </h3>
                 <p className="text-gray-400 mb-6">
-                  Comprehensive KYC management and verification system coming soon.
+                  Comprehensive KYC management and verification system coming
+                  soon.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Card className="bg-gray-700 border-gray-600">
                     <CardContent className="p-4 text-center">
-                      <div className="text-2xl font-bold text-blue-500">{stats.pendingKYC}</div>
-                      <div className="text-sm text-gray-400">Pending Review</div>
+                      <div className="text-2xl font-bold text-blue-500">
+                        {stats.pendingKYC}
+                      </div>
+                      <div className="text-sm text-gray-400">
+                        Pending Review
+                      </div>
                     </CardContent>
                   </Card>
                   <Card className="bg-gray-700 border-gray-600">
                     <CardContent className="p-4 text-center">
                       <div className="text-2xl font-bold text-green-500">
-                        {users.filter(u => u.kycStatus === "approved").length}
+                        {users.filter((u) => u.kycStatus === "approved").length}
                       </div>
                       <div className="text-sm text-gray-400">Approved</div>
                     </CardContent>
@@ -893,7 +957,7 @@ export function UserManagementSystem() {
                   <Card className="bg-gray-700 border-gray-600">
                     <CardContent className="p-4 text-center">
                       <div className="text-2xl font-bold text-red-500">
-                        {users.filter(u => u.kycStatus === "rejected").length}
+                        {users.filter((u) => u.kycStatus === "rejected").length}
                       </div>
                       <div className="text-sm text-gray-400">Rejected</div>
                     </CardContent>
@@ -913,12 +977,16 @@ export function UserManagementSystem() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <Label className="text-white">Auto-verify email addresses</Label>
+                    <Label className="text-white">
+                      Auto-verify email addresses
+                    </Label>
                     <Switch defaultChecked />
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <Label className="text-white">Require phone verification</Label>
+                    <Label className="text-white">
+                      Require phone verification
+                    </Label>
                     <Switch />
                   </div>
 
@@ -935,22 +1003,30 @@ export function UserManagementSystem() {
 
                 <div className="space-y-4">
                   <div>
-                    <Label className="text-white">Maximum session time (minutes)</Label>
+                    <Label className="text-white">
+                      Maximum session time (minutes)
+                    </Label>
                     <Input type="number" defaultValue="180" className="mt-1" />
                   </div>
 
                   <div>
-                    <Label className="text-white">Inactivity timeout (minutes)</Label>
+                    <Label className="text-white">
+                      Inactivity timeout (minutes)
+                    </Label>
                     <Input type="number" defaultValue="30" className="mt-1" />
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <Label className="text-white">Enable login notifications</Label>
+                    <Label className="text-white">
+                      Enable login notifications
+                    </Label>
                     <Switch defaultChecked />
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <Label className="text-white">Require 2FA for withdrawals</Label>
+                    <Label className="text-white">
+                      Require 2FA for withdrawals
+                    </Label>
                     <Switch defaultChecked />
                   </div>
                 </div>
@@ -982,18 +1058,23 @@ export function UserManagementSystem() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="text-center p-3 bg-gray-700 rounded">
-                <div className="text-white font-medium">{selectedUser.username}</div>
+                <div className="text-white font-medium">
+                  {selectedUser.username}
+                </div>
                 <div className="text-sm text-gray-400">
-                  GC: {selectedUser.balances.goldCoins.toLocaleString()} | 
-                  SC: {selectedUser.balances.sweepsCoins.toFixed(2)} | 
-                  VIP: {selectedUser.balances.vipPoints}
+                  GC: {selectedUser.balances.goldCoins.toLocaleString()} | SC:{" "}
+                  {selectedUser.balances.sweepsCoins.toFixed(2)} | VIP:{" "}
+                  {selectedUser.balances.vipPoints}
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-white">Action</Label>
-                  <Select value={balanceAction} onValueChange={(value: any) => setBalanceAction(value)}>
+                  <Select
+                    value={balanceAction}
+                    onValueChange={(value: any) => setBalanceAction(value)}
+                  >
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
@@ -1006,7 +1087,10 @@ export function UserManagementSystem() {
 
                 <div>
                   <Label className="text-white">Currency</Label>
-                  <Select value={balanceCurrency} onValueChange={(value: any) => setBalanceCurrency(value)}>
+                  <Select
+                    value={balanceCurrency}
+                    onValueChange={(value: any) => setBalanceCurrency(value)}
+                  >
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
@@ -1048,7 +1132,9 @@ export function UserManagementSystem() {
                   className={`flex-1 ${balanceAction === "credit" ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700"}`}
                   disabled={isLoading || !balanceAmount || !balanceReason}
                 >
-                  {isLoading ? "Processing..." : `${balanceAction === "credit" ? "Credit" : "Debit"} ${balanceAmount} ${balanceCurrency}`}
+                  {isLoading
+                    ? "Processing..."
+                    : `${balanceAction === "credit" ? "Credit" : "Debit"} ${balanceAmount} ${balanceCurrency}`}
                 </Button>
                 <Button
                   variant="outline"

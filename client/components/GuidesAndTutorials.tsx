@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Switch } from "./ui/switch";
@@ -18,12 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "./ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { useAuth } from "./AuthContext";
 import {
   BookOpen,
@@ -62,7 +52,16 @@ interface Guide {
   id: string;
   title: string;
   description: string;
-  category: "casino_basics" | "games" | "payments" | "vip" | "staff" | "admin" | "kyc" | "redemption" | "responsible_gaming";
+  category:
+    | "casino_basics"
+    | "games"
+    | "payments"
+    | "vip"
+    | "staff"
+    | "admin"
+    | "kyc"
+    | "redemption"
+    | "responsible_gaming";
   type: "guide" | "tutorial" | "video" | "faq" | "quick_tip";
   difficulty: "beginner" | "intermediate" | "advanced";
   estimatedTime: number; // in minutes
@@ -138,7 +137,8 @@ export function GuidesAndTutorials() {
       {
         id: "guide_001",
         title: "Welcome to CoinKrazy Casino",
-        description: "Complete beginner's guide to getting started with social casino gaming",
+        description:
+          "Complete beginner's guide to getting started with social casino gaming",
         category: "casino_basics",
         type: "guide",
         difficulty: "beginner",
@@ -174,18 +174,31 @@ Your safety is our priority. We use industry-standard encryption to protect your
           {
             title: "Create Your Account",
             content: "Sign up with your email and create a secure password",
-            tips: ["Use a strong password", "Verify your email address", "Complete your profile"]
+            tips: [
+              "Use a strong password",
+              "Verify your email address",
+              "Complete your profile",
+            ],
           },
           {
             title: "Claim Welcome Bonus",
             content: "Get your free starter coins to begin playing",
-            tips: ["Check your inbox for bonus codes", "Claim daily bonuses", "Follow us on social media for extra bonuses"]
+            tips: [
+              "Check your inbox for bonus codes",
+              "Claim daily bonuses",
+              "Follow us on social media for extra bonuses",
+            ],
           },
           {
             title: "Choose Your First Game",
-            content: "Start with beginner-friendly slots or try our tutorial games",
-            tips: ["Start with lower bet amounts", "Read game rules", "Try demo mode first"]
-          }
+            content:
+              "Start with beginner-friendly slots or try our tutorial games",
+            tips: [
+              "Start with lower bet amounts",
+              "Read game rules",
+              "Try demo mode first",
+            ],
+          },
         ],
         relatedGuides: ["guide_002", "guide_003"],
         tags: ["beginner", "welcome", "basics", "getting-started"],
@@ -196,11 +209,12 @@ Your safety is our priority. We use industry-standard encryption to protect your
         lastUpdated: new Date("2024-01-15"),
         author: "CoinKrazy Team",
       },
-      
+
       {
         id: "guide_002",
         title: "How to Play Slot Games",
-        description: "Master the art of slot gaming with tips, strategies, and game mechanics",
+        description:
+          "Master the art of slot gaming with tips, strategies, and game mechanics",
         category: "games",
         type: "tutorial",
         difficulty: "beginner",
@@ -241,19 +255,32 @@ Slot games are the heart of any casino. Here's everything you need to know:
         steps: [
           {
             title: "Select Your Game",
-            content: "Browse our slot collection and choose a game that appeals to you",
-            tips: ["Check the RTP percentage", "Read the game description", "Try the demo version first"]
+            content:
+              "Browse our slot collection and choose a game that appeals to you",
+            tips: [
+              "Check the RTP percentage",
+              "Read the game description",
+              "Try the demo version first",
+            ],
           },
           {
             title: "Set Your Bet",
             content: "Choose your coin value and number of paylines",
-            tips: ["Start with smaller bets", "Understand the minimum and maximum bets", "Consider your total bankroll"]
+            tips: [
+              "Start with smaller bets",
+              "Understand the minimum and maximum bets",
+              "Consider your total bankroll",
+            ],
           },
           {
             title: "Understand the Features",
             content: "Learn about wilds, scatters, and bonus rounds",
-            tips: ["Read the paytable", "Know the bonus triggers", "Understand the special symbols"]
-          }
+            tips: [
+              "Read the paytable",
+              "Know the bonus triggers",
+              "Understand the special symbols",
+            ],
+          },
         ],
         relatedGuides: ["guide_003", "guide_004"],
         tags: ["slots", "gameplay", "tutorial", "features"],
@@ -270,7 +297,8 @@ Slot games are the heart of any casino. Here's everything you need to know:
       {
         id: "guide_003",
         title: "Gold Coin Store Guide",
-        description: "Everything you need to know about purchasing Gold Coin packages",
+        description:
+          "Everything you need to know about purchasing Gold Coin packages",
         category: "payments",
         type: "guide",
         difficulty: "beginner",
@@ -338,7 +366,8 @@ Choose from our range of packages:
       {
         id: "guide_004",
         title: "VIP Program Benefits",
-        description: "Unlock exclusive rewards and benefits with our VIP membership program",
+        description:
+          "Unlock exclusive rewards and benefits with our VIP membership program",
         category: "vip",
         type: "guide",
         difficulty: "intermediate",
@@ -414,7 +443,8 @@ Use our VIP calculator to see:
       {
         id: "guide_005",
         title: "KYC Verification Process",
-        description: "Step-by-step guide to completing your Know Your Customer verification",
+        description:
+          "Step-by-step guide to completing your Know Your Customer verification",
         category: "kyc",
         type: "guide",
         difficulty: "beginner",
@@ -502,7 +532,8 @@ Know Your Customer (KYC) verification is a security process that helps us:
       {
         id: "guide_006",
         title: "Prize Redemption Process",
-        description: "How to redeem your Sweeps Coins for real prizes and cash rewards",
+        description:
+          "How to redeem your Sweeps Coins for real prizes and cash rewards",
         category: "redemption",
         type: "guide",
         difficulty: "intermediate",
@@ -598,7 +629,8 @@ Know Your Customer (KYC) verification is a security process that helps us:
       {
         id: "guide_007",
         title: "Staff Panel User Guide",
-        description: "Comprehensive guide for staff members using the CoinKrazy staff panel",
+        description:
+          "Comprehensive guide for staff members using the CoinKrazy staff panel",
         category: "staff",
         type: "guide",
         difficulty: "advanced",
@@ -755,64 +787,105 @@ The CoinKrazy Staff Panel is your central hub for managing player interactions, 
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case "casino_basics": return <BookOpen className="w-4 h-4" />;
-      case "games": return <Gamepad2 className="w-4 h-4" />;
-      case "payments": return <CreditCard className="w-4 h-4" />;
-      case "vip": return <Crown className="w-4 h-4" />;
-      case "staff": return <Shield className="w-4 h-4" />;
-      case "admin": return <Award className="w-4 h-4" />;
-      case "kyc": return <FileText className="w-4 h-4" />;
-      case "redemption": return <Gift className="w-4 h-4" />;
-      case "responsible_gaming": return <HelpCircle className="w-4 h-4" />;
-      default: return <BookOpen className="w-4 h-4" />;
+      case "casino_basics":
+        return <BookOpen className="w-4 h-4" />;
+      case "games":
+        return <Gamepad2 className="w-4 h-4" />;
+      case "payments":
+        return <CreditCard className="w-4 h-4" />;
+      case "vip":
+        return <Crown className="w-4 h-4" />;
+      case "staff":
+        return <Shield className="w-4 h-4" />;
+      case "admin":
+        return <Award className="w-4 h-4" />;
+      case "kyc":
+        return <FileText className="w-4 h-4" />;
+      case "redemption":
+        return <Gift className="w-4 h-4" />;
+      case "responsible_gaming":
+        return <HelpCircle className="w-4 h-4" />;
+      default:
+        return <BookOpen className="w-4 h-4" />;
     }
   };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case "guide": return <BookOpen className="w-4 h-4" />;
-      case "tutorial": return <Play className="w-4 h-4" />;
-      case "video": return <Video className="w-4 h-4" />;
-      case "faq": return <HelpCircle className="w-4 h-4" />;
-      case "quick_tip": return <Lightbulb className="w-4 h-4" />;
-      default: return <FileText className="w-4 h-4" />;
+      case "guide":
+        return <BookOpen className="w-4 h-4" />;
+      case "tutorial":
+        return <Play className="w-4 h-4" />;
+      case "video":
+        return <Video className="w-4 h-4" />;
+      case "faq":
+        return <HelpCircle className="w-4 h-4" />;
+      case "quick_tip":
+        return <Lightbulb className="w-4 h-4" />;
+      default:
+        return <FileText className="w-4 h-4" />;
     }
   };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case "beginner": return "bg-green-600";
-      case "intermediate": return "bg-yellow-600";
-      case "advanced": return "bg-red-600";
-      default: return "bg-gray-600";
+      case "beginner":
+        return "bg-green-600";
+      case "intermediate":
+        return "bg-yellow-600";
+      case "advanced":
+        return "bg-red-600";
+      default:
+        return "bg-gray-600";
     }
   };
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case "casino_basics": return "bg-blue-600";
-      case "games": return "bg-purple-600";
-      case "payments": return "bg-green-600";
-      case "vip": return "bg-yellow-600";
-      case "staff": return "bg-indigo-600";
-      case "admin": return "bg-red-600";
-      case "kyc": return "bg-orange-600";
-      case "redemption": return "bg-pink-600";
-      case "responsible_gaming": return "bg-teal-600";
-      default: return "bg-gray-600";
+      case "casino_basics":
+        return "bg-blue-600";
+      case "games":
+        return "bg-purple-600";
+      case "payments":
+        return "bg-green-600";
+      case "vip":
+        return "bg-yellow-600";
+      case "staff":
+        return "bg-indigo-600";
+      case "admin":
+        return "bg-red-600";
+      case "kyc":
+        return "bg-orange-600";
+      case "redemption":
+        return "bg-pink-600";
+      case "responsible_gaming":
+        return "bg-teal-600";
+      default:
+        return "bg-gray-600";
     }
   };
 
-  const filteredGuides = guides.filter(guide => {
-    const matchesSearch = guide.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         guide.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         guide.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    const matchesCategory = filterCategory === "all" || guide.category === filterCategory;
+  const filteredGuides = guides.filter((guide) => {
+    const matchesSearch =
+      guide.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      guide.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      guide.tags.some((tag) =>
+        tag.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+
+    const matchesCategory =
+      filterCategory === "all" || guide.category === filterCategory;
     const matchesType = filterType === "all" || guide.type === filterType;
-    const matchesDifficulty = filterDifficulty === "all" || guide.difficulty === filterDifficulty;
-    
-    return matchesSearch && matchesCategory && matchesType && matchesDifficulty && guide.isPublished;
+    const matchesDifficulty =
+      filterDifficulty === "all" || guide.difficulty === filterDifficulty;
+
+    return (
+      matchesSearch &&
+      matchesCategory &&
+      matchesType &&
+      matchesDifficulty &&
+      guide.isPublished
+    );
   });
 
   const handleCreateGuide = () => {
@@ -827,7 +900,7 @@ The CoinKrazy Staff Panel is your central hub for managing player interactions, 
       author: user?.username || "Admin",
     };
 
-    setGuides(prev => [guide, ...prev]);
+    setGuides((prev) => [guide, ...prev]);
     setShowCreateModal(false);
     setNewGuide({
       title: "",
@@ -913,13 +986,18 @@ The CoinKrazy Staff Panel is your central hub for managing player interactions, 
                 </div>
 
                 <div>
-                  <Select value={filterCategory} onValueChange={setFilterCategory}>
+                  <Select
+                    value={filterCategory}
+                    onValueChange={setFilterCategory}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Category" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Categories</SelectItem>
-                      <SelectItem value="casino_basics">Casino Basics</SelectItem>
+                      <SelectItem value="casino_basics">
+                        Casino Basics
+                      </SelectItem>
                       <SelectItem value="games">Games</SelectItem>
                       <SelectItem value="payments">Payments</SelectItem>
                       <SelectItem value="vip">VIP Program</SelectItem>
@@ -947,7 +1025,10 @@ The CoinKrazy Staff Panel is your central hub for managing player interactions, 
                 </div>
 
                 <div>
-                  <Select value={filterDifficulty} onValueChange={setFilterDifficulty}>
+                  <Select
+                    value={filterDifficulty}
+                    onValueChange={setFilterDifficulty}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Difficulty" />
                     </SelectTrigger>
@@ -966,7 +1047,10 @@ The CoinKrazy Staff Panel is your central hub for managing player interactions, 
           {/* Guide Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredGuides.map((guide) => (
-              <Card key={guide.id} className="bg-gray-800 border-gray-700 hover:border-purple-500 transition-all duration-300">
+              <Card
+                key={guide.id}
+                className="bg-gray-800 border-gray-700 hover:border-purple-500 transition-all duration-300"
+              >
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2">
@@ -977,10 +1061,14 @@ The CoinKrazy Staff Panel is your central hub for managing player interactions, 
                     </div>
                     <div className="flex items-center gap-1">
                       {getTypeIcon(guide.type)}
-                      {guide.isFeatured && <Star className="w-4 h-4 text-yellow-500" />}
+                      {guide.isFeatured && (
+                        <Star className="w-4 h-4 text-yellow-500" />
+                      )}
                     </div>
                   </div>
-                  <CardTitle className="text-white text-lg">{guide.title}</CardTitle>
+                  <CardTitle className="text-white text-lg">
+                    {guide.title}
+                  </CardTitle>
                   <p className="text-gray-400 text-sm">{guide.description}</p>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -1031,48 +1119,61 @@ The CoinKrazy Staff Panel is your central hub for managing player interactions, 
 
         <TabsContent value="featured" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {guides.filter(g => g.isFeatured && g.isPublished).map((guide) => (
-              <Card key={guide.id} className="bg-gray-800 border-gray-700 border-2 border-yellow-500">
-                <CardHeader>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Star className="w-5 h-5 text-yellow-500" />
-                    <Badge className="bg-yellow-600">Featured</Badge>
-                    <Badge className={getCategoryColor(guide.category)}>
-                      {guide.category.replace("_", " ")}
-                    </Badge>
-                  </div>
-                  <CardTitle className="text-white text-xl">{guide.title}</CardTitle>
-                  <p className="text-gray-400">{guide.description}</p>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-3 gap-4 text-sm">
-                    <div className="text-center">
-                      <div className="text-white font-bold">{guide.views.toLocaleString()}</div>
-                      <div className="text-gray-400">Views</div>
+            {guides
+              .filter((g) => g.isFeatured && g.isPublished)
+              .map((guide) => (
+                <Card
+                  key={guide.id}
+                  className="bg-gray-800 border-gray-700 border-2 border-yellow-500"
+                >
+                  <CardHeader>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Star className="w-5 h-5 text-yellow-500" />
+                      <Badge className="bg-yellow-600">Featured</Badge>
+                      <Badge className={getCategoryColor(guide.category)}>
+                        {guide.category.replace("_", " ")}
+                      </Badge>
                     </div>
-                    <div className="text-center">
-                      <div className="text-white font-bold">{guide.rating.toFixed(1)}</div>
-                      <div className="text-gray-400">Rating</div>
+                    <CardTitle className="text-white text-xl">
+                      {guide.title}
+                    </CardTitle>
+                    <p className="text-gray-400">{guide.description}</p>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-3 gap-4 text-sm">
+                      <div className="text-center">
+                        <div className="text-white font-bold">
+                          {guide.views.toLocaleString()}
+                        </div>
+                        <div className="text-gray-400">Views</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-white font-bold">
+                          {guide.rating.toFixed(1)}
+                        </div>
+                        <div className="text-gray-400">Rating</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-white font-bold">
+                          {guide.estimatedTime}m
+                        </div>
+                        <div className="text-gray-400">Read Time</div>
+                      </div>
                     </div>
-                    <div className="text-center">
-                      <div className="text-white font-bold">{guide.estimatedTime}m</div>
-                      <div className="text-gray-400">Read Time</div>
-                    </div>
-                  </div>
 
-                  <Button
-                    className="w-full bg-yellow-600 hover:bg-yellow-700"
-                    onClick={() => {
-                      setSelectedGuide(guide);
-                      setShowGuideModal(true);
-                    }}
-                  >
-                    <Star className="w-4 h-4 mr-2" />
-                    Read Featured Guide
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+                    <Button
+                      className="w-full bg-yellow-600 hover:bg-yellow-700"
+                      onClick={() => {
+                        setSelectedGuide(guide);
+                        setShowGuideModal(true);
+                      }}
+                    >
+                      <Star className="w-4 h-4 mr-2" />
+                      Read Featured Guide
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
           </div>
         </TabsContent>
 
@@ -1095,19 +1196,28 @@ The CoinKrazy Staff Panel is your central hub for managing player interactions, 
             <CardContent>
               <div className="space-y-4">
                 {guides.map((guide) => (
-                  <div key={guide.id} className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
+                  <div
+                    key={guide.id}
+                    className="flex items-center justify-between p-4 bg-gray-700 rounded-lg"
+                  >
                     <div className="flex items-center gap-4">
                       <div className="flex items-center gap-2">
                         {getCategoryIcon(guide.category)}
                         {getTypeIcon(guide.type)}
                       </div>
                       <div>
-                        <div className="text-white font-medium">{guide.title}</div>
-                        <div className="text-gray-400 text-sm">{guide.category.replace("_", " ")} • {guide.type}</div>
+                        <div className="text-white font-medium">
+                          {guide.title}
+                        </div>
+                        <div className="text-gray-400 text-sm">
+                          {guide.category.replace("_", " ")} • {guide.type}
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant={guide.isPublished ? "default" : "secondary"}>
+                      <Badge
+                        variant={guide.isPublished ? "default" : "secondary"}
+                      >
                         {guide.isPublished ? "Published" : "Draft"}
                       </Badge>
                       <Button size="sm" variant="outline">
@@ -1134,7 +1244,9 @@ The CoinKrazy Staff Panel is your central hub for managing player interactions, 
                     <Badge className={getCategoryColor(selectedGuide.category)}>
                       {selectedGuide.category.replace("_", " ")}
                     </Badge>
-                    <Badge className={getDifficultyColor(selectedGuide.difficulty)}>
+                    <Badge
+                      className={getDifficultyColor(selectedGuide.difficulty)}
+                    >
                       {selectedGuide.difficulty}
                     </Badge>
                     <div className="flex items-center gap-1 text-sm text-gray-400">
@@ -1142,7 +1254,9 @@ The CoinKrazy Staff Panel is your central hub for managing player interactions, 
                       {selectedGuide.estimatedTime} min
                     </div>
                   </div>
-                  <CardTitle className="text-white text-2xl">{selectedGuide.title}</CardTitle>
+                  <CardTitle className="text-white text-2xl">
+                    {selectedGuide.title}
+                  </CardTitle>
                   <p className="text-gray-400">{selectedGuide.description}</p>
                 </div>
                 <Button
@@ -1163,7 +1277,9 @@ The CoinKrazy Staff Panel is your central hub for managing player interactions, 
 
               {selectedGuide.steps && selectedGuide.steps.length > 0 && (
                 <div className="space-y-4">
-                  <h3 className="text-xl font-bold text-white">Step-by-Step Guide</h3>
+                  <h3 className="text-xl font-bold text-white">
+                    Step-by-Step Guide
+                  </h3>
                   {selectedGuide.steps.map((step, index) => (
                     <Card key={index} className="bg-gray-700 border-gray-600">
                       <CardContent className="p-4">
@@ -1192,7 +1308,8 @@ The CoinKrazy Staff Panel is your central hub for managing player interactions, 
 
               <div className="flex items-center justify-between pt-4 border-t border-gray-600">
                 <div className="text-sm text-gray-400">
-                  By {selectedGuide.author} • Last updated {selectedGuide.lastUpdated.toLocaleDateString()}
+                  By {selectedGuide.author} • Last updated{" "}
+                  {selectedGuide.lastUpdated.toLocaleDateString()}
                 </div>
                 <div className="flex items-center gap-2">
                   <Button variant="outline" size="sm">
@@ -1231,7 +1348,9 @@ The CoinKrazy Staff Panel is your central hub for managing player interactions, 
                 <Label className="text-white">Title</Label>
                 <Input
                   value={newGuide.title}
-                  onChange={(e) => setNewGuide(prev => ({ ...prev, title: e.target.value }))}
+                  onChange={(e) =>
+                    setNewGuide((prev) => ({ ...prev, title: e.target.value }))
+                  }
                   className="mt-1"
                 />
               </div>
@@ -1240,7 +1359,12 @@ The CoinKrazy Staff Panel is your central hub for managing player interactions, 
                 <Label className="text-white">Description</Label>
                 <Textarea
                   value={newGuide.description}
-                  onChange={(e) => setNewGuide(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) =>
+                    setNewGuide((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
                   className="mt-1"
                   rows={3}
                 />
@@ -1249,12 +1373,19 @@ The CoinKrazy Staff Panel is your central hub for managing player interactions, 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-white">Category</Label>
-                  <Select value={newGuide.category} onValueChange={(value: any) => setNewGuide(prev => ({ ...prev, category: value }))}>
+                  <Select
+                    value={newGuide.category}
+                    onValueChange={(value: any) =>
+                      setNewGuide((prev) => ({ ...prev, category: value }))
+                    }
+                  >
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="casino_basics">Casino Basics</SelectItem>
+                      <SelectItem value="casino_basics">
+                        Casino Basics
+                      </SelectItem>
                       <SelectItem value="games">Games</SelectItem>
                       <SelectItem value="payments">Payments</SelectItem>
                       <SelectItem value="vip">VIP Program</SelectItem>
@@ -1268,7 +1399,12 @@ The CoinKrazy Staff Panel is your central hub for managing player interactions, 
 
                 <div>
                   <Label className="text-white">Type</Label>
-                  <Select value={newGuide.type} onValueChange={(value: any) => setNewGuide(prev => ({ ...prev, type: value }))}>
+                  <Select
+                    value={newGuide.type}
+                    onValueChange={(value: any) =>
+                      setNewGuide((prev) => ({ ...prev, type: value }))
+                    }
+                  >
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
@@ -1286,7 +1422,12 @@ The CoinKrazy Staff Panel is your central hub for managing player interactions, 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-white">Difficulty</Label>
-                  <Select value={newGuide.difficulty} onValueChange={(value: any) => setNewGuide(prev => ({ ...prev, difficulty: value }))}>
+                  <Select
+                    value={newGuide.difficulty}
+                    onValueChange={(value: any) =>
+                      setNewGuide((prev) => ({ ...prev, difficulty: value }))
+                    }
+                  >
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
@@ -1303,7 +1444,12 @@ The CoinKrazy Staff Panel is your central hub for managing player interactions, 
                   <Input
                     type="number"
                     value={newGuide.estimatedTime}
-                    onChange={(e) => setNewGuide(prev => ({ ...prev, estimatedTime: parseInt(e.target.value) || 5 }))}
+                    onChange={(e) =>
+                      setNewGuide((prev) => ({
+                        ...prev,
+                        estimatedTime: parseInt(e.target.value) || 5,
+                      }))
+                    }
                     className="mt-1"
                   />
                 </div>
@@ -1313,7 +1459,12 @@ The CoinKrazy Staff Panel is your central hub for managing player interactions, 
                 <Label className="text-white">Content</Label>
                 <Textarea
                   value={newGuide.content}
-                  onChange={(e) => setNewGuide(prev => ({ ...prev, content: e.target.value }))}
+                  onChange={(e) =>
+                    setNewGuide((prev) => ({
+                      ...prev,
+                      content: e.target.value,
+                    }))
+                  }
                   className="mt-1"
                   rows={6}
                   placeholder="Write your guide content in Markdown format..."
@@ -1324,7 +1475,9 @@ The CoinKrazy Staff Panel is your central hub for managing player interactions, 
                 <div className="flex items-center space-x-2">
                   <Switch
                     checked={newGuide.isPublished}
-                    onCheckedChange={(checked) => setNewGuide(prev => ({ ...prev, isPublished: checked }))}
+                    onCheckedChange={(checked) =>
+                      setNewGuide((prev) => ({ ...prev, isPublished: checked }))
+                    }
                   />
                   <Label className="text-white">Publish immediately</Label>
                 </div>
@@ -1332,7 +1485,9 @@ The CoinKrazy Staff Panel is your central hub for managing player interactions, 
                 <div className="flex items-center space-x-2">
                   <Switch
                     checked={newGuide.isFeatured}
-                    onCheckedChange={(checked) => setNewGuide(prev => ({ ...prev, isFeatured: checked }))}
+                    onCheckedChange={(checked) =>
+                      setNewGuide((prev) => ({ ...prev, isFeatured: checked }))
+                    }
                   />
                   <Label className="text-white">Feature this guide</Label>
                 </div>

@@ -128,10 +128,10 @@ function FullDisclaimerContent() {
               THIS IS A SWEEPSTAKES GAMING PLATFORM
             </p>
             <p className="text-sm text-muted-foreground">
-              CoinKrazy, operated by Howes Networks, LLC, operates as a promotional sweepstakes platform where
-              virtual currency is used for entertainment purposes only. This
-              platform complies with applicable sweepstakes and promotional
-              gaming laws.
+              CoinKrazy, operated by Howes Networks, LLC, operates as a
+              promotional sweepstakes platform where virtual currency is used
+              for entertainment purposes only. This platform complies with
+              applicable sweepstakes and promotional gaming laws.
             </p>
           </div>
         </CardContent>

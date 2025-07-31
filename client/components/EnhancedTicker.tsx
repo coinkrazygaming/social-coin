@@ -99,7 +99,8 @@ export const EnhancedTicker: React.FC<EnhancedTickerProps> = ({
         id: "win_001",
         type: "winner",
         content: "Big Win Alert!",
-        displayText: "🎉 HUGE WIN! SlotMaster97 just won 25,000 SC on Royal Fortune! Congratulations! 🎉",
+        displayText:
+          "🎉 HUGE WIN! SlotMaster97 just won 25,000 SC on Royal Fortune! Congratulations! 🎉",
         priority: "high",
         isActive: true,
         displayDuration: 10,
@@ -111,10 +112,11 @@ export const EnhancedTicker: React.FC<EnhancedTickerProps> = ({
         createdAt: new Date(Date.now() - 300000),
       },
       {
-        id: "win_002", 
+        id: "win_002",
         type: "winner",
         content: "Jackpot Winner!",
-        displayText: "🏆 JACKPOT! LuckyPlayer777 hit the MEGA JACKPOT for 150,000 SC on Diamond Dreams! 🏆",
+        displayText:
+          "🏆 JACKPOT! LuckyPlayer777 hit the MEGA JACKPOT for 150,000 SC on Diamond Dreams! 🏆",
         priority: "urgent",
         isActive: true,
         displayDuration: 12,
@@ -127,9 +129,10 @@ export const EnhancedTicker: React.FC<EnhancedTickerProps> = ({
       },
       {
         id: "win_003",
-        type: "winner", 
+        type: "winner",
         content: "Lucky Strike!",
-        displayText: "⚡ LIGHTNING WIN! CasinoKing23 struck gold with 45,000 SC on Lucky Sevens! ⚡",
+        displayText:
+          "⚡ LIGHTNING WIN! CasinoKing23 struck gold with 45,000 SC on Lucky Sevens! ⚡",
         priority: "high",
         isActive: true,
         displayDuration: 8,
@@ -146,7 +149,8 @@ export const EnhancedTicker: React.FC<EnhancedTickerProps> = ({
         id: "promo_001",
         type: "promotion",
         content: "Weekend Special!",
-        displayText: "🔥 WEEKEND SPECIAL: 100% Bonus Gold Coins + 50 Free SC! Use code WEEKEND100 🔥",
+        displayText:
+          "🔥 WEEKEND SPECIAL: 100% Bonus Gold Coins + 50 Free SC! Use code WEEKEND100 🔥",
         priority: "urgent",
         isActive: true,
         displayDuration: 12,
@@ -160,7 +164,8 @@ export const EnhancedTicker: React.FC<EnhancedTickerProps> = ({
         id: "promo_002",
         type: "promotion",
         content: "Flash Sale Alert!",
-        displayText: "⚡ FLASH SALE: 24 hours only! Extra 50% Gold Coins on all packages! Hurry! ⚡",
+        displayText:
+          "⚡ FLASH SALE: 24 hours only! Extra 50% Gold Coins on all packages! Hurry! ⚡",
         priority: "high",
         isActive: true,
         displayDuration: 10,
@@ -174,7 +179,8 @@ export const EnhancedTicker: React.FC<EnhancedTickerProps> = ({
         id: "promo_003",
         type: "promotion",
         content: "VIP Exclusive!",
-        displayText: "👑 VIP EXCLUSIVE: Double rewards on all deposits this week! VIP members only! 👑",
+        displayText:
+          "👑 VIP EXCLUSIVE: Double rewards on all deposits this week! VIP members only! 👑",
         priority: "medium",
         isActive: true,
         displayDuration: 8,
@@ -184,12 +190,13 @@ export const EnhancedTicker: React.FC<EnhancedTickerProps> = ({
         createdAt: new Date(Date.now() - 5400000),
       },
 
-      // Social Messages  
+      // Social Messages
       {
         id: "social_001",
         type: "social",
         content: "Follow us!",
-        displayText: "📱 Follow @CoinKrazy on all social platforms for exclusive bonuses and giveaways! 📱",
+        displayText:
+          "📱 Follow @CoinKrazy on all social platforms for exclusive bonuses and giveaways! 📱",
         priority: "medium",
         isActive: true,
         displayDuration: 8,
@@ -202,7 +209,8 @@ export const EnhancedTicker: React.FC<EnhancedTickerProps> = ({
         id: "social_002",
         type: "social",
         content: "Community Milestone!",
-        displayText: "🎉 We just reached 100K players! Thank you for being part of the CoinKrazy family! 🎉",
+        displayText:
+          "🎉 We just reached 100K players! Thank you for being part of the CoinKrazy family! 🎉",
         priority: "high",
         isActive: true,
         displayDuration: 10,
@@ -215,7 +223,8 @@ export const EnhancedTicker: React.FC<EnhancedTickerProps> = ({
         id: "jackpot_001",
         type: "jackpot",
         content: "Progressive Jackpot Alert",
-        displayText: "💰 MEGA JACKPOT now at $125,000! Play Mega Fortune for your chance to win BIG! 💰",
+        displayText:
+          "💰 MEGA JACKPOT now at $125,000! Play Mega Fortune for your chance to win BIG! 💰",
         priority: "high",
         isActive: true,
         displayDuration: 10,
@@ -229,7 +238,8 @@ export const EnhancedTicker: React.FC<EnhancedTickerProps> = ({
         id: "jackpot_002",
         type: "jackpot",
         content: "Daily Must Drop!",
-        displayText: "🎯 DAILY MUST DROP: $45,000 SC must be won before midnight! Don't miss out! 🎯",
+        displayText:
+          "🎯 DAILY MUST DROP: $45,000 SC must be won before midnight! Don't miss out! 🎯",
         priority: "urgent",
         isActive: true,
         displayDuration: 12,
@@ -244,7 +254,8 @@ export const EnhancedTicker: React.FC<EnhancedTickerProps> = ({
         id: "tournament_001",
         type: "tournament",
         content: "Tournament Alert!",
-        displayText: "🏆 TOURNAMENT: Weekly Slots Championship starts in 2 hours! $50,000 SC prize pool! 🏆",
+        displayText:
+          "🏆 TOURNAMENT: Weekly Slots Championship starts in 2 hours! $50,000 SC prize pool! 🏆",
         priority: "high",
         isActive: true,
         displayDuration: 10,
@@ -257,7 +268,8 @@ export const EnhancedTicker: React.FC<EnhancedTickerProps> = ({
         id: "news_001",
         type: "news",
         content: "Daily Bonus Reminder",
-        displayText: "🎁 Don't forget your FREE daily bonus! Login now to claim your coins! 🎁",
+        displayText:
+          "🎁 Don't forget your FREE daily bonus! Login now to claim your coins! 🎁",
         priority: "medium",
         isActive: true,
         displayDuration: 8,
@@ -267,21 +279,29 @@ export const EnhancedTicker: React.FC<EnhancedTickerProps> = ({
     ];
 
     // Filter messages based on ticker type
-    let filteredMessages = allMessages.filter(msg => msg.isActive);
-    
+    let filteredMessages = allMessages.filter((msg) => msg.isActive);
+
     if (tickerType !== "all") {
       switch (tickerType) {
         case "winners":
-          filteredMessages = filteredMessages.filter(msg => msg.type === "winner");
+          filteredMessages = filteredMessages.filter(
+            (msg) => msg.type === "winner",
+          );
           break;
         case "promotions":
-          filteredMessages = filteredMessages.filter(msg => msg.type === "promotion");
+          filteredMessages = filteredMessages.filter(
+            (msg) => msg.type === "promotion",
+          );
           break;
         case "social":
-          filteredMessages = filteredMessages.filter(msg => msg.type === "social");
+          filteredMessages = filteredMessages.filter(
+            (msg) => msg.type === "social",
+          );
           break;
         case "jackpots":
-          filteredMessages = filteredMessages.filter(msg => msg.type === "jackpot" || msg.type === "tournament");
+          filteredMessages = filteredMessages.filter(
+            (msg) => msg.type === "jackpot" || msg.type === "tournament",
+          );
           break;
       }
     }
@@ -365,9 +385,9 @@ export const EnhancedTicker: React.FC<EnhancedTickerProps> = ({
       {/* Ticker Bar */}
       <div
         className={`relative bg-gradient-to-r ${getTickerTypeColor()} border-y border-gray-600 shadow-lg`}
-        style={{ 
+        style={{
           backgroundColor: settings.backgroundColor,
-          fontSize: `${settings.fontSize}px`
+          fontSize: `${settings.fontSize}px`,
         }}
       >
         {/* Ticker Type Label */}
@@ -393,7 +413,10 @@ export const EnhancedTicker: React.FC<EnhancedTickerProps> = ({
               className="absolute inset-y-0 flex items-center whitespace-nowrap"
               style={{ color: settings.textColor }}
               onAnimationStart={() => {
-                if (currentMessage.priority === "urgent" || currentMessage.priority === "high") {
+                if (
+                  currentMessage.priority === "urgent" ||
+                  currentMessage.priority === "high"
+                ) {
                   playNotificationSound();
                 }
               }}
@@ -436,7 +459,8 @@ export const EnhancedTicker: React.FC<EnhancedTickerProps> = ({
         </div>
 
         {/* Priority Indicator */}
-        {(currentMessage.priority === "urgent" || currentMessage.priority === "high") && (
+        {(currentMessage.priority === "urgent" ||
+          currentMessage.priority === "high") && (
           <div className="absolute top-0 left-24 right-16 h-1 bg-gradient-to-r from-red-500 to-yellow-500 animate-pulse" />
         )}
 
@@ -455,11 +479,7 @@ export const EnhancedTicker: React.FC<EnhancedTickerProps> = ({
       </div>
 
       {/* Sound Effect */}
-      <audio
-        ref={audioRef}
-        preload="auto"
-        src="/notification-sound.mp3"
-      />
+      <audio ref={audioRef} preload="auto" src="/notification-sound.mp3" />
 
       {/* Restore Button */}
       {!isVisible && (
@@ -467,7 +487,7 @@ export const EnhancedTicker: React.FC<EnhancedTickerProps> = ({
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           onClick={() => setIsVisible(true)}
-          className={`fixed ${position === 'top' ? 'top-16' : 'bottom-4'} right-4 bg-gradient-to-r ${getTickerTypeColor()} text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg hover:shadow-xl transition-all z-50`}
+          className={`fixed ${position === "top" ? "top-16" : "bottom-4"} right-4 bg-gradient-to-r ${getTickerTypeColor()} text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg hover:shadow-xl transition-all z-50`}
         >
           Show {getTickerTypeLabel()}
         </motion.button>
@@ -477,7 +497,9 @@ export const EnhancedTicker: React.FC<EnhancedTickerProps> = ({
 };
 
 // Multi-Ticker Component for Header
-export const MultiTicker: React.FC<{ className?: string }> = ({ className = "" }) => {
+export const MultiTicker: React.FC<{ className?: string }> = ({
+  className = "",
+}) => {
   const [activeTickers, setActiveTickers] = useState([
     { type: "winners" as const, visible: true },
     { type: "promotions" as const, visible: true },
@@ -490,7 +512,7 @@ export const MultiTicker: React.FC<{ className?: string }> = ({ className = "" }
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTickerIndex((prev) => {
-        const visibleTickers = activeTickers.filter(t => t.visible);
+        const visibleTickers = activeTickers.filter((t) => t.visible);
         return (prev + 1) % visibleTickers.length;
       });
     }, 15000); // Switch ticker every 15 seconds
@@ -498,19 +520,16 @@ export const MultiTicker: React.FC<{ className?: string }> = ({ className = "" }
     return () => clearInterval(interval);
   }, [activeTickers]);
 
-  const visibleTickers = activeTickers.filter(t => t.visible);
-  
+  const visibleTickers = activeTickers.filter((t) => t.visible);
+
   if (visibleTickers.length === 0) return null;
 
   const currentTicker = visibleTickers[currentTickerIndex];
 
   return (
     <div className={`w-full ${className}`}>
-      <EnhancedTicker 
-        tickerType={currentTicker.type}
-        position="top"
-      />
-      
+      <EnhancedTicker tickerType={currentTicker.type} position="top" />
+
       {/* Ticker Navigation Dots */}
       <div className="flex justify-center gap-1 py-1 bg-gray-900/50">
         {visibleTickers.map((ticker, index) => (
@@ -518,8 +537,8 @@ export const MultiTicker: React.FC<{ className?: string }> = ({ className = "" }
             key={ticker.type}
             onClick={() => setCurrentTickerIndex(index)}
             className={`w-2 h-2 rounded-full transition-all ${
-              index === currentTickerIndex 
-                ? "bg-gold scale-125" 
+              index === currentTickerIndex
+                ? "bg-gold scale-125"
                 : "bg-gray-600 hover:bg-gray-500"
             }`}
             title={ticker.type}

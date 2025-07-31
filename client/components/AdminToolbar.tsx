@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Switch } from "./ui/switch";
@@ -19,12 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "./ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { useAuth } from "./AuthContext";
 import {
   Settings,
@@ -123,26 +113,31 @@ interface SitePage {
   createdBy: string;
 }
 
-export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) => {
+export const AdminToolbar: React.FC<AdminToolbarProps> = ({
+  className = "",
+}) => {
   const { user } = useAuth();
   const [isVisible, setIsVisible] = useState(true);
-  const [activePanel, setActivePanel] = useState<"chat" | "editor" | "cms" | "aitools" | "analytics" | "users" | null>(null);
+  const [activePanel, setActivePanel] = useState<
+    "chat" | "editor" | "cms" | "aitools" | "analytics" | "users" | null
+  >(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
-  
+
   // AI Chat State
   const [aiMessages, setAiMessages] = useState<AIMessage[]>([
     {
       id: "welcome",
       type: "ai",
-      content: "Hello! I'm JoseyAI, your CoinKrazy admin assistant. I can help you with site management, content creation, user support, and analytics. What would you like to know?",
+      content:
+        "Hello! I'm JoseyAI, your CoinKrazy admin assistant. I can help you with site management, content creation, user support, and analytics. What would you like to know?",
       timestamp: new Date(),
       read: true,
     },
   ]);
   const [chatMessage, setChatMessage] = useState("");
   const [isChatMinimized, setIsChatMinimized] = useState(false);
-  
+
   // CMS State
   const [sitePages, setSitePages] = useState<SitePage[]>([
     {
@@ -173,17 +168,23 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
       createdBy: "admin",
     },
   ]);
-  
+
   const [currentPage, setCurrentPage] = useState<SitePage | null>(null);
   const [showNewPageModal, setShowNewPageModal] = useState(false);
-  const [deviceView, setDeviceView] = useState<"desktop" | "tablet" | "mobile">("desktop");
+  const [deviceView, setDeviceView] = useState<"desktop" | "tablet" | "mobile">(
+    "desktop",
+  );
   const [isPublishing, setIsPublishing] = useState(false);
-  const [publishStatus, setPublishStatus] = useState<"idle" | "publishing" | "success" | "error">("idle");
+  const [publishStatus, setPublishStatus] = useState<
+    "idle" | "publishing" | "success" | "error"
+  >("idle");
   const [aiImagePrompt, setAiImagePrompt] = useState("");
   const [aiVideoPrompt, setAiVideoPrompt] = useState("");
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
-  const [generatedAssets, setGeneratedAssets] = useState<Array<{id: string, type: 'image' | 'video', url: string, prompt: string}>>([]);
+  const [generatedAssets, setGeneratedAssets] = useState<
+    Array<{ id: string; type: "image" | "video"; url: string; prompt: string }>
+  >([]);
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -203,7 +204,7 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
       read: true,
     };
 
-    setAiMessages(prev => [...prev, userMessage]);
+    setAiMessages((prev) => [...prev, userMessage]);
     setChatMessage("");
 
     // Simulate AI response
@@ -215,27 +216,48 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
         timestamp: new Date(),
         read: false,
       };
-      setAiMessages(prev => [...prev, aiResponse]);
+      setAiMessages((prev) => [...prev, aiResponse]);
     }, 1000);
   };
 
   const generateAIResponse = (message: string): string => {
     const responses = {
-      analytics: "I can help you analyze your casino performance. Current stats show 2,847 active users, $145,672 in total deposits this month, and a 96.8% payment success rate. Would you like me to dive deeper into any specific metrics?",
-      users: "Your user management system shows 15,473 total users with 156 pending KYC verifications. I can help you process these or check for any flagged accounts. What specific user management task do you need assistance with?",
-      payments: "Payment systems are running smoothly with PayPal, Stripe, and Google Pay all active. Recent transaction volume is up 12% from last week. Need me to check any specific payment issues or process any pending withdrawals?",
-      content: "I can help you create and manage content across your site. Would you like me to generate new slot game descriptions, update promotional banners, or help with SEO optimization for your pages?",
-      default: "I'm here to help with any admin tasks! I can assist with user management, payment processing, content creation, analytics review, or technical support. Just let me know what you need help with.",
+      analytics:
+        "I can help you analyze your casino performance. Current stats show 2,847 active users, $145,672 in total deposits this month, and a 96.8% payment success rate. Would you like me to dive deeper into any specific metrics?",
+      users:
+        "Your user management system shows 15,473 total users with 156 pending KYC verifications. I can help you process these or check for any flagged accounts. What specific user management task do you need assistance with?",
+      payments:
+        "Payment systems are running smoothly with PayPal, Stripe, and Google Pay all active. Recent transaction volume is up 12% from last week. Need me to check any specific payment issues or process any pending withdrawals?",
+      content:
+        "I can help you create and manage content across your site. Would you like me to generate new slot game descriptions, update promotional banners, or help with SEO optimization for your pages?",
+      default:
+        "I'm here to help with any admin tasks! I can assist with user management, payment processing, content creation, analytics review, or technical support. Just let me know what you need help with.",
     };
 
     const lowerMessage = message.toLowerCase();
-    if (lowerMessage.includes("analytic") || lowerMessage.includes("stats") || lowerMessage.includes("data")) {
+    if (
+      lowerMessage.includes("analytic") ||
+      lowerMessage.includes("stats") ||
+      lowerMessage.includes("data")
+    ) {
       return responses.analytics;
-    } else if (lowerMessage.includes("user") || lowerMessage.includes("player") || lowerMessage.includes("kyc")) {
+    } else if (
+      lowerMessage.includes("user") ||
+      lowerMessage.includes("player") ||
+      lowerMessage.includes("kyc")
+    ) {
       return responses.users;
-    } else if (lowerMessage.includes("payment") || lowerMessage.includes("transaction") || lowerMessage.includes("deposit")) {
+    } else if (
+      lowerMessage.includes("payment") ||
+      lowerMessage.includes("transaction") ||
+      lowerMessage.includes("deposit")
+    ) {
       return responses.payments;
-    } else if (lowerMessage.includes("content") || lowerMessage.includes("page") || lowerMessage.includes("edit")) {
+    } else if (
+      lowerMessage.includes("content") ||
+      lowerMessage.includes("page") ||
+      lowerMessage.includes("edit")
+    ) {
       return responses.content;
     } else {
       return responses.default;
@@ -243,14 +265,16 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
   };
 
   const markAllAsRead = () => {
-    setAiMessages(prev => prev.map(msg => ({ ...msg, read: true })));
+    setAiMessages((prev) => prev.map((msg) => ({ ...msg, read: true })));
   };
 
   const markAllAsUnread = () => {
-    setAiMessages(prev => prev.map(msg => ({ ...msg, read: false })));
+    setAiMessages((prev) => prev.map((msg) => ({ ...msg, read: false })));
   };
 
-  const unreadCount = aiMessages.filter(msg => !msg.read && msg.type === "ai").length;
+  const unreadCount = aiMessages.filter(
+    (msg) => !msg.read && msg.type === "ai",
+  ).length;
 
   const handleElementSelect = (elementId: string) => {
     setSelectedElement(elementId);
@@ -266,7 +290,7 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
       lastModified: new Date(),
       createdBy: user.username,
     };
-    setSitePages(prev => [...prev, newPage]);
+    setSitePages((prev) => [...prev, newPage]);
     setCurrentPage(newPage);
     setShowNewPageModal(false);
   };
@@ -277,7 +301,7 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
 
     try {
       // Simulate GitHub publish API call
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, 3000));
       setPublishStatus("success");
 
       // Reset status after 3 seconds
@@ -300,16 +324,16 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
     setIsGeneratingImage(true);
     try {
       // Simulate AI image generation
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      await new Promise((resolve) => setTimeout(resolve, 5000));
 
       const newImage = {
         id: `img_${Date.now()}`,
-        type: 'image' as const,
+        type: "image" as const,
         url: `https://picsum.photos/800/600?random=${Date.now()}`,
-        prompt: aiImagePrompt
+        prompt: aiImagePrompt,
       };
 
-      setGeneratedAssets(prev => [newImage, ...prev]);
+      setGeneratedAssets((prev) => [newImage, ...prev]);
       setAiImagePrompt("");
     } finally {
       setIsGeneratingImage(false);
@@ -322,16 +346,16 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
     setIsGeneratingVideo(true);
     try {
       // Simulate AI video generation
-      await new Promise(resolve => setTimeout(resolve, 8000));
+      await new Promise((resolve) => setTimeout(resolve, 8000));
 
       const newVideo = {
         id: `vid_${Date.now()}`,
-        type: 'video' as const,
+        type: "video" as const,
         url: `https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4`,
-        prompt: aiVideoPrompt
+        prompt: aiVideoPrompt,
       };
 
-      setGeneratedAssets(prev => [newVideo, ...prev]);
+      setGeneratedAssets((prev) => [newVideo, ...prev]);
       setAiVideoPrompt("");
     } finally {
       setIsGeneratingVideo(false);
@@ -340,19 +364,27 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
 
   const getPublishButtonText = () => {
     switch (publishStatus) {
-      case "publishing": return "Publishing...";
-      case "success": return "Published!";
-      case "error": return "Error";
-      default: return "Publish to GitHub";
+      case "publishing":
+        return "Publishing...";
+      case "success":
+        return "Published!";
+      case "error":
+        return "Error";
+      default:
+        return "Publish to GitHub";
     }
   };
 
   const getPublishButtonClass = () => {
     switch (publishStatus) {
-      case "publishing": return "bg-blue-600 hover:bg-blue-700";
-      case "success": return "bg-green-600 hover:bg-green-700";
-      case "error": return "bg-red-600 hover:bg-red-700";
-      default: return "bg-purple-600 hover:bg-purple-700";
+      case "publishing":
+        return "bg-blue-600 hover:bg-blue-700";
+      case "success":
+        return "bg-green-600 hover:bg-green-700";
+      case "error":
+        return "bg-red-600 hover:bg-red-700";
+      default:
+        return "bg-purple-600 hover:bg-purple-700";
     }
   };
 
@@ -368,18 +400,22 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
                 <span className="text-white font-bold">Admin Tools</span>
                 <Badge className="bg-yellow-600 text-black">LIVE</Badge>
               </div>
-              
+
               <div className="flex items-center gap-1">
                 <Button
                   size="sm"
                   variant={activePanel === "chat" ? "secondary" : "ghost"}
-                  onClick={() => setActivePanel(activePanel === "chat" ? null : "chat")}
+                  onClick={() =>
+                    setActivePanel(activePanel === "chat" ? null : "chat")
+                  }
                   className="text-white hover:bg-red-700"
                   title="AI Assistant Chat"
                 >
                   <MessageSquare className="w-4 h-4" />
                   {unreadCount > 0 && (
-                    <Badge className="ml-1 bg-blue-600 text-white text-xs">{unreadCount}</Badge>
+                    <Badge className="ml-1 bg-blue-600 text-white text-xs">
+                      {unreadCount}
+                    </Badge>
                   )}
                 </Button>
 
@@ -399,7 +435,9 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
                 <Button
                   size="sm"
                   variant={activePanel === "cms" ? "secondary" : "ghost"}
-                  onClick={() => setActivePanel(activePanel === "cms" ? null : "cms")}
+                  onClick={() =>
+                    setActivePanel(activePanel === "cms" ? null : "cms")
+                  }
                   className="text-white hover:bg-red-700"
                   title="CMS Pages Manager"
                 >
@@ -409,7 +447,9 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
                 <Button
                   size="sm"
                   variant={activePanel === "aitools" ? "secondary" : "ghost"}
-                  onClick={() => setActivePanel(activePanel === "aitools" ? null : "aitools")}
+                  onClick={() =>
+                    setActivePanel(activePanel === "aitools" ? null : "aitools")
+                  }
                   className="text-white hover:bg-red-700"
                   title="AI Content Generator"
                 >
@@ -419,7 +459,11 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
                 <Button
                   size="sm"
                   variant={activePanel === "analytics" ? "secondary" : "ghost"}
-                  onClick={() => setActivePanel(activePanel === "analytics" ? null : "analytics")}
+                  onClick={() =>
+                    setActivePanel(
+                      activePanel === "analytics" ? null : "analytics",
+                    )
+                  }
                   className="text-white hover:bg-red-700"
                   title="Analytics Dashboard"
                 >
@@ -429,7 +473,9 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
                 <Button
                   size="sm"
                   variant={activePanel === "users" ? "secondary" : "ghost"}
-                  onClick={() => setActivePanel(activePanel === "users" ? null : "users")}
+                  onClick={() =>
+                    setActivePanel(activePanel === "users" ? null : "users")
+                  }
                   className="text-white hover:bg-red-700"
                   title="User Management"
                 >
@@ -523,14 +569,18 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
                       onClick={() => setIsChatMinimized(!isChatMinimized)}
                       className="text-gray-400 hover:text-white"
                     >
-                      {isChatMinimized ? <Maximize2 className="w-4 h-4" /> : <Minimize2 className="w-4 h-4" />}
+                      {isChatMinimized ? (
+                        <Maximize2 className="w-4 h-4" />
+                      ) : (
+                        <Minimize2 className="w-4 h-4" />
+                      )}
                     </Button>
                   </div>
                 </div>
               </CardHeader>
               {!isChatMinimized && (
                 <CardContent className="space-y-4">
-                  <div 
+                  <div
                     ref={chatContainerRef}
                     className="h-64 overflow-y-auto space-y-2 bg-gray-800 rounded p-3"
                   >
@@ -561,9 +611,11 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
                       onChange={(e) => setChatMessage(e.target.value)}
                       placeholder="Ask me about analytics, users, payments..."
                       className="flex-1 bg-gray-800 border-gray-600 text-white"
-                      onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+                      onKeyPress={(e) =>
+                        e.key === "Enter" && handleSendMessage()
+                      }
                     />
-                    <Button 
+                    <Button
                       onClick={handleSendMessage}
                       className="bg-blue-600 hover:bg-blue-700"
                       disabled={!chatMessage.trim()}
@@ -573,7 +625,12 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
                   </div>
 
                   <div className="flex flex-wrap gap-1">
-                    {["Show user stats", "Payment summary", "Recent activity", "Site performance"].map((suggestion) => (
+                    {[
+                      "Show user stats",
+                      "Payment summary",
+                      "Recent activity",
+                      "Site performance",
+                    ].map((suggestion) => (
                       <Button
                         key={suggestion}
                         size="sm"
@@ -608,7 +665,9 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
                     <Edit className="w-5 h-5 text-green-400" />
                     Page Editor
                   </CardTitle>
-                  <Badge className="bg-green-600 text-white text-xs">LIVE EDIT</Badge>
+                  <Badge className="bg-green-600 text-white text-xs">
+                    LIVE EDIT
+                  </Badge>
                 </div>
                 <div className="text-xs text-gray-400">
                   Click any element on the page to edit instantly
@@ -623,58 +682,104 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
                   </TabsList>
 
                   <TabsContent value="elements" className="space-y-2">
-                    <div className="text-sm text-gray-400 mb-2">Add Elements</div>
+                    <div className="text-sm text-gray-400 mb-2">
+                      Add Elements
+                    </div>
                     <div className="grid grid-cols-2 gap-2">
-                      <Button size="sm" variant="outline" className="flex flex-col gap-1 h-auto py-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="flex flex-col gap-1 h-auto py-2"
+                      >
                         <Type className="w-4 h-4" />
                         <span className="text-xs">Text</span>
                       </Button>
-                      <Button size="sm" variant="outline" className="flex flex-col gap-1 h-auto py-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="flex flex-col gap-1 h-auto py-2"
+                      >
                         <ImageIcon className="w-4 h-4" />
                         <span className="text-xs">Image</span>
                       </Button>
-                      <Button size="sm" variant="outline" className="flex flex-col gap-1 h-auto py-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="flex flex-col gap-1 h-auto py-2"
+                      >
                         <Square className="w-4 h-4" />
                         <span className="text-xs">Button</span>
                       </Button>
-                      <Button size="sm" variant="outline" className="flex flex-col gap-1 h-auto py-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="flex flex-col gap-1 h-auto py-2"
+                      >
                         <Layout className="w-4 h-4" />
                         <span className="text-xs">Section</span>
                       </Button>
                     </div>
 
-                    <div className="text-sm text-gray-400 mb-2 mt-4">Text Formatting</div>
+                    <div className="text-sm text-gray-400 mb-2 mt-4">
+                      Text Formatting
+                    </div>
                     <div className="grid grid-cols-3 gap-1">
-                      <Button size="sm" variant="outline"><Bold className="w-4 h-4" /></Button>
-                      <Button size="sm" variant="outline"><Italic className="w-4 h-4" /></Button>
-                      <Button size="sm" variant="outline"><Underline className="w-4 h-4" /></Button>
-                      <Button size="sm" variant="outline"><AlignLeft className="w-4 h-4" /></Button>
-                      <Button size="sm" variant="outline"><AlignCenter className="w-4 h-4" /></Button>
-                      <Button size="sm" variant="outline"><AlignRight className="w-4 h-4" /></Button>
+                      <Button size="sm" variant="outline">
+                        <Bold className="w-4 h-4" />
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        <Italic className="w-4 h-4" />
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        <Underline className="w-4 h-4" />
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        <AlignLeft className="w-4 h-4" />
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        <AlignCenter className="w-4 h-4" />
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        <AlignRight className="w-4 h-4" />
+                      </Button>
                     </div>
                   </TabsContent>
 
                   <TabsContent value="styles" className="space-y-3">
                     {selectedElement ? (
                       <>
-                        <div className="text-sm text-gray-400">Element Styles</div>
+                        <div className="text-sm text-gray-400">
+                          Element Styles
+                        </div>
                         <div className="space-y-2">
                           <div>
-                            <Label className="text-white text-sm">Background Color</Label>
+                            <Label className="text-white text-sm">
+                              Background Color
+                            </Label>
                             <div className="flex gap-2 mt-1">
                               <Input type="color" className="w-16 h-8" />
-                              <Input placeholder="#ffffff" className="flex-1 h-8" />
+                              <Input
+                                placeholder="#ffffff"
+                                className="flex-1 h-8"
+                              />
                             </div>
                           </div>
                           <div>
-                            <Label className="text-white text-sm">Text Color</Label>
+                            <Label className="text-white text-sm">
+                              Text Color
+                            </Label>
                             <div className="flex gap-2 mt-1">
                               <Input type="color" className="w-16 h-8" />
-                              <Input placeholder="#000000" className="flex-1 h-8" />
+                              <Input
+                                placeholder="#000000"
+                                className="flex-1 h-8"
+                              />
                             </div>
                           </div>
                           <div>
-                            <Label className="text-white text-sm">Font Size</Label>
+                            <Label className="text-white text-sm">
+                              Font Size
+                            </Label>
                             <Select>
                               <SelectTrigger className="mt-1">
                                 <SelectValue placeholder="Select size" />
@@ -701,21 +806,27 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
                     <div className="flex gap-1">
                       <Button
                         size="sm"
-                        variant={deviceView === "desktop" ? "default" : "outline"}
+                        variant={
+                          deviceView === "desktop" ? "default" : "outline"
+                        }
                         onClick={() => setDeviceView("desktop")}
                       >
                         <Monitor className="w-4 h-4" />
                       </Button>
                       <Button
                         size="sm"
-                        variant={deviceView === "tablet" ? "default" : "outline"}
+                        variant={
+                          deviceView === "tablet" ? "default" : "outline"
+                        }
                         onClick={() => setDeviceView("tablet")}
                       >
                         <Tablet className="w-4 h-4" />
                       </Button>
                       <Button
                         size="sm"
-                        variant={deviceView === "mobile" ? "default" : "outline"}
+                        variant={
+                          deviceView === "mobile" ? "default" : "outline"
+                        }
                         onClick={() => setDeviceView("mobile")}
                       >
                         <Smartphone className="w-4 h-4" />
@@ -723,7 +834,10 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
                     </div>
 
                     <div className="space-y-2">
-                      <Button size="sm" className="w-full bg-green-600 hover:bg-green-700">
+                      <Button
+                        size="sm"
+                        className="w-full bg-green-600 hover:bg-green-700"
+                      >
                         <Save className="w-4 h-4 mr-2" />
                         Save Changes
                       </Button>
@@ -773,11 +887,15 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
                       className="flex items-center justify-between p-3 bg-gray-800 rounded-lg"
                     >
                       <div>
-                        <div className="text-white font-medium">{page.title}</div>
+                        <div className="text-white font-medium">
+                          {page.title}
+                        </div>
                         <div className="text-gray-400 text-sm">{page.slug}</div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Badge variant={page.isPublished ? "default" : "secondary"}>
+                        <Badge
+                          variant={page.isPublished ? "default" : "secondary"}
+                        >
                           {page.isPublished ? "Published" : "Draft"}
                         </Badge>
                         <Button
@@ -844,7 +962,9 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
 
                   <TabsContent value="images" className="space-y-4">
                     <div className="space-y-3">
-                      <Label className="text-white text-sm">Generate AI Image</Label>
+                      <Label className="text-white text-sm">
+                        Generate AI Image
+                      </Label>
                       <Textarea
                         value={aiImagePrompt}
                         onChange={(e) => setAiImagePrompt(e.target.value)}
@@ -873,7 +993,9 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
 
                   <TabsContent value="videos" className="space-y-4">
                     <div className="space-y-3">
-                      <Label className="text-white text-sm">Generate AI Video</Label>
+                      <Label className="text-white text-sm">
+                        Generate AI Video
+                      </Label>
                       <Textarea
                         value={aiVideoPrompt}
                         onChange={(e) => setAiVideoPrompt(e.target.value)}
@@ -904,20 +1026,29 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
                 {/* Generated Assets */}
                 {generatedAssets.length > 0 && (
                   <div className="border-t border-gray-700 pt-4">
-                    <div className="text-white font-medium mb-3">Recent Generations</div>
+                    <div className="text-white font-medium mb-3">
+                      Recent Generations
+                    </div>
                     <div className="space-y-2 max-h-48 overflow-y-auto">
                       {generatedAssets.slice(0, 5).map((asset) => (
-                        <div key={asset.id} className="flex items-center gap-3 p-2 bg-gray-800 rounded">
+                        <div
+                          key={asset.id}
+                          className="flex items-center gap-3 p-2 bg-gray-800 rounded"
+                        >
                           <div className="w-12 h-12 bg-gray-700 rounded flex items-center justify-center">
-                            {asset.type === 'image' ? (
+                            {asset.type === "image" ? (
                               <ImageIcon className="w-6 h-6 text-gray-400" />
                             ) : (
                               <Video className="w-6 h-6 text-gray-400" />
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-white text-sm truncate">{asset.prompt}</div>
-                            <div className="text-gray-400 text-xs">{asset.type}</div>
+                            <div className="text-white text-sm truncate">
+                              {asset.prompt}
+                            </div>
+                            <div className="text-gray-400 text-xs">
+                              {asset.type}
+                            </div>
                           </div>
                           <Button size="sm" variant="outline">
                             <Download className="w-4 h-4" />
@@ -974,7 +1105,10 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
                 </div>
 
                 <div className="space-y-2">
-                  <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
+                  <Button
+                    size="sm"
+                    className="w-full bg-blue-600 hover:bg-blue-700"
+                  >
                     <FileText className="w-4 h-4 mr-2" />
                     Generate Report
                   </Button>
@@ -1033,7 +1167,10 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
 
                 <div className="space-y-2">
                   <div className="text-sm text-gray-400">Quick Actions</div>
-                  <Button size="sm" className="w-full bg-green-600 hover:bg-green-700">
+                  <Button
+                    size="sm"
+                    className="w-full bg-green-600 hover:bg-green-700"
+                  >
                     <Shield className="w-4 h-4 mr-2" />
                     Process KYC Queue
                   </Button>
@@ -1048,11 +1185,19 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = "" }) =>
                 </div>
 
                 <div className="border-t border-gray-700 pt-3">
-                  <div className="text-sm text-gray-400 mb-2">Recent Activity</div>
+                  <div className="text-sm text-gray-400 mb-2">
+                    Recent Activity
+                  </div>
                   <div className="space-y-1 text-xs">
-                    <div className="text-gray-300">New user registration: player123</div>
-                    <div className="text-gray-300">KYC approved: highroller99</div>
-                    <div className="text-gray-300">Account suspended: spammer01</div>
+                    <div className="text-gray-300">
+                      New user registration: player123
+                    </div>
+                    <div className="text-gray-300">
+                      KYC approved: highroller99
+                    </div>
+                    <div className="text-gray-300">
+                      Account suspended: spammer01
+                    </div>
                   </div>
                 </div>
               </CardContent>

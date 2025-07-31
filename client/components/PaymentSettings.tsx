@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Switch } from "./ui/switch";
@@ -18,12 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "./ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { useAuth } from "./AuthContext";
 import {
   CreditCard,
@@ -107,12 +97,12 @@ export function PaymentSettings() {
       },
       fees: {
         percentage: 2.9,
-        fixed: 0.30,
+        fixed: 0.3,
       },
       limits: {
-        min: 1.00,
-        max: 10000.00,
-        daily: 25000.00,
+        min: 1.0,
+        max: 10000.0,
+        daily: 25000.0,
       },
       features: ["Instant Transfer", "Buyer Protection", "Mobile Optimized"],
       lastTest: new Date(),
@@ -131,14 +121,18 @@ export function PaymentSettings() {
       },
       fees: {
         percentage: 2.9,
-        fixed: 0.30,
+        fixed: 0.3,
       },
       limits: {
-        min: 0.50,
-        max: 999999.00,
-        daily: 100000.00,
+        min: 0.5,
+        max: 999999.0,
+        daily: 100000.0,
       },
-      features: ["Advanced Fraud Protection", "3D Secure", "International Cards"],
+      features: [
+        "Advanced Fraud Protection",
+        "3D Secure",
+        "International Cards",
+      ],
       lastTest: new Date(),
       testResult: "success",
     },
@@ -154,12 +148,12 @@ export function PaymentSettings() {
       },
       fees: {
         percentage: 2.2,
-        fixed: 0.00,
+        fixed: 0.0,
       },
       limits: {
-        min: 1.00,
-        max: 5000.00,
-        daily: 15000.00,
+        min: 1.0,
+        max: 5000.0,
+        daily: 15000.0,
       },
       features: ["One-Click Payments", "Biometric Auth", "Mobile First"],
       lastTest: new Date(),
@@ -177,12 +171,12 @@ export function PaymentSettings() {
       },
       fees: {
         percentage: 2.2,
-        fixed: 0.00,
+        fixed: 0.0,
       },
       limits: {
-        min: 1.00,
-        max: 5000.00,
-        daily: 15000.00,
+        min: 1.0,
+        max: 5000.0,
+        daily: 15000.0,
       },
       features: ["Touch ID", "Face ID", "iOS Integration"],
       lastTest: new Date(),
@@ -249,47 +243,48 @@ export function PaymentSettings() {
     ],
   });
 
-  const [editingProvider, setEditingProvider] = useState<PaymentProvider | null>(null);
+  const [editingProvider, setEditingProvider] =
+    useState<PaymentProvider | null>(null);
   const [isTesting, setIsTesting] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleProviderToggle = async (providerId: string, enabled: boolean) => {
-    setProviders(prev => 
-      prev.map(p => 
-        p.id === providerId 
+    setProviders((prev) =>
+      prev.map((p) =>
+        p.id === providerId
           ? { ...p, enabled, status: enabled ? "active" : "inactive" }
-          : p
-      )
+          : p,
+      ),
     );
   };
 
   const handleTestConnection = async (providerId: string) => {
     setIsTesting(providerId);
-    
+
     // Simulate API test
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setProviders(prev => 
-      prev.map(p => 
-        p.id === providerId 
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    setProviders((prev) =>
+      prev.map((p) =>
+        p.id === providerId
           ? { ...p, lastTest: new Date(), testResult: "success" }
-          : p
-      )
+          : p,
+      ),
     );
-    
+
     setIsTesting(null);
   };
 
   const handleSaveProvider = async (provider: PaymentProvider) => {
     setIsSaving(true);
-    
+
     // Simulate API save
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    setProviders(prev => 
-      prev.map(p => p.id === provider.id ? provider : p)
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    setProviders((prev) =>
+      prev.map((p) => (p.id === provider.id ? provider : p)),
     );
-    
+
     setEditingProvider(null);
     setIsSaving(false);
   };
@@ -382,15 +377,22 @@ export function PaymentSettings() {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="text-2xl">{getProviderIcon(provider.type)}</div>
+                      <div className="text-2xl">
+                        {getProviderIcon(provider.type)}
+                      </div>
                       <div>
                         <CardTitle className="text-white flex items-center gap-2">
                           {provider.name}
                           {getStatusIcon(provider.status)}
                         </CardTitle>
                         <div className="flex items-center gap-4 text-sm text-gray-400">
-                          <span>Fee: {provider.fees.percentage}% + ${provider.fees.fixed}</span>
-                          <Badge variant={provider.enabled ? "default" : "secondary"}>
+                          <span>
+                            Fee: {provider.fees.percentage}% + $
+                            {provider.fees.fixed}
+                          </span>
+                          <Badge
+                            variant={provider.enabled ? "default" : "secondary"}
+                          >
                             {provider.enabled ? "Enabled" : "Disabled"}
                           </Badge>
                         </div>
@@ -398,7 +400,9 @@ export function PaymentSettings() {
                     </div>
                     <Switch
                       checked={provider.enabled}
-                      onCheckedChange={(enabled) => handleProviderToggle(provider.id, enabled)}
+                      onCheckedChange={(enabled) =>
+                        handleProviderToggle(provider.id, enabled)
+                      }
                     />
                   </div>
                 </CardHeader>
@@ -406,15 +410,21 @@ export function PaymentSettings() {
                   <div className="grid grid-cols-3 gap-4 text-sm">
                     <div>
                       <div className="text-gray-400">Min Amount</div>
-                      <div className="text-white font-medium">${provider.limits.min}</div>
+                      <div className="text-white font-medium">
+                        ${provider.limits.min}
+                      </div>
                     </div>
                     <div>
                       <div className="text-gray-400">Max Amount</div>
-                      <div className="text-white font-medium">${provider.limits.max.toLocaleString()}</div>
+                      <div className="text-white font-medium">
+                        ${provider.limits.max.toLocaleString()}
+                      </div>
                     </div>
                     <div>
                       <div className="text-gray-400">Daily Limit</div>
-                      <div className="text-white font-medium">${provider.limits.daily.toLocaleString()}</div>
+                      <div className="text-white font-medium">
+                        ${provider.limits.daily.toLocaleString()}
+                      </div>
                     </div>
                   </div>
 
@@ -422,7 +432,11 @@ export function PaymentSettings() {
                     <div className="text-gray-400 text-sm mb-2">Features</div>
                     <div className="flex flex-wrap gap-1">
                       {provider.features.map((feature, index) => (
-                        <Badge key={index} variant="outline" className="text-xs">
+                        <Badge
+                          key={index}
+                          variant="outline"
+                          className="text-xs"
+                        >
                           {feature}
                         </Badge>
                       ))}
@@ -455,10 +469,13 @@ export function PaymentSettings() {
 
                   <div className="text-xs text-gray-500">
                     Last tested: {provider.lastTest.toLocaleDateString()}
-                    <Badge 
+                    <Badge
                       className={`ml-2 ${
-                        provider.testResult === "success" ? "bg-green-600" : 
-                        provider.testResult === "error" ? "bg-red-600" : "bg-gray-600"
+                        provider.testResult === "success"
+                          ? "bg-green-600"
+                          : provider.testResult === "error"
+                            ? "bg-red-600"
+                            : "bg-gray-600"
                       }`}
                     >
                       {provider.testResult}
@@ -478,13 +495,18 @@ export function PaymentSettings() {
             <CardContent>
               <div className="space-y-4">
                 {paymentStats.providerBreakdown.map((provider, index) => (
-                  <div key={index} className="flex items-center justify-between">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between"
+                  >
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
                         {provider.provider.charAt(0)}
                       </div>
                       <div>
-                        <div className="text-white font-medium">{provider.provider}</div>
+                        <div className="text-white font-medium">
+                          {provider.provider}
+                        </div>
                         <div className="text-sm text-gray-400">
                           {provider.transactions} transactions
                         </div>
@@ -511,21 +533,31 @@ export function PaymentSettings() {
             <CardContent>
               <div className="space-y-3">
                 {paymentStats.recentActivity.map((activity, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-3 bg-gray-700 rounded-lg"
+                  >
                     <div className="flex items-center gap-3">
                       <div className="text-sm">
-                        <div className="text-white font-medium">{activity.provider}</div>
+                        <div className="text-white font-medium">
+                          {activity.provider}
+                        </div>
                         <div className="text-gray-400">
                           {new Date(activity.date).toLocaleTimeString()}
                         </div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-white font-bold">${activity.amount}</div>
-                      <Badge 
+                      <div className="text-white font-bold">
+                        ${activity.amount}
+                      </div>
+                      <Badge
                         className={
-                          activity.status === "completed" ? "bg-green-600" :
-                          activity.status === "pending" ? "bg-yellow-600" : "bg-red-600"
+                          activity.status === "completed"
+                            ? "bg-green-600"
+                            : activity.status === "pending"
+                              ? "bg-yellow-600"
+                              : "bg-red-600"
                         }
                       >
                         {activity.status}
@@ -541,7 +573,9 @@ export function PaymentSettings() {
         <TabsContent value="settings" className="space-y-6">
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
-              <CardTitle className="text-white">Global Payment Settings</CardTitle>
+              <CardTitle className="text-white">
+                Global Payment Settings
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -556,13 +590,17 @@ export function PaymentSettings() {
                         <SelectItem value="USD">USD - US Dollar</SelectItem>
                         <SelectItem value="EUR">EUR - Euro</SelectItem>
                         <SelectItem value="GBP">GBP - British Pound</SelectItem>
-                        <SelectItem value="CAD">CAD - Canadian Dollar</SelectItem>
+                        <SelectItem value="CAD">
+                          CAD - Canadian Dollar
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div>
-                    <Label className="text-white">Auto Retry Failed Payments</Label>
+                    <Label className="text-white">
+                      Auto Retry Failed Payments
+                    </Label>
                     <div className="flex items-center space-x-2 mt-1">
                       <Switch defaultChecked />
                       <span className="text-sm text-gray-400">Enabled</span>
@@ -570,25 +608,46 @@ export function PaymentSettings() {
                   </div>
 
                   <div>
-                    <Label className="text-white">Payment Timeout (seconds)</Label>
+                    <Label className="text-white">
+                      Payment Timeout (seconds)
+                    </Label>
                     <Input type="number" defaultValue="300" className="mt-1" />
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <div>
-                    <Label className="text-white">Minimum Purchase Amount</Label>
-                    <Input type="number" step="0.01" defaultValue="1.00" className="mt-1" />
+                    <Label className="text-white">
+                      Minimum Purchase Amount
+                    </Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      defaultValue="1.00"
+                      className="mt-1"
+                    />
                   </div>
 
                   <div>
-                    <Label className="text-white">Maximum Purchase Amount</Label>
-                    <Input type="number" step="0.01" defaultValue="10000.00" className="mt-1" />
+                    <Label className="text-white">
+                      Maximum Purchase Amount
+                    </Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      defaultValue="10000.00"
+                      className="mt-1"
+                    />
                   </div>
 
                   <div>
                     <Label className="text-white">Daily Purchase Limit</Label>
-                    <Input type="number" step="0.01" defaultValue="25000.00" className="mt-1" />
+                    <Input
+                      type="number"
+                      step="0.01"
+                      defaultValue="25000.00"
+                      className="mt-1"
+                    />
                   </div>
                 </div>
               </div>
@@ -621,7 +680,9 @@ export function PaymentSettings() {
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <Label className="text-white">3D Secure Authentication</Label>
+                    <Label className="text-white">
+                      3D Secure Authentication
+                    </Label>
                     <Switch defaultChecked />
                   </div>
 
@@ -642,16 +703,16 @@ export function PaymentSettings() {
                 <div className="space-y-4">
                   <div>
                     <Label className="text-white">Webhook Endpoint</Label>
-                    <Input 
-                      defaultValue="https://api.coinkrazy.com/webhooks/payments" 
-                      className="mt-1" 
-                      readOnly 
+                    <Input
+                      defaultValue="https://api.coinkrazy.com/webhooks/payments"
+                      className="mt-1"
+                      readOnly
                     />
                   </div>
 
                   <div>
                     <Label className="text-white">IP Whitelist</Label>
-                    <Textarea 
+                    <Textarea
                       placeholder="Enter IP addresses (one per line)"
                       className="mt-1"
                       rows={3}
@@ -691,23 +752,21 @@ export function PaymentSettings() {
                   <>
                     <div>
                       <Label className="text-white">Client ID</Label>
-                      <Input 
-                        defaultValue={editingProvider.config.clientId} 
+                      <Input
+                        defaultValue={editingProvider.config.clientId}
                         className="mt-1"
                       />
                     </div>
                     <div>
                       <Label className="text-white">Client Secret</Label>
-                      <Input 
-                        type="password" 
-                        defaultValue="••••••••••••••••••••••••••••••••" 
+                      <Input
+                        type="password"
+                        defaultValue="••••••••••••••••••••••••••••••••"
                         className="mt-1"
                       />
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Switch 
-                        checked={editingProvider.config.sandbox} 
-                      />
+                      <Switch checked={editingProvider.config.sandbox} />
                       <Label className="text-white">Sandbox Mode</Label>
                     </div>
                   </>
@@ -717,16 +776,16 @@ export function PaymentSettings() {
                   <>
                     <div>
                       <Label className="text-white">Publishable Key</Label>
-                      <Input 
-                        defaultValue={editingProvider.config.publishableKey} 
+                      <Input
+                        defaultValue={editingProvider.config.publishableKey}
                         className="mt-1"
                       />
                     </div>
                     <div>
                       <Label className="text-white">Secret Key</Label>
-                      <Input 
-                        type="password" 
-                        defaultValue="••••••••••••••••••••••••••••••••" 
+                      <Input
+                        type="password"
+                        defaultValue="••••••••••••••••••••••••••••••••"
                         className="mt-1"
                       />
                     </div>
@@ -737,8 +796,8 @@ export function PaymentSettings() {
                   <>
                     <div>
                       <Label className="text-white">Merchant ID</Label>
-                      <Input 
-                        defaultValue={editingProvider.config.merchantId} 
+                      <Input
+                        defaultValue={editingProvider.config.merchantId}
                         className="mt-1"
                       />
                     </div>
@@ -760,19 +819,19 @@ export function PaymentSettings() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label className="text-white">Fee Percentage</Label>
-                    <Input 
-                      type="number" 
-                      step="0.1" 
-                      defaultValue={editingProvider.fees.percentage} 
+                    <Input
+                      type="number"
+                      step="0.1"
+                      defaultValue={editingProvider.fees.percentage}
                       className="mt-1"
                     />
                   </div>
                   <div>
                     <Label className="text-white">Fixed Fee</Label>
-                    <Input 
-                      type="number" 
-                      step="0.01" 
-                      defaultValue={editingProvider.fees.fixed} 
+                    <Input
+                      type="number"
+                      step="0.01"
+                      defaultValue={editingProvider.fees.fixed}
                       className="mt-1"
                     />
                   </div>
@@ -781,28 +840,28 @@ export function PaymentSettings() {
                 <div className="grid grid-cols-3 gap-4">
                   <div>
                     <Label className="text-white">Min Amount</Label>
-                    <Input 
-                      type="number" 
-                      step="0.01" 
-                      defaultValue={editingProvider.limits.min} 
+                    <Input
+                      type="number"
+                      step="0.01"
+                      defaultValue={editingProvider.limits.min}
                       className="mt-1"
                     />
                   </div>
                   <div>
                     <Label className="text-white">Max Amount</Label>
-                    <Input 
-                      type="number" 
-                      step="0.01" 
-                      defaultValue={editingProvider.limits.max} 
+                    <Input
+                      type="number"
+                      step="0.01"
+                      defaultValue={editingProvider.limits.max}
                       className="mt-1"
                     />
                   </div>
                   <div>
                     <Label className="text-white">Daily Limit</Label>
-                    <Input 
-                      type="number" 
-                      step="0.01" 
-                      defaultValue={editingProvider.limits.daily} 
+                    <Input
+                      type="number"
+                      step="0.01"
+                      defaultValue={editingProvider.limits.daily}
                       className="mt-1"
                     />
                   </div>

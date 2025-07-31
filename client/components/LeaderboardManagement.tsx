@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Switch } from "./ui/switch";
@@ -17,12 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "./ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { useAuth } from "./AuthContext";
 import {
   Trophy,
@@ -52,7 +42,14 @@ interface LeaderboardCategory {
   id: string;
   name: string;
   description: string;
-  type: "total_winnings" | "total_wagered" | "biggest_win" | "games_played" | "win_streak" | "daily_active" | "vip_points";
+  type:
+    | "total_winnings"
+    | "total_wagered"
+    | "biggest_win"
+    | "games_played"
+    | "win_streak"
+    | "daily_active"
+    | "vip_points";
   isActive: boolean;
   resetPeriod: "daily" | "weekly" | "monthly" | "never";
   maxParticipants: number;
@@ -131,11 +128,36 @@ export function LeaderboardManagement() {
       resetPeriod: "weekly",
       maxParticipants: 100,
       rewards: [
-        { position: 1, type: "sc", amount: 5, description: "5 SC for 1st place" },
-        { position: 2, type: "sc", amount: 3, description: "3 SC for 2nd place" },
-        { position: 3, type: "sc", amount: 2, description: "2 SC for 3rd place" },
-        { position: 4, type: "sc", amount: 1, description: "1 SC for 4th-5th place" },
-        { position: 5, type: "sc", amount: 1, description: "1 SC for 4th-5th place" },
+        {
+          position: 1,
+          type: "sc",
+          amount: 5,
+          description: "5 SC for 1st place",
+        },
+        {
+          position: 2,
+          type: "sc",
+          amount: 3,
+          description: "3 SC for 2nd place",
+        },
+        {
+          position: 3,
+          type: "sc",
+          amount: 2,
+          description: "2 SC for 3rd place",
+        },
+        {
+          position: 4,
+          type: "sc",
+          amount: 1,
+          description: "1 SC for 4th-5th place",
+        },
+        {
+          position: 5,
+          type: "sc",
+          amount: 1,
+          description: "1 SC for 4th-5th place",
+        },
       ],
       qualificationCriteria: {
         minLevel: 5,
@@ -150,11 +172,11 @@ export function LeaderboardManagement() {
           userId: "user1",
           username: "SlotMaster97",
           position: 1,
-          score: 2847.50,
+          score: 2847.5,
           previousPosition: 2,
           trend: "up",
           vipLevel: "Gold",
-          totalWagered: 5420.00,
+          totalWagered: 5420.0,
           gamesPlayed: 342,
           lastActivity: new Date(),
           qualified: true,
@@ -178,11 +200,11 @@ export function LeaderboardManagement() {
           userId: "user3",
           username: "CasinoKing23",
           position: 3,
-          score: 1892.30,
+          score: 1892.3,
           previousPosition: 4,
           trend: "up",
           vipLevel: "Platinum",
-          totalWagered: 6721.40,
+          totalWagered: 6721.4,
           gamesPlayed: 456,
           lastActivity: new Date(),
           qualified: true,
@@ -192,10 +214,10 @@ export function LeaderboardManagement() {
           userId: "user4",
           username: "WinStreak99",
           position: 4,
-          score: 1654.80,
+          score: 1654.8,
           trend: "new",
           vipLevel: "Bronze",
-          totalWagered: 3245.60,
+          totalWagered: 3245.6,
           gamesPlayed: 201,
           lastActivity: new Date(),
           qualified: true,
@@ -209,7 +231,7 @@ export function LeaderboardManagement() {
           previousPosition: 3,
           trend: "down",
           vipLevel: "Diamond",
-          totalWagered: 8934.20,
+          totalWagered: 8934.2,
           gamesPlayed: 612,
           lastActivity: new Date(),
           qualified: true,
@@ -251,9 +273,24 @@ export function LeaderboardManagement() {
       resetPeriod: "weekly",
       maxParticipants: 50,
       rewards: [
-        { position: 1, type: "sc", amount: 5, description: "5 SC for 1st place" },
-        { position: 2, type: "sc", amount: 3, description: "3 SC for 2nd place" },
-        { position: 3, type: "sc", amount: 2, description: "2 SC for 3rd place" },
+        {
+          position: 1,
+          type: "sc",
+          amount: 5,
+          description: "5 SC for 1st place",
+        },
+        {
+          position: 2,
+          type: "sc",
+          amount: 3,
+          description: "3 SC for 2nd place",
+        },
+        {
+          position: 3,
+          type: "sc",
+          amount: 2,
+          description: "2 SC for 3rd place",
+        },
       ],
       qualificationCriteria: {
         minLevel: 10,
@@ -281,11 +318,11 @@ export function LeaderboardManagement() {
           userId: "user7",
           username: "BigSpender",
           position: 2,
-          score: 12856.30,
+          score: 12856.3,
           previousPosition: 3,
           trend: "up",
           vipLevel: "Platinum",
-          totalWagered: 12856.30,
+          totalWagered: 12856.3,
           gamesPlayed: 654,
           lastActivity: new Date(),
           qualified: true,
@@ -295,11 +332,11 @@ export function LeaderboardManagement() {
           userId: "user8",
           username: "VIPPlayer1",
           position: 3,
-          score: 11234.90,
+          score: 11234.9,
           previousPosition: 2,
           trend: "down",
           vipLevel: "Diamond",
-          totalWagered: 11234.90,
+          totalWagered: 11234.9,
           gamesPlayed: 723,
           lastActivity: new Date(),
           qualified: true,
@@ -316,9 +353,24 @@ export function LeaderboardManagement() {
       resetPeriod: "weekly",
       maxParticipants: 25,
       rewards: [
-        { position: 1, type: "sc", amount: 5, description: "5 SC for 1st place" },
-        { position: 2, type: "sc", amount: 3, description: "3 SC for 2nd place" },
-        { position: 3, type: "sc", amount: 2, description: "2 SC for 3rd place" },
+        {
+          position: 1,
+          type: "sc",
+          amount: 5,
+          description: "5 SC for 1st place",
+        },
+        {
+          position: 2,
+          type: "sc",
+          amount: 3,
+          description: "3 SC for 2nd place",
+        },
+        {
+          position: 3,
+          type: "sc",
+          amount: 2,
+          description: "2 SC for 3rd place",
+        },
       ],
       qualificationCriteria: {
         minLevel: 3,
@@ -333,10 +385,10 @@ export function LeaderboardManagement() {
           userId: "user9",
           username: "MegaWinner",
           position: 1,
-          score: 8945.60,
+          score: 8945.6,
           trend: "new",
           vipLevel: "Gold",
-          totalWagered: 2456.80,
+          totalWagered: 2456.8,
           gamesPlayed: 156,
           lastActivity: new Date(),
           qualified: true,
@@ -363,7 +415,7 @@ export function LeaderboardManagement() {
           score: 4567.89,
           trend: "new",
           vipLevel: "Bronze",
-          totalWagered: 1245.60,
+          totalWagered: 1245.6,
           gamesPlayed: 76,
           lastActivity: new Date(),
           qualified: true,
@@ -380,9 +432,24 @@ export function LeaderboardManagement() {
       resetPeriod: "weekly",
       maxParticipants: 75,
       rewards: [
-        { position: 1, type: "sc", amount: 5, description: "5 SC for 1st place" },
-        { position: 2, type: "sc", amount: 3, description: "3 SC for 2nd place" },
-        { position: 3, type: "sc", amount: 2, description: "2 SC for 3rd place" },
+        {
+          position: 1,
+          type: "sc",
+          amount: 5,
+          description: "5 SC for 1st place",
+        },
+        {
+          position: 2,
+          type: "sc",
+          amount: 3,
+          description: "3 SC for 2nd place",
+        },
+        {
+          position: 3,
+          type: "sc",
+          amount: 2,
+          description: "2 SC for 3rd place",
+        },
       ],
       qualificationCriteria: {
         minLevel: 1,
@@ -443,7 +510,7 @@ export function LeaderboardManagement() {
     weeklyRewardsPaid: 45.5,
     monthlyRewardsPaid: 189.75,
     pendingApprovals: 12,
-    totalSCPaid: 2456.80,
+    totalSCPaid: 2456.8,
     averageScore: 1567.89,
     topCategories: [
       { category: "Biggest Winners", participants: 342 },
@@ -453,20 +520,25 @@ export function LeaderboardManagement() {
     ],
   });
 
-  const [selectedCategory, setSelectedCategory] = useState<LeaderboardCategory | null>(null);
+  const [selectedCategory, setSelectedCategory] =
+    useState<LeaderboardCategory | null>(null);
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [isProcessingRewards, setIsProcessingRewards] = useState(false);
 
-  const handleApproveReward = async (rewardId: string, approved: boolean, notes?: string) => {
+  const handleApproveReward = async (
+    rewardId: string,
+    approved: boolean,
+    notes?: string,
+  ) => {
     setIsProcessingRewards(true);
-    
+
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    setCategories(prev => 
-      prev.map(category => ({
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    setCategories((prev) =>
+      prev.map((category) => ({
         ...category,
-        pendingRewards: category.pendingRewards.map(reward =>
+        pendingRewards: category.pendingRewards.map((reward) =>
           reward.id === rewardId
             ? {
                 ...reward,
@@ -475,37 +547,41 @@ export function LeaderboardManagement() {
                 notes,
                 paidAt: approved ? new Date() : undefined,
               }
-            : reward
+            : reward,
         ),
-      }))
+      })),
     );
-    
+
     if (approved) {
-      setStats(prev => ({
+      setStats((prev) => ({
         ...prev,
         pendingApprovals: prev.pendingApprovals - 1,
         weeklyRewardsPaid: prev.weeklyRewardsPaid + 5, // Assuming 5 SC reward
       }));
     }
-    
+
     setIsProcessingRewards(false);
   };
 
   const handleResetLeaderboard = async (categoryId: string) => {
-    if (!confirm("Are you sure you want to reset this leaderboard? This action cannot be undone.")) {
+    if (
+      !confirm(
+        "Are you sure you want to reset this leaderboard? This action cannot be undone.",
+      )
+    ) {
       return;
     }
 
-    setCategories(prev =>
-      prev.map(category =>
+    setCategories((prev) =>
+      prev.map((category) =>
         category.id === categoryId
           ? {
               ...category,
               currentLeaders: [],
               startDate: new Date(),
             }
-          : category
-      )
+          : category,
+      ),
     );
   };
 
@@ -615,19 +691,25 @@ export function LeaderboardManagement() {
                       <CardTitle className="text-white flex items-center gap-2">
                         <Trophy className="w-5 h-5 text-yellow-500" />
                         {category.name}
-                        <Badge variant={category.isActive ? "default" : "secondary"}>
+                        <Badge
+                          variant={category.isActive ? "default" : "secondary"}
+                        >
                           {category.isActive ? "Active" : "Inactive"}
                         </Badge>
                       </CardTitle>
-                      <p className="text-gray-400 text-sm">{category.description}</p>
+                      <p className="text-gray-400 text-sm">
+                        {category.description}
+                      </p>
                     </div>
                     <Switch
                       checked={category.isActive}
                       onCheckedChange={(checked) => {
-                        setCategories(prev =>
-                          prev.map(c => 
-                            c.id === category.id ? { ...c, isActive: checked } : c
-                          )
+                        setCategories((prev) =>
+                          prev.map((c) =>
+                            c.id === category.id
+                              ? { ...c, isActive: checked }
+                              : c,
+                          ),
                         );
                       }}
                     />
@@ -637,37 +719,59 @@ export function LeaderboardManagement() {
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <div className="text-gray-400">Reset Period</div>
-                      <div className="text-white font-medium capitalize">{category.resetPeriod}</div>
+                      <div className="text-white font-medium capitalize">
+                        {category.resetPeriod}
+                      </div>
                     </div>
                     <div>
                       <div className="text-gray-400">Participants</div>
-                      <div className="text-white font-medium">{category.currentLeaders.length}/{category.maxParticipants}</div>
+                      <div className="text-white font-medium">
+                        {category.currentLeaders.length}/
+                        {category.maxParticipants}
+                      </div>
                     </div>
                   </div>
 
                   <div>
-                    <div className="text-gray-400 text-sm mb-2">Top 3 Leaders</div>
+                    <div className="text-gray-400 text-sm mb-2">
+                      Top 3 Leaders
+                    </div>
                     <div className="space-y-2">
                       {category.currentLeaders.slice(0, 3).map((leader) => (
-                        <div key={leader.id} className="flex items-center justify-between p-2 bg-gray-700 rounded">
+                        <div
+                          key={leader.id}
+                          className="flex items-center justify-between p-2 bg-gray-700 rounded"
+                        >
                           <div className="flex items-center gap-3">
                             <div className="flex items-center gap-1">
                               {getPositionIcon(leader.position)}
-                              <span className="text-white font-bold">#{leader.position}</span>
+                              <span className="text-white font-bold">
+                                #{leader.position}
+                              </span>
                             </div>
                             <div>
-                              <div className="text-white font-medium">{leader.username}</div>
-                              <Badge className={`text-xs ${getVIPBadgeColor(leader.vipLevel)}`}>
+                              <div className="text-white font-medium">
+                                {leader.username}
+                              </div>
+                              <Badge
+                                className={`text-xs ${getVIPBadgeColor(leader.vipLevel)}`}
+                              >
                                 {leader.vipLevel}
                               </Badge>
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="text-white font-bold">{leader.score.toLocaleString()}</div>
+                            <div className="text-white font-bold">
+                              {leader.score.toLocaleString()}
+                            </div>
                             <div className="flex items-center gap-1">
                               {getTrendIcon(leader.trend)}
                               <span className="text-xs text-gray-400">
-                                {leader.trend === "new" ? "NEW" : leader.previousPosition ? `#${leader.previousPosition}` : ""}
+                                {leader.trend === "new"
+                                  ? "NEW"
+                                  : leader.previousPosition
+                                    ? `#${leader.previousPosition}`
+                                    : ""}
                               </span>
                             </div>
                           </div>
@@ -677,11 +781,18 @@ export function LeaderboardManagement() {
                   </div>
 
                   <div>
-                    <div className="text-gray-400 text-sm mb-2">Rewards (Top 5)</div>
+                    <div className="text-gray-400 text-sm mb-2">
+                      Rewards (Top 5)
+                    </div>
                     <div className="space-y-1">
                       {category.rewards.map((reward, index) => (
-                        <div key={index} className="flex items-center justify-between text-xs">
-                          <span className="text-gray-400">#{reward.position}</span>
+                        <div
+                          key={index}
+                          className="flex items-center justify-between text-xs"
+                        >
+                          <span className="text-gray-400">
+                            #{reward.position}
+                          </span>
                           <Badge className="bg-green-600">
                             {reward.amount} {reward.type.toUpperCase()}
                           </Badge>
@@ -713,7 +824,8 @@ export function LeaderboardManagement() {
                     <div className="p-2 bg-yellow-900 border border-yellow-700 rounded">
                       <div className="flex items-center gap-2 text-yellow-300 text-sm">
                         <AlertTriangle className="w-4 h-4" />
-                        {category.pendingRewards.length} pending reward{category.pendingRewards.length !== 1 ? 's' : ''}
+                        {category.pendingRewards.length} pending reward
+                        {category.pendingRewards.length !== 1 ? "s" : ""}
                       </div>
                     </div>
                   )}
@@ -732,60 +844,75 @@ export function LeaderboardManagement() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {categories.some(c => c.pendingRewards.length > 0) ? (
+              {categories.some((c) => c.pendingRewards.length > 0) ? (
                 <div className="space-y-4">
-                  {categories.flatMap(category => 
-                    category.pendingRewards.filter(r => r.status === "pending")
-                  ).map((reward) => (
-                    <div key={reward.id} className="p-4 bg-gray-700 rounded-lg">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          {getPositionIcon(reward.position)}
-                          <div>
-                            <div className="text-white font-medium">{reward.username}</div>
-                            <div className="text-gray-400 text-sm">
-                              {reward.category} - #{reward.position} place
+                  {categories
+                    .flatMap((category) =>
+                      category.pendingRewards.filter(
+                        (r) => r.status === "pending",
+                      ),
+                    )
+                    .map((reward) => (
+                      <div
+                        key={reward.id}
+                        className="p-4 bg-gray-700 rounded-lg"
+                      >
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            {getPositionIcon(reward.position)}
+                            <div>
+                              <div className="text-white font-medium">
+                                {reward.username}
+                              </div>
+                              <div className="text-gray-400 text-sm">
+                                {reward.category} - #{reward.position} place
+                              </div>
+                              <div className="text-gray-500 text-xs">
+                                Week ending:{" "}
+                                {reward.weekEnding.toLocaleDateString()}
+                              </div>
                             </div>
-                            <div className="text-gray-500 text-xs">
-                              Week ending: {reward.weekEnding.toLocaleDateString()}
+                          </div>
+                          <div className="text-right">
+                            <Badge className="bg-green-600 text-white font-bold">
+                              {reward.rewardAmount}{" "}
+                              {reward.rewardType.toUpperCase()}
+                            </Badge>
+                            <div className="text-gray-400 text-xs mt-1">
+                              Requested:{" "}
+                              {reward.requestedAt.toLocaleDateString()}
                             </div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <Badge className="bg-green-600 text-white font-bold">
-                            {reward.rewardAmount} {reward.rewardType.toUpperCase()}
-                          </Badge>
-                          <div className="text-gray-400 text-xs mt-1">
-                            Requested: {reward.requestedAt.toLocaleDateString()}
-                          </div>
-                        </div>
-                      </div>
 
-                      <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          className="bg-green-600 hover:bg-green-700"
-                          onClick={() => handleApproveReward(reward.id, true)}
-                          disabled={isProcessingRewards}
-                        >
-                          <CheckCircle className="w-4 h-4 mr-2" />
-                          Approve & Pay
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white"
-                          onClick={() => {
-                            const reason = prompt("Denial reason (required):");
-                            if (reason) handleApproveReward(reward.id, false, reason);
-                          }}
-                          disabled={isProcessingRewards}
-                        >
-                          Deny
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700"
+                            onClick={() => handleApproveReward(reward.id, true)}
+                            disabled={isProcessingRewards}
+                          >
+                            <CheckCircle className="w-4 h-4 mr-2" />
+                            Approve & Pay
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white"
+                            onClick={() => {
+                              const reason = prompt(
+                                "Denial reason (required):",
+                              );
+                              if (reason)
+                                handleApproveReward(reward.id, false, reason);
+                            }}
+                            disabled={isProcessingRewards}
+                          >
+                            Deny
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               ) : (
                 <div className="text-center py-8">
@@ -805,13 +932,18 @@ export function LeaderboardManagement() {
             <CardContent>
               <div className="space-y-4">
                 {stats.topCategories.map((category, index) => (
-                  <div key={index} className="flex items-center justify-between">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between"
+                  >
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
                         {index + 1}
                       </div>
                       <div>
-                        <div className="text-white font-medium">{category.category}</div>
+                        <div className="text-white font-medium">
+                          {category.category}
+                        </div>
                         <div className="text-sm text-gray-400">
                           {category.participants} participants
                         </div>
@@ -819,7 +951,11 @@ export function LeaderboardManagement() {
                     </div>
                     <div className="text-right">
                       <div className="text-white font-bold">
-                        {((category.participants / stats.totalParticipants) * 100).toFixed(1)}%
+                        {(
+                          (category.participants / stats.totalParticipants) *
+                          100
+                        ).toFixed(1)}
+                        %
                       </div>
                       <div className="text-sm text-gray-400">of total</div>
                     </div>
@@ -861,15 +997,23 @@ export function LeaderboardManagement() {
         <TabsContent value="settings" className="space-y-6">
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
-              <CardTitle className="text-white">Global Leaderboard Settings</CardTitle>
+              <CardTitle className="text-white">
+                Global Leaderboard Settings
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div>
-                    <Label className="text-white">Auto-approve rewards under</Label>
+                    <Label className="text-white">
+                      Auto-approve rewards under
+                    </Label>
                     <div className="flex items-center gap-2 mt-1">
-                      <Input type="number" defaultValue="5" className="flex-1" />
+                      <Input
+                        type="number"
+                        defaultValue="5"
+                        className="flex-1"
+                      />
                       <Select defaultValue="sc">
                         <SelectTrigger className="w-20">
                           <SelectValue />
@@ -883,26 +1027,38 @@ export function LeaderboardManagement() {
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <Label className="text-white">Enable automatic rewards</Label>
+                    <Label className="text-white">
+                      Enable automatic rewards
+                    </Label>
                     <Switch defaultChecked />
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <Label className="text-white">Weekly reset notifications</Label>
+                    <Label className="text-white">
+                      Weekly reset notifications
+                    </Label>
                     <Switch defaultChecked />
                   </div>
 
                   <div>
-                    <Label className="text-white">Maximum participants per category</Label>
+                    <Label className="text-white">
+                      Maximum participants per category
+                    </Label>
                     <Input type="number" defaultValue="100" className="mt-1" />
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <div>
-                    <Label className="text-white">Default reward amount (1st place)</Label>
+                    <Label className="text-white">
+                      Default reward amount (1st place)
+                    </Label>
                     <div className="flex items-center gap-2 mt-1">
-                      <Input type="number" defaultValue="5" className="flex-1" />
+                      <Input
+                        type="number"
+                        defaultValue="5"
+                        className="flex-1"
+                      />
                       <Select defaultValue="sc">
                         <SelectTrigger className="w-20">
                           <SelectValue />
@@ -916,7 +1072,9 @@ export function LeaderboardManagement() {
                   </div>
 
                   <div>
-                    <Label className="text-white">Minimum qualification level</Label>
+                    <Label className="text-white">
+                      Minimum qualification level
+                    </Label>
                     <Input type="number" defaultValue="1" className="mt-1" />
                   </div>
 

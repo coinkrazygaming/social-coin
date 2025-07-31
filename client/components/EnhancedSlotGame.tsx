@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Switch } from "./ui/switch";
@@ -93,7 +88,7 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [showAgreement, setShowAgreement] = useState(true);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
-  
+
   const [gameBalance, setGameBalance] = useState({ GC: 0, SC: 0 });
   const [currentSymbols, setCurrentSymbols] = useState<string[][]>([
     ["🍋", "🍒", "⭐"],
@@ -102,7 +97,7 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
     ["💎", "⭐", "🍒"],
     ["🍒", "🍋", "💎"],
   ]);
-  
+
   const [lastWin, setLastWin] = useState<SpinResult | null>(null);
   const [gameStats, setGameStats] = useState<GameStats>({
     totalSpins: 0,
@@ -119,19 +114,19 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
 
   const [showSettings, setShowSettings] = useState(false);
   const [spinHistory, setSpinHistory] = useState<SpinResult[]>([]);
-  
+
   const spinTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
 
   // Available symbols with different weights for realistic RTP
   const symbols = [
-    { symbol: "🍒", weight: 25, value: 2 },    // Cherry - common, low value
-    { symbol: "🍋", weight: 20, value: 3 },    // Lemon - common, low value  
-    { symbol: "🍊", weight: 18, value: 4 },    // Orange - common, low value
-    { symbol: "⭐", weight: 15, value: 8 },    // Star - medium, medium value
-    { symbol: "💎", weight: 12, value: 15 },   // Diamond - rare, high value
-    { symbol: "👑", weight: 8, value: 25 },    // Crown - very rare, very high value
-    { symbol: "🎰", weight: 2, value: 100 },   // Jackpot - extremely rare, jackpot
+    { symbol: "🍒", weight: 25, value: 2 }, // Cherry - common, low value
+    { symbol: "🍋", weight: 20, value: 3 }, // Lemon - common, low value
+    { symbol: "🍊", weight: 18, value: 4 }, // Orange - common, low value
+    { symbol: "⭐", weight: 15, value: 8 }, // Star - medium, medium value
+    { symbol: "💎", weight: 12, value: 15 }, // Diamond - rare, high value
+    { symbol: "👑", weight: 8, value: 25 }, // Crown - very rare, very high value
+    { symbol: "🎰", weight: 2, value: 100 }, // Jackpot - extremely rare, jackpot
   ];
 
   const paylines = [
@@ -161,7 +156,7 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
         handleSpin();
       }, 2000);
     }
-    
+
     return () => {
       if (autoPlayRef.current) {
         clearTimeout(autoPlayRef.current);
@@ -173,14 +168,14 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
     const totalWeight = symbols.reduce((sum, s) => sum + s.weight, 0);
     const random = Math.random() * totalWeight;
     let currentWeight = 0;
-    
+
     for (const symbol of symbols) {
       currentWeight += symbol.weight;
       if (random <= currentWeight) {
         return symbol.symbol;
       }
     }
-    
+
     return symbols[0].symbol;
   };
 
@@ -206,7 +201,7 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
     paylines.forEach((payline, lineIndex) => {
       const lineSymbols = payline.map((row, reel) => reels[reel][row]);
       const firstSymbol = lineSymbols[0];
-      
+
       // Count consecutive matching symbols from left
       let consecutiveCount = 1;
       for (let i = 1; i < lineSymbols.length; i++) {
@@ -216,23 +211,23 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
           break;
         }
       }
-      
+
       // Calculate win for this line (need at least 3 consecutive)
       if (consecutiveCount >= 3) {
-        const symbolData = symbols.find(s => s.symbol === firstSymbol);
+        const symbolData = symbols.find((s) => s.symbol === firstSymbol);
         if (symbolData) {
           let lineWin = symbolData.value * betAmount;
-          
+
           // Bonus multipliers for 4 or 5 of a kind
           if (consecutiveCount === 4) lineWin *= 3;
           if (consecutiveCount === 5) lineWin *= 10;
-          
+
           // Special jackpot symbol
           if (firstSymbol === "🎰" && consecutiveCount >= 3) {
             lineWin *= 50;
             bonusTriggered = true;
           }
-          
+
           totalWin += lineWin;
           winLines.push(lineIndex);
         }
@@ -240,7 +235,9 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
     });
 
     // Bonus features
-    const scatterCount = reels.flat().filter(symbol => symbol === "⭐").length;
+    const scatterCount = reels
+      .flat()
+      .filter((symbol) => symbol === "⭐").length;
     if (scatterCount >= 3) {
       totalWin += betAmount * scatterCount * 5;
       multiplier = scatterCount;
@@ -259,7 +256,7 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
 
   const handleSpin = async () => {
     if (!gameMode || isSpinning) return;
-    
+
     const currentBalance = gameMode === "GC" ? gameBalance.GC : gameBalance.SC;
     if (currentBalance < betAmount) {
       alert(`Insufficient ${gameMode} balance!`);
@@ -267,60 +264,62 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
     }
 
     setIsSpinning(true);
-    
+
     // Deduct bet amount immediately
     const newBalance = currentBalance - betAmount;
-    setGameBalance(prev => ({
+    setGameBalance((prev) => ({
       ...prev,
       [gameMode]: newBalance,
     }));
 
     // Update user's actual balance
     if (updateBalance) {
-      const balanceUpdate = gameMode === "GC" 
-        ? { goldCoins: -betAmount, sweepsCoins: 0 }
-        : { goldCoins: 0, sweepsCoins: -betAmount };
+      const balanceUpdate =
+        gameMode === "GC"
+          ? { goldCoins: -betAmount, sweepsCoins: 0 }
+          : { goldCoins: 0, sweepsCoins: -betAmount };
       updateBalance(balanceUpdate);
     }
 
     // Animate spinning
     const spinDuration = 2000 + Math.random() * 1000;
-    
+
     // Generate intermediate spinning frames
     let spinFrames = 0;
     const maxFrames = 20;
-    
+
     const spinInterval = setInterval(() => {
       setCurrentSymbols(generateReels());
       spinFrames++;
-      
+
       if (spinFrames >= maxFrames) {
         clearInterval(spinInterval);
-        
+
         // Generate final result
         const result = calculateWinnings(generateReels());
         setCurrentSymbols(result.symbols);
         setLastWin(result);
-        
+
         // Handle winnings
         if (result.isWin) {
           const newBalanceAfterWin = newBalance + result.winAmount;
-          setGameBalance(prev => ({
+          setGameBalance((prev) => ({
             ...prev,
             [gameMode]: newBalanceAfterWin,
           }));
 
           // Update user's actual balance with winnings
           if (updateBalance) {
-            const balanceUpdate = gameMode === "GC" 
-              ? { goldCoins: result.winAmount, sweepsCoins: 0 }
-              : { goldCoins: 0, sweepsCoins: result.winAmount };
+            const balanceUpdate =
+              gameMode === "GC"
+                ? { goldCoins: result.winAmount, sweepsCoins: 0 }
+                : { goldCoins: 0, sweepsCoins: result.winAmount };
             updateBalance(balanceUpdate);
           }
         }
 
         // Update stats
-        setGameStats(prev => {
+        setGameStats((prev) => {
           const newStats = {
             ...prev,
             totalSpins: prev.totalSpins + 1,
@@ -333,16 +332,19 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
               won: prev.currentSession.won + result.winAmount,
             },
           };
-          newStats.winRate = newStats.totalSpins > 0 ? (newStats.totalWon / newStats.totalWagered) * 100 : 0;
+          newStats.winRate =
+            newStats.totalSpins > 0
+              ? (newStats.totalWon / newStats.totalWagered) * 100
+              : 0;
           return newStats;
         });
 
-        setSpinHistory(prev => [result, ...prev.slice(0, 9)]);
+        setSpinHistory((prev) => [result, ...prev.slice(0, 9)]);
         setIsSpinning(false);
 
         // Handle auto-play
         if (autoPlay && autoSpinsLeft > 0) {
-          setAutoSpinsLeft(prev => prev - 1);
+          setAutoSpinsLeft((prev) => prev - 1);
           if (autoSpinsLeft <= 1) {
             setAutoPlay(false);
           }
@@ -367,7 +369,9 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
         <Card className="w-96">
           <CardContent className="p-6 text-center">
             <h3 className="text-xl font-bold mb-4">Login Required</h3>
-            <p className="text-gray-600 mb-4">Please login to play slot games.</p>
+            <p className="text-gray-600 mb-4">
+              Please login to play slot games.
+            </p>
             <Button onClick={onClose}>Close</Button>
           </CardContent>
         </Card>
@@ -417,7 +421,9 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
                 >
                   <div className="text-center">
                     <Star className="w-8 h-8 text-green-500 mx-auto mb-2" />
-                    <div className="text-white font-bold">Sweeps Coins (SC)</div>
+                    <div className="text-white font-bold">
+                      Sweeps Coins (SC)
+                    </div>
                     <div className="text-gray-400 text-sm">For Real Prizes</div>
                     <div className="text-green-500 font-bold mt-2">
                       Balance: {gameBalance.SC.toFixed(2)} SC
@@ -450,7 +456,10 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
                     size="sm"
                     variant="outline"
                     onClick={() => setBetAmount(betAmount + 1)}
-                    disabled={betAmount >= (gameMode === "GC" ? gameBalance.GC : gameBalance.SC)}
+                    disabled={
+                      betAmount >=
+                      (gameMode === "GC" ? gameBalance.GC : gameBalance.SC)
+                    }
                   >
                     <Plus className="w-4 h-4" />
                   </Button>
@@ -462,7 +471,10 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
                       size="sm"
                       variant={betAmount === amount ? "default" : "outline"}
                       onClick={() => setBetAmount(amount)}
-                      disabled={amount > (gameMode === "GC" ? gameBalance.GC : gameBalance.SC)}
+                      disabled={
+                        amount >
+                        (gameMode === "GC" ? gameBalance.GC : gameBalance.SC)
+                      }
                     >
                       {amount}
                     </Button>
@@ -473,34 +485,47 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
 
             {/* Sweepstakes Agreement */}
             <div className="space-y-4 border-t border-gray-700 pt-4">
-              <h3 className="text-white font-bold">Sweepstakes Rules & Agreement</h3>
+              <h3 className="text-white font-bold">
+                Sweepstakes Rules & Agreement
+              </h3>
               <div className="bg-gray-800 p-4 rounded-lg max-h-32 overflow-y-auto text-sm text-gray-300">
                 <p className="mb-2">
-                  <strong>SWEEPSTAKES GAMING RULES - Howes Networks, LLC</strong>
+                  <strong>
+                    SWEEPSTAKES GAMING RULES - Howes Networks, LLC
+                  </strong>
                 </p>
                 <p className="mb-2">
-                  1. You must be 18+ years old to participate in sweepstakes gaming.
+                  1. You must be 18+ years old to participate in sweepstakes
+                  gaming.
                 </p>
                 <p className="mb-2">
-                  2. No purchase necessary to play. Gold Coins are for entertainment only and have no cash value.
+                  2. No purchase necessary to play. Gold Coins are for
+                  entertainment only and have no cash value.
                 </p>
                 <p className="mb-2">
-                  3. Sweeps Coins can be redeemed for cash prizes subject to terms and conditions.
+                  3. Sweeps Coins can be redeemed for cash prizes subject to
+                  terms and conditions.
                 </p>
                 <p className="mb-2">
-                  4. {gameMode === "GC" ? "Gold Coins" : "Sweeps Coins"} mode selected. You can only win {gameMode === "GC" ? "Gold Coins" : "Sweeps Coins"} in this mode.
+                  4. {gameMode === "GC" ? "Gold Coins" : "Sweeps Coins"} mode
+                  selected. You can only win{" "}
+                  {gameMode === "GC" ? "Gold Coins" : "Sweeps Coins"} in this
+                  mode.
                 </p>
                 <p className="mb-2">
-                  5. Results are determined by random number generation and are not influenced by previous results.
+                  5. Results are determined by random number generation and are
+                  not influenced by previous results.
                 </p>
                 <p className="mb-2">
-                  6. Responsible gaming tools are available. Set limits and play responsibly.
+                  6. Responsible gaming tools are available. Set limits and play
+                  responsibly.
                 </p>
                 <p className="mb-2">
-                  7. Contact: coinkrazy00@gmail.com | Address: 228 Blondeau St, Keokuk IA 52632
+                  7. Contact: coinkrazy00@gmail.com | Address: 228 Blondeau St,
+                  Keokuk IA 52632
                 </p>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <input
                   type="checkbox"
@@ -510,7 +535,8 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
                   className="rounded"
                 />
                 <label htmlFor="agree-terms" className="text-white text-sm">
-                  I agree to the Sweepstakes Rules and Conditions and confirm I am 18+ years old
+                  I agree to the Sweepstakes Rules and Conditions and confirm I
+                  am 18+ years old
                 </label>
               </div>
             </div>
@@ -541,7 +567,9 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
         <div className="bg-black/30 p-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-bold text-white">{gameName}</h1>
-            <Badge className={`${gameMode === "GC" ? "bg-yellow-600" : "bg-green-600"}`}>
+            <Badge
+              className={`${gameMode === "GC" ? "bg-yellow-600" : "bg-green-600"}`}
+            >
               {gameMode} Mode
             </Badge>
           </div>
@@ -552,7 +580,11 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
               onClick={() => setSoundEnabled(!soundEnabled)}
               className="text-white"
             >
-              {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+              {soundEnabled ? (
+                <Volume2 className="w-4 h-4" />
+              ) : (
+                <VolumeX className="w-4 h-4" />
+              )}
             </Button>
             <Button
               size="sm"
@@ -580,16 +612,19 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
             <div className="mb-6 flex items-center gap-8">
               <div className="text-center">
                 <div className="text-white text-sm">Balance</div>
-                <div className={`text-2xl font-bold ${gameMode === "GC" ? "text-yellow-500" : "text-green-500"}`}>
-                  {gameMode === "GC" 
-                    ? `${gameBalance.GC.toLocaleString()} GC` 
-                    : `${gameBalance.SC.toFixed(2)} SC`
-                  }
+                <div
+                  className={`text-2xl font-bold ${gameMode === "GC" ? "text-yellow-500" : "text-green-500"}`}
+                >
+                  {gameMode === "GC"
+                    ? `${gameBalance.GC.toLocaleString()} GC`
+                    : `${gameBalance.SC.toFixed(2)} SC`}
                 </div>
               </div>
               <div className="text-center">
                 <div className="text-white text-sm">Bet</div>
-                <div className="text-xl font-bold text-white">{betAmount} {gameMode}</div>
+                <div className="text-xl font-bold text-white">
+                  {betAmount} {gameMode}
+                </div>
               </div>
               {lastWin && lastWin.isWin && (
                 <div className="text-center">
@@ -610,14 +645,22 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
                       <motion.div
                         key={`${reelIndex}-${symbolIndex}`}
                         className={`w-16 h-16 bg-white rounded-lg flex items-center justify-center text-2xl ${
-                          lastWin?.winLines.some(line => 
-                            paylines[line] && paylines[line][reelIndex] === symbolIndex
-                          ) ? "ring-4 ring-yellow-400 bg-yellow-100" : ""
+                          lastWin?.winLines.some(
+                            (line) =>
+                              paylines[line] &&
+                              paylines[line][reelIndex] === symbolIndex,
+                          )
+                            ? "ring-4 ring-yellow-400 bg-yellow-100"
+                            : ""
                         }`}
-                        animate={isSpinning ? { 
-                          rotateX: [0, 360, 720, 1080],
-                          scale: [1, 1.1, 1, 1.1, 1]
-                        } : {}}
+                        animate={
+                          isSpinning
+                            ? {
+                                rotateX: [0, 360, 720, 1080],
+                                scale: [1, 1.1, 1, 1.1, 1],
+                              }
+                            : {}
+                        }
                         transition={{ duration: 0.5, delay: reelIndex * 0.1 }}
                       >
                         {symbol}
@@ -626,7 +669,7 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
                   </div>
                 ))}
               </div>
-              
+
               {/* Win Display */}
               {lastWin && lastWin.isWin && (
                 <motion.div
@@ -638,7 +681,9 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
                     YOU WIN! +{lastWin.winAmount} {gameMode}
                   </div>
                   {lastWin.bonusTriggered && (
-                    <div className="text-purple-400 font-bold">BONUS TRIGGERED!</div>
+                    <div className="text-purple-400 font-bold">
+                      BONUS TRIGGERED!
+                    </div>
                   )}
                 </motion.div>
               )}
@@ -656,13 +701,19 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
                   <Minus className="w-4 h-4" />
                 </Button>
                 <div className="w-20 text-center">
-                  <div className="text-white font-bold">{betAmount} {gameMode}</div>
+                  <div className="text-white font-bold">
+                    {betAmount} {gameMode}
+                  </div>
                 </div>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => setBetAmount(betAmount + 1)}
-                  disabled={betAmount >= (gameMode === "GC" ? gameBalance.GC : gameBalance.SC) || isSpinning}
+                  disabled={
+                    betAmount >=
+                      (gameMode === "GC" ? gameBalance.GC : gameBalance.SC) ||
+                    isSpinning
+                  }
                 >
                   <Plus className="w-4 h-4" />
                 </Button>
@@ -671,7 +722,11 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
               <Button
                 size="lg"
                 onClick={handleSpin}
-                disabled={isSpinning || (gameMode === "GC" ? gameBalance.GC : gameBalance.SC) < betAmount}
+                disabled={
+                  isSpinning ||
+                  (gameMode === "GC" ? gameBalance.GC : gameBalance.SC) <
+                    betAmount
+                }
                 className="bg-green-600 hover:bg-green-700 text-white font-bold px-8"
               >
                 {isSpinning ? (
@@ -683,7 +738,10 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
               </Button>
 
               <div className="flex items-center gap-2">
-                <Select value={autoSpinsLeft.toString()} onValueChange={(value) => handleAutoPlay(parseInt(value))}>
+                <Select
+                  value={autoSpinsLeft.toString()}
+                  onValueChange={(value) => handleAutoPlay(parseInt(value))}
+                >
                   <SelectTrigger className="w-32">
                     <SelectValue placeholder="Auto Play" />
                   </SelectTrigger>
@@ -696,9 +754,7 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
                   </SelectContent>
                 </Select>
                 {autoPlay && (
-                  <div className="text-white text-sm">
-                    {autoSpinsLeft} left
-                  </div>
+                  <div className="text-white text-sm">{autoSpinsLeft} left</div>
                 )}
               </div>
             </div>
@@ -709,26 +765,48 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
             {/* Game Stats */}
             <Card className="bg-black/50 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-white text-sm">Session Stats</CardTitle>
+                <CardTitle className="text-white text-sm">
+                  Session Stats
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Spins:</span>
-                  <span className="text-white">{gameStats.currentSession.spins}</span>
+                  <span className="text-white">
+                    {gameStats.currentSession.spins}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Wagered:</span>
-                  <span className="text-white">{gameStats.currentSession.wagered} {gameMode}</span>
+                  <span className="text-white">
+                    {gameStats.currentSession.wagered} {gameMode}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Won:</span>
-                  <span className="text-green-400">{gameStats.currentSession.won} {gameMode}</span>
+                  <span className="text-green-400">
+                    {gameStats.currentSession.won} {gameMode}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Net:</span>
-                  <span className={gameStats.currentSession.won - gameStats.currentSession.wagered >= 0 ? "text-green-400" : "text-red-400"}>
-                    {((gameStats.currentSession.won - gameStats.currentSession.wagered) > 0 ? "+" : "")}
-                    {gameStats.currentSession.won - gameStats.currentSession.wagered} {gameMode}
+                  <span
+                    className={
+                      gameStats.currentSession.won -
+                        gameStats.currentSession.wagered >=
+                      0
+                        ? "text-green-400"
+                        : "text-red-400"
+                    }
+                  >
+                    {gameStats.currentSession.won -
+                      gameStats.currentSession.wagered >
+                    0
+                      ? "+"
+                      : ""}
+                    {gameStats.currentSession.won -
+                      gameStats.currentSession.wagered}{" "}
+                    {gameMode}
                   </span>
                 </div>
               </CardContent>
@@ -737,17 +815,26 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
             {/* Recent Spins */}
             <Card className="bg-black/50 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-white text-sm">Recent Spins</CardTitle>
+                <CardTitle className="text-white text-sm">
+                  Recent Spins
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 {spinHistory.slice(0, 5).map((spin, index) => (
-                  <div key={index} className="flex justify-between items-center text-sm">
+                  <div
+                    key={index}
+                    className="flex justify-between items-center text-sm"
+                  >
                     <div className="flex items-center gap-1">
                       {spin.symbols[0].slice(0, 3).map((symbol, i) => (
-                        <span key={i} className="text-xs">{symbol}</span>
+                        <span key={i} className="text-xs">
+                          {symbol}
+                        </span>
                       ))}
                     </div>
-                    <div className={`font-bold ${spin.isWin ? "text-green-400" : "text-gray-400"}`}>
+                    <div
+                      className={`font-bold ${spin.isWin ? "text-green-400" : "text-gray-400"}`}
+                    >
                       {spin.isWin ? `+${spin.winAmount}` : "0"} {gameMode}
                     </div>
                   </div>
@@ -764,7 +851,9 @@ export const EnhancedSlotGame: React.FC<SlotGameProps> = ({
                 {symbols.map((symbol) => (
                   <div key={symbol.symbol} className="flex justify-between">
                     <span>{symbol.symbol} x3</span>
-                    <span className="text-yellow-400">{symbol.value * betAmount} {gameMode}</span>
+                    <span className="text-yellow-400">
+                      {symbol.value * betAmount} {gameMode}
+                    </span>
                   </div>
                 ))}
                 <div className="border-t border-gray-600 pt-1 mt-2">

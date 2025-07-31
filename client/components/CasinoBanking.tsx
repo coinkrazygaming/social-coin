@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Switch } from "./ui/switch";
@@ -18,12 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "./ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { useAuth } from "./AuthContext";
 import {
   DollarSign,
@@ -59,7 +49,15 @@ interface BankingTransaction {
   id: string;
   userId: string;
   username: string;
-  type: "deposit" | "withdrawal" | "bonus" | "refund" | "admin_credit" | "admin_debit" | "jackpot" | "promotion";
+  type:
+    | "deposit"
+    | "withdrawal"
+    | "bonus"
+    | "refund"
+    | "admin_credit"
+    | "admin_debit"
+    | "jackpot"
+    | "promotion";
   status: "pending" | "processing" | "completed" | "failed" | "cancelled";
   amount: number;
   currency: "USD" | "GC" | "SC";
@@ -142,9 +140,9 @@ export function CasinoBanking() {
       completedAt: new Date(Date.now() - 3480000),
       fees: {
         processingFee: 1.45,
-        platformFee: 0.50,
-        total: 1.95
-      }
+        platformFee: 0.5,
+        total: 1.95,
+      },
     },
     {
       id: "txn_002",
@@ -152,13 +150,13 @@ export function CasinoBanking() {
       username: "LuckySpinner",
       type: "withdrawal",
       status: "pending",
-      amount: 25.00,
+      amount: 25.0,
       currency: "USD",
       method: "paypal",
       reference: "WD-98765432109876543210",
       description: "Sweeps Coin Redemption - 25 SC",
       requestedAt: new Date(Date.now() - 1800000),
-      notes: "Awaiting KYC verification"
+      notes: "Awaiting KYC verification",
     },
     {
       id: "txn_003",
@@ -177,8 +175,8 @@ export function CasinoBanking() {
         adminId: "admin1",
         adminUsername: "AdminUser",
         reason: "System compensation",
-        timestamp: new Date(Date.now() - 7200000)
-      }
+        timestamp: new Date(Date.now() - 7200000),
+      },
     },
     {
       id: "txn_004",
@@ -193,7 +191,7 @@ export function CasinoBanking() {
       description: "Gold Coin Package Purchase - Mega Pack",
       requestedAt: new Date(Date.now() - 5400000),
       processedAt: new Date(Date.now() - 5340000),
-      notes: "Card declined - insufficient funds"
+      notes: "Card declined - insufficient funds",
     },
     {
       id: "txn_005",
@@ -212,9 +210,9 @@ export function CasinoBanking() {
         adminId: "admin1",
         adminUsername: "AdminUser",
         reason: "Leaderboard reward",
-        timestamp: new Date(Date.now() - 10800000)
-      }
-    }
+        timestamp: new Date(Date.now() - 10800000),
+      },
+    },
   ]);
 
   const [stats, setStats] = useState<BankingStats>({
@@ -228,15 +226,40 @@ export function CasinoBanking() {
     averageWithdrawalAmount: 35.67,
     dailyVolume: 4567.89,
     weeklyVolume: 28934.56,
-    monthlyVolume: 125678.90,
+    monthlyVolume: 125678.9,
     topSpenders: [
-      { userId: "user1", username: "SlotMaster97", totalSpent: 2456.78, transactionCount: 45 },
-      { userId: "user2", username: "HighRoller88", totalSpent: 1892.34, transactionCount: 28 },
-      { userId: "user3", username: "VIPPlayer1", totalSpent: 1634.56, transactionCount: 35 },
-      { userId: "user4", username: "CasinoKing23", totalSpent: 1287.90, transactionCount: 22 },
-      { userId: "user5", username: "LuckySpinner", totalSpent: 967.43, transactionCount: 18 }
+      {
+        userId: "user1",
+        username: "SlotMaster97",
+        totalSpent: 2456.78,
+        transactionCount: 45,
+      },
+      {
+        userId: "user2",
+        username: "HighRoller88",
+        totalSpent: 1892.34,
+        transactionCount: 28,
+      },
+      {
+        userId: "user3",
+        username: "VIPPlayer1",
+        totalSpent: 1634.56,
+        transactionCount: 35,
+      },
+      {
+        userId: "user4",
+        username: "CasinoKing23",
+        totalSpent: 1287.9,
+        transactionCount: 22,
+      },
+      {
+        userId: "user5",
+        username: "LuckySpinner",
+        totalSpent: 967.43,
+        transactionCount: 18,
+      },
     ],
-    recentActivity: []
+    recentActivity: [],
   });
 
   const [userBalances, setUserBalances] = useState<UserBalance[]>([
@@ -255,8 +278,8 @@ export function CasinoBanking() {
         weeklyDeposit: 2500,
         monthlyDeposit: 10000,
         dailyWithdrawal: 200,
-        weeklyWithdrawal: 1000
-      }
+        weeklyWithdrawal: 1000,
+      },
     },
     {
       userId: "user2",
@@ -265,7 +288,7 @@ export function CasinoBanking() {
       sweepsCoins: 12.89,
       vipPoints: 234,
       totalDeposited: 967.43,
-      totalWithdrawn: 78.90,
+      totalWithdrawn: 78.9,
       lastActivity: new Date(Date.now() - 1800000),
       status: "active",
       limits: {
@@ -273,18 +296,23 @@ export function CasinoBanking() {
         weeklyDeposit: 1500,
         monthlyDeposit: 6000,
         dailyWithdrawal: 150,
-        weeklyWithdrawal: 750
-      }
-    }
+        weeklyWithdrawal: 750,
+      },
+    },
   ]);
 
-  const [selectedTransaction, setSelectedTransaction] = useState<BankingTransaction | null>(null);
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<BankingTransaction | null>(null);
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [showBalanceModal, setShowBalanceModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserBalance | null>(null);
-  const [balanceAction, setBalanceAction] = useState<"credit" | "debit">("credit");
+  const [balanceAction, setBalanceAction] = useState<"credit" | "debit">(
+    "credit",
+  );
   const [balanceAmount, setBalanceAmount] = useState("");
-  const [balanceCurrency, setBalanceCurrency] = useState<"GC" | "SC" | "vip_points">("GC");
+  const [balanceCurrency, setBalanceCurrency] = useState<
+    "GC" | "SC" | "vip_points"
+  >("GC");
   const [balanceReason, setBalanceReason] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -292,21 +320,30 @@ export function CasinoBanking() {
     type: "all",
     status: "all",
     currency: "all",
-    dateRange: "7d"
+    dateRange: "7d",
   });
 
-  const handleTransactionAction = async (transactionId: string, action: "approve" | "deny" | "cancel", notes?: string) => {
+  const handleTransactionAction = async (
+    transactionId: string,
+    action: "approve" | "deny" | "cancel",
+    notes?: string,
+  ) => {
     setIsProcessing(true);
-    
+
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    setTransactions(prev => 
-      prev.map(txn => 
-        txn.id === transactionId 
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    setTransactions((prev) =>
+      prev.map((txn) =>
+        txn.id === transactionId
           ? {
               ...txn,
-              status: action === "approve" ? "processing" : action === "deny" ? "failed" : "cancelled",
+              status:
+                action === "approve"
+                  ? "processing"
+                  : action === "deny"
+                    ? "failed"
+                    : "cancelled",
               processedAt: new Date(),
               completedAt: action === "approve" ? new Date() : undefined,
               notes: notes || txn.notes,
@@ -314,13 +351,13 @@ export function CasinoBanking() {
                 adminId: user?.id || "admin1",
                 adminUsername: user?.username || "AdminUser",
                 reason: notes || `Transaction ${action}d`,
-                timestamp: new Date()
-              }
+                timestamp: new Date(),
+              },
             }
-          : txn
-      )
+          : txn,
+      ),
     );
-    
+
     setIsProcessing(false);
   };
 
@@ -328,10 +365,10 @@ export function CasinoBanking() {
     if (!selectedUser || !balanceAmount || !balanceReason) return;
 
     setIsProcessing(true);
-    
+
     const amount = parseFloat(balanceAmount);
     const isCredit = balanceAction === "credit";
-    
+
     // Create transaction record
     const newTransaction: BankingTransaction = {
       id: `txn_${Date.now()}`,
@@ -350,31 +387,40 @@ export function CasinoBanking() {
         adminId: user?.id || "admin1",
         adminUsername: user?.username || "AdminUser",
         reason: balanceReason,
-        timestamp: new Date()
-      }
+        timestamp: new Date(),
+      },
     };
 
-    setTransactions(prev => [newTransaction, ...prev]);
+    setTransactions((prev) => [newTransaction, ...prev]);
 
     // Update user balance
-    setUserBalances(prev => 
-      prev.map(userBalance => 
+    setUserBalances((prev) =>
+      prev.map((userBalance) =>
         userBalance.userId === selectedUser.userId
           ? {
               ...userBalance,
-              goldCoins: balanceCurrency === "GC" 
-                ? (isCredit ? userBalance.goldCoins + amount : userBalance.goldCoins - amount)
-                : userBalance.goldCoins,
-              sweepsCoins: balanceCurrency === "SC"
-                ? (isCredit ? userBalance.sweepsCoins + amount : userBalance.sweepsCoins - amount)
-                : userBalance.sweepsCoins,
-              vipPoints: balanceCurrency === "vip_points"
-                ? (isCredit ? userBalance.vipPoints + amount : userBalance.vipPoints - amount)
-                : userBalance.vipPoints,
-              lastActivity: new Date()
+              goldCoins:
+                balanceCurrency === "GC"
+                  ? isCredit
+                    ? userBalance.goldCoins + amount
+                    : userBalance.goldCoins - amount
+                  : userBalance.goldCoins,
+              sweepsCoins:
+                balanceCurrency === "SC"
+                  ? isCredit
+                    ? userBalance.sweepsCoins + amount
+                    : userBalance.sweepsCoins - amount
+                  : userBalance.sweepsCoins,
+              vipPoints:
+                balanceCurrency === "vip_points"
+                  ? isCredit
+                    ? userBalance.vipPoints + amount
+                    : userBalance.vipPoints - amount
+                  : userBalance.vipPoints,
+              lastActivity: new Date(),
             }
-          : userBalance
-      )
+          : userBalance,
+      ),
     );
 
     setIsProcessing(false);
@@ -403,12 +449,18 @@ export function CasinoBanking() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "completed": return "bg-green-600";
-      case "pending": return "bg-yellow-600";
-      case "processing": return "bg-blue-600";
-      case "failed": return "bg-red-600";
-      case "cancelled": return "bg-gray-600";
-      default: return "bg-gray-600";
+      case "completed":
+        return "bg-green-600";
+      case "pending":
+        return "bg-yellow-600";
+      case "processing":
+        return "bg-blue-600";
+      case "failed":
+        return "bg-red-600";
+      case "cancelled":
+        return "bg-gray-600";
+      default:
+        return "bg-gray-600";
     }
   };
 
@@ -429,10 +481,11 @@ export function CasinoBanking() {
     }
   };
 
-  const filteredTransactions = transactions.filter(txn => {
+  const filteredTransactions = transactions.filter((txn) => {
     if (filters.type !== "all" && txn.type !== filters.type) return false;
     if (filters.status !== "all" && txn.status !== filters.status) return false;
-    if (filters.currency !== "all" && txn.currency !== filters.currency) return false;
+    if (filters.currency !== "all" && txn.currency !== filters.currency)
+      return false;
     return true;
   });
 
@@ -497,7 +550,12 @@ export function CasinoBanking() {
               <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                 <div>
                   <Label className="text-white">Type</Label>
-                  <Select value={filters.type} onValueChange={(value) => setFilters(prev => ({ ...prev, type: value }))}>
+                  <Select
+                    value={filters.type}
+                    onValueChange={(value) =>
+                      setFilters((prev) => ({ ...prev, type: value }))
+                    }
+                  >
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
@@ -506,7 +564,9 @@ export function CasinoBanking() {
                       <SelectItem value="deposit">Deposits</SelectItem>
                       <SelectItem value="withdrawal">Withdrawals</SelectItem>
                       <SelectItem value="bonus">Bonuses</SelectItem>
-                      <SelectItem value="admin_credit">Admin Credits</SelectItem>
+                      <SelectItem value="admin_credit">
+                        Admin Credits
+                      </SelectItem>
                       <SelectItem value="admin_debit">Admin Debits</SelectItem>
                     </SelectContent>
                   </Select>
@@ -514,7 +574,12 @@ export function CasinoBanking() {
 
                 <div>
                   <Label className="text-white">Status</Label>
-                  <Select value={filters.status} onValueChange={(value) => setFilters(prev => ({ ...prev, status: value }))}>
+                  <Select
+                    value={filters.status}
+                    onValueChange={(value) =>
+                      setFilters((prev) => ({ ...prev, status: value }))
+                    }
+                  >
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
@@ -531,7 +596,12 @@ export function CasinoBanking() {
 
                 <div>
                   <Label className="text-white">Currency</Label>
-                  <Select value={filters.currency} onValueChange={(value) => setFilters(prev => ({ ...prev, currency: value }))}>
+                  <Select
+                    value={filters.currency}
+                    onValueChange={(value) =>
+                      setFilters((prev) => ({ ...prev, currency: value }))
+                    }
+                  >
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
@@ -546,7 +616,12 @@ export function CasinoBanking() {
 
                 <div>
                   <Label className="text-white">Date Range</Label>
-                  <Select value={filters.dateRange} onValueChange={(value) => setFilters(prev => ({ ...prev, dateRange: value }))}>
+                  <Select
+                    value={filters.dateRange}
+                    onValueChange={(value) =>
+                      setFilters((prev) => ({ ...prev, dateRange: value }))
+                    }
+                  >
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
@@ -575,13 +650,18 @@ export function CasinoBanking() {
               <CardTitle className="text-white flex items-center gap-2">
                 <Receipt className="w-5 h-5" />
                 Transaction History
-                <Badge className="ml-auto">{filteredTransactions.length} transactions</Badge>
+                <Badge className="ml-auto">
+                  {filteredTransactions.length} transactions
+                </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {filteredTransactions.map((transaction) => (
-                  <div key={transaction.id} className="p-4 bg-gray-700 rounded-lg">
+                  <div
+                    key={transaction.id}
+                    className="p-4 bg-gray-700 rounded-lg"
+                  >
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-3">
                         {getTypeIcon(transaction.type)}
@@ -599,7 +679,10 @@ export function CasinoBanking() {
                       </div>
                       <div className="text-right">
                         <div className="text-white font-bold">
-                          {transaction.type === "withdrawal" || transaction.type === "admin_debit" ? "-" : "+"}
+                          {transaction.type === "withdrawal" ||
+                          transaction.type === "admin_debit"
+                            ? "-"
+                            : "+"}
                           {transaction.amount} {transaction.currency}
                         </div>
                         <Badge className={getStatusColor(transaction.status)}>
@@ -630,7 +713,12 @@ export function CasinoBanking() {
                             <Button
                               size="sm"
                               className="bg-green-600 hover:bg-green-700"
-                              onClick={() => handleTransactionAction(transaction.id, "approve")}
+                              onClick={() =>
+                                handleTransactionAction(
+                                  transaction.id,
+                                  "approve",
+                                )
+                              }
                               disabled={isProcessing}
                             >
                               <CheckCircle className="w-4 h-4 mr-2" />
@@ -642,7 +730,12 @@ export function CasinoBanking() {
                               className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white"
                               onClick={() => {
                                 const reason = prompt("Denial reason:");
-                                if (reason) handleTransactionAction(transaction.id, "deny", reason);
+                                if (reason)
+                                  handleTransactionAction(
+                                    transaction.id,
+                                    "deny",
+                                    reason,
+                                  );
                               }}
                               disabled={isProcessing}
                             >
@@ -656,7 +749,9 @@ export function CasinoBanking() {
                     {transaction.fees && (
                       <div className="mt-2 p-2 bg-gray-600 rounded text-xs">
                         <div className="text-gray-300">
-                          Fees: Processing ${transaction.fees.processingFee} + Platform ${transaction.fees.platformFee} = ${transaction.fees.total}
+                          Fees: Processing ${transaction.fees.processingFee} +
+                          Platform ${transaction.fees.platformFee} = $
+                          {transaction.fees.total}
                         </div>
                       </div>
                     )}
@@ -677,7 +772,9 @@ export function CasinoBanking() {
 
         <TabsContent value="balances" className="space-y-6">
           <div className="flex justify-between items-center">
-            <h3 className="text-xl font-bold text-white">User Balance Management</h3>
+            <h3 className="text-xl font-bold text-white">
+              User Balance Management
+            </h3>
             <Button
               onClick={() => setShowBalanceModal(true)}
               className="bg-blue-600 hover:bg-blue-700"
@@ -689,15 +786,25 @@ export function CasinoBanking() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {userBalances.map((userBalance) => (
-              <Card key={userBalance.userId} className="bg-gray-800 border-gray-700">
+              <Card
+                key={userBalance.userId}
+                className="bg-gray-800 border-gray-700"
+              >
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
-                      <CardTitle className="text-white">{userBalance.username}</CardTitle>
-                      <Badge className={
-                        userBalance.status === "active" ? "bg-green-600" :
-                        userBalance.status === "suspended" ? "bg-red-600" : "bg-yellow-600"
-                      }>
+                      <CardTitle className="text-white">
+                        {userBalance.username}
+                      </CardTitle>
+                      <Badge
+                        className={
+                          userBalance.status === "active"
+                            ? "bg-green-600"
+                            : userBalance.status === "suspended"
+                              ? "bg-red-600"
+                              : "bg-yellow-600"
+                        }
+                      >
                         {userBalance.status}
                       </Badge>
                     </div>
@@ -739,11 +846,15 @@ export function CasinoBanking() {
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <div className="text-gray-400">Total Deposited</div>
-                      <div className="text-white font-medium">${userBalance.totalDeposited.toLocaleString()}</div>
+                      <div className="text-white font-medium">
+                        ${userBalance.totalDeposited.toLocaleString()}
+                      </div>
                     </div>
                     <div>
                       <div className="text-gray-400">Total Withdrawn</div>
-                      <div className="text-white font-medium">${userBalance.totalWithdrawn.toLocaleString()}</div>
+                      <div className="text-white font-medium">
+                        ${userBalance.totalWithdrawn.toLocaleString()}
+                      </div>
                     </div>
                   </div>
 
@@ -792,20 +903,27 @@ export function CasinoBanking() {
             <CardContent>
               <div className="space-y-3">
                 {stats.topSpenders.map((spender, index) => (
-                  <div key={spender.userId} className="flex items-center justify-between p-3 bg-gray-700 rounded">
+                  <div
+                    key={spender.userId}
+                    className="flex items-center justify-between p-3 bg-gray-700 rounded"
+                  >
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center text-white font-bold">
                         {index + 1}
                       </div>
                       <div>
-                        <div className="text-white font-medium">{spender.username}</div>
+                        <div className="text-white font-medium">
+                          {spender.username}
+                        </div>
                         <div className="text-gray-400 text-sm">
                           {spender.transactionCount} transactions
                         </div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-white font-bold">${spender.totalSpent.toLocaleString()}</div>
+                      <div className="text-white font-bold">
+                        ${spender.totalSpent.toLocaleString()}
+                      </div>
                       <div className="text-gray-400 text-sm">Total Spent</div>
                     </div>
                   </div>
@@ -826,45 +944,81 @@ export function CasinoBanking() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
-                  <h4 className="text-white font-medium">Default Deposit Limits</h4>
+                  <h4 className="text-white font-medium">
+                    Default Deposit Limits
+                  </h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label className="text-white">Daily Limit</Label>
-                      <Input type="number" defaultValue="500" className="mt-1" />
+                      <Input
+                        type="number"
+                        defaultValue="500"
+                        className="mt-1"
+                      />
                     </div>
                     <div>
                       <Label className="text-white">Weekly Limit</Label>
-                      <Input type="number" defaultValue="2500" className="mt-1" />
+                      <Input
+                        type="number"
+                        defaultValue="2500"
+                        className="mt-1"
+                      />
                     </div>
                     <div>
                       <Label className="text-white">Monthly Limit</Label>
-                      <Input type="number" defaultValue="10000" className="mt-1" />
+                      <Input
+                        type="number"
+                        defaultValue="10000"
+                        className="mt-1"
+                      />
                     </div>
                     <div>
                       <Label className="text-white">Single Transaction</Label>
-                      <Input type="number" defaultValue="1000" className="mt-1" />
+                      <Input
+                        type="number"
+                        defaultValue="1000"
+                        className="mt-1"
+                      />
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="text-white font-medium">Default Withdrawal Limits</h4>
+                  <h4 className="text-white font-medium">
+                    Default Withdrawal Limits
+                  </h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label className="text-white">Daily Limit</Label>
-                      <Input type="number" defaultValue="200" className="mt-1" />
+                      <Input
+                        type="number"
+                        defaultValue="200"
+                        className="mt-1"
+                      />
                     </div>
                     <div>
                       <Label className="text-white">Weekly Limit</Label>
-                      <Input type="number" defaultValue="1000" className="mt-1" />
+                      <Input
+                        type="number"
+                        defaultValue="1000"
+                        className="mt-1"
+                      />
                     </div>
                     <div>
                       <Label className="text-white">Monthly Limit</Label>
-                      <Input type="number" defaultValue="4000" className="mt-1" />
+                      <Input
+                        type="number"
+                        defaultValue="4000"
+                        className="mt-1"
+                      />
                     </div>
                     <div>
                       <Label className="text-white">Single Transaction</Label>
-                      <Input type="number" defaultValue="500" className="mt-1" />
+                      <Input
+                        type="number"
+                        defaultValue="500"
+                        className="mt-1"
+                      />
                     </div>
                   </div>
                 </div>
@@ -875,40 +1029,60 @@ export function CasinoBanking() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <Label className="text-white">Auto-approve withdrawals under</Label>
+                      <Label className="text-white">
+                        Auto-approve withdrawals under
+                      </Label>
                       <div className="flex items-center gap-2">
-                        <Input type="number" defaultValue="50" className="w-20" />
+                        <Input
+                          type="number"
+                          defaultValue="50"
+                          className="w-20"
+                        />
                         <span className="text-white">USD</span>
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <Label className="text-white">Require KYC for withdrawals over</Label>
+                      <Label className="text-white">
+                        Require KYC for withdrawals over
+                      </Label>
                       <div className="flex items-center gap-2">
-                        <Input type="number" defaultValue="100" className="w-20" />
+                        <Input
+                          type="number"
+                          defaultValue="100"
+                          className="w-20"
+                        />
                         <span className="text-white">USD</span>
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <Label className="text-white">Enable velocity checks</Label>
+                      <Label className="text-white">
+                        Enable velocity checks
+                      </Label>
                       <Switch defaultChecked />
                     </div>
                   </div>
 
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <Label className="text-white">Flag rapid transactions</Label>
+                      <Label className="text-white">
+                        Flag rapid transactions
+                      </Label>
                       <Switch defaultChecked />
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <Label className="text-white">Enable fraud detection</Label>
+                      <Label className="text-white">
+                        Enable fraud detection
+                      </Label>
                       <Switch defaultChecked />
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <Label className="text-white">Require 2FA for large amounts</Label>
+                      <Label className="text-white">
+                        Require 2FA for large amounts
+                      </Label>
                       <Switch defaultChecked />
                     </div>
                   </div>
@@ -934,7 +1108,9 @@ export function CasinoBanking() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
-                  <h4 className="text-white font-medium">Transaction Reports</h4>
+                  <h4 className="text-white font-medium">
+                    Transaction Reports
+                  </h4>
                   <div className="space-y-2">
                     <Button variant="outline" className="w-full justify-start">
                       <Download className="w-4 h-4 mr-2" />
@@ -981,7 +1157,8 @@ export function CasinoBanking() {
               <div className="p-4 bg-blue-900 border border-blue-700 rounded">
                 <div className="flex items-center gap-2 text-blue-300 text-sm">
                   <Lock className="w-4 h-4" />
-                  All reports are encrypted and comply with financial data protection regulations
+                  All reports are encrypted and comply with financial data
+                  protection regulations
                 </div>
               </div>
             </CardContent>
@@ -1011,11 +1188,13 @@ export function CasinoBanking() {
             <CardContent className="space-y-4">
               {selectedUser && (
                 <div className="text-center p-3 bg-gray-700 rounded">
-                  <div className="text-white font-medium">{selectedUser.username}</div>
+                  <div className="text-white font-medium">
+                    {selectedUser.username}
+                  </div>
                   <div className="text-sm text-gray-400">
-                    GC: {selectedUser.goldCoins.toLocaleString()} | 
-                    SC: {selectedUser.sweepsCoins.toFixed(2)} | 
-                    VIP: {selectedUser.vipPoints}
+                    GC: {selectedUser.goldCoins.toLocaleString()} | SC:{" "}
+                    {selectedUser.sweepsCoins.toFixed(2)} | VIP:{" "}
+                    {selectedUser.vipPoints}
                   </div>
                 </div>
               )}
@@ -1023,7 +1202,10 @@ export function CasinoBanking() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-white">Action</Label>
-                  <Select value={balanceAction} onValueChange={(value: any) => setBalanceAction(value)}>
+                  <Select
+                    value={balanceAction}
+                    onValueChange={(value: any) => setBalanceAction(value)}
+                  >
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
@@ -1036,7 +1218,10 @@ export function CasinoBanking() {
 
                 <div>
                   <Label className="text-white">Currency</Label>
-                  <Select value={balanceCurrency} onValueChange={(value: any) => setBalanceCurrency(value)}>
+                  <Select
+                    value={balanceCurrency}
+                    onValueChange={(value: any) => setBalanceCurrency(value)}
+                  >
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
@@ -1078,7 +1263,9 @@ export function CasinoBanking() {
                   className={`flex-1 ${balanceAction === "credit" ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700"}`}
                   disabled={isProcessing || !balanceAmount || !balanceReason}
                 >
-                  {isProcessing ? "Processing..." : `${balanceAction === "credit" ? "Credit" : "Debit"} ${balanceAmount} ${balanceCurrency}`}
+                  {isProcessing
+                    ? "Processing..."
+                    : `${balanceAction === "credit" ? "Credit" : "Debit"} ${balanceAmount} ${balanceCurrency}`}
                 </Button>
                 <Button
                   variant="outline"
