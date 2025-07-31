@@ -41,10 +41,17 @@ export function Ticker() {
   }, []);
 
   const fetchTickerItems = async (retryCount = 0) => {
+    let timeoutId: NodeJS.Timeout | null = null;
+    let controller: AbortController | null = null;
+
     try {
-      // Add timeout and more robust error handling
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      // Create abort controller and timeout
+      controller = new AbortController();
+      timeoutId = setTimeout(() => {
+        if (controller && !controller.signal.aborted) {
+          controller.abort();
+        }
+      }, 8000); // Increased timeout to 8 seconds
 
       const response = await fetch("/api/ticker", {
         signal: controller.signal,
@@ -54,7 +61,11 @@ export function Ticker() {
         },
       });
 
-      clearTimeout(timeoutId);
+      // Clear timeout on successful response
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
 
       if (response.ok) {
         const contentType = response.headers.get("content-type");
@@ -79,21 +90,32 @@ export function Ticker() {
         setTickerItems(fallbackItems);
       }
     } catch (error) {
-      console.error("Error fetching ticker items:", error);
+      // Clean up timeout if it exists
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
 
-      // Check if it's a network error or abort error
+      // Handle different error types
       if (error instanceof Error) {
         if (error.name === "AbortError") {
-          console.warn("Ticker request timed out");
+          console.warn("Ticker request was aborted (timeout or cancellation)");
+          // Don't retry on abort errors, just use fallback
+          setTickerItems(fallbackItems);
+          return;
         } else if (error.message.includes("Failed to fetch")) {
           console.warn(
             "Network error fetching ticker - server may be unavailable",
           );
+        } else {
+          console.error("Error fetching ticker items:", error);
         }
+      } else {
+        console.error("Unknown error fetching ticker items:", error);
       }
 
-      // Retry once after a short delay
-      if (retryCount < 1) {
+      // Retry once after a short delay (but not for abort errors)
+      if (retryCount < 1 && !(error instanceof Error && error.name === "AbortError")) {
         console.log(`Retrying ticker fetch... attempt ${retryCount + 1}`);
         setTimeout(() => fetchTickerItems(retryCount + 1), 3000);
         return;
@@ -103,6 +125,11 @@ export function Ticker() {
       console.log("Using fallback ticker items after failed retries");
       setTickerItems(fallbackItems);
     } finally {
+      // Clean up timeout if it still exists
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+
       if (retryCount === 0) {
         // Only set loading false on first attempt
         setIsLoading(false);
