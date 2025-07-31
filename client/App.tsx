@@ -33,7 +33,6 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <div className="min-h-screen flex flex-col">
-            <Ticker />
             <Header />
             <main className="flex-1">
               <Routes>
@@ -61,7 +60,6 @@ const App = () => (
               </Routes>
             </main>
             <Footer />
-            <AdminToolbar />
           </div>
         </AuthProvider>
       </BrowserRouter>
