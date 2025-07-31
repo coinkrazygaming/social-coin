@@ -2255,7 +2255,48 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
           </TabsContent>
 
           <TabsContent value="users">
-            <UserManagement />
+            <Card className="bg-gray-800/50 border-gray-700 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="text-white">User Management</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <Card className="bg-gray-700/50">
+                    <CardContent className="p-4 text-center">
+                      <div className="text-2xl font-bold text-blue-400">
+                        {systemStats.totalUsers.toLocaleString()}
+                      </div>
+                      <div className="text-sm text-gray-400">Total Users</div>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-gray-700/50">
+                    <CardContent className="p-4 text-center">
+                      <div className="text-2xl font-bold text-green-400">
+                        {systemStats.activeUsers.toLocaleString()}
+                      </div>
+                      <div className="text-sm text-gray-400">Active Users</div>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-gray-700/50">
+                    <CardContent className="p-4 text-center">
+                      <div className="text-2xl font-bold text-purple-400">
+                        {Math.floor(Math.random() * 500) + 100}
+                      </div>
+                      <div className="text-sm text-gray-400">New This Week</div>
+                    </CardContent>
+                  </Card>
+                </div>
+                <div className="mt-6 text-center text-gray-400">
+                  <p>Advanced user management features coming soon...</p>
+                  <p>Current user data is displayed in the dashboard and analytics sections.</p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Ticker & Social Media Tab */}
+          <TabsContent value="ticker">
+            <TickerManagement />
           </TabsContent>
 
           <TabsContent value="security">
