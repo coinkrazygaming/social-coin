@@ -1,6 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "./ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Progress } from "./ui/progress";
 import { Timer, Target, Trophy, Play, RotateCcw } from "lucide-react";
@@ -17,7 +23,7 @@ interface Cat {
   y: number;
   velocityX: number;
   velocityY: number;
-  type: 'normal' | 'fast' | 'sneaky' | 'golden';
+  type: "normal" | "fast" | "sneaky" | "golden";
   size: number;
   active: boolean;
   escaping: boolean;
@@ -34,14 +40,24 @@ interface Cage {
   catchRadius: number;
 }
 
-export function BrensMeow({ userId, username, onGameComplete }: BrensMeowProps) {
+export function BrensMeow({
+  userId,
+  username,
+  onGameComplete,
+}: BrensMeowProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
   const [score, setScore] = useState(0);
   const [catsEscaped, setCatsEscaped] = useState(0);
   const [catsCaught, setCatsCaught] = useState(0);
   const [cats, setCats] = useState<Cat[]>([]);
-  const [cage, setCage] = useState<Cage>({ x: 0, y: 0, size: 40, active: false, catchRadius: 60 });
+  const [cage, setCage] = useState<Cage>({
+    x: 0,
+    y: 0,
+    size: 40,
+    active: false,
+    catchRadius: 60,
+  });
   const [gameStarted, setGameStarted] = useState(false);
   const [gameEnded, setGameEnded] = useState(false);
   const [mouseX, setMouseX] = useState(0);
@@ -65,7 +81,13 @@ export function BrensMeow({ userId, username, onGameComplete }: BrensMeowProps) 
     setCatsEscaped(0);
     setCatsCaught(0);
     setCats([]);
-    setCage({ x: CANVAS_WIDTH / 2, y: CANVAS_HEIGHT / 2, size: 40, active: false, catchRadius: 60 });
+    setCage({
+      x: CANVAS_WIDTH / 2,
+      y: CANVAS_HEIGHT / 2,
+      size: 40,
+      active: false,
+      catchRadius: 60,
+    });
 
     gameTimerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
@@ -85,7 +107,7 @@ export function BrensMeow({ userId, username, onGameComplete }: BrensMeowProps) 
   const endGame = useCallback(() => {
     setIsPlaying(false);
     setGameEnded(true);
-    
+
     if (gameTimerRef.current) {
       clearInterval(gameTimerRef.current);
     }
@@ -99,9 +121,9 @@ export function BrensMeow({ userId, username, onGameComplete }: BrensMeowProps) 
     // Calculate SC earned based on score
     let scEarned = 0;
     if (score >= 1500) scEarned = 0.25;
-    else if (score >= 1200) scEarned = 0.20;
+    else if (score >= 1200) scEarned = 0.2;
     else if (score >= 900) scEarned = 0.15;
-    else if (score >= 600) scEarned = 0.10;
+    else if (score >= 600) scEarned = 0.1;
     else if (score >= 300) scEarned = 0.05;
 
     setTimeout(() => {
@@ -112,13 +134,20 @@ export function BrensMeow({ userId, username, onGameComplete }: BrensMeowProps) 
   const spawnCat = useCallback(() => {
     if (!isPlaying) return;
 
-    const catTypes = ['normal', 'normal', 'normal', 'fast', 'sneaky', 'golden'] as const;
+    const catTypes = [
+      "normal",
+      "normal",
+      "normal",
+      "fast",
+      "sneaky",
+      "golden",
+    ] as const;
     const type = catTypes[Math.floor(Math.random() * catTypes.length)];
-    
+
     // Spawn from edges
     const spawnSide = Math.floor(Math.random() * 4);
     let x, y, velocityX, velocityY;
-    
+
     switch (spawnSide) {
       case 0: // Top
         x = Math.random() * CANVAS_WIDTH;
@@ -147,11 +176,18 @@ export function BrensMeow({ userId, username, onGameComplete }: BrensMeowProps) 
     }
 
     // Adjust speed based on cat type
-    const speedMultiplier = type === 'fast' ? 2 : type === 'sneaky' ? 0.7 : type === 'golden' ? 1.2 : 1;
+    const speedMultiplier =
+      type === "fast"
+        ? 2
+        : type === "sneaky"
+          ? 0.7
+          : type === "golden"
+            ? 1.2
+            : 1;
     velocityX *= speedMultiplier;
     velocityY *= speedMultiplier;
 
-    const size = type === 'golden' ? 35 : type === 'sneaky' ? 20 : 25;
+    const size = type === "golden" ? 35 : type === "sneaky" ? 20 : 25;
 
     const newCat: Cat = {
       id: Date.now() + Math.random(),
@@ -168,165 +204,181 @@ export function BrensMeow({ userId, username, onGameComplete }: BrensMeowProps) 
       lastDirectionChange: Date.now(),
     };
 
-    setCats(prev => [...prev, newCat]);
+    setCats((prev) => [...prev, newCat]);
   }, [isPlaying]);
 
-  const handleMouseMove = useCallback((event: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isPlaying) return;
+  const handleMouseMove = useCallback(
+    (event: React.MouseEvent<HTMLCanvasElement>) => {
+      if (!isPlaying) return;
 
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+      const canvas = canvasRef.current;
+      if (!canvas) return;
 
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    
-    const newMouseX = (event.clientX - rect.left) * scaleX;
-    const newMouseY = (event.clientY - rect.top) * scaleY;
-    
-    setMouseX(newMouseX);
-    setMouseY(newMouseY);
-    
-    setCage(prev => ({
-      ...prev,
-      x: newMouseX,
-      y: newMouseY,
-    }));
-  }, [isPlaying]);
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+
+      const newMouseX = (event.clientX - rect.left) * scaleX;
+      const newMouseY = (event.clientY - rect.top) * scaleY;
+
+      setMouseX(newMouseX);
+      setMouseY(newMouseY);
+
+      setCage((prev) => ({
+        ...prev,
+        x: newMouseX,
+        y: newMouseY,
+      }));
+    },
+    [isPlaying],
+  );
 
   const handleMouseDown = useCallback(() => {
     if (!isPlaying) return;
-    
-    setCage(prev => ({ ...prev, active: true }));
-    
+
+    setCage((prev) => ({ ...prev, active: true }));
+
     // Check for cat catches
-    setCats(prevCats => prevCats.map(cat => {
-      if (cat.active && !cat.caught) {
-        const distance = Math.sqrt((cat.x - cage.x) ** 2 + (cat.y - cage.y) ** 2);
-        
-        if (distance <= cage.catchRadius) {
-          // Cat caught!
-          setCatsCaught(prev => prev + 1);
-          
-          let points = 0;
-          switch (cat.type) {
-            case 'normal':
-              points = 100;
-              break;
-            case 'fast':
-              points = 200;
-              break;
-            case 'sneaky':
-              points = 150;
-              break;
-            case 'golden':
-              points = 500;
-              break;
+    setCats((prevCats) =>
+      prevCats.map((cat) => {
+        if (cat.active && !cat.caught) {
+          const distance = Math.sqrt(
+            (cat.x - cage.x) ** 2 + (cat.y - cage.y) ** 2,
+          );
+
+          if (distance <= cage.catchRadius) {
+            // Cat caught!
+            setCatsCaught((prev) => prev + 1);
+
+            let points = 0;
+            switch (cat.type) {
+              case "normal":
+                points = 100;
+                break;
+              case "fast":
+                points = 200;
+                break;
+              case "sneaky":
+                points = 150;
+                break;
+              case "golden":
+                points = 500;
+                break;
+            }
+
+            setScore((prev) => prev + points);
+            return { ...cat, caught: true, active: false };
           }
-          
-          setScore(prev => prev + points);
-          return { ...cat, caught: true, active: false };
         }
-      }
-      return cat;
-    }));
+        return cat;
+      }),
+    );
   }, [isPlaying, cage]);
 
   const handleMouseUp = useCallback(() => {
-    setCage(prev => ({ ...prev, active: false }));
+    setCage((prev) => ({ ...prev, active: false }));
   }, []);
 
   const updateCats = useCallback(() => {
     const currentTime = Date.now();
-    
-    setCats(prevCats => prevCats.map(cat => {
-      if (!cat.active || cat.caught) return cat;
 
-      let newX = cat.x + cat.velocityX;
-      let newY = cat.y + cat.velocityY;
-      let newVelocityX = cat.velocityX;
-      let newVelocityY = cat.velocityY;
+    setCats((prevCats) =>
+      prevCats
+        .map((cat) => {
+          if (!cat.active || cat.caught) return cat;
 
-      // Cat AI behavior
-      const timeSinceSpawn = currentTime - cat.spawnTime;
-      const timeSinceDirectionChange = currentTime - cat.lastDirectionChange;
+          let newX = cat.x + cat.velocityX;
+          let newY = cat.y + cat.velocityY;
+          let newVelocityX = cat.velocityX;
+          let newVelocityY = cat.velocityY;
 
-      // Make cats run away from the cage
-      const distanceToCage = Math.sqrt((newX - cage.x) ** 2 + (newY - cage.y) ** 2);
-      const fleeDistance = cat.type === 'sneaky' ? 120 : 80;
+          // Cat AI behavior
+          const timeSinceSpawn = currentTime - cat.spawnTime;
+          const timeSinceDirectionChange =
+            currentTime - cat.lastDirectionChange;
 
-      if (distanceToCage < fleeDistance) {
-        // Run away from cage
-        const fleeX = newX - cage.x;
-        const fleeY = newY - cage.y;
-        const fleeLength = Math.sqrt(fleeX ** 2 + fleeY ** 2);
-        
-        if (fleeLength > 0) {
-          const fleeForce = cat.type === 'fast' ? 3 : cat.type === 'sneaky' ? 2 : 2.5;
-          newVelocityX += (fleeX / fleeLength) * fleeForce;
-          newVelocityY += (fleeY / fleeLength) * fleeForce;
-        }
-      }
+          // Make cats run away from the cage
+          const distanceToCage = Math.sqrt(
+            (newX - cage.x) ** 2 + (newY - cage.y) ** 2,
+          );
+          const fleeDistance = cat.type === "sneaky" ? 120 : 80;
 
-      // Random direction changes
-      if (timeSinceDirectionChange > 2000 + Math.random() * 3000) {
-        const randomForce = cat.type === 'sneaky' ? 1 : 0.5;
-        newVelocityX += (Math.random() - 0.5) * randomForce;
-        newVelocityY += (Math.random() - 0.5) * randomForce;
-        cat.lastDirectionChange = currentTime;
-      }
+          if (distanceToCage < fleeDistance) {
+            // Run away from cage
+            const fleeX = newX - cage.x;
+            const fleeY = newY - cage.y;
+            const fleeLength = Math.sqrt(fleeX ** 2 + fleeY ** 2);
 
-      // Limit velocity
-      const maxSpeed = cat.type === 'fast' ? 5 : cat.type === 'sneaky' ? 3 : 4;
-      const currentSpeed = Math.sqrt(newVelocityX ** 2 + newVelocityY ** 2);
-      if (currentSpeed > maxSpeed) {
-        newVelocityX = (newVelocityX / currentSpeed) * maxSpeed;
-        newVelocityY = (newVelocityY / currentSpeed) * maxSpeed;
-      }
+            if (fleeLength > 0) {
+              const fleeForce =
+                cat.type === "fast" ? 3 : cat.type === "sneaky" ? 2 : 2.5;
+              newVelocityX += (fleeX / fleeLength) * fleeForce;
+              newVelocityY += (fleeY / fleeLength) * fleeForce;
+            }
+          }
 
-      // Bounce off walls
-      if (newX <= cat.size || newX >= CANVAS_WIDTH - cat.size) {
-        newVelocityX = -newVelocityX * 0.8;
-        newX = Math.max(cat.size, Math.min(CANVAS_WIDTH - cat.size, newX));
-      }
-      if (newY <= cat.size || newY >= CANVAS_HEIGHT - cat.size) {
-        newVelocityY = -newVelocityY * 0.8;
-        newY = Math.max(cat.size, Math.min(CANVAS_HEIGHT - cat.size, newY));
-      }
+          // Random direction changes
+          if (timeSinceDirectionChange > 2000 + Math.random() * 3000) {
+            const randomForce = cat.type === "sneaky" ? 1 : 0.5;
+            newVelocityX += (Math.random() - 0.5) * randomForce;
+            newVelocityY += (Math.random() - 0.5) * randomForce;
+            cat.lastDirectionChange = currentTime;
+          }
 
-      // Check if cat escaped (been on screen too long)
-      if (timeSinceSpawn > 15000) {
-        setCatsEscaped(prev => prev + 1);
-        return { ...cat, active: false, escaping: true };
-      }
+          // Limit velocity
+          const maxSpeed =
+            cat.type === "fast" ? 5 : cat.type === "sneaky" ? 3 : 4;
+          const currentSpeed = Math.sqrt(newVelocityX ** 2 + newVelocityY ** 2);
+          if (currentSpeed > maxSpeed) {
+            newVelocityX = (newVelocityX / currentSpeed) * maxSpeed;
+            newVelocityY = (newVelocityY / currentSpeed) * maxSpeed;
+          }
 
-      return {
-        ...cat,
-        x: newX,
-        y: newY,
-        velocityX: newVelocityX,
-        velocityY: newVelocityY,
-      };
-    }).filter(cat => cat.active || (Date.now() - cat.spawnTime < 16000)));
+          // Bounce off walls
+          if (newX <= cat.size || newX >= CANVAS_WIDTH - cat.size) {
+            newVelocityX = -newVelocityX * 0.8;
+            newX = Math.max(cat.size, Math.min(CANVAS_WIDTH - cat.size, newX));
+          }
+          if (newY <= cat.size || newY >= CANVAS_HEIGHT - cat.size) {
+            newVelocityY = -newVelocityY * 0.8;
+            newY = Math.max(cat.size, Math.min(CANVAS_HEIGHT - cat.size, newY));
+          }
+
+          // Check if cat escaped (been on screen too long)
+          if (timeSinceSpawn > 15000) {
+            setCatsEscaped((prev) => prev + 1);
+            return { ...cat, active: false, escaping: true };
+          }
+
+          return {
+            ...cat,
+            x: newX,
+            y: newY,
+            velocityX: newVelocityX,
+            velocityY: newVelocityY,
+          };
+        })
+        .filter((cat) => cat.active || Date.now() - cat.spawnTime < 16000),
+    );
   }, [cage]);
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
-    const ctx = canvas.getContext('2d');
+
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     // Clear canvas with grass background
     const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
-    gradient.addColorStop(0, '#87CEEB');
-    gradient.addColorStop(0.3, '#98FB98');
-    gradient.addColorStop(1, '#228B22');
+    gradient.addColorStop(0, "#87CEEB");
+    gradient.addColorStop(0.3, "#98FB98");
+    gradient.addColorStop(1, "#228B22");
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
     // Draw grass texture
-    ctx.fillStyle = 'rgba(34, 139, 34, 0.3)';
+    ctx.fillStyle = "rgba(34, 139, 34, 0.3)";
     for (let i = 0; i < 100; i++) {
       const x = Math.random() * CANVAS_WIDTH;
       const y = CANVAS_HEIGHT * 0.3 + Math.random() * CANVAS_HEIGHT * 0.7;
@@ -334,73 +386,90 @@ export function BrensMeow({ userId, username, onGameComplete }: BrensMeowProps) 
     }
 
     // Draw trees/bushes
-    ctx.fillStyle = '#228B22';
+    ctx.fillStyle = "#228B22";
     for (let i = 0; i < 8; i++) {
-      const treeX = (i * CANVAS_WIDTH / 8) + 50;
+      const treeX = (i * CANVAS_WIDTH) / 8 + 50;
       const treeY = CANVAS_HEIGHT * 0.2;
-      
+
       ctx.beginPath();
       ctx.arc(treeX, treeY, 30, 0, Math.PI * 2);
       ctx.fill();
     }
 
     // Draw cats
-    cats.forEach(cat => {
+    cats.forEach((cat) => {
       if (!cat.active && !cat.escaping) return;
 
       ctx.save();
       ctx.translate(cat.x, cat.y);
-      
+
       // Cat body
-      let catColor = '#8B4513';
-      if (cat.type === 'golden') catColor = '#FFD700';
-      else if (cat.type === 'fast') catColor = '#FF6B6B';
-      else if (cat.type === 'sneaky') catColor = '#666666';
-      
+      let catColor = "#8B4513";
+      if (cat.type === "golden") catColor = "#FFD700";
+      else if (cat.type === "fast") catColor = "#FF6B6B";
+      else if (cat.type === "sneaky") catColor = "#666666";
+
       ctx.fillStyle = catColor;
       ctx.beginPath();
       ctx.ellipse(0, 0, cat.size * 0.8, cat.size * 0.6, 0, 0, Math.PI * 2);
       ctx.fill();
-      
+
       // Cat head
       ctx.beginPath();
       ctx.arc(-cat.size * 0.5, -cat.size * 0.3, cat.size * 0.5, 0, Math.PI * 2);
       ctx.fill();
-      
+
       // Cat ears
       ctx.beginPath();
       ctx.moveTo(-cat.size * 0.8, -cat.size * 0.6);
       ctx.lineTo(-cat.size * 0.6, -cat.size * 0.9);
       ctx.lineTo(-cat.size * 0.4, -cat.size * 0.6);
       ctx.fill();
-      
+
       ctx.beginPath();
       ctx.moveTo(-cat.size * 0.6, -cat.size * 0.6);
       ctx.lineTo(-cat.size * 0.4, -cat.size * 0.9);
       ctx.lineTo(-cat.size * 0.2, -cat.size * 0.6);
       ctx.fill();
-      
+
       // Cat eyes
-      ctx.fillStyle = '#000000';
+      ctx.fillStyle = "#000000";
       ctx.beginPath();
-      ctx.arc(-cat.size * 0.7, -cat.size * 0.4, cat.size * 0.08, 0, Math.PI * 2);
+      ctx.arc(
+        -cat.size * 0.7,
+        -cat.size * 0.4,
+        cat.size * 0.08,
+        0,
+        Math.PI * 2,
+      );
       ctx.fill();
-      
+
       ctx.beginPath();
-      ctx.arc(-cat.size * 0.3, -cat.size * 0.4, cat.size * 0.08, 0, Math.PI * 2);
+      ctx.arc(
+        -cat.size * 0.3,
+        -cat.size * 0.4,
+        cat.size * 0.08,
+        0,
+        Math.PI * 2,
+      );
       ctx.fill();
-      
+
       // Cat tail
       ctx.strokeStyle = catColor;
       ctx.lineWidth = cat.size * 0.2;
       ctx.beginPath();
       ctx.moveTo(cat.size * 0.8, 0);
-      ctx.quadraticCurveTo(cat.size * 1.2, -cat.size * 0.5, cat.size * 0.9, -cat.size * 0.8);
+      ctx.quadraticCurveTo(
+        cat.size * 1.2,
+        -cat.size * 0.5,
+        cat.size * 0.9,
+        -cat.size * 0.8,
+      );
       ctx.stroke();
-      
+
       // Speed indicator for fast cats
-      if (cat.type === 'fast') {
-        ctx.strokeStyle = '#FFFFFF';
+      if (cat.type === "fast") {
+        ctx.strokeStyle = "#FFFFFF";
         ctx.lineWidth = 2;
         for (let i = 0; i < 3; i++) {
           ctx.beginPath();
@@ -409,11 +478,11 @@ export function BrensMeow({ userId, username, onGameComplete }: BrensMeowProps) 
           ctx.stroke();
         }
       }
-      
+
       // Stealth indicator for sneaky cats
-      if (cat.type === 'sneaky') {
+      if (cat.type === "sneaky") {
         ctx.globalAlpha = 0.7;
-        ctx.strokeStyle = '#666666';
+        ctx.strokeStyle = "#666666";
         ctx.lineWidth = 1;
         ctx.setLineDash([5, 5]);
         ctx.beginPath();
@@ -422,34 +491,42 @@ export function BrensMeow({ userId, username, onGameComplete }: BrensMeowProps) 
         ctx.setLineDash([]);
         ctx.globalAlpha = 1;
       }
-      
+
       ctx.restore();
     });
 
     // Draw cage/net
-    ctx.strokeStyle = cage.active ? '#FFD700' : '#8B4513';
+    ctx.strokeStyle = cage.active ? "#FFD700" : "#8B4513";
     ctx.lineWidth = cage.active ? 4 : 2;
-    
+
     // Cage circle
     ctx.beginPath();
     ctx.arc(cage.x, cage.y, cage.catchRadius, 0, Math.PI * 2);
     ctx.stroke();
-    
+
     // Net pattern
     if (cage.active) {
       ctx.globalAlpha = 0.3;
-      ctx.fillStyle = '#FFD700';
+      ctx.fillStyle = "#FFD700";
       ctx.fill();
       ctx.globalAlpha = 1;
-      
+
       // Net grid
       const gridSize = 20;
       ctx.beginPath();
-      for (let x = cage.x - cage.catchRadius; x <= cage.x + cage.catchRadius; x += gridSize) {
+      for (
+        let x = cage.x - cage.catchRadius;
+        x <= cage.x + cage.catchRadius;
+        x += gridSize
+      ) {
         ctx.moveTo(x, cage.y - cage.catchRadius);
         ctx.lineTo(x, cage.y + cage.catchRadius);
       }
-      for (let y = cage.y - cage.catchRadius; y <= cage.y + cage.catchRadius; y += gridSize) {
+      for (
+        let y = cage.y - cage.catchRadius;
+        y <= cage.y + cage.catchRadius;
+        y += gridSize
+      ) {
         ctx.moveTo(cage.x - cage.catchRadius, y);
         ctx.lineTo(cage.x + cage.catchRadius, y);
       }
@@ -457,7 +534,7 @@ export function BrensMeow({ userId, username, onGameComplete }: BrensMeowProps) 
     }
 
     // Draw cage center
-    ctx.fillStyle = cage.active ? '#FFD700' : '#8B4513';
+    ctx.fillStyle = cage.active ? "#FFD700" : "#8B4513";
     ctx.beginPath();
     ctx.arc(cage.x, cage.y, 8, 0, Math.PI * 2);
     ctx.fill();
@@ -473,7 +550,7 @@ export function BrensMeow({ userId, username, onGameComplete }: BrensMeowProps) 
     if (gameStarted && !gameEnded) {
       animate();
     }
-    
+
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
@@ -495,7 +572,10 @@ export function BrensMeow({ userId, username, onGameComplete }: BrensMeowProps) 
     };
   }, []);
 
-  const catchRate = (catsCaught + catsEscaped) > 0 ? Math.round((catsCaught / (catsCaught + catsEscaped)) * 100) : 0;
+  const catchRate =
+    catsCaught + catsEscaped > 0
+      ? Math.round((catsCaught / (catsCaught + catsEscaped)) * 100)
+      : 0;
 
   if (!gameStarted) {
     return (
@@ -524,12 +604,14 @@ export function BrensMeow({ userId, username, onGameComplete }: BrensMeowProps) 
                 <div className="text-xs">0.25 SC</div>
               </div>
               <div className="bg-muted p-3 rounded-lg">
-                <div className="text-yellow-400 font-semibold">1200+ Points</div>
+                <div className="text-yellow-400 font-semibold">
+                  1200+ Points
+                </div>
                 <div className="text-xs">0.20 SC</div>
               </div>
             </div>
-            <Button 
-              onClick={startGame} 
+            <Button
+              onClick={startGame}
               className="w-full bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground"
             >
               <Play className="h-4 w-4 mr-2" />
@@ -559,7 +641,9 @@ export function BrensMeow({ userId, username, onGameComplete }: BrensMeowProps) 
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-casino-red">{catsEscaped}</div>
+            <div className="text-2xl font-bold text-casino-red">
+              {catsEscaped}
+            </div>
             <div className="text-sm text-muted-foreground">Escaped</div>
           </CardContent>
         </Card>
@@ -614,15 +698,18 @@ export function BrensMeow({ userId, username, onGameComplete }: BrensMeowProps) 
               onMouseDown={handleMouseDown}
               onMouseUp={handleMouseUp}
               onMouseLeave={handleMouseUp}
-              style={{ maxWidth: '100%', height: 'auto' }}
+              style={{ maxWidth: "100%", height: "auto" }}
             />
-            
+
             {isPlaying && (
               <div className="text-center space-y-2">
                 <div className="text-lg font-semibold">
                   Move mouse to position cage, click to catch cats!
                 </div>
-                <Progress value={(60 - timeLeft) / 60 * 100} className="w-64" />
+                <Progress
+                  value={((60 - timeLeft) / 60) * 100}
+                  className="w-64"
+                />
               </div>
             )}
 
@@ -636,14 +723,27 @@ export function BrensMeow({ userId, username, onGameComplete }: BrensMeowProps) 
                     <div className="text-muted-foreground">Total Score</div>
                   </div>
                   <div>
-                    <div className="text-xl font-bold text-sweep">{catchRate}%</div>
+                    <div className="text-xl font-bold text-sweep">
+                      {catchRate}%
+                    </div>
                     <div className="text-muted-foreground">Catch Rate</div>
                   </div>
                 </div>
                 <div className="text-lg">
                   You earned{" "}
                   <span className="text-gold font-bold">
-                    {score >= 1500 ? "0.25" : score >= 1200 ? "0.20" : score >= 900 ? "0.15" : score >= 600 ? "0.10" : score >= 300 ? "0.05" : "0.00"} SC
+                    {score >= 1500
+                      ? "0.25"
+                      : score >= 1200
+                        ? "0.20"
+                        : score >= 900
+                          ? "0.15"
+                          : score >= 600
+                            ? "0.10"
+                            : score >= 300
+                              ? "0.05"
+                              : "0.00"}{" "}
+                    SC
                   </span>
                 </div>
               </div>

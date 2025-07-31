@@ -1,6 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "./ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Progress } from "./ui/progress";
 import { Timer, Target, Trophy, Play, RotateCcw } from "lucide-react";
@@ -28,15 +34,19 @@ interface SelectedGem {
 const GEM_TYPES = 6;
 const GRID_SIZE = 8;
 const GEM_COLORS = [
-  '#FF0000', // Red
-  '#00FF00', // Green
-  '#0000FF', // Blue
-  '#FFFF00', // Yellow
-  '#FF00FF', // Magenta
-  '#00FFFF', // Cyan
+  "#FF0000", // Red
+  "#00FF00", // Green
+  "#0000FF", // Blue
+  "#FFFF00", // Yellow
+  "#FF00FF", // Magenta
+  "#00FFFF", // Cyan
 ];
 
-export function CoreysFastJewels({ userId, username, onGameComplete }: CoreysFastJewelsProps) {
+export function CoreysFastJewels({
+  userId,
+  username,
+  onGameComplete,
+}: CoreysFastJewelsProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
   const [score, setScore] = useState(0);
@@ -71,7 +81,7 @@ export function CoreysFastJewels({ userId, username, onGameComplete }: CoreysFas
 
   const initializeGrid = useCallback(() => {
     const newGrid: Gem[][] = [];
-    
+
     for (let y = 0; y < GRID_SIZE; y++) {
       newGrid[y] = [];
       for (let x = 0; x < GRID_SIZE; x++) {
@@ -80,13 +90,17 @@ export function CoreysFastJewels({ userId, username, onGameComplete }: CoreysFas
           gem = createRandomGem(x, y);
         } while (
           // Avoid creating initial matches
-          (x >= 2 && newGrid[y][x - 1].type === gem.type && newGrid[y][x - 2].type === gem.type) ||
-          (y >= 2 && newGrid[y - 1][x].type === gem.type && newGrid[y - 2][x].type === gem.type)
+          (x >= 2 &&
+            newGrid[y][x - 1].type === gem.type &&
+            newGrid[y][x - 2].type === gem.type) ||
+          (y >= 2 &&
+            newGrid[y - 1][x].type === gem.type &&
+            newGrid[y - 2][x].type === gem.type)
         );
         newGrid[y][x] = gem;
       }
     }
-    
+
     return newGrid;
   }, [createRandomGem]);
 
@@ -101,7 +115,7 @@ export function CoreysFastJewels({ userId, username, onGameComplete }: CoreysFas
     setCombo(0);
     setSelectedGem(null);
     setIsProcessing(false);
-    
+
     const newGrid = initializeGrid();
     setGrid(newGrid);
 
@@ -119,7 +133,7 @@ export function CoreysFastJewels({ userId, username, onGameComplete }: CoreysFas
   const endGame = useCallback(() => {
     setIsPlaying(false);
     setGameEnded(true);
-    
+
     if (gameTimerRef.current) {
       clearInterval(gameTimerRef.current);
     }
@@ -130,9 +144,9 @@ export function CoreysFastJewels({ userId, username, onGameComplete }: CoreysFas
     // Calculate SC earned based on score
     let scEarned = 0;
     if (score >= 3000) scEarned = 0.25;
-    else if (score >= 2500) scEarned = 0.20;
+    else if (score >= 2500) scEarned = 0.2;
     else if (score >= 2000) scEarned = 0.15;
-    else if (score >= 1500) scEarned = 0.10;
+    else if (score >= 1500) scEarned = 0.1;
     else if (score >= 1000) scEarned = 0.05;
 
     setTimeout(() => {
@@ -140,228 +154,263 @@ export function CoreysFastJewels({ userId, username, onGameComplete }: CoreysFas
     }, 2000);
   }, [score, onGameComplete]);
 
-  const findMatches = useCallback((grid: Gem[][]): { x: number; y: number }[] => {
-    const matches: { x: number; y: number }[] = [];
-    
-    // Check horizontal matches
-    for (let y = 0; y < GRID_SIZE; y++) {
-      let count = 1;
-      let currentType = grid[y][0].type;
-      
-      for (let x = 1; x < GRID_SIZE; x++) {
-        if (grid[y][x].type === currentType) {
-          count++;
-        } else {
-          if (count >= 3) {
-            for (let i = x - count; i < x; i++) {
-              matches.push({ x: i, y });
-            }
-          }
-          count = 1;
-          currentType = grid[y][x].type;
-        }
-      }
-      
-      if (count >= 3) {
-        for (let i = GRID_SIZE - count; i < GRID_SIZE; i++) {
-          matches.push({ x: i, y });
-        }
-      }
-    }
-    
-    // Check vertical matches
-    for (let x = 0; x < GRID_SIZE; x++) {
-      let count = 1;
-      let currentType = grid[0][x].type;
-      
-      for (let y = 1; y < GRID_SIZE; y++) {
-        if (grid[y][x].type === currentType) {
-          count++;
-        } else {
-          if (count >= 3) {
-            for (let i = y - count; i < y; i++) {
-              matches.push({ x, y: i });
-            }
-          }
-          count = 1;
-          currentType = grid[y][x].type;
-        }
-      }
-      
-      if (count >= 3) {
-        for (let i = GRID_SIZE - count; i < GRID_SIZE; i++) {
-          matches.push({ x, y: i });
-        }
-      }
-    }
-    
-    return matches;
-  }, []);
+  const findMatches = useCallback(
+    (grid: Gem[][]): { x: number; y: number }[] => {
+      const matches: { x: number; y: number }[] = [];
 
-  const removeMatches = useCallback((grid: Gem[][], matches: { x: number; y: number }[]): Gem[][] => {
-    const newGrid = grid.map(row => [...row]);
-    
-    matches.forEach(({ x, y }) => {
-      newGrid[y][x].eliminating = true;
-    });
-    
-    return newGrid;
-  }, []);
+      // Check horizontal matches
+      for (let y = 0; y < GRID_SIZE; y++) {
+        let count = 1;
+        let currentType = grid[y][0].type;
 
-  const dropGems = useCallback((grid: Gem[][]): Gem[][] => {
-    const newGrid = grid.map(row => [...row]);
-    
-    for (let x = 0; x < GRID_SIZE; x++) {
-      let writeIndex = GRID_SIZE - 1;
-      
-      // Drop existing gems
-      for (let y = GRID_SIZE - 1; y >= 0; y--) {
-        if (!newGrid[y][x].eliminating) {
-          if (writeIndex !== y) {
-            newGrid[writeIndex][x] = { ...newGrid[y][x], y: writeIndex };
-            newGrid[y][x] = createRandomGem(x, y);
+        for (let x = 1; x < GRID_SIZE; x++) {
+          if (grid[y][x].type === currentType) {
+            count++;
+          } else {
+            if (count >= 3) {
+              for (let i = x - count; i < x; i++) {
+                matches.push({ x: i, y });
+              }
+            }
+            count = 1;
+            currentType = grid[y][x].type;
           }
-          writeIndex--;
+        }
+
+        if (count >= 3) {
+          for (let i = GRID_SIZE - count; i < GRID_SIZE; i++) {
+            matches.push({ x: i, y });
+          }
         }
       }
-      
-      // Fill empty spaces with new gems
-      for (let y = writeIndex; y >= 0; y--) {
-        newGrid[y][x] = createRandomGem(x, y);
+
+      // Check vertical matches
+      for (let x = 0; x < GRID_SIZE; x++) {
+        let count = 1;
+        let currentType = grid[0][x].type;
+
+        for (let y = 1; y < GRID_SIZE; y++) {
+          if (grid[y][x].type === currentType) {
+            count++;
+          } else {
+            if (count >= 3) {
+              for (let i = y - count; i < y; i++) {
+                matches.push({ x, y: i });
+              }
+            }
+            count = 1;
+            currentType = grid[y][x].type;
+          }
+        }
+
+        if (count >= 3) {
+          for (let i = GRID_SIZE - count; i < GRID_SIZE; i++) {
+            matches.push({ x, y: i });
+          }
+        }
       }
-    }
-    
-    return newGrid;
-  }, [createRandomGem]);
+
+      return matches;
+    },
+    [],
+  );
+
+  const removeMatches = useCallback(
+    (grid: Gem[][], matches: { x: number; y: number }[]): Gem[][] => {
+      const newGrid = grid.map((row) => [...row]);
+
+      matches.forEach(({ x, y }) => {
+        newGrid[y][x].eliminating = true;
+      });
+
+      return newGrid;
+    },
+    [],
+  );
+
+  const dropGems = useCallback(
+    (grid: Gem[][]): Gem[][] => {
+      const newGrid = grid.map((row) => [...row]);
+
+      for (let x = 0; x < GRID_SIZE; x++) {
+        let writeIndex = GRID_SIZE - 1;
+
+        // Drop existing gems
+        for (let y = GRID_SIZE - 1; y >= 0; y--) {
+          if (!newGrid[y][x].eliminating) {
+            if (writeIndex !== y) {
+              newGrid[writeIndex][x] = { ...newGrid[y][x], y: writeIndex };
+              newGrid[y][x] = createRandomGem(x, y);
+            }
+            writeIndex--;
+          }
+        }
+
+        // Fill empty spaces with new gems
+        for (let y = writeIndex; y >= 0; y--) {
+          newGrid[y][x] = createRandomGem(x, y);
+        }
+      }
+
+      return newGrid;
+    },
+    [createRandomGem],
+  );
 
   const processMatches = useCallback(async () => {
     if (isProcessing) return;
-    
+
     setIsProcessing(true);
     let currentGrid = [...grid];
     let totalMatches = 0;
     let currentCombo = 0;
-    
+
     while (true) {
       const matches = findMatches(currentGrid);
       if (matches.length === 0) break;
-      
+
       totalMatches += matches.length;
       currentCombo++;
-      
+
       // Calculate score with combo multiplier
       const baseScore = matches.length * 10;
       const comboBonus = currentCombo > 1 ? baseScore * (currentCombo - 1) : 0;
-      setScore(prev => prev + baseScore + comboBonus);
-      
-      setMatches(prev => prev + matches.length);
+      setScore((prev) => prev + baseScore + comboBonus);
+
+      setMatches((prev) => prev + matches.length);
       setCombo(currentCombo);
-      
+
       // Remove matches
       currentGrid = removeMatches(currentGrid, matches);
       setGrid(currentGrid);
-      
+
       // Wait for animation
-      await new Promise(resolve => setTimeout(resolve, 300));
-      
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
       // Drop gems
       currentGrid = dropGems(currentGrid);
       setGrid(currentGrid);
-      
+
       // Wait for drop animation
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300));
     }
-    
+
     setCombo(0);
     setIsProcessing(false);
   }, [grid, isProcessing, findMatches, removeMatches, dropGems]);
 
-  const swapGems = useCallback((x1: number, y1: number, x2: number, y2: number) => {
-    const newGrid = grid.map(row => [...row]);
-    const temp = newGrid[y1][x1];
-    newGrid[y1][x1] = newGrid[y2][x2];
-    newGrid[y2][x2] = temp;
-    
-    // Update positions
-    newGrid[y1][x1].x = x1;
-    newGrid[y1][x1].y = y1;
-    newGrid[y2][x2].x = x2;
-    newGrid[y2][x2].y = y2;
-    
-    return newGrid;
-  }, [grid]);
+  const swapGems = useCallback(
+    (x1: number, y1: number, x2: number, y2: number) => {
+      const newGrid = grid.map((row) => [...row]);
+      const temp = newGrid[y1][x1];
+      newGrid[y1][x1] = newGrid[y2][x2];
+      newGrid[y2][x2] = temp;
 
-  const isValidSwap = useCallback((x1: number, y1: number, x2: number, y2: number): boolean => {
-    const testGrid = swapGems(x1, y1, x2, y2);
-    const matches = findMatches(testGrid);
-    return matches.length > 0;
-  }, [swapGems, findMatches]);
+      // Update positions
+      newGrid[y1][x1].x = x1;
+      newGrid[y1][x1].y = y1;
+      newGrid[y2][x2].x = x2;
+      newGrid[y2][x2].y = y2;
 
-  const handleCanvasClick = useCallback((event: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isPlaying || isProcessing) return;
+      return newGrid;
+    },
+    [grid],
+  );
 
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+  const isValidSwap = useCallback(
+    (x1: number, y1: number, x2: number, y2: number): boolean => {
+      const testGrid = swapGems(x1, y1, x2, y2);
+      const matches = findMatches(testGrid);
+      return matches.length > 0;
+    },
+    [swapGems, findMatches],
+  );
 
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    
-    const clickX = Math.floor(((event.clientX - rect.left) * scaleX) / GEM_SIZE);
-    const clickY = Math.floor(((event.clientY - rect.top) * scaleY) / GEM_SIZE);
+  const handleCanvasClick = useCallback(
+    (event: React.MouseEvent<HTMLCanvasElement>) => {
+      if (!isPlaying || isProcessing) return;
 
-    if (clickX < 0 || clickX >= GRID_SIZE || clickY < 0 || clickY >= GRID_SIZE) return;
+      const canvas = canvasRef.current;
+      if (!canvas) return;
 
-    if (!selectedGem) {
-      setSelectedGem({ x: clickX, y: clickY });
-    } else {
-      const { x: sx, y: sy } = selectedGem;
-      
-      if (sx === clickX && sy === clickY) {
-        // Deselect if clicking the same gem
-        setSelectedGem(null);
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+
+      const clickX = Math.floor(
+        ((event.clientX - rect.left) * scaleX) / GEM_SIZE,
+      );
+      const clickY = Math.floor(
+        ((event.clientY - rect.top) * scaleY) / GEM_SIZE,
+      );
+
+      if (
+        clickX < 0 ||
+        clickX >= GRID_SIZE ||
+        clickY < 0 ||
+        clickY >= GRID_SIZE
+      )
+        return;
+
+      if (!selectedGem) {
+        setSelectedGem({ x: clickX, y: clickY });
       } else {
-        // Check if gems are adjacent
-        const dx = Math.abs(sx - clickX);
-        const dy = Math.abs(sy - clickY);
-        
-        if ((dx === 1 && dy === 0) || (dx === 0 && dy === 1)) {
-          // Valid adjacent swap
-          if (isValidSwap(sx, sy, clickX, clickY)) {
-            const newGrid = swapGems(sx, sy, clickX, clickY);
-            setGrid(newGrid);
-            setMoves(prev => prev + 1);
-            setSelectedGem(null);
-            
-            // Process matches after a short delay
-            setTimeout(() => {
-              processMatches();
-            }, 100);
-          } else {
-            // Invalid swap, animate back
-            setSelectedGem(null);
-          }
+        const { x: sx, y: sy } = selectedGem;
+
+        if (sx === clickX && sy === clickY) {
+          // Deselect if clicking the same gem
+          setSelectedGem(null);
         } else {
-          // Not adjacent, select new gem
-          setSelectedGem({ x: clickX, y: clickY });
+          // Check if gems are adjacent
+          const dx = Math.abs(sx - clickX);
+          const dy = Math.abs(sy - clickY);
+
+          if ((dx === 1 && dy === 0) || (dx === 0 && dy === 1)) {
+            // Valid adjacent swap
+            if (isValidSwap(sx, sy, clickX, clickY)) {
+              const newGrid = swapGems(sx, sy, clickX, clickY);
+              setGrid(newGrid);
+              setMoves((prev) => prev + 1);
+              setSelectedGem(null);
+
+              // Process matches after a short delay
+              setTimeout(() => {
+                processMatches();
+              }, 100);
+            } else {
+              // Invalid swap, animate back
+              setSelectedGem(null);
+            }
+          } else {
+            // Not adjacent, select new gem
+            setSelectedGem({ x: clickX, y: clickY });
+          }
         }
       }
-    }
-  }, [isPlaying, isProcessing, selectedGem, isValidSwap, swapGems, processMatches]);
+    },
+    [
+      isPlaying,
+      isProcessing,
+      selectedGem,
+      isValidSwap,
+      swapGems,
+      processMatches,
+    ],
+  );
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
-    const ctx = canvas.getContext('2d');
+
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     // Clear canvas
-    ctx.fillStyle = '#1a1a2e';
+    ctx.fillStyle = "#1a1a2e";
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
     // Draw grid background
-    ctx.strokeStyle = '#333';
+    ctx.strokeStyle = "#333";
     ctx.lineWidth = 1;
     for (let x = 0; x <= GRID_SIZE; x++) {
       ctx.beginPath();
@@ -384,16 +433,16 @@ export function CoreysFastJewels({ userId, username, onGameComplete }: CoreysFas
 
         const drawX = x * GEM_SIZE;
         const drawY = y * GEM_SIZE;
-        
+
         // Gem background
         if (gem.eliminating) {
-          ctx.fillStyle = '#FF0000';
+          ctx.fillStyle = "#FF0000";
           ctx.globalAlpha = 0.5;
         } else {
           ctx.fillStyle = GEM_COLORS[gem.type];
           ctx.globalAlpha = 1;
         }
-        
+
         // Draw gem shape (diamond)
         ctx.beginPath();
         ctx.moveTo(drawX + GEM_SIZE / 2, drawY + 5);
@@ -402,9 +451,9 @@ export function CoreysFastJewels({ userId, username, onGameComplete }: CoreysFas
         ctx.lineTo(drawX + 5, drawY + GEM_SIZE / 2);
         ctx.closePath();
         ctx.fill();
-        
+
         // Add gem highlight
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
         ctx.beginPath();
         ctx.moveTo(drawX + GEM_SIZE / 2, drawY + 5);
         ctx.lineTo(drawX + GEM_SIZE - 5, drawY + GEM_SIZE / 2);
@@ -412,23 +461,23 @@ export function CoreysFastJewels({ userId, username, onGameComplete }: CoreysFas
         ctx.lineTo(drawX + 5, drawY + GEM_SIZE / 2);
         ctx.closePath();
         ctx.fill();
-        
+
         // Draw selection highlight
         if (selectedGem && selectedGem.x === x && selectedGem.y === y) {
-          ctx.strokeStyle = '#FFD700';
+          ctx.strokeStyle = "#FFD700";
           ctx.lineWidth = 4;
           ctx.strokeRect(drawX + 2, drawY + 2, GEM_SIZE - 4, GEM_SIZE - 4);
         }
-        
+
         ctx.globalAlpha = 1;
       }
     }
 
     // Draw combo indicator
     if (combo > 1) {
-      ctx.fillStyle = '#FFD700';
-      ctx.font = 'bold 24px Arial';
-      ctx.textAlign = 'center';
+      ctx.fillStyle = "#FFD700";
+      ctx.font = "bold 24px Arial";
+      ctx.textAlign = "center";
       ctx.fillText(`COMBO x${combo}!`, CANVAS_WIDTH / 2, 30);
     }
   }, [grid, selectedGem, combo]);
@@ -442,7 +491,7 @@ export function CoreysFastJewels({ userId, username, onGameComplete }: CoreysFas
     if (gameStarted && !gameEnded) {
       animate();
     }
-    
+
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
@@ -489,12 +538,14 @@ export function CoreysFastJewels({ userId, username, onGameComplete }: CoreysFas
                 <div className="text-xs">0.25 SC</div>
               </div>
               <div className="bg-muted p-3 rounded-lg">
-                <div className="text-yellow-400 font-semibold">2500+ Points</div>
+                <div className="text-yellow-400 font-semibold">
+                  2500+ Points
+                </div>
                 <div className="text-xs">0.20 SC</div>
               </div>
             </div>
-            <Button 
-              onClick={startGame} 
+            <Button
+              onClick={startGame}
               className="w-full bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground"
             >
               <Play className="h-4 w-4 mr-2" />
@@ -530,13 +581,17 @@ export function CoreysFastJewels({ userId, username, onGameComplete }: CoreysFas
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-green-400">{averageScore}</div>
+            <div className="text-2xl font-bold text-green-400">
+              {averageScore}
+            </div>
             <div className="text-sm text-muted-foreground">Avg/Move</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-casino-red">{timeLeft}s</div>
+            <div className="text-2xl font-bold text-casino-red">
+              {timeLeft}s
+            </div>
             <div className="text-sm text-muted-foreground">Time Left</div>
           </CardContent>
         </Card>
@@ -552,15 +607,20 @@ export function CoreysFastJewels({ userId, username, onGameComplete }: CoreysFas
               height={CANVAS_HEIGHT}
               className="border border-border rounded-lg cursor-pointer"
               onClick={handleCanvasClick}
-              style={{ maxWidth: '100%', height: 'auto' }}
+              style={{ maxWidth: "100%", height: "auto" }}
             />
-            
+
             {isPlaying && (
               <div className="text-center space-y-2">
                 <div className="text-lg font-semibold">
-                  {selectedGem ? 'Click an adjacent gem to swap!' : 'Click a gem to select it!'}
+                  {selectedGem
+                    ? "Click an adjacent gem to swap!"
+                    : "Click a gem to select it!"}
                 </div>
-                <Progress value={(60 - timeLeft) / 60 * 100} className="w-64" />
+                <Progress
+                  value={((60 - timeLeft) / 60) * 100}
+                  className="w-64"
+                />
                 {combo > 1 && (
                   <Badge variant="secondary" className="bg-gold/20 text-gold">
                     COMBO x{combo}!
@@ -584,14 +644,27 @@ export function CoreysFastJewels({ userId, username, onGameComplete }: CoreysFas
                     <div className="text-muted-foreground">Final Score</div>
                   </div>
                   <div>
-                    <div className="text-xl font-bold text-sweep">{matches}</div>
+                    <div className="text-xl font-bold text-sweep">
+                      {matches}
+                    </div>
                     <div className="text-muted-foreground">Gems Matched</div>
                   </div>
                 </div>
                 <div className="text-lg">
                   You earned{" "}
                   <span className="text-gold font-bold">
-                    {score >= 3000 ? "0.25" : score >= 2500 ? "0.20" : score >= 2000 ? "0.15" : score >= 1500 ? "0.10" : score >= 1000 ? "0.05" : "0.00"} SC
+                    {score >= 3000
+                      ? "0.25"
+                      : score >= 2500
+                        ? "0.20"
+                        : score >= 2000
+                          ? "0.15"
+                          : score >= 1500
+                            ? "0.10"
+                            : score >= 1000
+                              ? "0.05"
+                              : "0.00"}{" "}
+                    SC
                   </span>
                 </div>
               </div>

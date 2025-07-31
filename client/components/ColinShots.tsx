@@ -43,7 +43,11 @@ interface Ball {
   trail: { x: number; y: number }[];
 }
 
-export function ColinShots({ userId, username, onGameComplete }: ColinShotsProps) {
+export function ColinShots({
+  userId,
+  username,
+  onGameComplete,
+}: ColinShotsProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
   const [score, setScore] = useState(0);
@@ -102,7 +106,7 @@ export function ColinShots({ userId, username, onGameComplete }: ColinShotsProps
     setIsPlaying(false);
     setGameEnded(true);
     setIsCharging(false);
-    
+
     if (gameTimerRef.current) {
       clearInterval(gameTimerRef.current);
     }
@@ -116,11 +120,11 @@ export function ColinShots({ userId, username, onGameComplete }: ColinShotsProps
     // Calculate SC earned based on score
     const percentage = shots > 0 ? (score / shots) * 100 : 0;
     let scEarned = 0;
-    
+
     if (percentage >= 80) scEarned = 0.25;
-    else if (percentage >= 60) scEarned = 0.20;
+    else if (percentage >= 60) scEarned = 0.2;
     else if (percentage >= 40) scEarned = 0.15;
-    else if (percentage >= 20) scEarned = 0.10;
+    else if (percentage >= 20) scEarned = 0.1;
     else if (score > 0) scEarned = 0.05;
 
     setTimeout(() => {
@@ -130,10 +134,10 @@ export function ColinShots({ userId, username, onGameComplete }: ColinShotsProps
 
   const handleMouseDown = useCallback(() => {
     if (!isPlaying || currentBall || isCharging) return;
-    
+
     setIsCharging(true);
     setPowerLevel(0);
-    
+
     const chargePower = () => {
       setPowerLevel((prev) => {
         const newPower = prev + 2;
@@ -146,53 +150,56 @@ export function ColinShots({ userId, username, onGameComplete }: ColinShotsProps
         return newPower;
       });
     };
-    
+
     chargePower();
   }, [isPlaying, currentBall, isCharging]);
 
   const handleMouseUp = useCallback(() => {
     if (!isCharging) return;
-    
+
     setIsCharging(false);
     if (powerChargeRef.current) {
       clearTimeout(powerChargeRef.current);
     }
-    
+
     shootBall(powerLevel);
   }, [isCharging, powerLevel]);
 
-  const shootBall = useCallback((power: number) => {
-    if (!isPlaying || currentBall) return;
+  const shootBall = useCallback(
+    (power: number) => {
+      if (!isPlaying || currentBall) return;
 
-    setShots(prev => prev + 1);
-    setIsCharging(false);
-    setPowerLevel(0);
+      setShots((prev) => prev + 1);
+      setIsCharging(false);
+      setPowerLevel(0);
 
-    // Calculate velocity based on power and angle
-    const angle = -45 * (Math.PI / 180); // 45 degrees upward
-    const maxVelocity = 15;
-    const velocity = (power / 100) * maxVelocity;
-    
-    const velocityX = Math.cos(angle) * velocity;
-    const velocityY = Math.sin(angle) * velocity;
+      // Calculate velocity based on power and angle
+      const angle = -45 * (Math.PI / 180); // 45 degrees upward
+      const maxVelocity = 15;
+      const velocity = (power / 100) * maxVelocity;
 
-    const newBall: Ball = {
-      id: Date.now(),
-      x: SHOT_START_X,
-      y: SHOT_START_Y,
-      velocityX,
-      velocityY,
-      active: true,
-      trail: [],
-    };
+      const velocityX = Math.cos(angle) * velocity;
+      const velocityY = Math.sin(angle) * velocity;
 
-    setCurrentBall(newBall);
-  }, [isPlaying, currentBall]);
+      const newBall: Ball = {
+        id: Date.now(),
+        x: SHOT_START_X,
+        y: SHOT_START_Y,
+        velocityX,
+        velocityY,
+        active: true,
+        trail: [],
+      };
+
+      setCurrentBall(newBall);
+    },
+    [isPlaying, currentBall],
+  );
 
   const checkHoopCollision = useCallback((ball: Ball): boolean => {
     const ballCenterX = ball.x;
     const ballCenterY = ball.y;
-    
+
     // Check if ball is going through the hoop
     if (
       ballCenterX >= HOOP_X - HOOP_WIDTH / 2 &&
@@ -203,7 +210,7 @@ export function ColinShots({ userId, username, onGameComplete }: ColinShotsProps
     ) {
       return true;
     }
-    
+
     return false;
   }, []);
 
@@ -212,14 +219,14 @@ export function ColinShots({ userId, username, onGameComplete }: ColinShotsProps
       if (!prevBall || !prevBall.active) return null;
 
       const newBall = { ...prevBall };
-      
+
       // Update position
       newBall.x += newBall.velocityX;
       newBall.y += newBall.velocityY;
-      
+
       // Apply gravity
       newBall.velocityY += GRAVITY;
-      
+
       // Update trail
       newBall.trail.push({ x: newBall.x, y: newBall.y });
       if (newBall.trail.length > 10) {
@@ -228,16 +235,16 @@ export function ColinShots({ userId, username, onGameComplete }: ColinShotsProps
 
       // Check hoop collision
       if (checkHoopCollision(newBall)) {
-        setScore(prev => prev + 1);
+        setScore((prev) => prev + 1);
         setLastShotMade(true);
         setShowingShotResult(true);
         newBall.active = false;
-        
+
         setTimeout(() => {
           setShowingShotResult(false);
           setCurrentBall(null);
         }, 1000);
-        
+
         return newBall;
       }
 
@@ -250,7 +257,7 @@ export function ColinShots({ userId, username, onGameComplete }: ColinShotsProps
         setLastShotMade(false);
         setShowingShotResult(true);
         newBall.active = false;
-        
+
         setTimeout(() => {
           setShowingShotResult(false);
           setCurrentBall(null);
@@ -264,38 +271,38 @@ export function ColinShots({ userId, username, onGameComplete }: ColinShotsProps
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
-    const ctx = canvas.getContext('2d');
+
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     // Clear canvas
-    ctx.fillStyle = '#1a1a2e';
+    ctx.fillStyle = "#1a1a2e";
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
     // Draw court
-    ctx.fillStyle = '#8B4513';
+    ctx.fillStyle = "#8B4513";
     ctx.fillRect(0, CANVAS_HEIGHT - 100, CANVAS_WIDTH, 100);
-    
+
     // Draw court lines
-    ctx.strokeStyle = '#FFFFFF';
+    ctx.strokeStyle = "#FFFFFF";
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.arc(SHOT_START_X, CANVAS_HEIGHT - 50, 60, 0, Math.PI * 2);
     ctx.stroke();
 
     // Draw backboard
-    ctx.fillStyle = '#FFFFFF';
+    ctx.fillStyle = "#FFFFFF";
     ctx.fillRect(HOOP_X + HOOP_WIDTH / 2, HOOP_Y - 40, 10, 60);
 
     // Draw hoop
-    ctx.strokeStyle = '#FF6600';
+    ctx.strokeStyle = "#FF6600";
     ctx.lineWidth = 8;
     ctx.beginPath();
     ctx.arc(HOOP_X, HOOP_Y, HOOP_WIDTH / 2, 0, Math.PI);
     ctx.stroke();
 
     // Draw net
-    ctx.strokeStyle = '#FFFFFF';
+    ctx.strokeStyle = "#FFFFFF";
     ctx.lineWidth = 2;
     for (let i = 0; i < 8; i++) {
       const angle = i * (Math.PI / 7);
@@ -303,7 +310,7 @@ export function ColinShots({ userId, username, onGameComplete }: ColinShotsProps
       const startY = HOOP_Y;
       const endX = startX + Math.sin(angle) * 20;
       const endY = startY + 30;
-      
+
       ctx.beginPath();
       ctx.moveTo(startX, startY);
       ctx.lineTo(endX, endY);
@@ -312,11 +319,11 @@ export function ColinShots({ userId, username, onGameComplete }: ColinShotsProps
 
     // Draw ball trail
     if (currentBall && currentBall.trail.length > 1) {
-      ctx.strokeStyle = '#FF6600';
+      ctx.strokeStyle = "#FF6600";
       ctx.lineWidth = 3;
       ctx.beginPath();
       ctx.moveTo(currentBall.trail[0].x, currentBall.trail[0].y);
-      
+
       for (let i = 1; i < currentBall.trail.length; i++) {
         ctx.lineTo(currentBall.trail[i].x, currentBall.trail[i].y);
       }
@@ -325,18 +332,18 @@ export function ColinShots({ userId, username, onGameComplete }: ColinShotsProps
 
     // Draw ball
     if (currentBall && currentBall.active) {
-      ctx.fillStyle = '#FF6600';
+      ctx.fillStyle = "#FF6600";
       ctx.beginPath();
       ctx.arc(currentBall.x, currentBall.y, BALL_RADIUS, 0, Math.PI * 2);
       ctx.fill();
-      
+
       // Ball lines
-      ctx.strokeStyle = '#000000';
+      ctx.strokeStyle = "#000000";
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.arc(currentBall.x, currentBall.y, BALL_RADIUS, 0, Math.PI * 2);
       ctx.stroke();
-      
+
       // Ball curves
       ctx.beginPath();
       ctx.moveTo(currentBall.x - BALL_RADIUS, currentBall.y);
@@ -348,16 +355,22 @@ export function ColinShots({ userId, username, onGameComplete }: ColinShotsProps
 
     // Draw shooting position indicator
     if (isPlaying && !currentBall) {
-      ctx.fillStyle = isCharging ? '#FF6600' : '#FFFFFF';
+      ctx.fillStyle = isCharging ? "#FF6600" : "#FFFFFF";
       ctx.beginPath();
       ctx.arc(SHOT_START_X, SHOT_START_Y, 15, 0, Math.PI * 2);
       ctx.fill();
-      
+
       if (isCharging) {
-        ctx.strokeStyle = '#FFFFFF';
+        ctx.strokeStyle = "#FFFFFF";
         ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.arc(SHOT_START_X, SHOT_START_Y, 20 + (powerLevel / 5), 0, Math.PI * 2);
+        ctx.arc(
+          SHOT_START_X,
+          SHOT_START_Y,
+          20 + powerLevel / 5,
+          0,
+          Math.PI * 2,
+        );
         ctx.stroke();
       }
     }
@@ -368,30 +381,43 @@ export function ColinShots({ userId, username, onGameComplete }: ColinShotsProps
       const meterHeight = 20;
       const meterX = CANVAS_WIDTH / 2 - meterWidth / 2;
       const meterY = CANVAS_HEIGHT - 150;
-      
-      ctx.fillStyle = '#333333';
+
+      ctx.fillStyle = "#333333";
       ctx.fillRect(meterX, meterY, meterWidth, meterHeight);
-      
-      ctx.fillStyle = powerLevel > 80 ? '#FF0000' : powerLevel > 50 ? '#FFD700' : '#00FF00';
-      ctx.fillRect(meterX, meterY, (meterWidth * powerLevel) / 100, meterHeight);
-      
-      ctx.strokeStyle = '#FFFFFF';
+
+      ctx.fillStyle =
+        powerLevel > 80 ? "#FF0000" : powerLevel > 50 ? "#FFD700" : "#00FF00";
+      ctx.fillRect(
+        meterX,
+        meterY,
+        (meterWidth * powerLevel) / 100,
+        meterHeight,
+      );
+
+      ctx.strokeStyle = "#FFFFFF";
       ctx.lineWidth = 2;
       ctx.strokeRect(meterX, meterY, meterWidth, meterHeight);
     }
 
     // Draw shot result
     if (showingShotResult) {
-      ctx.fillStyle = lastShotMade ? '#00FF00' : '#FF0000';
-      ctx.font = 'bold 48px Arial';
-      ctx.textAlign = 'center';
+      ctx.fillStyle = lastShotMade ? "#00FF00" : "#FF0000";
+      ctx.font = "bold 48px Arial";
+      ctx.textAlign = "center";
       ctx.fillText(
-        lastShotMade ? 'SWISH!' : 'MISS!',
+        lastShotMade ? "SWISH!" : "MISS!",
         CANVAS_WIDTH / 2,
-        CANVAS_HEIGHT / 2
+        CANVAS_HEIGHT / 2,
       );
     }
-  }, [currentBall, isPlaying, isCharging, powerLevel, showingShotResult, lastShotMade]);
+  }, [
+    currentBall,
+    isPlaying,
+    isCharging,
+    powerLevel,
+    showingShotResult,
+    lastShotMade,
+  ]);
 
   const animate = useCallback(() => {
     updateBall();
@@ -403,7 +429,7 @@ export function ColinShots({ userId, username, onGameComplete }: ColinShotsProps
     if (gameStarted && !gameEnded) {
       animate();
     }
-    
+
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
@@ -437,7 +463,8 @@ export function ColinShots({ userId, username, onGameComplete }: ColinShotsProps
               <span>Colin Shots</span>
             </CardTitle>
             <CardDescription>
-              Basketball free throw challenge - score as many shots as possible in 60 seconds!
+              Basketball free throw challenge - score as many shots as possible
+              in 60 seconds!
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -453,12 +480,14 @@ export function ColinShots({ userId, username, onGameComplete }: ColinShotsProps
                 <div className="text-xs">0.25 SC</div>
               </div>
               <div className="bg-muted p-3 rounded-lg">
-                <div className="text-yellow-400 font-semibold">60%+ Accuracy</div>
+                <div className="text-yellow-400 font-semibold">
+                  60%+ Accuracy
+                </div>
                 <div className="text-xs">0.20 SC</div>
               </div>
             </div>
-            <Button 
-              onClick={startGame} 
+            <Button
+              onClick={startGame}
               className="w-full bg-gradient-to-r from-gold to-yellow-400 text-gold-foreground"
             >
               <Play className="h-4 w-4 mr-2" />
@@ -494,7 +523,9 @@ export function ColinShots({ userId, username, onGameComplete }: ColinShotsProps
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-casino-red">{timeLeft}s</div>
+            <div className="text-2xl font-bold text-casino-red">
+              {timeLeft}s
+            </div>
             <div className="text-sm text-muted-foreground">Time Left</div>
           </CardContent>
         </Card>
@@ -512,13 +543,15 @@ export function ColinShots({ userId, username, onGameComplete }: ColinShotsProps
               onMouseDown={handleMouseDown}
               onMouseUp={handleMouseUp}
               onMouseLeave={handleMouseUp}
-              style={{ maxWidth: '100%', height: 'auto' }}
+              style={{ maxWidth: "100%", height: "auto" }}
             />
-            
+
             {isPlaying && !currentBall && (
               <div className="text-center space-y-2">
                 <div className="text-lg font-semibold">
-                  {isCharging ? 'Release to Shoot!' : 'Hold Mouse Button to Charge Shot'}
+                  {isCharging
+                    ? "Release to Shoot!"
+                    : "Hold Mouse Button to Charge Shot"}
                 </div>
                 <Progress value={powerLevel} className="w-64" />
               </div>
@@ -534,14 +567,27 @@ export function ColinShots({ userId, username, onGameComplete }: ColinShotsProps
                     <div className="text-muted-foreground">Shots Made</div>
                   </div>
                   <div>
-                    <div className="text-xl font-bold text-sweep">{accuracy}%</div>
+                    <div className="text-xl font-bold text-sweep">
+                      {accuracy}%
+                    </div>
                     <div className="text-muted-foreground">Accuracy</div>
                   </div>
                 </div>
                 <div className="text-lg">
                   You earned{" "}
                   <span className="text-gold font-bold">
-                    {accuracy >= 80 ? "0.25" : accuracy >= 60 ? "0.20" : accuracy >= 40 ? "0.15" : accuracy >= 20 ? "0.10" : score > 0 ? "0.05" : "0.00"} SC
+                    {accuracy >= 80
+                      ? "0.25"
+                      : accuracy >= 60
+                        ? "0.20"
+                        : accuracy >= 40
+                          ? "0.15"
+                          : accuracy >= 20
+                            ? "0.10"
+                            : score > 0
+                              ? "0.05"
+                              : "0.00"}{" "}
+                    SC
                   </span>
                 </div>
               </div>
