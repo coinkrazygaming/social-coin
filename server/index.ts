@@ -256,5 +256,13 @@ export function createServer() {
   app.post("/api/ai-employees/mini-games/log-session", handleLogSessionToAI);
   app.post("/api/ai-employees/security/analyze-events", handleAnalyzeSecurityEvents);
 
+  // Admin Alerts routes
+  app.get("/api/admin/alerts", handleGetAdminAlerts);
+  app.post("/api/admin/alerts/:alertId/read", handleMarkAlertAsRead);
+  app.post("/api/admin/alerts/:alertId/acknowledge", handleAcknowledgeAlert);
+  app.post("/api/admin/alerts/:alertId/resolve", handleResolveAlert);
+  app.post("/api/admin/alerts", handleCreateAlert);
+  app.get("/api/admin/alerts/stats", handleGetAlertStats);
+
   return app;
 }
