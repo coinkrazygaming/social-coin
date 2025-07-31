@@ -37,7 +37,7 @@ import { VIPManagement } from "../components/VIPManagement";
 import { PaymentSettings } from "../components/PaymentSettings";
 import { LeaderboardManagement } from "../components/LeaderboardManagement";
 import { AchievementBadgeSystem } from "../components/AchievementBadgeSystem";
-import { CasinoBanking } from "../components/CasinoBanking";
+import { EnhancedCasinoBanking } from "../components/EnhancedCasinoBanking";
 import { TickerManagement } from "../components/TickerManagement";
 import { UserManagementSystem } from "../components/UserManagementSystem";
 import {
