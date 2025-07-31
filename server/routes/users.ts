@@ -5,7 +5,7 @@ import {
   Transaction,
   MiniGamePlay,
   MiniGameCooldown,
-} from "@shared/types";
+} from "../../shared/types";
 import { z } from "zod";
 
 // In-memory storage (replace with real database)
