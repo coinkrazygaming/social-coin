@@ -50,7 +50,11 @@ export function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <>
+      {/* Multi-Ticker System */}
+      <MultiTicker className="sticky top-0 z-50" />
+
+      <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="w-[95%] mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
@@ -257,5 +261,6 @@ export function Header() {
         defaultTab={authModalTab}
       />
     </header>
+    </>
   );
 }
