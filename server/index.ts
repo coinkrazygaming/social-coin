@@ -79,8 +79,15 @@ import {
   handleProcessRefund,
   handleGetPaymentStats,
 } from "./routes/store";
-// Lazy import slots to avoid issues during Vite config loading
-let slotsHandlers: any = null;
+import {
+  handleGetInHouseSlots,
+  handleCreateSlot,
+  handleUpdateSlot,
+  handleDeleteSlot,
+  handleSpinSlot,
+  handleGetSlotStats,
+  handleGetAllSlotStats,
+} from "./routes/slots";
 
 export function createServer() {
   const app = express();
