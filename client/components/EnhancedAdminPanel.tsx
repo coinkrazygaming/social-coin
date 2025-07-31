@@ -661,7 +661,7 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                         .slice(0, 5)
                         .map((slot, index) => (
                           <div
-                            key={slot.id}
+                            key={`popular-${slot.id}-${index}`}
                             className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg"
                           >
                             <div className="flex items-center space-x-3">
