@@ -319,7 +319,7 @@ function FullDisclaimerContent() {
         </p>
         <p>
           For questions regarding sweepstakes rules or compliance, contact:
-          legal@coinkrazy.com
+          coinkrazy00@gmail.com
         </p>
         <p className="text-center font-semibold">
           Remember: Play Responsibly. Must be 18+. No Purchase Necessary.
