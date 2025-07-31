@@ -266,7 +266,7 @@ export default function Slots() {
                   <h3 className="text-xl font-bold mb-4 flex items-center">
                     <Clock className="h-5 w-5 mr-2 text-blue-400" />
                     Coming Soon ({25 - DEFAULT_COINKRAZY_SLOTS.length} more
-                    slots)
+                    games)
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                     {Array.from(
@@ -281,7 +281,7 @@ export default function Slots() {
                               <Sparkles className="h-8 w-8 text-gold/50 animate-pulse" />
                             </div>
                             <h4 className="font-bold text-gold/70 text-sm mb-1">
-                              Slot #{DEFAULT_COINKRAZY_SLOTS.length + index + 1}
+                              Game #{DEFAULT_COINKRAZY_SLOTS.length + index + 1}
                             </h4>
                             <p className="text-xs text-muted-foreground mb-3">
                               In Development
@@ -314,7 +314,7 @@ export default function Slots() {
                       Exclusive Games
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                      Unique slot machines you won't find anywhere else, crafted
+                      Unique social casino games you won't find anywhere else, crafted
                       specifically for CoinKrazy players.
                     </p>
                   </CardContent>
