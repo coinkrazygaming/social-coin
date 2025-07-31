@@ -7,7 +7,7 @@ import { Badge } from './ui/badge';
 import { ScrollArea } from './ui/scroll-area';
 import { Separator } from './ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { DocumentationSection } from '../shared/adminToolbarTypes';
+import { DocumentationSection } from '../../shared/adminToolbarTypes';
 import { useAuth } from './AuthContext';
 
 interface DocumentationViewerProps {
