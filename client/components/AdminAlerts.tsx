@@ -134,6 +134,7 @@ export const AdminAlerts: React.FC<AdminAlertsProps> = ({ className = '' }) => {
   const [newChatMessage, setNewChatMessage] = useState('');
   const [userHasInteracted, setUserHasInteracted] = useState(false);
   const [isFlashing, setIsFlashing] = useState(false);
+  const [playedSounds, setPlayedSounds] = useState<Set<string>>(new Set());
   const audioRef = useRef<HTMLAudioElement>(null);
   const windowRef = useRef<Window | null>(null);
   const { user } = useAuth();
