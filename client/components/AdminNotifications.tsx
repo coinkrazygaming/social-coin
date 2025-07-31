@@ -106,15 +106,24 @@ export const AdminNotifications: React.FC<AdminNotificationsProps> = ({
   }, []);
 
   useEffect(() => {
-    // Play sound for new unacknowledged notifications only if user has interacted
-    const unacknowledged = notifications.filter(
-      (n) => !n.acknowledged && n.soundEnabled,
+    // Play sound only for truly new notifications that haven't played before
+    const newNotifications = notifications.filter(
+      (n) => !n.acknowledged && n.soundEnabled && !playedSounds.has(n.id)
     );
-    if (unacknowledged.length > 0 && soundEnabled && userHasInteracted) {
+
+    if (newNotifications.length > 0 && soundEnabled && userHasInteracted) {
+      // Mark these notifications as having played sound
+      setPlayedSounds(prev => {
+        const newSet = new Set(prev);
+        newNotifications.forEach(notification => newSet.add(notification.id));
+        return newSet;
+      });
+
+      // Play sound once for the new notifications
       playNotificationSound();
       flashWindow();
     }
-  }, [notifications, soundEnabled, userHasInteracted]);
+  }, [notifications, soundEnabled, userHasInteracted, playedSounds]);
 
   const loadNotifications = () => {
     // Real notifications based on actual system events
