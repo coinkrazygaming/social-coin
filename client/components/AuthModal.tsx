@@ -19,6 +19,7 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   defaultTab?: "login" | "register";
+  onAuthSuccess?: () => void;
 }
 
 export function AuthModal({
