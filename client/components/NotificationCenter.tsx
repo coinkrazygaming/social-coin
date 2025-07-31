@@ -174,8 +174,8 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
     setNotifications((prev) => [notification, ...prev]);
     setUnreadCount((prev) => prev + 1);
 
-    if (soundEnabled && audioRef.current) {
-      audioRef.current.play();
+    if (soundEnabled && audioRef.current && userHasInteracted) {
+      audioRef.current.play().catch(() => {});
     }
 
     // Show toast for high priority notifications
@@ -191,8 +191,8 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
     setAdminAlerts((prev) => [alert, ...prev]);
     setUnreadAlertsCount((prev) => prev + 1);
 
-    if (soundEnabled && audioRef.current) {
-      audioRef.current.play();
+    if (soundEnabled && audioRef.current && userHasInteracted) {
+      audioRef.current.play().catch(() => {});
     }
   };
 
