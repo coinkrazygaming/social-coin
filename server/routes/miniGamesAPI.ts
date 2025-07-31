@@ -572,14 +572,3 @@ function logToAIEmployee(department: string, data: any) {
   // 4. Update user risk profiles
   // 5. Log to admin dashboard
 }
-
-// Export all handlers
-export {
-  handleCheckGameCooldown,
-  handleSubmitGameSession,
-  handleGetUserGameHistory,
-  handleGetUserCooldowns,
-  handleGetSecurityEvents,
-  handleUpdateSecurityEvent,
-  handleGetGameAnalytics,
-};
