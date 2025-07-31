@@ -547,6 +547,7 @@ export function AdminPanel() {
             <TabsTrigger value="jackpots">Jackpots</TabsTrigger>
             <TabsTrigger value="vip">VIP</TabsTrigger>
             <TabsTrigger value="games">Games</TabsTrigger>
+            <TabsTrigger value="ai-developer">AI Game Dev</TabsTrigger>
             <TabsTrigger value="packages">Packages</TabsTrigger>
             <TabsTrigger value="redemptions">Redemptions</TabsTrigger>
             <TabsTrigger value="refunds">Refunds</TabsTrigger>
