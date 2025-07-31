@@ -7,8 +7,8 @@ import { ScrollArea } from './ui/scroll-area';
 import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
 import { Avatar, AvatarFallback } from './ui/avatar';
-import { aiEmployeeChat } from '../shared/aiEmployeeChat';
-import { AdminChatMessage, AIEmployee } from '../shared/adminToolbarTypes';
+import { aiEmployeeChat } from '../../shared/aiEmployeeChat';
+import { AdminChatMessage, AIEmployee } from '../../shared/adminToolbarTypes';
 import { useAuth } from './AuthContext';
 
 interface AdminChatWindowProps {
