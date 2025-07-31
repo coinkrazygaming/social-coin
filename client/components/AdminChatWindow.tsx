@@ -49,6 +49,8 @@ export const AdminChatWindow: React.FC<AdminChatWindowProps> = ({
       setMessages((prev) => [...prev, message]);
       if (!isVisible && message.senderType === "ai_employee") {
         setUnreadCount((prev) => prev + 1);
+        // Play notification sound for new AI employee messages
+        playNotificationSound();
       }
       scrollToBottom();
     };
