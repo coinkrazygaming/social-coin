@@ -4,7 +4,7 @@ import {
   LeaderboardCategory,
   UserStats,
   Achievement,
-} from "@shared/leaderboardTypes";
+} from "../../shared/leaderboardTypes";
 
 // In-memory storage (replace with real database)
 const leaderboardEntries: Map<string, LeaderboardEntry[]> = new Map();
