@@ -30,6 +30,7 @@ import { VisualSlotEditor } from "../components/VisualSlotEditor";
 import { JoseyAI } from "../components/JoseyAI";
 import { SecurityTab } from "../components/SecurityTab";
 import { AIEmployeeManagement } from "../components/AIEmployeeManagement";
+import { KYCOnboarding } from "../components/KYCOnboarding";
 import {
   GoldCoinPackage,
   StoreSettings,
