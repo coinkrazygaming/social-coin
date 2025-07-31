@@ -2,12 +2,20 @@
 import { createClient } from "@supabase/supabase-js";
 
 // Environment variables for database connections
-export const SUPABASE_URL =
-  process.env.NEXT_PUBLIC_SUPABASE_URL || "your_supabase_url";
-export const SUPABASE_ANON_KEY =
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "your_supabase_anon_key";
-export const NEON_DATABASE_URL =
-  process.env.DATABASE_URL || "your_neon_connection_string";
+// Check if running in Node.js environment
+const isServer = typeof process !== 'undefined' && process.env;
+
+export const SUPABASE_URL = isServer
+  ? process.env.NEXT_PUBLIC_SUPABASE_URL || "your_supabase_url"
+  : "your_supabase_url";
+
+export const SUPABASE_ANON_KEY = isServer
+  ? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "your_supabase_anon_key"
+  : "your_supabase_anon_key";
+
+export const NEON_DATABASE_URL = isServer
+  ? process.env.DATABASE_URL || "your_neon_connection_string"
+  : "your_neon_connection_string";
 
 // Supabase client
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
