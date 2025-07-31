@@ -298,6 +298,11 @@ export class DatabaseService {
     transactionData: Partial<Transaction>,
   ): Promise<boolean> {
     try {
+      if (!supabase) {
+        console.warn("Supabase client not available - using mock update");
+        return true;
+      }
+
       // Start transaction
       const { data: wallet, error: walletError } = await supabase
         .from("wallets")
