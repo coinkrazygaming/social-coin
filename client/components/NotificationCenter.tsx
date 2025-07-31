@@ -85,6 +85,16 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
     }
     loadChatMessages();
 
+    // Add user interaction listener
+    const handleUserInteraction = () => {
+      setUserHasInteracted(true);
+      document.removeEventListener('click', handleUserInteraction);
+      document.removeEventListener('keydown', handleUserInteraction);
+    };
+
+    document.addEventListener('click', handleUserInteraction);
+    document.addEventListener('keydown', handleUserInteraction);
+
     // Subscribe to real-time updates
     const notificationSub = subscribeToNotifications(
       user.id,
@@ -102,6 +112,8 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
       notificationSub.unsubscribe();
       globalNotificationSub.unsubscribe();
       adminAlertSub?.unsubscribe();
+      document.removeEventListener('click', handleUserInteraction);
+      document.removeEventListener('keydown', handleUserInteraction);
     };
   }, [user?.id]);
 
