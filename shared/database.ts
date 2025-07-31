@@ -6,19 +6,31 @@ import { createClient } from "@supabase/supabase-js";
 const isServer = typeof process !== 'undefined' && process.env;
 
 export const SUPABASE_URL = isServer
-  ? process.env.NEXT_PUBLIC_SUPABASE_URL || "your_supabase_url"
-  : "your_supabase_url";
+  ? process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co"
+  : "https://placeholder.supabase.co";
 
 export const SUPABASE_ANON_KEY = isServer
-  ? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "your_supabase_anon_key"
-  : "your_supabase_anon_key";
+  ? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder_anon_key_12345"
+  : "placeholder_anon_key_12345";
 
 export const NEON_DATABASE_URL = isServer
-  ? process.env.DATABASE_URL || "your_neon_connection_string"
-  : "your_neon_connection_string";
+  ? process.env.DATABASE_URL || "postgresql://placeholder"
+  : "postgresql://placeholder";
 
-// Supabase client
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Supabase client - only create if we have valid URLs
+export const supabase = (() => {
+  try {
+    // Only create client if URL looks valid (not a placeholder)
+    if (SUPABASE_URL && SUPABASE_URL !== "https://placeholder.supabase.co") {
+      return createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+    // Return a mock client for development/placeholder scenarios
+    return null;
+  } catch (error) {
+    console.warn("Failed to create Supabase client:", error);
+    return null;
+  }
+})();
 
 // Database table interfaces
 export interface User {
