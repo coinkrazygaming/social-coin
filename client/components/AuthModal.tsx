@@ -60,6 +60,9 @@ export function AuthModal({
     if (success) {
       onClose();
       setLoginData({ email: "", password: "" });
+      if (onAuthSuccess) {
+        onAuthSuccess();
+      }
     } else {
       setError("Invalid email or password");
     }
