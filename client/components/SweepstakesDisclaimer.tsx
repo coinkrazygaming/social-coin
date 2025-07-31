@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
-import { AlertTriangle, Info, Shield, Scale, Users, Clock } from "lucide-react";
+import { AlertTriangle, Info, Shield, Scale, Users, Clock, Coins } from "lucide-react";
 
 interface SweepstakesDisclaimerProps {
   variant?: 'full' | 'compact' | 'modal';
