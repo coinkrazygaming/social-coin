@@ -1189,8 +1189,8 @@ export function EnhancedAdminPanel({ userId }: EnhancedAdminPanelProps) {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {sortedAnalytics.slice(0, 10).map((analytics) => (
-                            <TableRow key={analytics.slotId}>
+                          {sortedAnalytics.slice(0, 10).map((analytics, index) => (
+                            <TableRow key={`${analytics.slotId}-${index}`}>
                               <TableCell className="text-white font-medium">
                                 {analytics.name}
                               </TableCell>
