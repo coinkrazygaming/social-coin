@@ -425,6 +425,11 @@ export class DatabaseService {
     notificationId: string,
   ): Promise<boolean> {
     try {
+      if (!supabase) {
+        console.warn("Supabase client not available - using mock update");
+        return true;
+      }
+
       const { error } = await supabase
         .from("notifications")
         .update({ read: true })
