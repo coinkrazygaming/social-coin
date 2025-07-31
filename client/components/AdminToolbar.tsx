@@ -47,15 +47,9 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = '' }) =>
       badge: unreadMessages > 0 ? unreadMessages.toString() : undefined
     },
     {
-      id: 'settings' as const,
-      label: 'Settings',
-      icon: Settings,
-      badge: undefined
-    },
-    {
-      id: 'docs' as const,
-      label: 'Docs',
-      icon: FileText,
+      id: 'tasks' as const,
+      label: 'Tasks',
+      icon: Users,
       badge: undefined
     },
     {
@@ -65,9 +59,21 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className = '' }) =>
       badge: pendingReports > 0 ? pendingReports.toString() : undefined
     },
     {
+      id: 'docs' as const,
+      label: 'Docs',
+      icon: FileText,
+      badge: undefined
+    },
+    {
       id: 'share' as const,
       label: 'Share',
       icon: Share2,
+      badge: undefined
+    },
+    {
+      id: 'settings' as const,
+      label: 'Settings',
+      icon: Settings,
       badge: undefined
     }
   ];
