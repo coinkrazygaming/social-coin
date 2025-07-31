@@ -667,6 +667,21 @@ export class DatabaseService {
 // Export singleton instance
 export const db = new DatabaseService();
 
+// Mock supabase client for server compatibility
+export const supabase = {
+  auth: {
+    signInWithOAuth: () => Promise.resolve({ data: null, error: null }),
+    getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+    signOut: () => Promise.resolve({ error: null })
+  },
+  from: () => ({
+    select: () => Promise.resolve({ data: [], error: null }),
+    insert: () => Promise.resolve({ data: [], error: null }),
+    update: () => Promise.resolve({ data: [], error: null }),
+    delete: () => Promise.resolve({ data: [], error: null })
+  })
+};
+
 // Notification and subscription functions (mock implementations)
 export function subscribeToNotifications(userId: string, callback: (notification: any) => void) {
   // Mock implementation - would use WebSocket or SSE in real app
