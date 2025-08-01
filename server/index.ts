@@ -249,6 +249,7 @@ export function createServer() {
   app.post("/api/slots/:slotId/spin", handleSpinSlot);
   app.get("/api/slots/:slotId/stats", handleGetSlotStats);
   app.get("/api/slots/stats", handleGetAllSlotStats);
+  app.get("/api/slots/wallet/:userId", handleGetUserWallet);
 
   // AI Employee routes
   app.get("/api/ai-employees", handleGetAIEmployees);
