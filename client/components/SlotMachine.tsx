@@ -33,8 +33,11 @@ interface SlotMachineProps {
   slot: SlotMachineType;
   userId: string;
   userBalance: number;
-  onSpin: (bet: number) => Promise<SlotSpin>;
+  currency: "GC" | "SC";
+  onSpin: (bet: number, currency: "GC" | "SC") => Promise<SlotSpin>;
   onBalanceUpdate: (newBalance: number) => void;
+  realTimeMode?: boolean;
+  onWalletUpdate?: (gcBalance: number, scBalance: number) => void;
 }
 
 interface ReelState {
