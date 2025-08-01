@@ -524,8 +524,8 @@ export function SlotMachine({
                   className="mb-2"
                 />
                 <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Min: ${slot.minBet}</span>
-                  <span>Max: ${slot.maxBet}</span>
+                  <span>Min: {slot.minBet} {currency}</span>
+                  <span>Max: {slot.maxBet} {currency}</span>
                 </div>
               </div>
 
