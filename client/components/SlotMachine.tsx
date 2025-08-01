@@ -536,7 +536,7 @@ export function SlotMachine({
                   variant="outline"
                   size="sm"
                 >
-                  1/2 Bet
+                  1/2 Play
                 </Button>
                 <Button
                   onClick={() => adjustBet(currentBet * 2)}
@@ -544,7 +544,7 @@ export function SlotMachine({
                   variant="outline"
                   size="sm"
                 >
-                  2x Bet
+                  2x Play
                 </Button>
                 <Button
                   onClick={maxBet}
@@ -552,7 +552,7 @@ export function SlotMachine({
                   variant="outline"
                   size="sm"
                 >
-                  Max Bet
+                  Max Play
                 </Button>
               </div>
             </div>
