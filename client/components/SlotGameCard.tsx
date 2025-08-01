@@ -92,14 +92,8 @@ export function SlotGameCard({
   const handleCurrencySelect = () => {
     setShowCurrencySelector(false);
 
-    switch (gameMode) {
-      case "free":
-        onPlayFreeGC?.(selectedCurrency);
-        break;
-      case "real":
-        onPlayRealSC?.(selectedCurrency);
-        break;
-    }
+    // Navigate to the slot game page with the selected currency
+    navigate(`/slots/${slot.id}?currency=${selectedCurrency}&mode=${gameMode}`);
   };
 
   const getCurrentBalance = () => {
