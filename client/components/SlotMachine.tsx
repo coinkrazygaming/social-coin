@@ -297,12 +297,23 @@ export function SlotMachine({
     try {
       const result = await spinReels();
       if (result.length > 0) {
-        // Record spin in backend
-        await onSpin(currentBet);
+        // Record spin in backend with currency
+        await onSpin(currentBet, currency);
+
+        // In real-time mode, update wallet immediately
+        if (realTimeMode && onWalletUpdate) {
+          // This would be called after successful wallet debit/credit on backend
+          // The actual wallet update happens in the parent component
+        }
       }
     } catch (error) {
       console.error("Spin error:", error);
       setIsSpinning(false);
+
+      // Show error message to user
+      if (error instanceof Error && error.message.includes("Insufficient")) {
+        alert(`Insufficient ${currency} balance. Please add more funds to continue playing.`);
+      }
     }
   };
 
