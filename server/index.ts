@@ -242,6 +242,9 @@ export function createServer() {
   app.post("/api/store/refund-requests/:refundId/process", handleProcessRefund);
   app.get("/api/store/payment-stats", handleGetPaymentStats);
 
+  // Enhanced Store routes
+  app.use("/api/enhanced-store", enhancedStoreRoutes);
+
   // In-house slots routes
   app.get("/api/slots/in-house", handleGetInHouseSlots);
   app.post("/api/slots/in-house", handleCreateSlot);
