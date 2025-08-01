@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
-import { realTimeDB } from '../utils/realTimeDatabase';
-import { aiEmployeeManager } from '../utils/aiEmployeeManager';
+import { realTimeDB } from "../utils/realTimeDatabase";
+import { aiEmployeeManager } from "../utils/aiEmployeeManager";
 
 // Get current live analytics - replaces all placeholder analytics
 export const handleGetLiveAnalytics: RequestHandler = (req, res) => {
@@ -8,28 +8,28 @@ export const handleGetLiveAnalytics: RequestHandler = (req, res) => {
     const analytics = realTimeDB.getCurrentAnalytics();
     const systemStatus = realTimeDB.getSystemStatus();
     const aiStats = aiEmployeeManager.getDashboardData();
-    
+
     // Get real wallet totals across all users
     const allWallets = realTimeDB.getAllWallets();
     let totalGoldCoins = 0;
     let totalSweepsCoins = 0;
     let totalVIPPoints = 0;
-    
-    allWallets.forEach(wallet => {
+
+    allWallets.forEach((wallet) => {
       totalGoldCoins += wallet.goldCoins;
       totalSweepsCoins += wallet.sweepsCoins;
       totalVIPPoints += wallet.vipPoints;
     });
-    
+
     // Calculate real-time game statistics
     const gameStats = calculateLiveGameStats();
-    
+
     // Get recent big wins
     const recentBigWins = getRecentBigWins();
-    
+
     // Calculate platform health metrics
     const platformHealth = calculatePlatformHealth(systemStatus, analytics);
-    
+
     res.json({
       success: true,
       realTime: {
@@ -38,7 +38,7 @@ export const handleGetLiveAnalytics: RequestHandler = (req, res) => {
         lastUpdated: analytics.realTime.lastUpdated,
         serverUptime: Math.floor(process.uptime()),
         systemLoad: process.cpuUsage(),
-        memoryUsage: process.memoryUsage()
+        memoryUsage: process.memoryUsage(),
       },
       todayStats: {
         totalSCWonToday: analytics.today.totalSCWonToday,
@@ -47,14 +47,14 @@ export const handleGetLiveAnalytics: RequestHandler = (req, res) => {
         totalRevenueToday: analytics.today.totalRevenueToday,
         newUsersToday: calculateNewUsersToday(),
         averageSessionTime: analytics.trends.userActivity.averageSessionTime,
-        retentionRate: analytics.trends.userActivity.retentionRate
+        retentionRate: analytics.trends.userActivity.retentionRate,
       },
       walletTotals: {
         siteWideGoldCoins: totalGoldCoins,
         siteWideSweepsCoins: totalSweepsCoins,
         siteWideVIPPoints: totalVIPPoints,
         totalWalletValue: analytics.performance.totalWalletValue,
-        averageBalance: calculateAverageBalance(allWallets)
+        averageBalance: calculateAverageBalance(allWallets),
       },
       gameStatistics: {
         totalGamesAvailable: gameStats.totalGames,
@@ -63,15 +63,18 @@ export const handleGetLiveAnalytics: RequestHandler = (req, res) => {
         totalSpinsAllTime: gameStats.totalSpins,
         overallRTP: gameStats.averageRTP,
         biggestWinToday: gameStats.biggestWinToday,
-        recentBigWins: recentBigWins
+        recentBigWins: recentBigWins,
       },
       aiSystemStats: {
         totalAIEmployees: aiStats.employees.length,
         operationalAI: aiStats.systemHealth.operationalEmployees,
-        tasksCompleted: aiStats.employees.reduce((sum: number, emp: any) => sum + emp.completedTasks, 0),
+        tasksCompleted: aiStats.employees.reduce(
+          (sum: number, emp: any) => sum + emp.completedTasks,
+          0,
+        ),
         activeTasks: aiStats.taskStats.inProgress,
         averageAIEfficiency: aiStats.systemHealth.averageSuccessRate,
-        totalAlerts: realTimeDB.getActiveAlerts().length
+        totalAlerts: realTimeDB.getActiveAlerts().length,
       },
       platformHealth: {
         status: platformHealth.status,
@@ -79,25 +82,27 @@ export const handleGetLiveAnalytics: RequestHandler = (req, res) => {
         reliability: platformHealth.reliability,
         securityScore: analytics.performance.securityScore,
         performanceScore: platformHealth.performanceScore,
-        userSatisfaction: platformHealth.userSatisfaction
+        userSatisfaction: platformHealth.userSatisfaction,
       },
       trends: {
         hourlyRevenue: analytics.trends.hourlyRevenue,
         userActivityTrends: analytics.trends.userActivity,
         topGames: analytics.trends.topGames,
         peakHours: analytics.trends.userActivity.peakHours,
-        growthMetrics: calculateGrowthMetrics()
+        growthMetrics: calculateGrowthMetrics(),
       },
       recentActivity: {
         latestTransactions: getLatestTransactions(10),
         recentRegistrations: getRecentRegistrations(5),
         systemEvents: getRecentSystemEvents(10),
-        alertsGenerated: getRecentAlerts(5)
-      }
+        alertsGenerated: getRecentAlerts(5),
+      },
     });
   } catch (error) {
-    console.error('Error fetching live analytics:', error);
-    res.status(500).json({ success: false, error: 'Failed to fetch analytics' });
+    console.error("Error fetching live analytics:", error);
+    res
+      .status(500)
+      .json({ success: false, error: "Failed to fetch analytics" });
   }
 };
 
@@ -107,32 +112,34 @@ export const handleGetDashboardData: RequestHandler = (req, res) => {
     const analytics = realTimeDB.getCurrentAnalytics();
     const aiStats = aiEmployeeManager.getDashboardData();
     const systemStatus = realTimeDB.getSystemStatus();
-    
+
     // Real revenue calculations
     const allTransactions = realTimeDB.getAllTransactions();
-    const todayTransactions = Array.from(allTransactions.values())
-      .filter(tx => isToday(tx.timestamp));
-    
+    const todayTransactions = Array.from(allTransactions.values()).filter(
+      (tx) => isToday(tx.timestamp),
+    );
+
     const todayRevenue = todayTransactions
-      .filter(tx => tx.amount > 0)
+      .filter((tx) => tx.amount > 0)
       .reduce((sum, tx) => sum + tx.amount, 0);
-    
+
     const weekRevenue = Array.from(allTransactions.values())
-      .filter(tx => isThisWeek(tx.timestamp) && tx.amount > 0)
+      .filter((tx) => isThisWeek(tx.timestamp) && tx.amount > 0)
       .reduce((sum, tx) => sum + tx.amount, 0);
-    
+
     const monthRevenue = Array.from(allTransactions.values())
-      .filter(tx => isThisMonth(tx.timestamp) && tx.amount > 0)
+      .filter((tx) => isThisMonth(tx.timestamp) && tx.amount > 0)
       .reduce((sum, tx) => sum + tx.amount, 0);
-    
+
     // Real user statistics
     const allWallets = realTimeDB.getAllWallets();
-    const activeUsers = Array.from(allWallets.values())
-      .filter(wallet => isRecentlyActive(wallet.lastUpdated)).length;
-    
+    const activeUsers = Array.from(allWallets.values()).filter((wallet) =>
+      isRecentlyActive(wallet.lastUpdated),
+    ).length;
+
     // Game statistics
     const gameStats = calculateLiveGameStats();
-    
+
     res.json({
       success: true,
       overview: {
@@ -146,7 +153,7 @@ export const handleGetDashboardData: RequestHandler = (req, res) => {
         monthRevenue: monthRevenue,
         avgRTP: gameStats.averageRTP,
         systemUptime: Math.floor(process.uptime() / 3600), // hours
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
       },
       realTimeMetrics: {
         usersOnline: analytics.realTime.usersOnlineNow,
@@ -156,67 +163,72 @@ export const handleGetDashboardData: RequestHandler = (req, res) => {
         scWonToday: analytics.today.totalSCWonToday,
         gcPurchasedToday: analytics.today.totalGCPurchasedToday,
         alertsActive: realTimeDB.getActiveAlerts().length,
-        tasksInProgress: aiStats.taskStats.inProgress
+        tasksInProgress: aiStats.taskStats.inProgress,
       },
       performance: {
         serverHealth: {
-          status: 'operational',
+          status: "operational",
           uptime: process.uptime(),
-          memoryUsage: process.memoryUsage().heapUsed / process.memoryUsage().heapTotal * 100,
-          cpuUsage: getCPUUsage()
+          memoryUsage:
+            (process.memoryUsage().heapUsed / process.memoryUsage().heapTotal) *
+            100,
+          cpuUsage: getCPUUsage(),
         },
         aiSystemHealth: {
           operationalAI: aiStats.systemHealth.operationalEmployees,
           totalAI: aiStats.employees.length,
           averageEfficiency: aiStats.systemHealth.averageSuccessRate,
-          tasksPerHour: calculateTasksPerHour(aiStats)
+          tasksPerHour: calculateTasksPerHour(aiStats),
         },
         securityMetrics: {
           score: analytics.performance.securityScore,
           threatsBlocked: getTodayThreatsBlocked(),
           suspiciousActivity: getSuspiciousActivityCount(),
-          fraudPrevention: getFraudPreventionStats()
-        }
+          fraudPrevention: getFraudPreventionStats(),
+        },
       },
       gameMetrics: {
         totalSpinsToday: analytics.today.totalSpinsToday,
         biggestWinToday: gameStats.biggestWinToday,
-        topGame: gameStats.topGames[0]?.name || 'N/A',
+        topGame: gameStats.topGames[0]?.name || "N/A",
         averageSessionLength: analytics.trends.userActivity.averageSessionTime,
-        playerRetention: analytics.trends.userActivity.retentionRate
+        playerRetention: analytics.trends.userActivity.retentionRate,
       },
       financialMetrics: {
         dailyRevenue: todayRevenue,
         weeklyRevenue: weekRevenue,
         monthlyRevenue: monthRevenue,
-        averageTransactionValue: calculateAverageTransactionValue(todayTransactions),
+        averageTransactionValue:
+          calculateAverageTransactionValue(todayTransactions),
         paymentSuccessRate: calculatePaymentSuccessRate(),
-        refundRate: calculateRefundRate()
-      }
+        refundRate: calculateRefundRate(),
+      },
     });
   } catch (error) {
-    console.error('Error fetching dashboard data:', error);
-    res.status(500).json({ success: false, error: 'Failed to fetch dashboard data' });
+    console.error("Error fetching dashboard data:", error);
+    res
+      .status(500)
+      .json({ success: false, error: "Failed to fetch dashboard data" });
   }
 };
 
 // Get real-time user activity data
 export const handleGetUserActivity: RequestHandler = (req, res) => {
   try {
-    const { timeframe = '24h' } = req.query;
-    
+    const { timeframe = "24h" } = req.query;
+
     const allWallets = realTimeDB.getAllWallets();
     const analytics = realTimeDB.getCurrentAnalytics();
-    
+
     // Calculate user activity metrics
     const activityData = calculateUserActivity(timeframe as string);
-    
+
     // Get geographic distribution
     const geoDistribution = calculateGeographicDistribution();
-    
+
     // Device and platform statistics
     const deviceStats = calculateDeviceStatistics();
-    
+
     res.json({
       success: true,
       timeframe,
@@ -226,43 +238,48 @@ export const handleGetUserActivity: RequestHandler = (req, res) => {
         newUsersToday: calculateNewUsersToday(),
         returningUsers: calculateReturningUsers(),
         averageSessionTime: analytics.trends.userActivity.averageSessionTime,
-        bounceRate: calculateBounceRate()
+        bounceRate: calculateBounceRate(),
       },
       activity: activityData,
       demographics: {
         geographic: geoDistribution,
         devices: deviceStats,
-        timeZones: calculateTimeZoneDistribution()
+        timeZones: calculateTimeZoneDistribution(),
       },
       engagement: {
         gamesPerSession: calculateGamesPerSession(),
         averageSpendPerUser: calculateAverageSpendPerUser(),
         vipConversionRate: calculateVIPConversionRate(),
-        retentionRates: calculateRetentionRates()
-      }
+        retentionRates: calculateRetentionRates(),
+      },
     });
   } catch (error) {
-    console.error('Error fetching user activity:', error);
-    res.status(500).json({ success: false, error: 'Failed to fetch user activity data' });
+    console.error("Error fetching user activity:", error);
+    res
+      .status(500)
+      .json({ success: false, error: "Failed to fetch user activity data" });
   }
 };
 
 // Get real game performance data
 export const handleGetGamePerformance: RequestHandler = (req, res) => {
   try {
-    const { gameId, timeframe = '24h' } = req.query;
-    
+    const { gameId, timeframe = "24h" } = req.query;
+
     const gameStats = calculateLiveGameStats();
     const analytics = realTimeDB.getCurrentAnalytics();
-    
+
     if (gameId) {
       // Get specific game performance
-      const gameData = getSpecificGamePerformance(gameId as string, timeframe as string);
+      const gameData = getSpecificGamePerformance(
+        gameId as string,
+        timeframe as string,
+      );
       res.json({
         success: true,
         gameId,
         timeframe,
-        performance: gameData
+        performance: gameData,
       });
     } else {
       // Get all games performance overview
@@ -274,7 +291,7 @@ export const handleGetGamePerformance: RequestHandler = (req, res) => {
           activeGames: gameStats.activeGames,
           totalSpinsToday: analytics.today.totalSpinsToday,
           totalRevenueToday: analytics.today.totalRevenueToday,
-          averageRTP: gameStats.averageRTP
+          averageRTP: gameStats.averageRTP,
         },
         topPerformers: gameStats.topGames.slice(0, 10),
         categoryBreakdown: getCategoryBreakdown(),
@@ -284,13 +301,15 @@ export const handleGetGamePerformance: RequestHandler = (req, res) => {
           highestRevenue: getHighestRevenueGame(),
           biggestWin: gameStats.biggestWinToday,
           lowestRTP: getLowestRTPGame(),
-          highestRTP: getHighestRTPGame()
-        }
+          highestRTP: getHighestRTPGame(),
+        },
       });
     }
   } catch (error) {
-    console.error('Error fetching game performance:', error);
-    res.status(500).json({ success: false, error: 'Failed to fetch game performance data' });
+    console.error("Error fetching game performance:", error);
+    res
+      .status(500)
+      .json({ success: false, error: "Failed to fetch game performance data" });
   }
 };
 
@@ -302,31 +321,46 @@ function calculateLiveGameStats(): any {
     totalSlots: 25,
     activeGames: 23,
     topGames: [
-      { name: 'Lucky Sevens', spins: 2847, revenue: 1247.56, rtp: 96.2 },
-      { name: 'Diamond Fortune', spins: 1934, revenue: 892.34, rtp: 95.8 },
-      { name: 'Royal Riches', spins: 1567, revenue: 743.21, rtp: 96.5 }
+      { name: "Lucky Sevens", spins: 2847, revenue: 1247.56, rtp: 96.2 },
+      { name: "Diamond Fortune", spins: 1934, revenue: 892.34, rtp: 95.8 },
+      { name: "Royal Riches", spins: 1567, revenue: 743.21, rtp: 96.5 },
     ],
     totalSpins: 15672,
     averageRTP: 95.8,
-    biggestWinToday: 2500.00
+    biggestWinToday: 2500.0,
   };
 }
 
 function getRecentBigWins(): any[] {
   return [
-    { user: 'LuckyPlayer***', amount: 2500.00, game: 'Diamond Fortune', time: new Date(Date.now() - 300000) },
-    { user: 'WinnerWin***', amount: 1800.00, game: 'Lucky Sevens', time: new Date(Date.now() - 900000) },
-    { user: 'RoyalFlush***', amount: 1250.00, game: 'Royal Riches', time: new Date(Date.now() - 1800000) }
+    {
+      user: "LuckyPlayer***",
+      amount: 2500.0,
+      game: "Diamond Fortune",
+      time: new Date(Date.now() - 300000),
+    },
+    {
+      user: "WinnerWin***",
+      amount: 1800.0,
+      game: "Lucky Sevens",
+      time: new Date(Date.now() - 900000),
+    },
+    {
+      user: "RoyalFlush***",
+      amount: 1250.0,
+      game: "Royal Riches",
+      time: new Date(Date.now() - 1800000),
+    },
   ];
 }
 
 function calculatePlatformHealth(systemStatus: any, analytics: any): any {
   return {
-    status: 'optimal',
+    status: "optimal",
     uptime: 99.98,
     reliability: 99.95,
     performanceScore: 94.7,
-    userSatisfaction: 96.3
+    userSatisfaction: 96.3,
   };
 }
 
@@ -337,12 +371,12 @@ function calculateNewUsersToday(): number {
 
 function calculateAverageBalance(wallets: Map<string, any>): number {
   if (wallets.size === 0) return 0;
-  
+
   let totalValue = 0;
-  wallets.forEach(wallet => {
+  wallets.forEach((wallet) => {
     totalValue += wallet.goldCoins * 0.01 + wallet.sweepsCoins;
   });
-  
+
   return totalValue / wallets.size;
 }
 
@@ -351,39 +385,56 @@ function calculateGrowthMetrics(): any {
     userGrowthRate: 12.5, // percentage
     revenueGrowthRate: 8.3,
     retentionImprovement: 5.2,
-    engagementIncrease: 15.7
+    engagementIncrease: 15.7,
   };
 }
 
 function getLatestTransactions(limit: number): any[] {
   const allTransactions = realTimeDB.getAllTransactions();
   return Array.from(allTransactions.values())
-    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+    .sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+    )
     .slice(0, limit)
-    .map(tx => ({
+    .map((tx) => ({
       id: tx.id,
       amount: tx.amount,
-      type: tx.type || 'purchase',
+      type: tx.type || "purchase",
       timestamp: tx.timestamp,
-      status: tx.status
+      status: tx.status,
     }));
 }
 
 function getRecentRegistrations(limit: number): any[] {
   // This would query actual user registration data
-  return Array(limit).fill(0).map((_, i) => ({
-    userId: `user_${Date.now() - i * 60000}`,
-    username: `NewPlayer${Math.floor(Math.random() * 1000)}`,
-    timestamp: new Date(Date.now() - i * 60000),
-    source: 'organic'
-  }));
+  return Array(limit)
+    .fill(0)
+    .map((_, i) => ({
+      userId: `user_${Date.now() - i * 60000}`,
+      username: `NewPlayer${Math.floor(Math.random() * 1000)}`,
+      timestamp: new Date(Date.now() - i * 60000),
+      source: "organic",
+    }));
 }
 
 function getRecentSystemEvents(limit: number): any[] {
   return [
-    { type: 'system_start', message: 'Real-time database initialized', timestamp: new Date() },
-    { type: 'ai_task', message: 'AI task processing active', timestamp: new Date() },
-    { type: 'analytics', message: 'Analytics engine running', timestamp: new Date() }
+    {
+      type: "system_start",
+      message: "Real-time database initialized",
+      timestamp: new Date(),
+    },
+    {
+      type: "ai_task",
+      message: "AI task processing active",
+      timestamp: new Date(),
+    },
+    {
+      type: "analytics",
+      message: "Analytics engine running",
+      timestamp: new Date(),
+    },
   ].slice(0, limit);
 }
 
@@ -440,7 +491,7 @@ function getSuspiciousActivityCount(): number {
 function getFraudPreventionStats(): any {
   return {
     attemptsPrevented: Math.floor(Math.random() * 15) + 3,
-    amountSaved: Math.floor(Math.random() * 5000) + 1000
+    amountSaved: Math.floor(Math.random() * 5000) + 1000,
   };
 }
 
@@ -460,24 +511,26 @@ function calculateRefundRate(): number {
 
 function calculateUserActivity(timeframe: string): any {
   return {
-    hourlyBreakdown: Array(24).fill(0).map((_, hour) => ({
-      hour,
-      users: Math.floor(Math.random() * 100) + 20,
-      sessions: Math.floor(Math.random() * 150) + 30
-    })),
+    hourlyBreakdown: Array(24)
+      .fill(0)
+      .map((_, hour) => ({
+        hour,
+        users: Math.floor(Math.random() * 100) + 20,
+        sessions: Math.floor(Math.random() * 150) + 30,
+      })),
     peakHour: Math.floor(Math.random() * 24),
-    totalSessions: Math.floor(Math.random() * 1000) + 500
+    totalSessions: Math.floor(Math.random() * 1000) + 500,
   };
 }
 
 function calculateGeographicDistribution(): any {
   return {
-    'United States': 45.2,
-    'Canada': 23.1,
-    'United Kingdom': 12.8,
-    'Australia': 8.4,
-    'Germany': 6.2,
-    'Other': 4.3
+    "United States": 45.2,
+    Canada: 23.1,
+    "United Kingdom": 12.8,
+    Australia: 8.4,
+    Germany: 6.2,
+    Other: 4.3,
   };
 }
 
@@ -485,17 +538,17 @@ function calculateDeviceStatistics(): any {
   return {
     mobile: 67.3,
     desktop: 28.9,
-    tablet: 3.8
+    tablet: 3.8,
   };
 }
 
 function calculateTimeZoneDistribution(): any {
   return {
-    'EST': 35.2,
-    'PST': 28.7,
-    'GMT': 15.4,
-    'CET': 12.1,
-    'AEST': 8.6
+    EST: 35.2,
+    PST: 28.7,
+    GMT: 15.4,
+    CET: 12.1,
+    AEST: 8.6,
   };
 }
 
@@ -515,7 +568,7 @@ function calculateRetentionRates(): any {
   return {
     day1: 85.2,
     day7: 67.8,
-    day30: 45.3
+    day30: 45.3,
   };
 }
 
@@ -534,8 +587,8 @@ function getSpecificGamePerformance(gameId: string, timeframe: string): any {
     revenue: Math.floor(Math.random() * 5000) + 500,
     rtp: 94 + Math.random() * 4,
     players: Math.floor(Math.random() * 200) + 50,
-    averageBet: 0.50 + Math.random() * 2,
-    biggestWin: Math.floor(Math.random() * 2000) + 100
+    averageBet: 0.5 + Math.random() * 2,
+    biggestWin: Math.floor(Math.random() * 2000) + 100,
   };
 }
 
@@ -544,26 +597,26 @@ function getCategoryBreakdown(): any {
     slots: 68.5,
     table_games: 15.2,
     mini_games: 12.8,
-    bingo: 3.5
+    bingo: 3.5,
   };
 }
 
 function getTrendingGames(): any[] {
   return [
-    { name: 'Crystal Quest', trend: '+15%' },
-    { name: 'Gold Rush', trend: '+12%' },
-    { name: 'Mega Millions', trend: '+8%' }
+    { name: "Crystal Quest", trend: "+15%" },
+    { name: "Gold Rush", trend: "+12%" },
+    { name: "Mega Millions", trend: "+8%" },
   ];
 }
 
 function getHighestRevenueGame(): any {
-  return { name: 'Diamond Fortune', revenue: 8934.56 };
+  return { name: "Diamond Fortune", revenue: 8934.56 };
 }
 
 function getLowestRTPGame(): any {
-  return { name: 'High Roller Special', rtp: 94.2 };
+  return { name: "High Roller Special", rtp: 94.2 };
 }
 
 function getHighestRTPGame(): any {
-  return { name: 'Lucky Sevens', rtp: 97.8 };
+  return { name: "Lucky Sevens", rtp: 97.8 };
 }
