@@ -344,20 +344,22 @@ export function SlotMachine({
           {/* Game Stats */}
           <div className="flex justify-center space-x-6 mt-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-casino-green">
-                ${userBalance.toFixed(2)}
+              <div className={`text-2xl font-bold ${
+                currency === "GC" ? "text-gold" : "text-purple-400"
+              }`}>
+                {userBalance.toLocaleString()} {currency}
               </div>
               <div className="text-sm text-muted-foreground">Balance</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-gold">
-                ${currentBet.toFixed(2)}
+              <div className="text-2xl font-bold text-white">
+                {currentBet.toLocaleString()} {currency}
               </div>
-              <div className="text-sm text-muted-foreground">Bet</div>
+              <div className="text-sm text-muted-foreground">Play Amount</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-sweep">
-                ${lastWin.toFixed(2)}
+              <div className="text-2xl font-bold text-casino-green">
+                {lastWin.toLocaleString()} {currency}
               </div>
               <div className="text-sm text-muted-foreground">Last Win</div>
             </div>
