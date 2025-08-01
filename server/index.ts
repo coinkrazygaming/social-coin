@@ -87,6 +87,7 @@ import {
   handleSpinSlot,
   handleGetSlotStats,
   handleGetAllSlotStats,
+  handleGetUserWallet,
 } from "./routes/slots";
 import {
   handleOAuthLogin,
