@@ -9,6 +9,7 @@ import MiniGames from "./pages/MiniGames";
 import { Store } from "./pages/Store";
 import { AdminPanel } from "./pages/AdminPanel";
 import Slots from "./pages/Slots";
+import SlotGame from "./pages/SlotGame";
 import TableGames from "./pages/TableGames";
 import Leaderboards from "./pages/Leaderboards";
 import Bingo from "./pages/Bingo";
