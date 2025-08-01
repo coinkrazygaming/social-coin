@@ -175,6 +175,21 @@ export const SecurityTab: React.FC = () => {
 
   const loadSecurityData = async () => {
     try {
+      // Simulate new alerts for live monitoring
+      if (Math.random() > 0.7) {
+        const newAlert = {
+          id: `alert_${Date.now()}`,
+          type: ["fraud", "suspicious_login", "bot_activity", "withdrawal_review"][Math.floor(Math.random() * 4)],
+          severity: ["low", "medium", "high", "critical"][Math.floor(Math.random() * 4)],
+          title: "New Security Alert",
+          description: "Automated security system detected potential threat",
+          timestamp: new Date(),
+          status: "new" as const,
+        };
+
+        setLiveAlerts(prev => [...prev.slice(-4), newAlert]); // Keep last 5 alerts
+      }
+
       // Load real security logs from actual platform monitoring
       const realLogs: SecurityLog[] = [
         {
