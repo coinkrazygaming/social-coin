@@ -311,5 +311,11 @@ export function createServer() {
   app.post("/api/admin/alerts", handleCreateAlert);
   app.get("/api/admin/alerts/stats", handleGetAlertStats);
 
+  // Real-time Analytics routes (replaces all placeholder analytics)
+  app.get("/api/analytics/live", handleGetLiveAnalytics);
+  app.get("/api/analytics/dashboard", handleGetDashboardData);
+  app.get("/api/analytics/users/activity", handleGetUserActivity);
+  app.get("/api/analytics/games/performance", handleGetGamePerformance);
+
   return app;
 }
