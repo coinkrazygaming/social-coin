@@ -324,5 +324,12 @@ export function createServer() {
   app.get("/api/analytics/users/activity", handleGetUserActivity);
   app.get("/api/analytics/games/performance", handleGetGamePerformance);
 
+  // Real-time Wallet routes (replaces all placeholder wallet systems)
+  app.get("/api/wallet/:userId", handleGetUserWallet);
+  app.post("/api/wallet/:userId/update", handleUpdateUserWallet);
+  app.post("/api/wallet/game-result", handleProcessGameResult);
+  app.get("/api/wallet/:userId/transactions", handleGetWalletTransactions);
+  app.get("/api/wallet/:userId/stats", handleGetWalletStats);
+
   return app;
 }
