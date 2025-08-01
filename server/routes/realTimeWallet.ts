@@ -650,11 +650,3 @@ function calculateTransactionSummary(transactions: any[]): any {
     }
   };
 }
-
-export {
-  handleGetUserWallet,
-  handleUpdateUserWallet,
-  handleProcessGameResult,
-  handleGetWalletTransactions,
-  handleGetWalletStats
-};
