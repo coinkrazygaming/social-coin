@@ -512,7 +512,7 @@ export function SlotMachine({
 
               <div>
                 <label className="text-sm text-muted-foreground mb-2 block">
-                  Bet Amount: ${currentBet.toFixed(2)}
+                  Play Amount: {currentBet.toLocaleString()} {currency}
                 </label>
                 <Slider
                   value={[currentBet]}
