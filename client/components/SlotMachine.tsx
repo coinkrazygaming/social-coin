@@ -608,7 +608,15 @@ export function SlotMachine({
               <div className="text-sm text-muted-foreground space-y-1">
                 <div>RTP: {slot.rtp}%</div>
                 <div>Volatility: {slot.volatility}</div>
-                <div>Total Wins: ${totalWins.toFixed(2)}</div>
+                <div>Total Wins: {totalWins.toLocaleString()} {currency}</div>
+                <div className="flex items-center mt-2">
+                  <div className={`w-2 h-2 rounded-full mr-2 ${
+                    currency === "GC" ? "bg-gold" : "bg-purple-400"
+                  }`}></div>
+                  <span className="text-xs">
+                    Playing with {currency === "GC" ? "Gold Coins" : "Sweeps Coins"}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
