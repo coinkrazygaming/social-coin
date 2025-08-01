@@ -536,10 +536,11 @@ export function AdminPanel() {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList
-            className="grid w-full grid-cols-19"
-            style={{ gridTemplateColumns: "repeat(19, 1fr)" }}
+            className="grid w-full grid-cols-20"
+            style={{ gridTemplateColumns: "repeat(20, 1fr)" }}
           >
             <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="alerts">Live Alerts</TabsTrigger>
             <TabsTrigger value="security">Security</TabsTrigger>
             <TabsTrigger value="ai-employees">AI Employees</TabsTrigger>
             <TabsTrigger value="kyc">KYC</TabsTrigger>
