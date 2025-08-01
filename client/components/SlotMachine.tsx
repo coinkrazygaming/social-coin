@@ -678,7 +678,7 @@ export function SlotMachine({
                   <div>
                     <div className="font-semibold">{symbol.name}</div>
                     <div className="text-xs text-muted-foreground">
-                      {symbol.value}x
+                      {symbol.value}x {currency}
                     </div>
                   </div>
                 </div>
