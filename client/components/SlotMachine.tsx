@@ -292,27 +292,89 @@ export function SlotMachine({
   };
 
   const handleSpin = async () => {
-    if (currentBet > userBalance) return;
+    if (currentBet > userBalance) {
+      alert(`Insufficient ${currency} balance. Current balance: ${userBalance}, Required: ${currentBet}`);
+      return;
+    }
 
     try {
-      const result = await spinReels();
-      if (result.length > 0) {
-        // Record spin in backend with currency
-        await onSpin(currentBet, currency);
+      setIsSpinning(true);
+      setLastWin(0);
+      setWinLines([]);
+      setShowWinAnimation(false);
 
-        // In real-time mode, update wallet immediately
-        if (realTimeMode && onWalletUpdate) {
-          // This would be called after successful wallet debit/credit on backend
-          // The actual wallet update happens in the parent component
+      // Play spin sound
+      if (soundEnabled && spinSoundRef.current) {
+        spinSoundRef.current.play().catch(() => {});
+      }
+
+      // Call the real backend spin API with actual wallet processing
+      const spinResult = await onSpin(currentBet, currency);
+
+      // Process the real result from backend
+      const result = spinResult.result || generateSpinResult();
+      const winAmount = spinResult.winAmount || 0;
+
+      // Animate reels with actual result
+      const spinPromises = reels.map((_, index) =>
+        animateReel(index, result[0]?.[index] || slot.reels[index].symbols[0]),
+      );
+
+      await Promise.all(spinPromises);
+
+      // Update display with real results
+      setLastWin(winAmount);
+      setSpinCount((prev) => prev + 1);
+      setTotalWins((prev) => prev + winAmount);
+
+      // Find winning lines from backend result
+      if (spinResult.winLines && spinResult.winLines.length > 0) {
+        setWinLines(spinResult.winLines);
+      }
+
+      // Update balance with real backend response
+      if (spinResult.newBalance !== undefined) {
+        onBalanceUpdate(spinResult.newBalance);
+      }
+
+      // In real-time mode, update wallet immediately with real values
+      if (realTimeMode && onWalletUpdate && spinResult.walletUpdate) {
+        onWalletUpdate(
+          spinResult.walletUpdate.goldCoins,
+          spinResult.walletUpdate.sweepsCoins
+        );
+      }
+
+      // Show win animation if won
+      if (winAmount > 0) {
+        setShowWinAnimation(true);
+        if (soundEnabled && winSoundRef.current) {
+          winSoundRef.current.play().catch(() => {});
+        }
+        setTimeout(() => setShowWinAnimation(false), 3000);
+
+        // Log big wins for analytics
+        if (winAmount > 1000) {
+          console.log(`🎉 Big win: ${winAmount} ${currency} on ${slot.name}`);
         }
       }
+
+      setIsSpinning(false);
     } catch (error) {
       console.error("Spin error:", error);
       setIsSpinning(false);
 
-      // Show error message to user
-      if (error instanceof Error && error.message.includes("Insufficient")) {
-        alert(`Insufficient ${currency} balance. Please add more funds to continue playing.`);
+      // Show specific error messages based on error type
+      if (error instanceof Error) {
+        if (error.message.includes("Insufficient")) {
+          alert(`Insufficient ${currency} balance. Please add more funds to continue playing.`);
+        } else if (error.message.includes("Session")) {
+          alert("Session expired. Please refresh the page and try again.");
+        } else if (error.message.includes("Network")) {
+          alert("Network error. Please check your connection and try again.");
+        } else {
+          alert("An error occurred while processing your spin. Please try again.");
+        }
       }
     }
   };
