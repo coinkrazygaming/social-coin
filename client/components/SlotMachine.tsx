@@ -298,7 +298,7 @@ export function SlotMachine({
       const spinResult = await onSpin(currentBet, currency);
 
       // Process the real result from backend
-      const result = spinResult.result || generateSpinResult();
+      const result = spinResult.result || generateFallbackResult();
       const winAmount = spinResult.winAmount || 0;
 
       // Animate reels with actual result
