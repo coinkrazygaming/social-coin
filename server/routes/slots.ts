@@ -213,6 +213,30 @@ export const handleGetSlotStats: RequestHandler = (req, res) => {
   }
 };
 
+export const handleGetUserWallet: RequestHandler = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    const gcBalance = await checkUserBalance(userId, "GC");
+    const scBalance = await checkUserBalance(userId, "SC");
+
+    res.json({
+      success: true,
+      wallet: {
+        GC: gcBalance,
+        SC: scBalance,
+      },
+    });
+  } catch (error) {
+    console.error("Error getting user wallet:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 export const handleGetAllSlotStats: RequestHandler = (req, res) => {
   try {
     const allStats = inHouseSlots.map((slot) => {
