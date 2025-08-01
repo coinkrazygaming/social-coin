@@ -644,7 +644,7 @@ export function SlotMachine({
 
             {currentBet > userBalance && (
               <p className="text-casino-red text-center mt-2">
-                Insufficient balance for this bet
+                Insufficient {currency} balance for this play amount
               </p>
             )}
           </div>
