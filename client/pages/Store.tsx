@@ -453,73 +453,21 @@ export function Store() {
           </CardContent>
         </Card>
 
-        {/* Payment Modal */}
-        {showPaymentModal && selectedPackage && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <Card className="bg-gray-800 border-gray-700 w-full max-w-md mx-4">
-              <CardHeader>
-                <CardTitle className="text-white flex justify-between items-center">
-                  Complete Purchase
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowPaymentModal(false)}
-                  >
-                    ✕
-                  </Button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="text-center">
-                  <div className="text-4xl mb-2">
-                    {getPackageIcon(selectedPackage.name)}
-                  </div>
-                  <h3 className="text-white font-medium text-lg">
-                    {selectedPackage.name}
-                  </h3>
-                  <p className="text-gray-400">{selectedPackage.description}</p>
-
-                  <div className="my-4 p-4 bg-gray-700 rounded">
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <div className="text-yellow-500 font-bold">
-                          {selectedPackage.goldCoins.toLocaleString()}
-                        </div>
-                        <div className="text-gray-400">Gold Coins</div>
-                      </div>
-                      <div>
-                        <div className="text-green-500 font-bold">
-                          +{selectedPackage.bonusSweepsCoins}
-                        </div>
-                        <div className="text-gray-400">Sweeps Coins</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="text-2xl font-bold text-white mb-4">
-                    ${selectedPackage.price}
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <Button
-                    onClick={() => processPayPalPayment(selectedPackage)}
-                    className="w-full bg-blue-600 hover:bg-blue-700"
-                    disabled={isProcessing}
-                  >
-                    <CreditCard className="w-4 h-4 mr-2" />
-                    {isProcessing ? "Processing..." : "Pay with PayPal"}
-                  </Button>
-
-                  <div className="text-xs text-gray-400 text-center">
-                    Secure payment processing • 256-bit SSL encryption
-                    <br />
-                    Payment goes to: corey@coinkrazy.com
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+        {/* Enhanced Checkout System */}
+        {selectedPackage && (
+          <EnhancedCheckoutSystem
+            selectedPackage={selectedPackage}
+            isOpen={showCheckout}
+            onClose={() => {
+              setShowCheckout(false);
+              setSelectedPackage(null);
+            }}
+            onComplete={handlePurchaseComplete}
+            userBalance={{
+              goldCoins: user?.goldCoins || 0,
+              sweepsCoins: user?.sweepsCoins || 0
+            }}
+          />
         )}
 
         <AccessDeniedModal
