@@ -47,6 +47,7 @@ const App = () => (
 
                 {/* Casino Routes */}
                 <Route path="/slots" element={<Slots />} />
+                <Route path="/slots/:slotId" element={<SlotGame />} />
                 <Route path="/table-games" element={<EnhancedTableGames />} />
                 <Route path="/sportsbook" element={<Sportsbook />} />
                 <Route path="/bingo" element={<Bingo />} />
