@@ -86,7 +86,7 @@ export function Store() {
     }
 
     setSelectedPackage(packageItem);
-    setShowPaymentModal(true);
+    setShowCheckout(true);
   };
 
   const processPayPalPayment = async (packageItem: GoldCoinPackage) => {
