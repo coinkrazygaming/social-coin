@@ -123,6 +123,7 @@ import {
   handleCreateAlert,
   handleGetAlertStats,
 } from "./routes/adminAlerts";
+import enhancedStoreRoutes from "./routes/enhancedStore";
 
 export function createServer() {
   const app = express();
