@@ -637,7 +637,7 @@ export function SlotMachine({
               ) : (
                 <div className="flex items-center">
                   <Play className="h-6 w-6 mr-3" />
-                  SPIN ${currentBet.toFixed(2)}
+                  PLAY {currentBet.toLocaleString()} {currency}
                 </div>
               )}
             </Button>
