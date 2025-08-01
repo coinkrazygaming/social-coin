@@ -71,7 +71,7 @@ export function Store() {
     if (!user) return;
 
     try {
-      const response = await fetch(`/api/store/users/${user.id}/purchases`);
+      const response = await fetch(`/api/enhanced-store/users/${user.id}/purchases`);
       const data = await response.json();
       setPurchaseHistory(data);
     } catch (error) {
