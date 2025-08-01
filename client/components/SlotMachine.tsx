@@ -169,51 +169,37 @@ export function SlotMachine({
     return result;
   };
 
-  const spinReels = async (): Promise<string[][]> => {
-    if (isSpinning || currentBet > userBalance) return [];
+  // Keep this for fallback/demo mode, but real spins use backend
+  const generateFallbackResult = (): string[][] => {
+    // This is only used if backend is unavailable
+    const result: string[][] = [];
 
-    setIsSpinning(true);
-    setLastWin(0);
-    setWinLines([]);
-    setShowWinAnimation(false);
+    for (let row = 0; row < slot.rows; row++) {
+      result[row] = [];
+      for (let reel = 0; reel < slot.reels.length; reel++) {
+        const reelSymbols = slot.reels[reel].symbols;
+        const weights = slot.reels[reel].weight;
 
-    // Play spin sound
-    if (soundEnabled && spinSoundRef.current) {
-      spinSoundRef.current.play().catch(() => {});
-    }
+        // Weighted random selection
+        const totalWeight = Object.values(weights).reduce(
+          (sum, weight) => sum + weight,
+          0,
+        );
+        let random = Math.random() * totalWeight;
 
-    // Generate result
-    const result = generateSpinResult();
+        let selectedSymbol = reelSymbols[0];
+        for (const symbolId of reelSymbols) {
+          random -= weights[symbolId] || 1;
+          if (random <= 0) {
+            selectedSymbol = symbolId;
+            break;
+          }
+        }
 
-    // Animate reels
-    const spinPromises = reels.map((_, index) =>
-      animateReel(index, result[0]?.[index] || slot.reels[index].symbols[0]),
-    );
-
-    await Promise.all(spinPromises);
-
-    // Calculate wins
-    const { amount, lines } = calculateWin(result);
-
-    setLastWin(amount);
-    setWinLines(lines);
-    setTotalWins((prev) => prev + amount);
-    setSpinCount((prev) => prev + 1);
-
-    // Update balance
-    const newBalance = userBalance - currentBet + amount;
-    onBalanceUpdate(newBalance);
-
-    // Show win animation if won
-    if (amount > 0) {
-      setShowWinAnimation(true);
-      if (soundEnabled && winSoundRef.current) {
-        winSoundRef.current.play().catch(() => {});
+        result[row][reel] = selectedSymbol;
       }
-      setTimeout(() => setShowWinAnimation(false), 3000);
     }
 
-    setIsSpinning(false);
     return result;
   };
 
