@@ -655,11 +655,45 @@ export const SecurityTab: React.FC = () => {
         </div>
       )}
 
+      {/* LuckyAI Chat Button */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-4">
+          <h2 className="text-2xl font-bold text-white">Security Center</h2>
+          <Badge className="bg-green-600 text-white">
+            <Activity className="h-3 w-3 mr-1" />
+            Live Monitoring Active
+          </Badge>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={() => setShowLuckyAIChat(true)}
+            className="bg-purple-600 hover:bg-purple-700 text-white"
+          >
+            <Bot className="h-4 w-4 mr-2" />
+            Chat with LuckyAI
+            {liveAlerts.length > 0 && (
+              <Badge className="ml-2 bg-red-500 text-white">
+                {liveAlerts.length}
+              </Badge>
+            )}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={exportSecurityReport}
+            className="border-gray-600 text-gray-300 hover:bg-gray-700"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Export Report
+          </Button>
+        </div>
+      </div>
+
       <Tabs defaultValue="logs" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="logs">Security Logs</TabsTrigger>
           <TabsTrigger value="recommendations">AI Recommendations</TabsTrigger>
-          <TabsTrigger value="monitoring">Real-time Monitoring</TabsTrigger>
+          <TabsTrigger value="monitoring">Live Monitoring</TabsTrigger>
+          <TabsTrigger value="flagged">Flagged Accounts</TabsTrigger>
           <TabsTrigger value="settings">Security Settings</TabsTrigger>
         </TabsList>
 
