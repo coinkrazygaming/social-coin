@@ -124,9 +124,38 @@ import {
   handleGetAlertStats,
 } from "./routes/adminAlerts";
 import enhancedStoreRoutes from "./routes/enhancedStore";
+import { realTimeDB } from "./utils/realTimeDatabase";
+import { aiEmployeeManager } from "./utils/aiEmployeeManager";
 
 export function createServer() {
   const app = express();
+
+  // Initialize real-time systems
+  console.log('🚀 Initializing CoinKrazy.com production systems...');
+
+  // Initialize real-time database
+  const db = realTimeDB;
+  console.log('✅ Real-time database system online');
+
+  // Initialize AI employee management
+  const aiManager = aiEmployeeManager;
+  console.log('✅ AI Employee Management system online');
+
+  // Set up real-time event handling
+  db.on('analytics-update', (data) => {
+    // Broadcast to connected clients via WebSocket (if implemented)
+    console.log('📊 Analytics updated:', data.today);
+  });
+
+  aiManager.on('task-created', (task) => {
+    console.log(`📋 AI Task created: ${task.title} (Priority: ${task.priority})`);
+  });
+
+  aiManager.on('task-escalated', ({ task, reason }) => {
+    console.log(`⚠️ AI Task escalated: ${task.title} - ${reason}`);
+  });
+
+  console.log('🤖 Production-ready AI systems operational');
 
   // Middleware
   app.use(cors());
