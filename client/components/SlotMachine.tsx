@@ -51,8 +51,11 @@ export function SlotMachine({
   slot,
   userId,
   userBalance,
+  currency,
   onSpin,
   onBalanceUpdate,
+  realTimeMode = false,
+  onWalletUpdate,
 }: SlotMachineProps) {
   const [reels, setReels] = useState<ReelState[]>([]);
   const [isSpinning, setIsSpinning] = useState(false);
