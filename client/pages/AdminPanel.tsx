@@ -49,6 +49,7 @@ import {
 } from "@shared/storeTypes";
 import { RedemptionRequest } from "@shared/userTypes";
 import { SlotMachine as SlotMachineType } from "@shared/slotTypes";
+import { AdminAlertsSystem } from "../components/AdminAlertsSystem";
 import {
   Settings,
   Package,
