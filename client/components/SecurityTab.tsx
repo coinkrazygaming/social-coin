@@ -1480,6 +1480,17 @@ export const SecurityTab: React.FC = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* LuckyAI Security Chat */}
+      <LuckyAISecurityChat
+        isOpen={showLuckyAIChat}
+        onToggle={() => setShowLuckyAIChat(false)}
+        alerts={liveAlerts}
+        onAlertAction={(alertId, action) => {
+          console.log(`Alert ${alertId} action: ${action}`);
+          // Handle alert actions here
+        }}
+      />
     </div>
   );
 };
