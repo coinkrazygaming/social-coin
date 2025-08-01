@@ -123,6 +123,12 @@ import {
   handleCreateAlert,
   handleGetAlertStats,
 } from "./routes/adminAlerts";
+import {
+  handleGetLiveAnalytics,
+  handleGetDashboardData,
+  handleGetUserActivity,
+  handleGetGamePerformance
+} from "./routes/realTimeAnalytics";
 import enhancedStoreRoutes from "./routes/enhancedStore";
 import { realTimeDB } from "./utils/realTimeDatabase";
 import { aiEmployeeManager } from "./utils/aiEmployeeManager";
