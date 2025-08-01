@@ -46,8 +46,7 @@ export function Store() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPackage, setSelectedPackage] =
     useState<GoldCoinPackage | null>(null);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
 
   useEffect(() => {
     fetchPackages();
