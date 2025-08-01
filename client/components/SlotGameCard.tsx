@@ -17,6 +17,14 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { Separator } from "./ui/separator";
+import {
   Play,
   Star,
   Crown,
@@ -26,6 +34,8 @@ import {
   Info,
   Sparkles,
   Gift,
+  DollarSign,
+  Wallet,
 } from "lucide-react";
 import { SlotMachine as SlotMachineType } from "@shared/slotTypes";
 import { SlotMachine } from "./SlotMachine";
@@ -33,9 +43,12 @@ import { useAuth } from "./AuthContext";
 
 interface SlotGameCardProps {
   slot: SlotMachineType;
-  onPlayFreeGC?: () => void;
-  onPlayRealSC?: () => void;
+  onPlayFreeGC?: (currency: "GC" | "SC") => void;
+  onPlayRealSC?: (currency: "GC" | "SC") => void;
   onPlayDemo?: () => void;
+  userGCBalance?: number;
+  userSCBalance?: number;
+  onWalletUpdate?: (gcBalance: number, scBalance: number) => void;
 }
 
 export function SlotGameCard({
@@ -43,9 +56,15 @@ export function SlotGameCard({
   onPlayFreeGC,
   onPlayRealSC,
   onPlayDemo,
+  userGCBalance = 0,
+  userSCBalance = 0,
+  onWalletUpdate,
 }: SlotGameCardProps) {
   const { user } = useAuth();
   const [showPreview, setShowPreview] = useState(false);
+  const [showCurrencySelector, setShowCurrencySelector] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState<"GC" | "SC">("GC");
+  const [gameMode, setGameMode] = useState<"free" | "real" | "demo">("demo");
   const [previewBalance, setPreviewBalance] = useState(100);
 
   const handleGameModeClick = (mode: "free" | "real" | "demo") => {
@@ -55,17 +74,38 @@ export function SlotGameCard({
       return;
     }
 
-    switch (mode) {
+    setGameMode(mode);
+
+    if (mode === "demo") {
+      setShowPreview(true);
+      return;
+    }
+
+    // For real money modes, show currency selector
+    if (mode === "free" || mode === "real") {
+      setShowCurrencySelector(true);
+    }
+  };
+
+  const handleCurrencySelect = () => {
+    setShowCurrencySelector(false);
+
+    switch (gameMode) {
       case "free":
-        onPlayFreeGC?.();
+        onPlayFreeGC?.(selectedCurrency);
         break;
       case "real":
-        onPlayRealSC?.();
-        break;
-      case "demo":
-        setShowPreview(true);
+        onPlayRealSC?.(selectedCurrency);
         break;
     }
+  };
+
+  const getCurrentBalance = () => {
+    return selectedCurrency === "GC" ? userGCBalance : userSCBalance;
+  };
+
+  const getCurrencySymbol = (currency: "GC" | "SC") => {
+    return currency === "GC" ? "GC" : "SC";
   };
 
   const getRarityColor = (rtp: number) => {
@@ -179,7 +219,7 @@ export function SlotGameCard({
         <CardContent className="pt-0">
           {/* Game Mode Buttons */}
           <div className="space-y-2">
-            {/* Play for Real Prizes with SC */}
+            {/* Real Money Play Button */}
             {user && (
               <Button
                 onClick={() => handleGameModeClick("real")}
@@ -187,11 +227,11 @@ export function SlotGameCard({
                 size="sm"
               >
                 <Trophy className="h-4 w-4 mr-2" />
-                Play for Real Prizes with SC!
+                Play for Real Prizes!
               </Button>
             )}
 
-            {/* Play for Free with GC */}
+            {/* Fun Play Button */}
             {user && (
               <Button
                 onClick={() => handleGameModeClick("free")}
@@ -200,8 +240,22 @@ export function SlotGameCard({
                 size="sm"
               >
                 <Coins className="h-4 w-4 mr-2" />
-                Play for Free with GC!
+                Play for Fun!
               </Button>
+            )}
+
+            {/* User wallet display */}
+            {user && (
+              <div className="flex justify-between text-xs mt-2 p-2 bg-gray-800/50 rounded">
+                <div className="flex items-center">
+                  <div className="w-2 h-2 bg-gold rounded-full mr-1"></div>
+                  <span className="text-gold font-semibold">{userGCBalance.toLocaleString()} GC</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-2 h-2 bg-purple-400 rounded-full mr-1"></div>
+                  <span className="text-purple-400 font-semibold">{userSCBalance.toLocaleString()} SC</span>
+                </div>
+              </div>
             )}
 
             {/* Play Demo Mode */}
@@ -231,8 +285,8 @@ export function SlotGameCard({
           {/* Betting Range */}
           <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-700">
             <div className="text-xs text-gray-400">
-              <span className="font-semibold text-white">Bet:</span> $
-              {slot.minBet} - ${slot.maxBet}
+              <span className="font-semibold text-white">Play:</span>{" "}
+              {slot.minBet} - {slot.maxBet} coins
             </div>
             <div className="text-xs text-gray-400">
               <span className="font-semibold text-white">Max Win:</span>{" "}
@@ -267,6 +321,7 @@ export function SlotGameCard({
               slot={slot}
               userId="demo"
               userBalance={previewBalance}
+              currency="GC"
               onSpin={async (bet) => {
                 // Demo mode with limited credits
                 if (previewBalance < bet) {
@@ -358,6 +413,108 @@ export function SlotGameCard({
                 </p>
               </div>
             )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Currency Selection Modal */}
+      <Dialog open={showCurrencySelector} onOpenChange={setShowCurrencySelector}>
+        <DialogContent className="max-w-md bg-gradient-to-br from-gray-900 to-gray-800 border-gold/50">
+          <DialogHeader>
+            <DialogTitle className="text-gold flex items-center">
+              <Wallet className="h-5 w-5 mr-2" />
+              Select Currency
+            </DialogTitle>
+            <DialogDescription className="text-gray-300">
+              Choose your currency for {slot.name}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 mt-4">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-white mb-4">
+                {gameMode === "real" ? "Play for Real Prizes" : "Play for Fun"}
+              </h3>
+            </div>
+
+            <Select value={selectedCurrency} onValueChange={(value: "GC" | "SC") => setSelectedCurrency(value)}>
+              <SelectTrigger className="w-full bg-gray-800 border-gold/30">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="GC">
+                  <div className="flex items-center justify-between w-full">
+                    <span className="flex items-center">
+                      <div className="w-3 h-3 bg-gold rounded-full mr-2"></div>
+                      Gold Coins (GC)
+                    </span>
+                    <span className="ml-4 text-gold font-semibold">
+                      {userGCBalance.toLocaleString()}
+                    </span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="SC">
+                  <div className="flex items-center justify-between w-full">
+                    <span className="flex items-center">
+                      <div className="w-3 h-3 bg-purple-400 rounded-full mr-2"></div>
+                      Sweeps Coins (SC)
+                    </span>
+                    <span className="ml-4 text-purple-400 font-semibold">
+                      {userSCBalance.toLocaleString()}
+                    </span>
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+
+            <div className="bg-gray-800/50 rounded-lg p-3">
+              <div className="text-sm text-gray-300">
+                <div className="flex justify-between">
+                  <span>Current Balance:</span>
+                  <span className={`font-semibold ${
+                    selectedCurrency === "GC" ? "text-gold" : "text-purple-400"
+                  }`}>
+                    {getCurrentBalance().toLocaleString()} {getCurrencySymbol(selectedCurrency)}
+                  </span>
+                </div>
+                <div className="flex justify-between mt-1">
+                  <span>Play Range:</span>
+                  <span className="text-white">
+                    {slot.minBet} - {slot.maxBet} {getCurrencySymbol(selectedCurrency)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {getCurrentBalance() < slot.minBet && (
+              <div className="bg-red-900/50 border border-red-500/50 rounded-lg p-3">
+                <p className="text-sm text-red-300">
+                  ⚠️ Insufficient {getCurrencySymbol(selectedCurrency)} balance.
+                  {selectedCurrency === "GC" ? (
+                    <> You need more Gold Coins to play.</>
+                  ) : (
+                    <> Purchase packages to get more Sweeps Coins.</>
+                  )}
+                </p>
+              </div>
+            )}
+
+            <div className="flex space-x-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowCurrencySelector(false)}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleCurrencySelect}
+                disabled={getCurrentBalance() < slot.minBet}
+                className="flex-1 bg-gradient-to-r from-gold to-yellow-400 text-black font-bold hover:from-yellow-400 hover:to-gold"
+              >
+                Play with {getCurrencySymbol(selectedCurrency)}
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
