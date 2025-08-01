@@ -104,13 +104,17 @@ export const handleDeleteSlot: RequestHandler = (req, res) => {
   }
 };
 
-export const handleSpinSlot: RequestHandler = (req, res) => {
+export const handleSpinSlot: RequestHandler = async (req, res) => {
   try {
     const { slotId } = req.params;
-    const { userId, bet } = req.body;
+    const { userId, bet, currency = "GC" } = req.body;
 
     if (!userId || !bet || bet <= 0) {
       return res.status(400).json({ error: "Invalid spin request" });
+    }
+
+    if (!["GC", "SC"].includes(currency)) {
+      return res.status(400).json({ error: "Invalid currency" });
     }
 
     const slot = inHouseSlots.find((s) => s.id === slotId);
@@ -121,12 +125,26 @@ export const handleSpinSlot: RequestHandler = (req, res) => {
     if (bet < slot.minBet || bet > slot.maxBet) {
       return res
         .status(400)
-        .json({ error: "Bet amount outside allowed range" });
+        .json({ error: "Play amount outside allowed range" });
+    }
+
+    // Check user balance (this would integrate with real wallet system)
+    // For now, using mock wallet check
+    const userBalance = await checkUserBalance(userId, currency);
+    if (userBalance < bet) {
+      return res.status(400).json({
+        error: `Insufficient ${currency} balance`,
+        required: bet,
+        available: userBalance
+      });
     }
 
     // Generate spin result
     const result = generateSpinResult(slot);
     const { winAmount, winLines } = calculateWin(slot, result, bet);
+
+    // Update user wallet in real-time
+    const walletUpdate = await updateUserWallet(userId, currency, -bet + winAmount);
 
     const spin: SlotSpin = {
       id: `spin_${Date.now()}_${Math.random()}`,
@@ -139,11 +157,17 @@ export const handleSpinSlot: RequestHandler = (req, res) => {
       timestamp: new Date(),
     };
 
+    // Add currency info to spin record
+    (spin as any).currency = currency;
+    (spin as any).walletUpdate = walletUpdate;
+
     slotSpins.push(spin);
 
     res.json({
       success: true,
       spin,
+      walletUpdate,
+      newBalance: walletUpdate.newBalance,
     });
   } catch (error) {
     console.error("Error processing slot spin:", error);
