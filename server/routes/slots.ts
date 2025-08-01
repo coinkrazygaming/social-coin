@@ -247,6 +247,43 @@ export const handleGetAllSlotStats: RequestHandler = (req, res) => {
   }
 };
 
+// Mock wallet system (in production, this would integrate with real wallet/database)
+const userWallets: Record<string, { GC: number; SC: number }> = {};
+
+async function checkUserBalance(userId: string, currency: "GC" | "SC"): Promise<number> {
+  if (!userWallets[userId]) {
+    // Initialize user wallet with some demo funds
+    userWallets[userId] = { GC: 10000, SC: 100 };
+  }
+  return userWallets[userId][currency];
+}
+
+async function updateUserWallet(
+  userId: string,
+  currency: "GC" | "SC",
+  amount: number
+): Promise<{ success: boolean; newBalance: number; gcBalance: number; scBalance: number }> {
+  if (!userWallets[userId]) {
+    userWallets[userId] = { GC: 10000, SC: 100 };
+  }
+
+  const currentBalance = userWallets[userId][currency];
+  const newBalance = currentBalance + amount;
+
+  if (newBalance < 0) {
+    throw new Error(`Insufficient ${currency} balance`);
+  }
+
+  userWallets[userId][currency] = newBalance;
+
+  return {
+    success: true,
+    newBalance,
+    gcBalance: userWallets[userId].GC,
+    scBalance: userWallets[userId].SC,
+  };
+}
+
 // Helper functions
 function generateSpinResult(slot: SlotMachine): string[][] {
   const result: string[][] = [];
