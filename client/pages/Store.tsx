@@ -92,7 +92,7 @@ export function Store() {
   const handlePurchaseComplete = async (transaction: any) => {
     try {
       // Send transaction to backend
-      const response = await fetch("/api/store/purchase", {
+      const response = await fetch("/api/enhanced-store/purchase", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -103,18 +103,24 @@ export function Store() {
       });
 
       if (response.ok) {
+        const result = await response.json();
+
         // Update user balance and purchase history
         fetchPurchaseHistory();
 
-        // Show success message
+        // Show success message with enhanced details
         setTimeout(() => {
           alert(
-            `Purchase successful! You received ${transaction.goldCoinsAwarded.toLocaleString()} Gold Coins and ${transaction.sweepsCoinsBonus} Sweeps Coins! Transaction ID: ${transaction.id}`,
+            `🎉 Purchase successful! You received ${transaction.goldCoinsAwarded.toLocaleString()} Gold Coins and ${transaction.sweepsCoinsBonus} Sweeps Coins! ${transaction.vipPointsEarned} VIP points earned. Transaction ID: ${transaction.id}`,
           );
         }, 1000);
+      } else {
+        const error = await response.json();
+        alert(`Purchase failed: ${error.error || 'Unknown error'}`);
       }
     } catch (error) {
       console.error("Error saving transaction:", error);
+      alert('Purchase failed. Please try again or contact support.');
     } finally {
       setShowCheckout(false);
       setSelectedPackage(null);
