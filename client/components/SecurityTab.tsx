@@ -157,6 +157,8 @@ export const SecurityTab: React.FC = () => {
     useState<AIRecommendation | null>(null);
   const [isMonitoring, setIsMonitoring] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
+  const [showLuckyAIChat, setShowLuckyAIChat] = useState(false);
+  const [liveAlerts, setLiveAlerts] = useState<any[]>([]);
   const { user } = useAuth();
 
   useEffect(() => {
