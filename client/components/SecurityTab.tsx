@@ -1039,6 +1039,158 @@ export const SecurityTab: React.FC = () => {
           </div>
         </TabsContent>
 
+        <TabsContent value="flagged" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-white">
+              Flagged User Accounts
+            </h3>
+            <div className="flex items-center gap-2">
+              <Badge className="bg-red-600 text-white">
+                <Flag className="h-3 w-3 mr-1" />
+                {logs.filter(log => log.flagged && !log.resolved).length} Active Flags
+              </Badge>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setShowLuckyAIChat(true)}
+                className="border-purple-500 text-purple-400 hover:bg-purple-500/10"
+              >
+                <Bot className="h-4 w-4 mr-2" />
+                Ask LuckyAI
+              </Button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {logs
+              .filter(log => log.flagged && !log.resolved && log.user)
+              .map((log) => (
+                <Card key={log.id} className="bg-gray-800 border-red-500/50">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <CardTitle className="text-white text-lg flex items-center gap-2">
+                          <UserX className="h-5 w-5 text-red-400" />
+                          @{log.user?.username}
+                        </CardTitle>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge className={getSeverityColor(log.severity)}>
+                            {log.severity}
+                          </Badge>
+                          <Badge variant="outline">
+                            {log.type.replace("_", " ")}
+                          </Badge>
+                          {log.aiAnalysis && (
+                            <Badge className="bg-purple-600 text-white">
+                              AI Risk: {log.aiAnalysis.riskScore}%
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm text-gray-400">
+                          {log.timestamp.toLocaleDateString()}
+                        </div>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="text-white font-medium mb-1">{log.action}</h4>
+                        <p className="text-gray-300 text-sm">{log.details}</p>
+                      </div>
+
+                      {log.user && (
+                        <div className="bg-gray-700/50 rounded p-3">
+                          <h5 className="text-white font-medium mb-2">User Details</h5>
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div>
+                              <span className="text-gray-400">IP:</span>
+                              <span className="text-white ml-2">{log.user.ip}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-400">Location:</span>
+                              <span className="text-white ml-2">{log.user.location}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-400">Device:</span>
+                              <span className="text-white ml-2">{log.user.device}</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {log.aiAnalysis && (
+                        <div className="bg-purple-900/30 border border-purple-500/30 rounded p-3">
+                          <h5 className="text-purple-400 font-medium mb-1 flex items-center gap-2">
+                            <Bot className="h-4 w-4" />
+                            LuckyAI Analysis
+                          </h5>
+                          <p className="text-gray-300 text-sm mb-2">
+                            {log.aiAnalysis.recommendation}
+                          </p>
+                          {log.aiAnalysis.autoAction && (
+                            <div className="text-xs text-purple-300">
+                              Auto Action: {log.aiAnalysis.autoAction}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-blue-500 text-blue-400 hover:bg-blue-500/10"
+                          onClick={() => setSelectedLog(log)}
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          Investigate
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-yellow-500 text-yellow-400 hover:bg-yellow-500/10"
+                        >
+                          <Lock className="h-4 w-4 mr-1" />
+                          Freeze Account
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="bg-green-600 hover:bg-green-700"
+                          onClick={() => resolveSecurity(log.id, "Reviewed and resolved by admin")}
+                        >
+                          <CheckCircle className="h-4 w-4 mr-1" />
+                          Resolve
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                        >
+                          <Ban className="h-4 w-4 mr-1" />
+                          Ban
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+          </div>
+
+          {logs.filter(log => log.flagged && !log.resolved && log.user).length === 0 && (
+            <Card className="bg-gray-800 border-gray-700">
+              <CardContent className="p-8 text-center">
+                <Shield className="h-12 w-12 text-green-500 mx-auto mb-4" />
+                <h3 className="text-white font-semibold mb-2">No Flagged Accounts</h3>
+                <p className="text-gray-400">
+                  All user accounts are currently in good standing. LuckyAI is actively monitoring for suspicious activity.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
         <TabsContent value="settings" className="space-y-4">
           {settings && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
