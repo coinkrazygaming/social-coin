@@ -89,44 +89,35 @@ export function Store() {
     setShowCheckout(true);
   };
 
-  const processPayPalPayment = async (packageItem: GoldCoinPackage) => {
-    setIsProcessing(true);
-
+  const handlePurchaseComplete = async (transaction: any) => {
     try {
-      // Simulate PayPal payment processing
-      const paymentReference = `PAY-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
+      // Send transaction to backend
       const response = await fetch("/api/store/purchase", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId: user!.id,
           username: user!.username,
-          packageId: packageItem.id,
-          paymentMethod: "paypal",
-          paymentReference,
+          transactionData: transaction,
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Payment failed");
+      if (response.ok) {
+        // Update user balance and purchase history
+        fetchPurchaseHistory();
+
+        // Show success message
+        setTimeout(() => {
+          alert(
+            `Purchase successful! You received ${transaction.goldCoinsAwarded.toLocaleString()} Gold Coins and ${transaction.sweepsCoinsBonus} Sweeps Coins! Transaction ID: ${transaction.id}`,
+          );
+        }, 1000);
       }
-
-      const result = await response.json();
-
-      // Update user balance (simulated)
-      alert(
-        `Payment successful! You received ${packageItem.goldCoins.toLocaleString()} Gold Coins and ${packageItem.bonusSweepsCoins} Sweeps Coins!`,
-      );
-
-      setShowPaymentModal(false);
-      setSelectedPackage(null);
-      fetchPurchaseHistory();
     } catch (error) {
-      console.error("Payment error:", error);
-      alert("Payment failed. Please try again.");
+      console.error("Error saving transaction:", error);
     } finally {
-      setIsProcessing(false);
+      setShowCheckout(false);
+      setSelectedPackage(null);
     }
   };
 
