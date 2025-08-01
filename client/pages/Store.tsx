@@ -15,6 +15,7 @@ import {
 } from "../components/ui/tabs";
 import { useAuth } from "../components/AuthContext";
 import { AccessDeniedModal } from "../components/AccessDeniedModal";
+import { EnhancedCheckoutSystem } from "../components/EnhancedCheckoutSystem";
 import {
   GoldCoinPackage,
   PurchaseTransaction,
