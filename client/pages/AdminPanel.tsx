@@ -710,7 +710,7 @@ export function AdminPanel() {
           </TabsContent>
 
           <TabsContent value="ai-employees" className="space-y-6">
-            <AIEmployeeManagement />
+            <EnhancedAIEmployeeSystem />
           </TabsContent>
 
           <TabsContent value="kyc" className="space-y-6">
