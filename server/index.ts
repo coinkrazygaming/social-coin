@@ -129,6 +129,13 @@ import {
   handleGetUserActivity,
   handleGetGamePerformance
 } from "./routes/realTimeAnalytics";
+import {
+  handleGetUserWallet,
+  handleUpdateUserWallet,
+  handleProcessGameResult,
+  handleGetWalletTransactions,
+  handleGetWalletStats
+} from "./routes/realTimeWallet";
 import enhancedStoreRoutes from "./routes/enhancedStore";
 import { realTimeDB } from "./utils/realTimeDatabase";
 import { aiEmployeeManager } from "./utils/aiEmployeeManager";
