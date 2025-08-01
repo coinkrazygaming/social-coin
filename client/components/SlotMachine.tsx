@@ -485,7 +485,7 @@ export function SlotMachine({
                     YOU WIN!
                   </div>
                   <div className="text-2xl font-bold text-casino-green mt-2">
-                    ${lastWin.toFixed(2)}
+                    {lastWin.toLocaleString()} {currency}
                   </div>
                   <div className="text-sm text-muted-foreground mt-2">
                     {winLines.length} winning line
