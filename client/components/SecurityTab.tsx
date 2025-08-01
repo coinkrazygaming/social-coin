@@ -58,6 +58,7 @@ import {
 } from "./ui/dialog";
 import { Textarea } from "./ui/textarea";
 import { useAuth } from "./AuthContext";
+import { LuckyAISecurityChat } from "./LuckyAISecurityChat";
 
 interface SecurityLog {
   id: string;
