@@ -62,6 +62,7 @@ export function SlotGameCard({
   onWalletUpdate,
 }: SlotGameCardProps) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [showPreview, setShowPreview] = useState(false);
   const [showCurrencySelector, setShowCurrencySelector] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState<"GC" | "SC">("GC");
