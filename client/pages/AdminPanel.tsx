@@ -563,6 +563,22 @@ export function AdminPanel() {
             <TabsTrigger value="ticker">Ticker</TabsTrigger>
           </TabsList>
 
+          <TabsContent value="alerts" className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-white">Live Admin Alerts</h2>
+              <Badge className="bg-red-600 text-white animate-pulse">
+                <Activity className="w-4 h-4 mr-2" />
+                Real-time Monitoring
+              </Badge>
+            </div>
+            <AdminAlertsSystem
+              isNavbarMode={false}
+              maxVisibleAlerts={50}
+              autoRefresh={true}
+              showFilters={true}
+            />
+          </TabsContent>
+
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Pending Actions */}
