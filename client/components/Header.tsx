@@ -101,7 +101,14 @@ export function Header() {
                 <NotificationCenter />
 
                 {/* Admin Alerts - Only visible to admins */}
-                <AdminAlerts />
+                {user?.role === "admin" && (
+                  <AdminAlertsSystem
+                    isNavbarMode={true}
+                    maxVisibleAlerts={20}
+                    autoRefresh={true}
+                    showFilters={true}
+                  />
+                )}
 
                 {/* Buy Coins Button */}
                 <Button
