@@ -567,10 +567,3 @@ function getLowestRTPGame(): any {
 function getHighestRTPGame(): any {
   return { name: 'Lucky Sevens', rtp: 97.8 };
 }
-
-export {
-  handleGetLiveAnalytics,
-  handleGetDashboardData,
-  handleGetUserActivity,
-  handleGetGamePerformance
-};
