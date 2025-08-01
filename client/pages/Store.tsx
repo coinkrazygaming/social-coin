@@ -57,7 +57,7 @@ export function Store() {
 
   const fetchPackages = async () => {
     try {
-      const response = await fetch("/api/store/packages?active=true");
+      const response = await fetch("/api/enhanced-store/packages?active=true");
       const data = await response.json();
       setPackages(data);
     } catch (error) {
