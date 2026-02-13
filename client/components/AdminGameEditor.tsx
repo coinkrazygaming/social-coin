@@ -188,8 +188,19 @@ export function AdminGameEditor({
   }, [gameId]);
 
   const loadGameData = async (id: string) => {
-    // TODO: Load actual game data from database
-    console.log("Loading game data for:", id);
+    try {
+      const response = await fetch(`/api/games/${id}`);
+      if (response.ok) {
+        const gameData = await response.json();
+        // Update form with loaded game data
+        console.log("Game data loaded:", gameData);
+        // TODO: Update form fields with gameData
+      } else {
+        console.error("Failed to load game data");
+      }
+    } catch (error) {
+      console.error("Error loading game data:", error);
+    }
   };
 
   const initializeSymbolWeights = () => {

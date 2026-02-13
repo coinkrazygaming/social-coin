@@ -452,22 +452,65 @@ export class SpinLoggerService {
     spinLog: SpinLog,
     reasons: any,
   ): Promise<void> {
-    // TODO: Implement database flag and admin notification
-    console.log("Suspicious activity detected:", {
-      userId,
-      spinLog: spinLog.id,
-      reasons,
-    });
+    try {
+      const { error } = await DatabaseService.supabase
+        .from("admin_alerts")
+        .insert({
+          type: "security_alert",
+          title: "Suspicious Activity Detected",
+          description: `User ${userId} - ${reasons}`,
+          priority: "high",
+          status: "pending",
+          related_user_id: userId,
+          related_entity_type: "spin_log",
+          related_entity_id: spinLog.id,
+          metadata: { spinLog, reasons },
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        });
+
+      if (error) {
+        console.error("Error flagging suspicious activity:", error);
+      }
+    } catch (error) {
+      console.error("Exception in flagSuspiciousActivity:", error);
+    }
   }
 
   private static async getPlayerName(userId: string): Promise<string> {
-    // TODO: Implement actual user lookup
-    return `Player_${userId.slice(-6)}`;
+    try {
+      const { data, error } = await DatabaseService.supabase
+        .from("users")
+        .select("username")
+        .eq("id", userId)
+        .single();
+
+      if (error || !data) {
+        return `Player_${userId.slice(-6)}`;
+      }
+
+      return data.username || `Player_${userId.slice(-6)}`;
+    } catch (error) {
+      return `Player_${userId.slice(-6)}`;
+    }
   }
 
   private static async getGameName(gameId: string): Promise<string> {
-    // TODO: Implement actual game lookup
-    return `Game_${gameId}`;
+    try {
+      const { data, error } = await DatabaseService.supabase
+        .from("games")
+        .select("name")
+        .eq("id", gameId)
+        .single();
+
+      if (error || !data) {
+        return `Game_${gameId}`;
+      }
+
+      return data.name || `Game_${gameId}`;
+    } catch (error) {
+      return `Game_${gameId}`;
+    }
   }
 
   private static detectDeviceType(userAgent: string): string {
@@ -477,8 +520,22 @@ export class SpinLoggerService {
   }
 
   private static async isSuspiciousActivity(log: SpinLog): Promise<boolean> {
-    // TODO: Implement suspicious activity detection logic
-    return log.win_amount > log.bet_amount * 100;
+    // Pattern 1: Extremely high win multiplier (> 100x)
+    if (log.win_amount > log.bet_amount * 100) {
+      return true;
+    }
+
+    // Pattern 2: Jackpot wins
+    if (log.is_jackpot) {
+      return true;
+    }
+
+    // Pattern 3: Very high single win amount
+    if (log.win_amount > 10000) {
+      return true;
+    }
+
+    return false;
   }
 
   private static async getSuspiciousActivityReason(
@@ -491,22 +548,107 @@ export class SpinLoggerService {
   }
 
   private static async batchSaveToDatabase(logs: SpinLog[]): Promise<void> {
-    // TODO: Implement batch database save
-    console.log(`Batch saving ${logs.length} spin logs to database`);
+    try {
+      const records = logs.map((log) => ({
+        id: log.id,
+        user_id: log.user_id,
+        game_id: log.game_id,
+        session_id: log.session_id,
+        bet_amount: log.bet_amount,
+        win_amount: log.win_amount,
+        currency: log.currency,
+        result: log.result,
+        multiplier: log.multiplier,
+        is_bonus: log.is_bonus,
+        is_jackpot: log.is_jackpot,
+        rtp_contribution: log.rtp_contribution,
+        timestamp: log.timestamp,
+        device_type: log.device_type,
+      }));
+
+      const { error } = await DatabaseService.supabase
+        .from("spin_logs")
+        .insert(records);
+
+      if (error) {
+        console.error("Error batch saving spin logs:", error);
+      }
+    } catch (error) {
+      console.error("Exception in batchSaveToDatabase:", error);
+    }
   }
 
   private static async saveSpinToDatabase(log: SpinLog): Promise<void> {
-    // TODO: Implement individual database save
-    console.log("Saving high-value spin to database:", log.id);
+    try {
+      const { error } = await DatabaseService.supabase
+        .from("spin_logs")
+        .insert({
+          id: log.id,
+          user_id: log.user_id,
+          game_id: log.game_id,
+          session_id: log.session_id,
+          bet_amount: log.bet_amount,
+          win_amount: log.win_amount,
+          currency: log.currency,
+          result: log.result,
+          multiplier: log.multiplier,
+          is_bonus: log.is_bonus,
+          is_jackpot: log.is_jackpot,
+          rtp_contribution: log.rtp_contribution,
+          timestamp: log.timestamp,
+          device_type: log.device_type,
+        });
+
+      if (error) {
+        console.error("Error saving spin to database:", error);
+      }
+    } catch (error) {
+      console.error("Exception in saveSpinToDatabase:", error);
+    }
   }
 
   private static async notifyAdminOfBigWin(log: SpinLog): Promise<void> {
-    // TODO: Implement admin notification system
-    console.log("Big win notification:", {
-      amount: log.win_amount,
-      currency: log.currency,
-      player: log.user_id,
-      game: log.game_id,
-    });
+    try {
+      // Get all admin users
+      const { data: admins, error: adminError } = await DatabaseService.supabase
+        .from("users")
+        .select("id")
+        .in("role", ["admin", "staff"])
+        .eq("status", "active");
+
+      if (adminError || !admins) {
+        console.error("Error fetching admins for big win notification:", adminError);
+        return;
+      }
+
+      // Create notifications for all admins
+      const notifications = admins.map((admin) => ({
+        user_id: admin.id,
+        sender_type: "system",
+        title: "🎰 Big Win Alert!",
+        message: `Player won ${log.win_amount} ${log.currency} (${log.multiplier}x multiplier)`,
+        type: "success",
+        priority: "medium",
+        read: false,
+        metadata: {
+          spinId: log.id,
+          userId: log.user_id,
+          gameId: log.game_id,
+          winAmount: log.win_amount,
+          multiplier: log.multiplier,
+        },
+        created_at: new Date().toISOString(),
+      }));
+
+      const { error } = await DatabaseService.supabase
+        .from("notifications")
+        .insert(notifications);
+
+      if (error) {
+        console.error("Error sending big win notifications:", error);
+      }
+    } catch (error) {
+      console.error("Exception in notifyAdminOfBigWin:", error);
+    }
   }
 }

@@ -3,6 +3,28 @@ import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import {
+  handleGetAllGames,
+  handleGetGameById,
+  handleUpdateGame,
+  handleGetGameStats,
+  handleGetGameRTP,
+  handleGetActivePlayerCount,
+  handleGetGameTrend,
+} from "./routes/games";
+import {
+  handleGetChatMessages,
+  handleCreateChatMessage,
+  handleGetPrivateChatMessages,
+} from "./routes/chat";
+import {
+  handleGetNotifications,
+  handleCreateNotification,
+  handleMarkAsRead,
+  handleMarkAllAsRead,
+  handleGetUnreadCount,
+  handleBroadcastNotification,
+} from "./routes/notifications";
+import {
   handleRegister,
   handleLogin,
   handleGetBalance,
@@ -317,6 +339,28 @@ export function createServer() {
   app.post("/api/admin/alerts/:alertId/resolve", handleResolveAlert);
   app.post("/api/admin/alerts", handleCreateAlert);
   app.get("/api/admin/alerts/stats", handleGetAlertStats);
+
+  // Games routes
+  app.get("/api/games", handleGetAllGames);
+  app.get("/api/games/:id", handleGetGameById);
+  app.put("/api/games/:id", handleUpdateGame);
+  app.get("/api/games/:id/stats", handleGetGameStats);
+  app.get("/api/games/:id/rtp", handleGetGameRTP);
+  app.get("/api/games/:id/active-players", handleGetActivePlayerCount);
+  app.get("/api/games/:id/trend", handleGetGameTrend);
+
+  // Chat routes
+  app.get("/api/chat/messages", handleGetChatMessages);
+  app.post("/api/chat/messages", handleCreateChatMessage);
+  app.get("/api/chat/private/:userId", handleGetPrivateChatMessages);
+
+  // Notifications routes
+  app.get("/api/notifications", handleGetNotifications);
+  app.post("/api/notifications", handleCreateNotification);
+  app.post("/api/notifications/:id/read", handleMarkAsRead);
+  app.post("/api/notifications/mark-all-read", handleMarkAllAsRead);
+  app.get("/api/notifications/unread-count", handleGetUnreadCount);
+  app.post("/api/notifications/broadcast", handleBroadcastNotification);
 
   // Real-time Analytics routes (replaces all placeholder analytics)
   app.get("/api/analytics/live", handleGetLiveAnalytics);

@@ -548,6 +548,43 @@ export class APISlotProvidersService {
     }, this.CACHE_DURATION);
   }
 
+  // Get provider error rate
+  private static async getProviderErrorRate(providerId: string): Promise<number> {
+    try {
+      // Check error rate in the last hour
+      const oneHourAgo = new Date();
+      oneHourAgo.setHours(oneHourAgo.getHours() - 1);
+
+      const { data: errors, error: errorQuery } = await DatabaseService.supabase
+        .from("game_errors")
+        .select("id", { count: "exact" })
+        .eq("provider_id", providerId)
+        .gte("created_at", oneHourAgo.toISOString());
+
+      const { data: requests, error: requestQuery } = await DatabaseService.supabase
+        .from("game_requests")
+        .select("id", { count: "exact" })
+        .eq("provider_id", providerId)
+        .gte("created_at", oneHourAgo.toISOString());
+
+      if (errorQuery || requestQuery || !requests) {
+        return 0;
+      }
+
+      const errorCount = errors?.length || 0;
+      const requestCount = requests?.length || 0;
+
+      if (requestCount === 0) {
+        return 0;
+      }
+
+      return Math.round((errorCount / requestCount) * 100 * 100) / 100;
+    } catch (error) {
+      console.error("Error calculating provider error rate:", error);
+      return 0;
+    }
+  }
+
   // Get provider statistics
   static getProviderStats(): Array<{
     name: string;
@@ -563,7 +600,7 @@ export class APISlotProvidersService {
       lastSync: new Date(
         this.lastCacheUpdate.get(provider.id) || 0,
       ).toISOString(),
-      errorRate: 0, // TODO: Track actual error rates
+      errorRate: await this.getProviderErrorRate(provider.id)
     }));
   }
 }

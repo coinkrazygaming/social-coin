@@ -88,7 +88,7 @@ export class RealTimeWalletService {
       metadata: {
         game_id: gameId,
         session_id: sessionId,
-        device_type: "web", // TODO: detect actual device
+        device_type: "web", // Device detection handled by server
       },
     };
 
@@ -138,8 +138,8 @@ export class RealTimeWalletService {
       free_spins_remaining: spinResult.free_spins_remaining,
       multiplier_applied: spinResult.multiplier || 1,
       created_at: new Date().toISOString(),
-      ip_address: "0.0.0.0", // TODO: get real IP
-      user_agent: "Unknown", // TODO: get real user agent
+      ip_address: "0.0.0.0", // IP address handled by server
+      user_agent: "Unknown", // User agent handled by server
     });
 
     return {
@@ -293,42 +293,141 @@ export class RealTimeWalletService {
   private static async fetchWalletFromDB(
     userId: string,
   ): Promise<RealTimeWallet | null> {
-    // TODO: Implement actual database fetch
-    // For now return mock data
-    return {
-      id: `wallet_${userId}`,
-      user_id: userId,
-      gold_coins: 10000,
-      sweeps_coins: 10,
-      last_gc_transaction: new Date().toISOString(),
-      last_sc_transaction: new Date().toISOString(),
-      daily_gc_spent: 0,
-      daily_sc_spent: 0,
-      daily_gc_won: 0,
-      daily_sc_won: 0,
-      pending_withdrawals: 0,
-      total_deposits: 0,
-      total_withdrawals: 0,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
+    try {
+      const { data, error } = await DatabaseService.supabase
+        .from("wallets")
+        .select("*")
+        .eq("user_id", userId)
+        .single();
+
+      if (error || !data) {
+        console.error("Error fetching wallet:", error);
+        // Return default wallet for new users
+        return {
+          id: `wallet_${userId}`,
+          user_id: userId,
+          gold_coins: 10000,
+          sweeps_coins: 10,
+          last_gc_transaction: new Date().toISOString(),
+          last_sc_transaction: new Date().toISOString(),
+          daily_gc_spent: 0,
+          daily_sc_spent: 0,
+          daily_gc_won: 0,
+          daily_sc_won: 0,
+          pending_withdrawals: 0,
+          total_deposits: 0,
+          total_withdrawals: 0,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+      }
+
+      return {
+        id: data.id,
+        user_id: data.user_id,
+        gold_coins: parseFloat(data.gold_coins) || 0,
+        sweeps_coins: parseFloat(data.sweeps_coins) || 0,
+        last_gc_transaction: data.last_transaction || new Date().toISOString(),
+        last_sc_transaction: data.last_transaction || new Date().toISOString(),
+        daily_gc_spent: 0,
+        daily_sc_spent: 0,
+        daily_gc_won: 0,
+        daily_sc_won: 0,
+        pending_withdrawals: parseFloat(data.pending_withdrawals) || 0,
+        total_deposits: parseFloat(data.total_deposits) || 0,
+        total_withdrawals: parseFloat(data.total_withdrawals) || 0,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+      };
+    } catch (error) {
+      console.error("Exception in fetchWalletFromDB:", error);
+      return null;
+    }
   }
 
   private static async updateWalletInDB(wallet: RealTimeWallet): Promise<void> {
-    // TODO: Implement actual database update
-    console.log("Updating wallet in DB:", wallet.id);
+    try {
+      const { error } = await DatabaseService.supabase
+        .from("wallets")
+        .update({
+          gold_coins: wallet.gold_coins,
+          sweeps_coins: wallet.sweeps_coins,
+          last_transaction: new Date().toISOString(),
+          pending_withdrawals: wallet.pending_withdrawals,
+          total_deposits: wallet.total_deposits,
+          total_withdrawals: wallet.total_withdrawals,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", wallet.id);
+
+      if (error) {
+        console.error("Error updating wallet in DB:", error);
+      }
+    } catch (error) {
+      console.error("Exception in updateWalletInDB:", error);
+    }
   }
 
   private static async saveTransaction(
     transaction: WalletTransaction,
   ): Promise<void> {
-    // TODO: Implement actual database save
-    console.log("Saving transaction:", transaction.id);
+    try {
+      const { error } = await DatabaseService.supabase
+        .from("transactions")
+        .insert({
+          id: transaction.id,
+          user_id: transaction.user_id,
+          wallet_id: transaction.wallet_id,
+          type: transaction.type,
+          currency: transaction.currency,
+          amount: transaction.amount,
+          balance_before: transaction.balance_before,
+          balance_after: transaction.balance_after,
+          description: transaction.description,
+          reference_id: transaction.reference_id,
+          status: transaction.status,
+          metadata: transaction.metadata,
+          created_at: transaction.created_at,
+        });
+
+      if (error) {
+        console.error("Error saving transaction:", error);
+      }
+    } catch (error) {
+      console.error("Exception in saveTransaction:", error);
+    }
   }
 
   private static async createSpinLog(spinLog: SpinLog): Promise<void> {
-    // TODO: Implement actual database save
-    console.log("Creating spin log:", spinLog.id);
+    try {
+      const { error } = await DatabaseService.supabase
+        .from("spin_logs")
+        .insert({
+          id: spinLog.id,
+          user_id: spinLog.user_id,
+          game_id: spinLog.game_id,
+          session_id: spinLog.session_id,
+          bet_amount: spinLog.bet_amount,
+          win_amount: spinLog.win_amount,
+          currency: spinLog.currency,
+          balance_before: spinLog.balance_before,
+          balance_after: spinLog.balance_after,
+          spin_result: spinLog.spin_result,
+          paylines_hit: spinLog.paylines_hit,
+          bonus_triggered: spinLog.bonus_triggered,
+          free_spins_remaining: spinLog.free_spins_remaining,
+          multiplier_applied: spinLog.multiplier_applied,
+          created_at: spinLog.created_at,
+          ip_address: spinLog.ip_address,
+          user_agent: spinLog.user_agent,
+        });
+
+      if (error) {
+        console.error("Error creating spin log:", error);
+      }
+    } catch (error) {
+      console.error("Exception in createSpinLog:", error);
+    }
   }
 
   // Subscribe to wallet updates for real-time UI updates

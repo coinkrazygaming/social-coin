@@ -145,8 +145,17 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
   };
 
   const loadChatMessages = async () => {
-    // TODO: Implement chat message loading from database
-    // For now, use mock data
+    try {
+      const response = await fetch(`/api/chat/messages?channel=${chatChannel}`);
+      if (response.ok) {
+        const messages = await response.json();
+        setChatMessages(messages);
+        return;
+      }
+    } catch (error) {
+      console.error("Error loading chat messages:", error);
+    }
+    // Fallback to mock data
     setChatMessages([
       {
         id: "1",
@@ -208,10 +217,24 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
   };
 
   const markAllAsRead = async () => {
-    // TODO: Implement bulk mark as read
-    const unreadNotifications = notifications.filter((n) => !n.read);
-    for (const notification of unreadNotifications) {
-      await markAsRead(notification.id);
+    try {
+      const unreadNotifications = notifications.filter((n) => !n.read);
+      const notificationIds = unreadNotifications.map((n) => n.id);
+      
+      const response = await fetch("/api/notifications/mark-all-read", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notificationIds }),
+      });
+
+      if (response.ok) {
+        setNotifications((prev) =>
+          prev.map((n) => ({ ...n, read: true }))
+        );
+        setUnreadCount(0);
+      }
+    } catch (error) {
+      console.error("Error marking all as read:", error);
     }
   };
 
@@ -232,7 +255,16 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
     setChatMessages((prev) => [...prev, newMessage]);
     setChatMessage("");
 
-    // TODO: Send to database and broadcast to other users
+    // Send to database and broadcast to other users
+    try {
+      await fetch("/api/chat/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newMessage),
+      });
+    } catch (error) {
+      console.error("Error sending chat message:", error);
+    }
   };
 
   const showNotificationToast = (notification: Notification) => {

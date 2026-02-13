@@ -110,7 +110,7 @@ export class RealTimeStatsService {
       totalSpins: game.total_spins_today,
       totalRevenue: game.total_revenue_gc + game.total_revenue_sc,
       biggestWin: game.total_payouts_gc + game.total_payouts_sc,
-      activeNow: Math.floor(Math.random() * 50), // TODO: Get real active player count
+      activeNow: await this.getActivePlayerCount(game.game_id),
       popularityScore: this.calculatePopularityScore(game),
     }));
   }
@@ -328,8 +328,46 @@ export class RealTimeStatsService {
   }
 
   private static async getPlayerName(playerId: string): Promise<string> {
-    // TODO: Implement actual player lookup
-    return `Player_${playerId.slice(-6)}`;
+    try {
+      const { data, error } = await DatabaseService.supabase
+        .from("users")
+        .select("username")
+        .eq("id", playerId)
+        .single();
+
+      if (error || !data) {
+        return `Player_${playerId.slice(-6)}`;
+      }
+
+      return data.username || `Player_${playerId.slice(-6)}`;
+    } catch (error) {
+      return `Player_${playerId.slice(-6)}`;
+    }
+  }
+
+  private static async getActivePlayerCount(gameId: string): Promise<number> {
+    try {
+      // Consider players active if they played in the last 5 minutes
+      const cutoffTime = new Date();
+      cutoffTime.setMinutes(cutoffTime.getMinutes() - 5);
+
+      const { data, error } = await DatabaseService.supabase
+        .from("spin_logs")
+        .select("user_id")
+        .eq("game_id", gameId)
+        .gte("timestamp", cutoffTime.toISOString());
+
+      if (error || !data) {
+        return 0;
+      }
+
+      // Count unique users
+      const uniqueUsers = new Set(data.map((log) => log.user_id));
+      return uniqueUsers.size;
+    } catch (error) {
+      console.error("Error getting active player count:", error);
+      return 0;
+    }
   }
 
   private static getGameCategory(gameId: string): string {
@@ -344,15 +382,74 @@ export class RealTimeStatsService {
     return Math.floor(spinsWeight + revenueWeight);
   }
 
-  private static calculateRTP(gameId: string): number {
-    // TODO: Calculate actual RTP from spin logs
-    return 95.0 + Math.random() * 3.0; // 95-98%
+  private static async calculateRTP(gameId: string): Promise<number> {
+    try {
+      // Calculate RTP from last 30 days of spin logs
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - 30);
+
+      const { data, error } = await DatabaseService.supabase
+        .from("spin_logs")
+        .select("bet_amount, win_amount")
+        .eq("game_id", gameId)
+        .gte("timestamp", cutoffDate.toISOString());
+
+      if (error || !data || data.length === 0) {
+        return 96.0; // Default RTP
+      }
+
+      const totalBet = data.reduce((sum, spin) => sum + parseFloat(spin.bet_amount), 0);
+      const totalWin = data.reduce((sum, spin) => sum + parseFloat(spin.win_amount), 0);
+
+      if (totalBet === 0) {
+        return 96.0;
+      }
+
+      const rtp = (totalWin / totalBet) * 100;
+      return Math.round(rtp * 100) / 100;
+    } catch (error) {
+      console.error("Error calculating RTP:", error);
+      return 96.0;
+    }
   }
 
-  private static calculateTrend(gameId: string): "up" | "down" | "stable" {
-    // TODO: Calculate actual trend from historical data
-    const trends: ("up" | "down" | "stable")[] = ["up", "down", "stable"];
-    return trends[Math.floor(Math.random() * trends.length)];
+  private static async calculateTrend(gameId: string): Promise<"up" | "down" | "stable"> {
+    try {
+      const now = new Date();
+      const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      const twoDaysAgo = new Date(now.getTime() - 48 * 60 * 60 * 1000);
+
+      // Get spin count for last 24 hours
+      const { data: recentData } = await DatabaseService.supabase
+        .from("spin_logs")
+        .select("id", { count: "exact" })
+        .eq("game_id", gameId)
+        .gte("timestamp", oneDayAgo.toISOString());
+
+      // Get spin count for previous 24 hours
+      const { data: previousData } = await DatabaseService.supabase
+        .from("spin_logs")
+        .select("id", { count: "exact" })
+        .eq("game_id", gameId)
+        .gte("timestamp", twoDaysAgo.toISOString())
+        .lt("timestamp", oneDayAgo.toISOString());
+
+      const recentCount = recentData?.length || 0;
+      const previousCount = previousData?.length || 0;
+
+      if (previousCount === 0) {
+        return "stable";
+      }
+
+      const change = ((recentCount - previousCount) / previousCount) * 100;
+
+      if (change > 10) return "up";
+      if (change < -10) return "down";
+      return "stable";
+    } catch (error) {
+      console.error("Error calculating trend:", error);
+      return "stable";
+    }
   }
 
   // Cleanup when service is stopped

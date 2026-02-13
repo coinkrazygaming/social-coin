@@ -172,12 +172,13 @@ export default function SocialCasinoPage() {
   const handleModeSelect = (mode: "GC" | "SC", betAmount: number) => {
     if (!selectedGame) return;
 
-    // TODO: Launch actual game with selected mode and bet
+    // Launch actual game with selected mode and bet
     console.log(`Launching ${selectedGame.name} with ${betAmount} ${mode}`);
     setShowGameModal(false);
 
-    // Navigate to game or open game window
-    // This would typically redirect to the actual slot game interface
+    // Navigate to game page with parameters
+    const gameUrl = `/slots/${selectedGame.id}?mode=${mode}&bet=${betAmount}`;
+    window.location.href = gameUrl;
   };
 
   const providers = Array.from(new Set(gamesList.map((game) => game.provider)));
